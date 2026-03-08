@@ -39,3 +39,23 @@ yarn-error.log*
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+
+# 64Box Specific Database & Media
+GBC_v19.mdb
+gb64.sqlite
+/gb64_export/
+/CSV_FILES_GBC_v19/
+/64BoxMedia/
+/emu-temp/
+
+# Testing output
+/playwright-report/
+/test-results/
+
+# Tauri Build target
+/src-tauri/target/
+
+# AI Agent Specific Folders
+/.agent
+/.agents
+/skills-lock.json

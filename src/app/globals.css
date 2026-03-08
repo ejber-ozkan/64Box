@@ -24,3 +24,11 @@ body {
   color: var(--foreground);
   font-family: Arial, Helvetica, sans-serif;
 }
+
+.custom-scrollbar-hidden::-webkit-scrollbar {
+  display: none;
+}
+.custom-scrollbar-hidden {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
