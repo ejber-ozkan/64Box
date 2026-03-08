@@ -1,6 +1,6 @@
-# EmulatorJS Core: vice_x64sc
+# EmulatorJS Core: vice_x64
 
-This package contains the stable EmulatorJS core: vice_x64sc
+This package contains the stable EmulatorJS core: vice_x64
 
 Lean more about EmulatorJS at https://emulatorjs.org
 
@@ -15,7 +15,7 @@ https://github.com/EmulatorJS/build
 To install core, run the following command:
 
 ```bash
-npm install @emulatorjs/core-vice_x64sc
+npm install @emulatorjs/core-vice_x64
 ```
 To install all cores, run the following command:
 

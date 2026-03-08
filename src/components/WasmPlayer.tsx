@@ -10,7 +10,7 @@ interface WasmPlayerProps {
   core?: string;
 }
 
-export function WasmPlayer({ romPath, onClose, core = 'vice_x64sc' }: WasmPlayerProps) {
+export function WasmPlayer({ romPath, onClose, core = 'vice_x64' }: WasmPlayerProps) {
   const iframeRef = useRef<HTMLIFrameElement>(null);
   const [error, setError] = useState<string | null>(null);
   const [loadingStatus, setLoadingStatus] = useState<string>('Reading ROM file...');
@@ -77,6 +77,11 @@ export function WasmPlayer({ romPath, onClose, core = 'vice_x64sc' }: WasmPlayer
               src="/emulator.html" 
               className={`w-full h-full border-0 transition-opacity duration-500 ${loadingStatus ? 'opacity-0' : 'opacity-100'}`}
               allow="fullscreen; autoplay; gamepad"
+              onLoad={(e) => {
+                e.currentTarget.focus();
+                // We also add a listener specifically tailored to click events to reclaim focus if they click out
+                e.currentTarget.addEventListener('mouseover', () => e.currentTarget?.focus());
+              }}
             />
           </>
         )}

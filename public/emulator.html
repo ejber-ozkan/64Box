@@ -69,10 +69,22 @@
         window.EJS_gameUrl = blobUrl;
         window.EJS_DEBUG_XX = true;
 
-        window.EJS_onLoad = function() {
-          console.log('[WASM-Iframe] Local Emulator Loaded!');
+        window.EJS_ready = function() {
+          console.log('[WASM-Iframe] Local Emulator Ready!');
           var loader = document.getElementById('loading');
           if (loader) loader.style.display = 'none';
+        };
+
+        window.EJS_onGameStart = function() {
+          console.log('[WASM-Iframe] Game Started! Focusing... ');
+          var loader = document.getElementById('loading');
+          if (loader) loader.style.display = 'none';
+          
+          // Force keyboard focus into the emulator iframe
+          window.focus();
+          document.body.focus();
+          var canvas = document.querySelector('canvas');
+          if (canvas) canvas.focus();
         };
 
         var script = document.createElement('script');

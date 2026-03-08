@@ -7,7 +7,8 @@ const PUBLIC_EMU = path.join(ROOT, 'public/emulator/data');
 
 const FOLDERS = [
   { src: 'emulatorjs/data', dest: '' },
-  { src: 'core-vice_x64sc', dest: 'cores' }
+  { src: 'core-vice_x64sc', dest: 'cores' },
+  { src: 'core-vice_x64', dest: 'cores' }
 ];
 
 console.log('--- Project 64Box Offline Local Setup ---');

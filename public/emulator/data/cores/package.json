@@ -1,8 +1,8 @@
 {
-    "name": "@emulatorjs/core-vice_x64sc",
+    "name": "@emulatorjs/core-vice_x64",
     "version": "4.2.3",
     "type": "module",
-    "description": "EmulatorJS Core: vice_x64sc",
+    "description": "EmulatorJS Core: vice_x64",
     "homepage": "https://emulatorjs.org",
     "license": "COPYING",
     "repository": {
