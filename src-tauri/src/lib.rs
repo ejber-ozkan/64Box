@@ -72,7 +72,27 @@ pub struct GameRow {
     pub developer_name: Option<String>,
     pub publisher_name: Option<String>,
     pub musician_name: Option<String>,
+    pub musician_photo: Option<String>,
+    pub musician_nick: Option<String>,
+    pub musician_group: Option<String>,
+    pub coder_name: Option<String>,
+    pub graphics_name: Option<String>,
+    pub version_by: Option<String>,
+    pub control: Option<String>,
+    pub players_from: Option<String>,
+    pub players_to: Option<String>,
+    pub players_sim: Option<String>,
+    pub comment: Option<String>,
+    pub review_rating: Option<String>,
     pub languages: Option<String>,
+    pub v_trainers: Option<String>,
+    pub v_length: Option<String>,
+    pub v_loading_screen: Option<bool>,
+    pub v_high_score_saver: Option<bool>,
+    pub v_included_docs: Option<bool>,
+    pub v_true_drive_emu: Option<bool>,
+    pub v_pal_ntsc: Option<String>,
+    pub memo: Option<String>,
 }
 
 // ---------------------------------------------------------------------------
@@ -444,15 +464,49 @@ pub mod commands {
         
         let conn = Connection::open(db_path).map_err(|e| format!("Database error: {}", e))?;
         
-        // Join Games for the Adult flag (not in GameView)
-        let mut query = "SELECT gv.*, g.Adult as isAdult FROM GameView gv JOIN Games g ON gv.id = g.GA_Id WHERE 1=1".to_string();
+        // Join Games and Musicians/Developers for additional metadata
+        let mut query = "
+            SELECT 
+                gv.*, 
+                g.Adult as isAdult,
+                g.Control as control,
+                g.PlayersFrom as players_from,
+                g.PlayersTo as players_to,
+                g.PlayersSim as players_sim,
+                g.Comment as comment,
+                g.ReviewRating as review_rating,
+                mu.Photo as musician_photo,
+                mu.Nick as musician_nick,
+                mu.Grp as musician_group,
+                pr.Musician as coder_name,
+                ar.Musician as graphics_name,
+                cr.Developer as version_by,
+                g.V_Trainers as v_trainers,
+                g.V_Length as v_length,
+                CASE WHEN g.V_LoadingScreen = '1' THEN 1 ELSE 0 END as v_loading_screen,
+                CASE WHEN g.V_HighScoreSaver = '1' THEN 1 ELSE 0 END as v_high_score_saver,
+                CASE WHEN g.V_IncludedDocs = '1' THEN 1 ELSE 0 END as v_included_docs,
+                CASE WHEN g.V_TrueDriveEmu = '1' THEN 1 ELSE 0 END as v_true_drive_emu,
+                g.V_PalNTSC as v_pal_ntsc,
+                g.MemoText as memo
+            FROM GameView gv 
+            JOIN Games g ON gv.id = g.GA_Id 
+            LEFT JOIN Musicians mu ON g.MU_Id = mu.MU_Id
+            LEFT JOIN Musicians pr ON g.PR_Id = pr.MU_Id
+            LEFT JOIN Musicians ar ON g.AR_Id = ar.MU_Id
+            LEFT JOIN Developers cr ON g.CR_Id = cr.DE_Id
+            WHERE 1=1".to_string();
         let mut params: Vec<String> = Vec::new();
 
         if let Some(f) = filters {
             if let Some(sq) = f.search_query {
                 if !sq.is_empty() {
-                    query.push_str(" AND gv.name LIKE ?");
-                    params.push(format!("%{}%", sq));
+                    query.push_str(" AND (gv.name LIKE ? OR gv.developer_name LIKE ? OR gv.publisher_name LIKE ? OR gv.musician_name LIKE ?)");
+                    let pattern = format!("%{}%", sq);
+                    params.push(pattern.clone());
+                    params.push(pattern.clone());
+                    params.push(pattern.clone());
+                    params.push(pattern);
                 }
             }
             if let Some(l) = f.letter {
@@ -517,7 +571,27 @@ pub mod commands {
                 developer_name: row.get("developer_name")?,
                 publisher_name: row.get("publisher_name")?,
                 musician_name: row.get("musician_name")?,
+                musician_photo: row.get("musician_photo")?,
+                musician_nick: row.get("musician_nick")?,
+                musician_group: row.get("musician_group")?,
+                coder_name: row.get("coder_name")?,
+                graphics_name: row.get("graphics_name")?,
+                version_by: row.get("version_by")?,
+                control: row.get("control")?,
+                players_from: row.get("players_from")?,
+                players_to: row.get("players_to")?,
+                players_sim: row.get("players_sim")?,
+                comment: row.get("comment")?,
+                review_rating: row.get("review_rating")?,
                 languages: row.get("languages")?,
+                v_trainers: row.get("v_trainers")?,
+                v_length: row.get("v_length")?,
+                v_loading_screen: Some(row.get::<_, i32>("v_loading_screen")? == 1),
+                v_high_score_saver: Some(row.get::<_, i32>("v_high_score_saver")? == 1),
+                v_included_docs: Some(row.get::<_, i32>("v_included_docs")? == 1),
+                v_true_drive_emu: Some(row.get::<_, i32>("v_true_drive_emu")? == 1),
+                v_pal_ntsc: row.get("v_pal_ntsc")?,
+                memo: row.get("memo")?,
             })
         }).map_err(|e| e.to_string())?;
         

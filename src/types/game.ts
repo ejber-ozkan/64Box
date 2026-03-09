@@ -12,6 +12,8 @@ export interface Musician {
   id: number;
   name: string;
   photoPath: string | null;
+  group: string | null;
+  nick: string | null;
 }
 
 export interface Game {
@@ -38,5 +40,25 @@ export interface Game {
   publisher: Publisher | null;
   musician: Musician | null;
   
+  control: string | null;
+  playersFrom: string | null;
+  playersTo: string | null;
+  playersSim: string | null;
+  comment: string | null;
+  reviewRating: string | null;
+  
   languages: string[];
+  
+  // New detailed metadata
+  coderName: string | null;
+  graphicsName: string | null;
+  versionBy: string | null;
+  vTrainers: string | null;
+  vLength: string | null;
+  vLoadingScreen: boolean | null;
+  vHighScoreSaver: boolean | null;
+  vIncludedDocs: boolean | null;
+  vTrueDriveEmu: boolean | null;
+  vPalNtsc: string | null;
+  memo: string | null;
 }

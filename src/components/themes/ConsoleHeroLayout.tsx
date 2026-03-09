@@ -7,6 +7,8 @@ import { ImageSlider } from '../ImageSlider';
 import { SidPlayer } from '../SidPlayer';
 import { PlayButton } from './PlayButton';
 import { DetailLayoutProps } from '../DetailView';
+import { MusicianPhoto } from '../MusicianPhoto';
+import { StatusRow } from '../StatusRow';
 
 export function ConsoleHeroLayout({ game, onBack, nav, onFullscreen }: DetailLayoutProps) {
   const { resolveMediaPath } = useSettings();
@@ -58,7 +60,7 @@ export function ConsoleHeroLayout({ game, onBack, nav, onFullscreen }: DetailLay
           <span>←</span> Back
         </button>
 
-        {/* Controller status bar (Consistent with current design) */}
+        {/* Controller status bar */}
         <div className="flex items-center gap-3 text-xs">
           <span className="text-gray-400 hidden sm:inline">Controller Support Active</span>
           <span className="px-4 py-1.5 bg-blue-600/30 border border-blue-400/50 text-blue-200 font-bold rounded-full animate-pulse min-w-[150px] text-center">
@@ -118,26 +120,118 @@ export function ConsoleHeroLayout({ game, onBack, nav, onFullscreen }: DetailLay
         <div className="w-[400px] flex flex-col shrink-0 gap-6">
            <div className="bg-white/5 backdrop-blur-xl border border-white/10 rounded-3xl p-8 shadow-2xl flex-1 flex flex-col transform transition translate-y-4 group-hover:translate-y-0 duration-700">
               <h1 className="text-5xl font-black text-white mb-2 leading-tight">{game.name}</h1>
-              <div className="text-blue-400 font-semibold text-lg mb-8">{game.year || 'Unknown Year'} • {game.developer?.name || 'Unknown Developer'}</div>
+              <div className="text-blue-400 font-semibold text-lg mb-8 uppercase tracking-wide">
+                {[
+                  game.year,
+                  game.publisher?.name && game.publisher.name !== '(Not Published)' ? game.publisher.name : null,
+                  game.developer?.name && game.developer.name !== '(Unknown)' ? game.developer.name : null
+                ].filter(Boolean).join(' • ')}
+              </div>
               
               <div className="space-y-4 mb-8">
-                 <div className="flex justify-between items-center border-b border-white/10 pb-4">
-                    <span className="text-gray-400">Genre</span>
-                    <span className="text-white font-medium">{game.parentGenre} / {game.subGenre}</span>
-                 </div>
-                 <div className="flex justify-between items-center border-b border-white/10 pb-4">
+                <div className="flex justify-between items-center border-b border-white/10 pb-4">
+                  <span className="text-gray-400">Genre</span>
+                  <span className="text-white font-medium">{game.parentGenre} / {game.subGenre}</span>
+                </div>
+
+                {game.publisher?.name && game.publisher.name !== '(Not Published)' && (
+                  <div className="flex justify-between items-center border-b border-white/10 pb-4">
                     <span className="text-gray-400">Publisher</span>
-                    <span className="text-white font-medium">{game.publisher?.name || '-'}</span>
-                 </div>
-                 <div className="flex justify-between items-center border-b border-white/10 pb-4">
+                    <span className="text-white font-medium">{game.publisher.name}</span>
+                  </div>
+                )}
+
+                {game.musician?.name && (
+                  <div className="flex justify-between items-center border-b border-white/10 pb-4">
                     <span className="text-gray-400">Musician</span>
-                    <span className="text-white font-medium">{game.musician?.name || '-'}</span>
-                 </div>
+                    <div className="flex items-center gap-3">
+                      <div className="text-right">
+                        <div className="text-white font-medium">{game.musician.name}</div>
+                        {game.musician.nick && <div className="text-blue-400 text-[10px] font-mono">&quot;{game.musician.nick}&quot;</div>}
+                      </div>
+                      <MusicianPhoto 
+                        photoFilename={game.musician.photoPath} 
+                        musicianName={game.musician.name} 
+                        className="w-10 h-10 shadow-lg border border-white/10"
+                      />
+                    </div>
+                  </div>
+                )}
+
+                <div className="flex justify-between items-center border-b border-white/10 pb-4">
+                  <span className="text-gray-400">Control</span>
+                  <span className="text-white font-medium">{game.control || 'Joystick'}</span>
+                </div>
+
+                <div className="flex justify-between items-center border-b border-white/10 pb-4">
+                  <span className="text-gray-400">Players</span>
+                  <span className="text-white font-medium">
+                    {game.playersFrom === game.playersTo ? game.playersFrom : `${game.playersFrom}-${game.playersTo}`}
+                    {game.playersSim === 'True' && ' (Sim)'}
+                  </span>
+                </div>
+
+                <div className="flex justify-between items-center border-b border-white/10 pb-4">
+                  <span className="text-gray-400">Rating</span>
+                  <span className="text-yellow-500 font-bold">
+                    {(() => {
+                      const r = parseInt(game.reviewRating || "0");
+                      if (r <= 0) return 'NR';
+                      const stars = Math.min(5, r);
+                      return '★'.repeat(stars) + '☆'.repeat(5 - stars);
+                    })()}
+                  </span>
+                </div>
+
+                {(game.coderName && game.coderName !== '(Unknown)') || (game.graphicsName && game.graphicsName !== '(Unknown)') ? (
+                  <div className="grid grid-cols-2 gap-4 border-b border-white/10 pb-4">
+                    {game.coderName && game.coderName !== '(Unknown)' && (
+                      <div className="flex flex-col">
+                        <span className="text-[10px] text-gray-500 uppercase tracking-widest font-bold">Coder</span>
+                        <span className="text-blue-300 text-sm truncate">{game.coderName}</span>
+                      </div>
+                    )}
+                    {game.graphicsName && game.graphicsName !== '(Unknown)' && (
+                      <div className="flex flex-col">
+                        <span className="text-[10px] text-gray-500 uppercase tracking-widest font-bold">Artist</span>
+                        <span className="text-green-300 text-sm truncate">{game.graphicsName}</span>
+                      </div>
+                    )}
+                  </div>
+                ) : null}
+
+                <div className="bg-white/5 rounded-2xl p-4 flex flex-col gap-3">
+                  <div className="text-[10px] text-gray-500 uppercase tracking-widest font-bold mb-1">Version Details</div>
+                  <div className="flex justify-between text-xs">
+                    <span className="text-gray-400">Version By</span>
+                    <span className="text-blue-300 font-medium">{game.versionBy || '---'}</span>
+                  </div>
+                  <div className="flex justify-between text-xs">
+                    <span className="text-gray-400">PAL / NTSC</span>
+                    <span className="text-yellow-400 font-medium">{game.vPalNtsc || '---'}</span>
+                  </div>
+                  <div className="flex justify-between text-xs">
+                    <span className="text-gray-400">Trainers</span>
+                    <span className="text-white font-medium">{game.vTrainers || '0'}</span>
+                  </div>
+                  <div className="flex justify-between text-xs">
+                    <span className="text-gray-400">Size</span>
+                    <span className="text-white font-medium">{game.vLength ? `${game.vLength} Blocks` : '---'}</span>
+                  </div>
+                  
+                  <div className="h-px bg-white/10 my-1" />
+                  
+                  <div className="space-y-2">
+                    <StatusRow label="Loading Screen" value={game.vLoadingScreen} />
+                    <StatusRow label="High Score Saver" value={game.vHighScoreSaver} />
+                    <StatusRow label="Included Docs" value={game.vIncludedDocs} />
+                    <StatusRow label="True Drive Emul" value={game.vTrueDriveEmu} />
+                  </div>
+                </div>
               </div>
 
               <div className="mt-auto flex flex-col gap-5">
                  <PlayButton game={game} nav={nav} />
-                 
                  <div 
                     onMouseEnter={() => nav.hoverZone('sid')}
                     className={`rounded-xl transition-all ${nav.focusCls('sid')}`}

@@ -224,6 +224,19 @@ export async function getDbGames(limit: number = 50, offset: number = 0, filters
     const rawGames = await invoke<any[]>('get_db_games', { limit, offset, filters });
     
     // Map the raw GameRow objects back into our nested Game interface
+    const controlMap: Record<string, string> = {
+      '0': 'Joystick Port 2',
+      '1': 'Joystick Port 1',
+      '2': 'Keyboard',
+      '3': 'Paddles Port 2',
+      '4': 'Paddles Port 1',
+      '5': 'Lightpen',
+      '6': 'Mouse Port 1',
+      '7': 'Mouse Port 2',
+      '8': 'Koala Pad',
+      '9': 'Lightgun',
+    };
+
     return rawGames.map((row) => ({
       id: parseInt(row.id, 10),
       name: row.name,
@@ -244,8 +257,44 @@ export async function getDbGames(limit: number = 50, offset: number = 0, filters
       subGenre: row.subGenre,
       developer: row.developerName ? { id: -1, name: row.developerName } : null,
       publisher: row.publisherName ? { id: -1, name: row.publisherName } : null,
-      musician: row.musicianName ? { id: -1, name: row.musicianName, photoPath: null } : null,
+      musician: row.musicianName ? { 
+        id: -1, 
+        name: row.musicianName, 
+        photoPath: row.musicianPhoto ?? null,
+        group: row.musicianGroup ?? null,
+        nick: row.musicianNick ?? null
+      } : null,
+      control: row.control ? (controlMap[row.control] || row.control) : 'Joystick',
+      playersFrom: row.playersFrom ?? null,
+      playersTo: row.playersTo ?? null,
+      playersSim: row.playersSim ?? null,
+      comment: row.comment ?? null,
+      reviewRating: row.reviewRating ?? null,
       languages: row.languages ? [row.languages] : [],
+      coderName: row.coderName ?? null,
+      graphicsName: row.graphicsName ?? null,
+      versionBy: row.versionBy ?? null,
+      vTrainers: row.vTrainers ?? null,
+      vLength: row.vLength ?? null,
+      vLoadingScreen: row.vLoadingScreen ?? null,
+      vHighScoreSaver: row.vHighScoreSaver ?? null,
+      vIncludedDocs: row.vIncludedDocs ?? null,
+      vTrueDriveEmu: row.vTrueDriveEmu ?? null,
+      vPalNtsc: (() => {
+        if (!row.vPalNtsc) return null;
+        const val = row.vPalNtsc.toString().trim();
+        const map: Record<string, string> = {
+          '1': 'PAL',
+          '2': 'NTSC',
+          '3': 'PAL / NTSC',
+          '4': 'NTSC / PAL',
+          'P': 'PAL',
+          'N': 'NTSC',
+          'B': 'Both (PAL & NTSC)'
+        };
+        return map[val] || val;
+      })(),
+      memo: row.memo ?? null,
     }));
   } catch (err) {
     console.error('Failed to get games from database:', err);

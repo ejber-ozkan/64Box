@@ -7,6 +7,8 @@ import { ImageSlider } from '../ImageSlider';
 import { SidPlayer } from '../SidPlayer';
 import { PlayButton } from './PlayButton';
 import { DetailLayoutProps } from '../DetailView';
+import { MusicianPhoto } from '../MusicianPhoto';
+import { StatusRow } from '../StatusRow';
 
 export function DigitalMuseumLayout({ game, onBack, nav, onFullscreen }: DetailLayoutProps) {
   const { resolveMediaPath } = useSettings();
@@ -149,13 +151,68 @@ export function DigitalMuseumLayout({ game, onBack, nav, onFullscreen }: DetailL
           <div className="flex justify-between items-start gap-8">
             <div className="flex-1">
               <h1 className="text-6xl font-black text-white mb-2 tracking-tighter">{game.name}</h1>
-              <div className="text-xl font-medium text-yellow-500 flex items-center gap-3">
-                <span>{game.year || '----'}</span>
-                <span className="w-1 h-1 bg-gray-700 rounded-full"></span>
-                <span className="text-gray-400 capitalize">{game.developer?.name || 'Unknown Developer'}</span>
+              <div className="flex flex-wrap items-center gap-x-4 gap-y-2 text-sm font-medium text-yellow-500/80">
+                <div className="flex items-center gap-2">
+                  <span className="text-yellow-500">{game.year || '----'}</span>
+                  {game.publisher?.name && game.publisher.name !== '(Not Published)' && (
+                    <>
+                      <span className="w-1 h-1 bg-gray-700 rounded-full"></span>
+                      <span className="text-white font-semibold">{game.publisher.name}</span>
+                    </>
+                  )}
+                  {game.developer?.name && game.developer.name !== '(Unknown)' && (
+                    <>
+                      <span className="w-1 h-1 bg-gray-700 rounded-full"></span>
+                      <span className="text-gray-400 capitalize">{game.developer.name}</span>
+                    </>
+                  )}
+                </div>
+                {(game.coderName && game.coderName !== '(Unknown)') || (game.graphicsName && game.graphicsName !== '(Unknown)') ? (
+                  <div className="flex items-center gap-4 border-l border-gray-800 pl-4 h-11">
+                    {game.coderName && game.coderName !== '(Unknown)' && (
+                      <div className="flex flex-col">
+                        <span className="text-[9px] text-gray-600 uppercase tracking-widest font-bold">Coding</span>
+                        <span className="text-blue-400 text-xs truncate max-w-[150px]">{game.coderName}</span>
+                      </div>
+                    )}
+                    {game.graphicsName && game.graphicsName !== '(Unknown)' && (
+                      <div className="flex flex-col">
+                        <span className="text-[9px] text-gray-600 uppercase tracking-widest font-bold">Graphics</span>
+                        <span className="text-green-400 text-xs truncate max-w-[150px]">{game.graphicsName}</span>
+                      </div>
+                    )}
+                  </div>
+                ) : null}
               </div>
             </div>
+
+            {game.musician && (
+              <div className="flex items-center gap-4 bg-gray-900/80 p-4 rounded-2xl border border-gray-800 shadow-xl min-w-[300px]">
+                <MusicianPhoto 
+                  photoFilename={game.musician.photoPath} 
+                  musicianName={game.musician.name} 
+                  className="w-16 h-16 shrink-0"
+                />
+                <div>
+                  <div className="text-[10px] font-bold text-gray-500 uppercase tracking-widest">Composer</div>
+                  <div className="text-white font-bold text-lg leading-tight">{game.musician.name}</div>
+                  {game.musician.nick && (
+                    <div className="text-blue-400 text-xs font-mono">&quot;{game.musician.nick}&quot;</div>
+                  )}
+                  {game.musician.group && (
+                    <div className="text-gray-500 text-[10px] mt-1 italic">{game.musician.group}</div>
+                  )}
+                </div>
+              </div>
+            )}
           </div>
+
+          {game.comment && (
+            <div className="bg-gray-900/40 p-6 rounded-xl border border-gray-800/50">
+               <div className="text-[10px] font-bold text-gray-500 uppercase tracking-widest mb-3">Database Comments</div>
+               <p className="text-gray-300 text-sm leading-relaxed whitespace-pre-wrap">{game.comment}</p>
+            </div>
+          )}
         </div>
 
         {/* Right Sidebar: Quick Actions & Metadata */}
@@ -187,9 +244,64 @@ export function DigitalMuseumLayout({ game, onBack, nav, onFullscreen }: DetailL
               </div>
               <div className="flex justify-between text-xs">
                 <span className="text-gray-500">Rating</span>
-                <span className="text-yellow-500 font-bold">★★★★☆</span>
+                <span className="text-yellow-500 font-bold">
+                  {(() => {
+                    const r = parseInt(game.reviewRating || "0");
+                    if (r <= 0) return 'UNRATED';
+                    const stars = Math.min(5, r);
+                    return '★'.repeat(stars) + '☆'.repeat(5 - stars);
+                  })()}
+                </span>
               </div>
+              <div className="flex justify-between text-xs">
+                <span className="text-gray-500">Control</span>
+                <span className="text-white font-medium">{game.control || 'Joystick'}</span>
+              </div>
+              <div className="flex justify-between text-xs">
+                <span className="text-gray-500">Players</span>
+                <span className="text-white font-medium">
+                  {game.playersFrom === game.playersTo ? game.playersFrom : `${game.playersFrom}-${game.playersTo}`}
+                  {game.playersSim === 'True' && ' (Simultaneous)'}
+                </span>
+              </div>
+              {game.languages?.length > 0 && (
+                <div className="flex justify-between text-xs">
+                  <span className="text-gray-500">Languages</span>
+                  <span className="text-white font-medium">{game.languages.join(', ')}</span>
+                </div>
+              )}
             </div>
+
+            <div className="text-[10px] font-bold text-gray-500 uppercase tracking-widest px-1 pt-4">Version Info</div>
+            <div className="bg-gray-800/20 rounded-xl p-4 border border-gray-800 flex flex-col gap-2">
+              <div className="flex justify-between text-xs">
+                <span className="text-gray-500">Version By</span>
+                <span className="text-blue-400 font-medium">{game.versionBy || '---'}</span>
+              </div>
+              <div className="flex justify-between text-xs">
+                <span className="text-gray-500">PAL / NTSC</span>
+                <span className="text-yellow-400 font-medium">{game.vPalNtsc || '---'}</span>
+              </div>
+              <div className="flex justify-between text-xs">
+                <span className="text-gray-500">Trainers</span>
+                <span className="text-white font-medium">{game.vTrainers || '0'}</span>
+              </div>
+              <div className="flex justify-between text-xs">
+                <span className="text-gray-500">Size</span>
+                <span className="text-white font-medium">{game.vLength ? `${game.vLength} Blocks` : '---'}</span>
+              </div>
+              <div className="h-px bg-gray-800 my-1" />
+              <StatusRow label="Loading Screen" value={game.vLoadingScreen} />
+              <StatusRow label="High Score Saver" value={game.vHighScoreSaver} />
+              <StatusRow label="Included Docs" value={game.vIncludedDocs} />
+              <StatusRow label="True Drive Emul" value={game.vTrueDriveEmu} />
+            </div>
+
+            {game.memo && (
+              <div className="mt-4 p-3 bg-red-950/20 border border-red-500/20 rounded-lg text-[10px] text-red-200/60 font-mono">
+                {game.memo}
+              </div>
+            )}
           </div>
         </div>
       </main>
