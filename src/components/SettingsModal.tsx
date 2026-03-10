@@ -20,7 +20,7 @@ export function SettingsView({ onBack }: SettingsViewProps) {
   const [localTheme, setLocalTheme]               = useState(settings.detailViewTheme);
   const [localScrapedMedia, setLocalScrapedMedia] = useState(settings.scrapedMediaPath);
   const [localHideAdult, setLocalHideAdult]       = useState(settings.hideAdultContent);
-  const [activeTab, setActiveTab]                 = useState<'appearance' | 'content' | 'paths' | 'emumovies' | 'maintenance'>('appearance');
+  const [activeTab, setActiveTab]                 = useState<'appearance' | 'content' | 'paths' | 'emumovies' | 'maintenance' | 'about'>('appearance');
   const [scanStatus, setScanStatus]               = useState<string | null>(null);
 
   const handleSave = () => {
@@ -74,6 +74,7 @@ export function SettingsView({ onBack }: SettingsViewProps) {
     { id: 'paths',      label: '📁 Local Paths' },
     { id: 'emumovies', label: '🎬 EmuMovies' },
     { id: 'maintenance', label: '🛠️ Maintenance' },
+    { id: 'about',       label: 'ℹ️ About & Credits' },
   ] as const;
 
   return (
@@ -306,6 +307,65 @@ export function SettingsView({ onBack }: SettingsViewProps) {
                     Soon...
                   </button>
                </div>
+            </div>
+          )}
+
+          {activeTab === 'about' && (
+            <div className="flex flex-col gap-6">
+              <div className="bg-gray-800 rounded-xl p-6 border border-gray-700">
+                <h3 className="text-white font-black text-lg mb-4 flex items-center gap-2">64Box</h3>
+                <p className="text-sm text-gray-300 mb-4">
+                  A modern Commodore 64 library and launcher.
+                </p>
+                <div className="space-y-4">
+                  <div>
+                    <h4 className="text-xs text-gray-500 uppercase tracking-widest font-bold mb-2">Open Source License</h4>
+                    <p className="text-xs text-gray-400 leading-relaxed mb-2">
+                      This project is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.
+                    </p>
+                    <a href="https://github.com/ejber-ozkan/64Box" target="_blank" rel="noopener noreferrer" className="text-blue-400 hover:text-blue-300 text-xs font-mono">
+                      View Source Code on GitHub →
+                    </a>
+                  </div>
+                </div>
+              </div>
+
+              <div className="bg-gray-900/50 rounded-xl p-6 border border-gray-800">
+                <h3 className="text-white font-bold mb-4 flex items-center gap-2">Third-Party Credits</h3>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                  <div className="space-y-2">
+                    <h4 className="text-xs text-blue-400 uppercase tracking-widest font-bold">Emulation Engine</h4>
+                    <div className="text-xs text-gray-300">
+                      <p className="font-bold">EmulatorJS & VICE</p>
+                      <p className="text-gray-500 mt-1 italic">Licensed under GNU GPLv3 / GPLv2+</p>
+                    </div>
+                  </div>
+                  
+                  <div className="space-y-2">
+                    <h4 className="text-xs text-blue-400 uppercase tracking-widest font-bold">Metadata & Media</h4>
+                    <div className="text-xs text-gray-300">
+                      <p className="font-bold">Gamebase64 Database</p>
+                      <p className="text-gray-500 mt-1 italic">Historical C64 preserve data</p>
+                    </div>
+                  </div>
+
+                  <div className="space-y-2">
+                    <h4 className="text-xs text-blue-400 uppercase tracking-widest font-bold">Media Scraping</h4>
+                    <div className="text-xs text-gray-300">
+                      <p className="font-bold">EmuMovies</p>
+                      <p className="text-gray-500 mt-1 italic">Video snaps & high-quality assets</p>
+                    </div>
+                  </div>
+
+                  <div className="space-y-2">
+                    <h4 className="text-xs text-blue-400 uppercase tracking-widest font-bold">Interface</h4>
+                    <div className="text-xs text-gray-300">
+                      <p className="font-bold">React, Next.js, Tauri</p>
+                      <p className="text-gray-500 mt-1 italic">Modern desktop app technologies</p>
+                    </div>
+                  </div>
+                </div>
+              </div>
             </div>
           )}
         </div>
