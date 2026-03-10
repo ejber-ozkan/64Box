@@ -14,7 +14,12 @@ A cross-platform (Windows, Mac, Linux) modern frontend for the **GameBase64** Co
 You'll need the following installed to build and run this project:
 - [Node.js](https://nodejs.org/en) (v20+)
 - [Rust](https://rustup.rs/) (for Tauri backend)
-- [Tauri CLI Requirements](https://tauri.app/v1/guides/getting-started/prerequisites)
+- **Linux (Ubuntu/Debian) System Dependencies**:
+  ```bash
+  sudo apt update
+  sudo apt install libwebkit2gtk-4.1-dev build-essential curl wget libssl-dev libgtk-3-dev libayatana-appindicator3-dev librsvg2-dev mdbtools
+  ```
+- [Tauri CLI Requirements](https://tauri.app/2/guides/getting-started/prerequisites/linux/)
 
 ## 2. Setting up the Database and Assets
 
@@ -36,9 +41,19 @@ Ensure you natively have Windows ODBC drivers for Access, or check scripts for P
 ```
 
 ### For Linux/Mac:
-You need `mdbtools` installed (`sudo apt install mdbtools` on Ubuntu, `brew install mdbtools` on Mac).
+Ensure you have the system prerequisites installed (section 1).
+
+You also need to install the required Node.js dependencies for the conversion script:
 ```bash
-./scripts/mdb-export-all.sh
+npm install csv-parse better-sqlite3
+```
+
+Then run the following commands to export and convert the database:
+```bash
+# Export MDB to CSV
+./scripts/mdb-export-all.sh ./GBC_v19.mdb
+
+# Convert CSV to SQLite
 node ./scripts/convert_csv_to_sqlite.js
 ```
 
@@ -75,3 +90,14 @@ You can find the compiled installers and executables in `src-tauri/target/releas
 Once the app boots successfully, open the **Settings** menu via the top header bar:
 1. Ensure the paths to your extracted GameBase64 `Screenshots`, `Games`, `BoxArt`, `Video` and `Sid` folders are set correctly.
 2. If you want to use the native emulator capability, select the absolute path to your `x64sc` (VICE) executable.
+
+## 6. Skills used to build this
+```bash
+npx skills add https://github.com/vercel-labs/agent-skills --skill web-design-guidelines
+npx skills add https://github.com/vercel-labs/agent-skills --skill vercel-react-native-skills
+npx skills add https://github.com/vercel-labs/agent-skills --skill vercel-react-best-practices
+npx skills add https://github.com/vercel-labs/agent-skills --skill vercel-composition-patterns
+npx skills add https://github.com/vercel-labs/agent-skills --skill deploy-to-vercel
+npx skills add https://github.com/bitxeno/sqlite-data-skill --skill 'SQLiteData Usage Guide'
+```
+

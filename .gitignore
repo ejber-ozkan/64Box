@@ -47,6 +47,7 @@ gb64.sqlite
 /CSV_FILES_GBC_v19/
 /64BoxMedia/
 /emu-temp/
+/GBC_v19/
 
 # Testing output
 /playwright-report/

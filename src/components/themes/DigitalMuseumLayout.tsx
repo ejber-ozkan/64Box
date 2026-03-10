@@ -11,7 +11,7 @@ import { MusicianPhoto } from '../MusicianPhoto';
 import { StatusRow } from '../StatusRow';
 
 export function DigitalMuseumLayout({ game, onBack, nav, onFullscreen }: DetailLayoutProps) {
-  const { resolveMediaPath } = useSettings();
+  const { settings, resolveMediaPath } = useSettings();
   const [activeMedia, setActiveMedia] = useState<'gameplay' | 'titlescreen' | 'videosna' | 'boxfront'>('gameplay');
 
   // Map media types to navigation zones
@@ -138,13 +138,54 @@ export function DigitalMuseumLayout({ game, onBack, nav, onFullscreen }: DetailL
               />
             )}
 
-            {/* Screenshot expand button */}
             <button
               onClick={() => onFullscreen(activeMedia === 'videosna' ? game.screenshotFilename : (activeMedia === 'gameplay' ? game.screenshotFilename : activeMedia === 'titlescreen' ? game.titlescreenFilename : game.boxFrontFilename))}
               onMouseEnter={() => nav.hoverZone('screenshot')}
               className="absolute top-3 right-3 z-20 px-3 py-2 bg-black/60 hover:bg-black/80 text-white text-xs rounded border border-gray-700 transition-all backdrop-blur-sm shadow-xl"
             >
               ⤢ Fullscreen
+            </button>
+            
+            <button
+              onClick={async () => {
+                const { searchEmuMovies, downloadEmuMoviesAsset } = await import('../../lib/emumovies');
+                if (!settings.emuMoviesUsername || !settings.emuMoviesPassword) {
+                  alert("Please configure EmuMovies credentials in Settings first!");
+                  return;
+                }
+                
+                try {
+                  alert(`Searching EmuMovies for '${game.name}'...`);
+                  const results = await searchEmuMovies(
+                    settings.emuMoviesUsername,
+                    settings.emuMoviesPassword,
+                    game.name,
+                    'Video'
+                  );
+                  
+                  if (results.length > 0) {
+                    const bestMatch = results[0];
+                    alert(`Found video! Downloading ${bestMatch.name}...`);
+                    const dlResult = await downloadEmuMoviesAsset(
+                      bestMatch.url,
+                      settings.scrapedMediaPath,
+                      `${game.id}_video.mp4`
+                    );
+                    if (dlResult.success) {
+                      alert("Download complete! Media saved to Scraped Media folder.");
+                    } else {
+                      alert("Download failed: " + dlResult.error);
+                    }
+                  } else {
+                    alert("No video snaps found for this game.");
+                  }
+                } catch (err) {
+                  alert("Scrape Error: " + err);
+                }
+              }}
+              className="absolute bottom-3 left-3 z-20 px-3 py-2 bg-blue-600/80 hover:bg-blue-600 text-white text-[10px] font-bold uppercase rounded border border-blue-500 transition-all backdrop-blur-sm shadow-xl"
+            >
+              🎬 Scrape EmuMovies
             </button>
           </div>
 

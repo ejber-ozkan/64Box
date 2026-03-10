@@ -301,7 +301,15 @@ pub mod commands {
              args.push(rom.to_string_lossy().to_string());
         }
 
-        match Command::new(&emulator).args(&args).spawn() {
+        let mut cmd = if cfg!(target_os = "linux") && emulator.extension().and_then(|e| e.to_str()).unwrap_or("").to_lowercase() == "exe" {
+            let mut c = Command::new("wine");
+            c.arg(&emulator);
+            c
+        } else {
+            Command::new(&emulator)
+        };
+
+        match cmd.args(&args).spawn() {
             Ok(_) => Ok(LaunchResult {
                 success: true,
                 message: format!("Launched {} successfully", exe_name),

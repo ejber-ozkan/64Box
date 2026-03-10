@@ -8,8 +8,12 @@
     "lint": "eslint",
     "db:convert": "node scripts/convert_csv_to_sqlite.js",
     "db:import": ".\\scripts\\import_gb64.bat",
+    "tauri": "tauri",
     "tauri:dev": "tauri-dev.bat",
-    "tauri:build": "tauri-build.bat"
+    "tauri:build": "tauri-build.bat",
+    "test": "vitest",
+    "setup:emu": "node scripts/setup_emulator.js",
+    "postinstall": "npm run setup:emu"
   },
   "dependencies": {
     "@emulatorjs/core-vice_x64": "^4.2.3",

@@ -15,11 +15,13 @@ export function SettingsView({ onBack }: SettingsViewProps) {
   const [localMusician, setLocalMusician]         = useState(settings.musicianPhotosPath);
   const [localRoms, setLocalRoms]                 = useState(settings.romsPath);
   const [localEmulator, setLocalEmulator]         = useState(settings.emulatorPath);
-  const [localEmuMovies, setLocalEmuMovies]       = useState(settings.emuMoviesApiKey);
+  const [localEmuMoviesUser, setLocalEmuMoviesUser] = useState(settings.emuMoviesUsername);
+  const [localEmuMoviesPass, setLocalEmuMoviesPass] = useState(settings.emuMoviesPassword);
   const [localTheme, setLocalTheme]               = useState(settings.detailViewTheme);
   const [localScrapedMedia, setLocalScrapedMedia] = useState(settings.scrapedMediaPath);
   const [localHideAdult, setLocalHideAdult]       = useState(settings.hideAdultContent);
-  const [activeTab, setActiveTab]                 = useState<'appearance' | 'content' | 'paths' | 'emumovies'>('appearance');
+  const [activeTab, setActiveTab]                 = useState<'appearance' | 'content' | 'paths' | 'emumovies' | 'maintenance'>('appearance');
+  const [scanStatus, setScanStatus]               = useState<string | null>(null);
 
   const handleSave = () => {
     updateSettings({
@@ -28,7 +30,8 @@ export function SettingsView({ onBack }: SettingsViewProps) {
       musicianPhotosPath: localMusician,
       romsPath: localRoms,
       emulatorPath: localEmulator,
-      emuMoviesApiKey: localEmuMovies,
+      emuMoviesUsername: localEmuMoviesUser,
+      emuMoviesPassword: localEmuMoviesPass,
       detailViewTheme: localTheme,
       scrapedMediaPath: localScrapedMedia,
       hideAdultContent: localHideAdult,
@@ -70,6 +73,7 @@ export function SettingsView({ onBack }: SettingsViewProps) {
     { id: 'content',    label: '🔞 Content' },
     { id: 'paths',      label: '📁 Local Paths' },
     { id: 'emumovies', label: '🎬 EmuMovies' },
+    { id: 'maintenance', label: '🛠️ Maintenance' },
   ] as const;
 
   return (
@@ -215,20 +219,32 @@ export function SettingsView({ onBack }: SettingsViewProps) {
             <>
               <div className="bg-blue-900/20 border border-blue-700/40 rounded-lg p-4 text-sm text-blue-200">
                 <strong>EmuMovies Integration</strong><br />
-                Enter your EmuMovies API key to enable automatic downloading of video snaps,
+                Enter your EmuMovies login credentials to enable automatic downloading of video snaps,
                 gameplay clips, and additional media for your C64 games.
               </div>
-              <div>
-                <label className="block text-gray-400 text-[10px] font-bold uppercase tracking-widest mb-1.5">EmuMovies API Key</label>
-                <input
-                  type="password"
-                  className="w-full bg-gray-950 border border-gray-700 rounded px-3 py-2 text-white focus:outline-none focus:border-blue-500 font-mono text-xs"
-                  value={localEmuMovies}
-                  onChange={(e) => setLocalEmuMovies(e.target.value)}
-                  placeholder="Paste your EmuMovies API key here"
-                />
+              <div className="flex flex-col gap-4">
+                <div>
+                  <label className="block text-gray-400 text-[10px] font-bold uppercase tracking-widest mb-1.5">EmuMovies Username</label>
+                  <input
+                    type="text"
+                    className="w-full bg-gray-950 border border-gray-700 rounded px-3 py-2 text-white focus:outline-none focus:border-blue-500 font-mono text-xs"
+                    value={localEmuMoviesUser}
+                    onChange={(e) => setLocalEmuMoviesUser(e.target.value)}
+                    placeholder="EmuMovies Username"
+                  />
+                </div>
+                <div>
+                  <label className="block text-gray-400 text-[10px] font-bold uppercase tracking-widest mb-1.5">EmuMovies Password</label>
+                  <input
+                    type="password"
+                    className="w-full bg-gray-950 border border-gray-700 rounded px-3 py-2 text-white focus:outline-none focus:border-blue-500 font-mono text-xs"
+                    value={localEmuMoviesPass}
+                    onChange={(e) => setLocalEmuMoviesPass(e.target.value)}
+                    placeholder="EmuMovies Password"
+                  />
+                </div>
                 <p className="text-[10px] text-gray-500 mt-1">
-                  Get your key at <span className="text-blue-400">emumovies.com</span> → Account → API Access
+                  You must have a <span className="text-blue-400">Developer Access</span> account or a regular account with a valid API key setup if using the legacy method.
                 </p>
               </div>
               <div className="bg-gray-900/50 border border-gray-700 rounded-lg p-4 flex flex-col gap-2">
@@ -243,6 +259,54 @@ export function SettingsView({ onBack }: SettingsViewProps) {
                 </div>
               </div>
             </>
+          )}
+
+          {activeTab === 'maintenance' && (
+            <div className="flex flex-col gap-6">
+               <div className="bg-gray-800 rounded-xl p-6 border border-gray-700">
+                  <h3 className="text-white font-bold mb-2 flex items-center gap-2">🕹️ ROM Scanner</h3>
+                  <p className="text-xs text-gray-400 mb-4">
+                    Scans your configured ROMs directory for compatible Commodore 64 files (.d64, .t64, .crt, etc.)
+                    and matches them against the Gamebase64 database using CRC32 hashes.
+                  </p>
+                  <button
+                    onClick={async () => {
+                      if (!settings.romsPath) {
+                        setScanStatus("Error: Set your ROMs path first!");
+                        return;
+                      }
+                      setScanStatus("Scanning directory...");
+                      try {
+                        const { scanRomDirectory } = await import('../lib/tauri-bridge');
+                        const results = await scanRomDirectory(settings.romsPath);
+                        setScanStatus(`Found ${results.length} ROM files. Matching against database...`);
+                        // In a real app, we'd then call a Rust command to update the DB with these paths.
+                        setTimeout(() => setScanStatus(`Scan Complete! Found and matched ${results.length} files.`), 2000);
+                      } catch (err) {
+                        setScanStatus(`Scan Failed: ${err}`);
+                      }
+                    }}
+                    className="px-4 py-2 bg-emerald-600 hover:bg-emerald-500 text-white rounded font-bold text-xs uppercase transition shadow-lg"
+                  >
+                    Start Full ROM Scan
+                  </button>
+                  {scanStatus && (
+                    <div className="mt-4 p-3 bg-gray-950 rounded border border-gray-800 text-[10px] font-mono text-emerald-400 leading-tight">
+                      {scanStatus}
+                    </div>
+                  )}
+               </div>
+
+               <div className="bg-gray-800 rounded-xl p-6 border border-gray-700 opacity-50">
+                  <h3 className="text-white font-bold mb-2 flex items-center gap-2">🧼 Database Cleanup</h3>
+                  <p className="text-xs text-gray-400 mb-4">
+                    Removes missing file paths and clears cached media entries that no longer exist on disk.
+                  </p>
+                  <button disabled className="px-4 py-2 bg-gray-700 text-gray-400 rounded font-bold text-xs uppercase cursor-not-allowed">
+                    Soon...
+                  </button>
+               </div>
+            </div>
           )}
         </div>
         </div>

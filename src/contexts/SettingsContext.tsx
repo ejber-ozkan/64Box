@@ -8,7 +8,8 @@ interface Settings {
   musicianPhotosPath: string;
   romsPath: string;
   emulatorPath: string;
-  emuMoviesApiKey: string;
+  emuMoviesUsername: string;
+  emuMoviesPassword: string;
   detailViewTheme: 'cia' | 'vic' | 'sx64';
   scrapedMediaPath: string;
   hideAdultContent: boolean;
@@ -29,7 +30,8 @@ const defaultSettings: Settings = {
   musicianPhotosPath: '/media/musicians',
   romsPath: '',
   emulatorPath: '',
-  emuMoviesApiKey: '',
+  emuMoviesUsername: '',
+  emuMoviesPassword: '',
   detailViewTheme: 'sx64',
   scrapedMediaPath: 'media/scraped',
   hideAdultContent: true,

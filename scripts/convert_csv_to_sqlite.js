@@ -13,14 +13,25 @@ if (fs.existsSync(dbPath)) {
 const db = new Database(dbPath);
 
 const tables = [
-    { name: 'Games', pk: 'GA_Id' },
+    { name: 'Artists', pk: 'AR_Id' },
+    { name: 'Config', pk: 'CF_Id' },
+    { name: 'Crackers', pk: 'CR_Id' },
     { name: 'Developers', pk: 'DE_Id' },
-    { name: 'Publishers', pk: 'PU_Id' },
-    { name: 'Musicians', pk: 'MU_Id' },
+    { name: 'Difficulty', pk: 'DI_Id' },
+    { name: 'Extras', pk: 'EX_Id' },
+    { name: 'Games', pk: 'GA_Id' },
     { name: 'Genres', pk: 'GE_Id' },
     { name: 'Languages', pk: 'LA_Id' },
-    { name: 'Years', pk: 'YE_Id' },
-    { name: 'PGenres', pk: 'PG_Id' }
+    { name: 'Licenses', pk: 'LI_Id' },
+    { name: 'Music', pk: 'MU_Id' },
+    { name: 'Musicians', pk: 'MS_Id' },
+    { name: 'PGenres', pk: 'PG_Id' },
+    { name: 'Programmers', pk: 'PR_Id' },
+    { name: 'Publishers', pk: 'PU_Id' },
+    { name: 'Rarities', pk: 'RA_Id' },
+    { name: 'ViewData', pk: 'VD_Id' },
+    { name: 'ViewFilters', pk: 'VF_Id' },
+    { name: 'Years', pk: 'YE_Id' }
 ];
 
 console.log('Converting CSVs to SQLite...');
