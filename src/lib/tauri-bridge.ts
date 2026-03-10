@@ -322,3 +322,25 @@ export async function getDbGames(limit: number = 50, offset: number = 0, filters
     return [];
   }
 }
+
+/**
+ * Save a sensitive setting encrypted in the local SQLite database.
+ */
+export async function saveSecureSetting(key: string, value: string): Promise<void> {
+  if (!isTauri()) {
+    localStorage.setItem(`secure_${key}`, value);
+    return;
+  }
+  return invoke<void>('save_secure_setting', { key, value });
+}
+
+/**
+ * Retrieve and decrypt a sensitive setting from the local SQLite database.
+ */
+export async function getSecureSetting(key: string): Promise<string | null> {
+  if (!isTauri()) {
+    return localStorage.getItem(`secure_${key}`);
+  }
+  return invoke<string | null>('get_secure_setting', { key });
+}
+

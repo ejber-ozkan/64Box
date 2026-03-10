@@ -72,7 +72,7 @@ npm install
 # For Linux/Mac:
 npm run tauri dev
 ```
-
+.\tauri-dev.bat
 ## 5. Building for Production
 
 To build a standalone executable/installer for your operating system:
@@ -101,3 +101,10 @@ npx skills add https://github.com/vercel-labs/agent-skills --skill deploy-to-ver
 npx skills add https://github.com/bitxeno/sqlite-data-skill --skill 'SQLiteData Usage Guide'
 ```
 
+Skills I created
+```bash
+.agents/skills/gb64-metadata-parser
+.agents/skills/rom-scanner-hashing
+.agents/skills/wasm-c64-bridge
+.agents/skills/tauri-architecture
+```

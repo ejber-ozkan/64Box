@@ -1,6 +1,7 @@
 "use client";
 
-import React, { createContext, useContext, useState, ReactNode } from 'react';
+import React, { createContext, useContext, useState, ReactNode, useEffect } from 'react';
+import { getSecureSetting, saveSecureSetting } from '../lib/tauri-bridge';
 
 interface Settings {
   screenshotsPath: string;
@@ -50,29 +51,89 @@ const defaultSettings: Settings = {
 
 const SettingsContext = createContext<SettingsContextType | undefined>(undefined);
 
+const SECURE_FIELDS = ['emuMoviesPassword', 'screenScraperPassword', 'theGamesDbApiKey'] as const;
+
 export function SettingsProvider({ children }: { children: ReactNode }) {
-  const [settings, setSettings] = useState<Settings>(() => {
-    // Load initial state from localStorage if available
-    if (typeof window !== 'undefined') {
+  const [isLoaded, setIsLoaded] = useState(false);
+  const [settings, setSettings] = useState<Settings>(defaultSettings);
+
+  // Initialize and load
+  useEffect(() => {
+    async function initializeSettings() {
+      // 1. Load basic settings from localStorage
+      let localValues: Partial<Settings> = {};
       try {
         const saved = localStorage.getItem('gb64_settings');
         if (saved) {
-          return { ...defaultSettings, ...JSON.parse(saved) };
+          localValues = JSON.parse(saved);
         }
       } catch (e) {
         console.error('Failed to load settings from localStorage', e);
       }
+
+      // 2. Load secure settings from Rust/SQLite
+      const secureValues: Partial<Settings> = {};
+      for (const field of SECURE_FIELDS) {
+        try {
+          const value = await getSecureSetting(field);
+          if (value) {
+            secureValues[field] = value;
+          } else if (localValues[field]) {
+            // 3. MIGRATION: If found in localStorage but NOT in secure storage, move it
+            console.log(`Migrating ${field} to secure storage...`);
+            await saveSecureSetting(field, localValues[field] as string);
+            secureValues[field] = localValues[field];
+          }
+        } catch (err) {
+          console.error(`Error loading/migrating secure field ${field}:`, err);
+        }
+      }
+
+      // 4. Sanitize localStorage (remove secure fields)
+      const sanitizedLocal = { ...localValues };
+      let needsSanitization = false;
+      SECURE_FIELDS.forEach(field => {
+        if (sanitizedLocal[field]) {
+          delete sanitizedLocal[field];
+          needsSanitization = true;
+        }
+      });
+      if (needsSanitization) {
+        localStorage.setItem('gb64_settings', JSON.stringify(sanitizedLocal));
+      }
+
+      // 5. Set final combined state
+      setSettings({
+        ...defaultSettings,
+        ...sanitizedLocal,
+        ...secureValues
+      });
+      setIsLoaded(true);
     }
-    return defaultSettings;
-  });
+
+    if (typeof window !== 'undefined') {
+      initializeSettings();
+    }
+  }, []);
 
   const updateSettings = (newSettings: Partial<Settings>) => {
     setSettings((prev) => {
       const updated = { ...prev, ...newSettings };
-      // Save to localStorage
+      
+      // 1. Persist sensitive fields to Secure storage (Rust/SQLite)
+      SECURE_FIELDS.forEach(field => {
+        if (newSettings[field] !== undefined) {
+          saveSecureSetting(field, newSettings[field] as string);
+        }
+      });
+
+      // 2. Persist others to localStorage (JSON)
       if (typeof window !== 'undefined') {
         try {
-          localStorage.setItem('gb64_settings', JSON.stringify(updated));
+          const toSave = { ...updated };
+          // Remove secure fields from localStorage object
+          SECURE_FIELDS.forEach(field => delete toSave[field]);
+          localStorage.setItem('gb64_settings', JSON.stringify(toSave));
         } catch (e) {
           console.error('Failed to save settings to localStorage', e);
         }
@@ -80,6 +141,7 @@ export function SettingsProvider({ children }: { children: ReactNode }) {
       return updated;
     });
   };
+
 
   const resolveMediaPath = (type: 'screenshot' | 'sound' | 'musician' | 'extras', filename: string) => {
     // In a real desktop app (Phase 3), Tauri would resolve these local absolute paths.

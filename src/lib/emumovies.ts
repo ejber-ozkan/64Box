@@ -25,7 +25,10 @@ export interface EmuMoviesSearchResult {
  * Login to EmuMovies to get a session ID.
  */
 export async function loginEmuMovies(user: string, api: string): Promise<string> {
-  if (!user || !api) throw new Error('Username and API Key / Password are required');
+  if (!user || !api) {
+    throw new Error('EmuMovies credentials missing. Please go to Settings ⚙ -> Art & Info Scraper and enter your EmuMovies Username and Password.');
+  }
+
   
   // Example of the older but common EmuMovies API login
   const url = `https://api.gamesdbase.com/login.aspx?user=${encodeURIComponent(user)}&api=${encodeURIComponent(api)}&product=64Box`;

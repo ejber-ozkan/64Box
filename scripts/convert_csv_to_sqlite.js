@@ -6,43 +6,26 @@ const Database = require('better-sqlite3');
 const outputDir = path.join(__dirname, '../gb64_export');
 const dbPath = path.join(__dirname, '../gb64.sqlite');
 
-if (fs.existsSync(dbPath)) {
-    fs.unlinkSync(dbPath);
-}
+// [MODIFIED] Do NOT delete the database file to preserve settings/other tables
+// if (fs.existsSync(dbPath)) {
+//     fs.unlinkSync(dbPath);
+// }
 
+console.log(`Connecting to database at ${dbPath}...`);
 const db = new Database(dbPath);
 
-const tables = [
-    { name: 'Artists', pk: 'AR_Id' },
-    { name: 'Config', pk: 'CF_Id' },
-    { name: 'Crackers', pk: 'CR_Id' },
-    { name: 'Developers', pk: 'DE_Id' },
-    { name: 'Difficulty', pk: 'DI_Id' },
-    { name: 'Extras', pk: 'EX_Id' },
-    { name: 'Games', pk: 'GA_Id' },
-    { name: 'Genres', pk: 'GE_Id' },
-    { name: 'Languages', pk: 'LA_Id' },
-    { name: 'Licenses', pk: 'LI_Id' },
-    { name: 'Music', pk: 'MU_Id' },
-    { name: 'Musicians', pk: 'MS_Id' },
-    { name: 'PGenres', pk: 'PG_Id' },
-    { name: 'Programmers', pk: 'PR_Id' },
-    { name: 'Publishers', pk: 'PU_Id' },
-    { name: 'Rarities', pk: 'RA_Id' },
-    { name: 'ViewData', pk: 'VD_Id' },
-    { name: 'ViewFilters', pk: 'VF_Id' },
-    { name: 'Years', pk: 'YE_Id' }
-];
+// Enable WAL mode for performance
+db.pragma('journal_mode = WAL');
 
-console.log('Converting CSVs to SQLite...');
+// [MODIFIED] Dynamically get all CSV files from the export directory
+const csvFiles = fs.readdirSync(outputDir).filter(f => f.endsWith('.csv'));
+console.log(`Found ${csvFiles.length} CSV files to import.`);
 
-for (const table of tables) {
-    const csvFile = path.join(outputDir, `${table.name}.csv`);
-    if (!fs.existsSync(csvFile)) {
-        console.warn(`Skipping ${table.name}, CSV not found.`);
-        continue;
-    }
-    console.log(`Importing ${table.name}...`);
+for (const file of csvFiles) {
+    const tableName = path.basename(file, '.csv');
+    const csvFile = path.join(outputDir, file);
+    
+    console.log(`Importing ${tableName}...`);
     
     const fileContent = fs.readFileSync(csvFile, 'utf8');
     const records = parse(fileContent, {
@@ -51,16 +34,22 @@ for (const table of tables) {
         bom: true
     });
 
-    if (records.length === 0) continue;
+    if (records.length === 0) {
+        console.warn(`Skipping ${tableName}, no records found.`);
+        continue;
+    }
+
+    // [MODIFIED] Drop existing table before recreating it
+    db.exec(`DROP TABLE IF EXISTS "${tableName}"`);
 
     // Create table using the columns from the first record
     const columns = Object.keys(records[0]);
-    // GA_Id is often string in CSV but is primary key, we treat it as INTEGER in sqlite
+    // Map columns to TEXT for simplicity as per original design
     const colsDef = columns.map(c => `"${c}" TEXT`).join(', ');
     
-    db.exec(`CREATE TABLE IF NOT EXISTS "${table.name}" (${colsDef})`);
+    db.exec(`CREATE TABLE "${tableName}" (${colsDef})`);
 
-    const insertSql = `INSERT INTO "${table.name}" (${columns.map(c => `"${c}"`).join(', ')}) VALUES (${columns.map(() => '?').join(', ')})`;
+    const insertSql = `INSERT INTO "${tableName}" (${columns.map(c => `"${c}"`).join(', ')}) VALUES (${columns.map(() => '?').join(', ')})`;
     const stmt = db.prepare(insertSql);
 
     const insertMany = db.transaction((rows) => {
@@ -69,14 +58,20 @@ for (const table of tables) {
         }
     });
 
-    insertMany(records);
+    try {
+        insertMany(records);
+        console.log(`Successfully imported ${records.length} records into ${tableName}.`);
+    } catch (err) {
+        console.error(`Error importing ${tableName}:`, err.message);
+    }
 }
 
 // Create views and indexes for the frontend
 console.log('Creating optimized views...');
 
+db.exec(`DROP VIEW IF EXISTS GameView`);
 db.exec(`
-CREATE VIEW IF NOT EXISTS GameView AS
+CREATE VIEW GameView AS
 SELECT 
     g.GA_Id as id,
     g.Name as name,
@@ -110,4 +105,5 @@ LEFT JOIN Languages la ON g.LA_Id = la.LA_Id;
 `);
 
 db.close();
-console.log(`Success! Database created at ${dbPath}`);
+console.log(`Success! Database updated at ${dbPath}`);
+

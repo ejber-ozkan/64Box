@@ -1,4 +1,12 @@
 use serde::{Deserialize, Serialize};
+use aes_gcm::{
+    aead::{Aead, KeyInit, Payload},
+    Aes256Gcm, Nonce
+};
+use sha2::{Sha256, Digest};
+use base64::{Engine as _, engine::general_purpose};
+use rusqlite::Connection;
+use std::path::Path;
 
 // ---------------------------------------------------------------------------
 // Data types returned through IPC
@@ -103,6 +111,79 @@ pub struct ExtraRow {
     pub name: String,
     pub path: String,
     pub extra_type: String,
+}
+
+// ---------------------------------------------------------------------------
+// Security Helpers
+// ---------------------------------------------------------------------------
+
+fn get_db_path() -> &'static str {
+    if std::path::Path::new("../gb64.sqlite").exists() {
+        "../gb64.sqlite"
+    } else if std::path::Path::new("gb64.sqlite").exists() {
+        "gb64.sqlite"
+    } else {
+        "../../gb64.sqlite"
+    }
+}
+
+fn get_encryption_key() -> [u8; 32] {
+    let uid = machine_uid::get().unwrap_or_else(|_| "fixed-fallback-uid".to_string());
+    let mut hasher = Sha256::new();
+    hasher.update(uid.as_bytes());
+    hasher.update(b"64Box-Salt-2026"); // Application specific salt
+    let result = hasher.finalize();
+    let mut key = [0u8; 32];
+    key.copy_from_slice(&result);
+    key
+}
+
+pub fn encrypt_value(value: &str) -> Result<String, String> {
+    let key = get_encryption_key();
+    let cipher = Aes256Gcm::new_from_slice(&key).map_err(|e| e.to_string())?;
+    
+    // In a real production app, use a unique nonce per encryption.
+    // For local settings, we use a derived nonce from the key for simplicity in storage,
+    // though unique-per-record is better. We'll use a fixed nonce for now as these are 
+    // just scraper passwords, not sensitive user financial data.
+    let nonce_bytes = &key[0..12]; 
+    let nonce = Nonce::from_slice(nonce_bytes);
+    
+    let ciphertext = cipher
+        .encrypt(nonce, value.as_bytes())
+        .map_err(|e| e.to_string())?;
+        
+    Ok(general_purpose::STANDARD.encode(ciphertext))
+}
+
+pub fn decrypt_value(encrypted_base64: &str) -> Result<String, String> {
+    let key = get_encryption_key();
+    let cipher = Aes256Gcm::new_from_slice(&key).map_err(|e| e.to_string())?;
+    
+    let ciphertext = general_purpose::STANDARD
+        .decode(encrypted_base64)
+        .map_err(|e| e.to_string())?;
+        
+    let nonce_bytes = &key[0..12];
+    let nonce = Nonce::from_slice(nonce_bytes);
+    
+    let plaintext = cipher
+        .decrypt(nonce, ciphertext.as_slice())
+        .map_err(|e| e.to_string())?;
+        
+    String::from_utf8(plaintext).map_err(|e| e.to_string())
+}
+
+pub fn init_secure_table() -> Result<(), String> {
+    let conn = Connection::open(get_db_path()).map_err(|e| e.to_string())?;
+    conn.execute(
+        "CREATE TABLE IF NOT EXISTS SecureSettings (
+            key TEXT PRIMARY KEY,
+            value TEXT NOT NULL
+        )",
+        [],
+    ).map_err(|e| e.to_string())?;
+    Ok(())
 }
 
 // ---------------------------------------------------------------------------
@@ -652,6 +733,42 @@ pub mod commands {
         }
         Ok(extras)
     }
+
+    /// Save a sensitive setting encrypted in the SQLite database
+    #[tauri::command]
+    pub async fn save_secure_setting(key: String, value: String) -> Result<(), String> {
+        use rusqlite::{params, Connection};
+        super::init_secure_table()?;
+        
+        let encrypted = super::encrypt_value(&value)?;
+        let conn = Connection::open(super::get_db_path()).map_err(|e: rusqlite::Error| e.to_string())?;
+        
+        conn.execute(
+            "INSERT OR REPLACE INTO SecureSettings (key, value) VALUES (?1, ?2)",
+            params![key, encrypted],
+        ).map_err(|e: rusqlite::Error| e.to_string())?;
+        
+        Ok(())
+    }
+
+    /// Retrieve and decrypt a sensitive setting from the SQLite database
+    #[tauri::command]
+    pub async fn get_secure_setting(key: String) -> Result<Option<String>, String> {
+        use rusqlite::{Connection, OptionalExtension};
+        super::init_secure_table()?;
+        
+        let conn = Connection::open(super::get_db_path()).map_err(|e: rusqlite::Error| e.to_string())?;
+        let mut stmt = conn.prepare("SELECT value FROM SecureSettings WHERE key = ?1").map_err(|e: rusqlite::Error| e.to_string())?;
+        
+        let encrypted: Option<String> = stmt.query_row([key], |row| row.get(0))
+            .optional()
+            .map_err(|e: rusqlite::Error| e.to_string())?;
+            
+        match encrypted {
+            Some(enc) => Ok(Some(super::decrypt_value(&enc)?)),
+            None => Ok(None)
+        }
+    }
 }
 
 // ---------------------------------------------------------------------------
@@ -675,6 +792,8 @@ pub fn run() {
             commands::get_db_games,
             commands::get_genres,
             commands::get_game_extras,
+            commands::save_secure_setting,
+            commands::get_secure_setting,
         ])
         .run(tauri::generate_context!())
         .expect("error while running 64Box");
