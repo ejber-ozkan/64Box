@@ -679,3 +679,44 @@ pub fn run() {
         .run(tauri::generate_context!())
         .expect("error while running 64Box");
 }
+#[cfg(test)]
+mod tests {
+    use super::*;
+    use std::fs::File;
+    use tempfile::tempdir;
+
+    #[tokio::test]
+    async fn test_resolve_media_path() {
+        let dir = tempdir().unwrap();
+        let file_path = dir.path().join("test.png");
+        File::create(&file_path).unwrap();
+
+        let res = commands::resolve_media_path(
+            dir.path().to_string_lossy().to_string(),
+            "test.png".to_string()
+        ).await;
+
+        assert!(res.exists);
+        assert!(res.absolute_path.contains("test.png"));
+    }
+
+    #[tokio::test]
+    async fn test_find_all_media_variants() {
+        let dir = tempdir().unwrap();
+        let base = dir.path().to_string_lossy().to_string();
+        
+        File::create(dir.path().join("game.png")).unwrap();
+        File::create(dir.path().join("game_1.png")).unwrap();
+        File::create(dir.path().join("game_a.png")).unwrap();
+
+        let variants = commands::find_all_media_variants(
+            base,
+            "game.png".to_string()
+        ).await;
+
+        assert_eq!(variants.len(), 3);
+        assert!(variants.iter().any(|v| v.contains("game.png")));
+        assert!(variants.iter().any(|v| v.contains("game_1.png")));
+        assert!(variants.iter().any(|v| v.contains("game_a.png")));
+    }
+}
