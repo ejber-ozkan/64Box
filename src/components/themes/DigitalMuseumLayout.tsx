@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect } from 'react';
-import { Game } from '../../types/game';
+import { Game, Extra } from '../../types/game';
 import { useSettings } from '../../contexts/SettingsContext';
 import { ImageSlider } from '../ImageSlider';
 import { SidPlayer } from '../SidPlayer';
@@ -9,10 +9,17 @@ import { PlayButton } from './PlayButton';
 import { DetailLayoutProps } from '../DetailView';
 import { MusicianPhoto } from '../MusicianPhoto';
 import { StatusRow } from '../StatusRow';
+import { getGameExtras } from '../../lib/tauri-bridge';
+import { ScrapeButton } from '../ScrapeButton';
 
 export function DigitalMuseumLayout({ game, onBack, nav, onFullscreen }: DetailLayoutProps) {
   const { settings, resolveMediaPath } = useSettings();
-  const [activeMedia, setActiveMedia] = useState<'gameplay' | 'titlescreen' | 'videosna' | 'boxfront'>('gameplay');
+  const [activeMedia, setActiveMedia] = useState<'gameplay' | 'titlescreen' | 'videosna' | 'boxfront' | 'extras'>('gameplay');
+  const [extras, setExtras] = useState<Extra[]>([]);
+
+  useEffect(() => {
+    getGameExtras(game.id).then(setExtras);
+  }, [game.id]);
 
   // Map media types to navigation zones
   const mediaToZone: Record<string, any> = {
@@ -20,6 +27,7 @@ export function DigitalMuseumLayout({ game, onBack, nav, onFullscreen }: DetailL
     titlescreen: 'media-titlescreen',
     videosna: 'media-videosna',
     boxfront: 'media-boxfront',
+    extras: 'media-extras',
   };
 
   // Register theme actions
@@ -51,7 +59,8 @@ export function DigitalMuseumLayout({ game, onBack, nav, onFullscreen }: DetailL
     nav.registerAction('media-titlescreen', () => setActiveMedia('titlescreen'));
     nav.registerAction('media-videosna', () => setActiveMedia('videosna'));
     nav.registerAction('media-boxfront', () => setActiveMedia('boxfront'));
-  }, [nav]);
+    nav.registerAction('media-extras', () => setActiveMedia('extras'));
+  }, [nav, activeMedia, game, onFullscreen]);
 
   const zoneLabels: Record<string, string> = {
     play: '▶ Play Game [A]',
@@ -61,6 +70,7 @@ export function DigitalMuseumLayout({ game, onBack, nav, onFullscreen }: DetailL
     'media-titlescreen': '🖼️ Title [A]',
     'media-videosna': '🎥 Video [A]',
     'media-boxfront': '📦 Box Art [A]',
+    'media-extras': '🎁 Extras [A]',
   };
 
   return (
@@ -111,16 +121,31 @@ export function DigitalMuseumLayout({ game, onBack, nav, onFullscreen }: DetailL
               </button>
             );
           })}
+
+          {extras.length > 0 && (
+            <button
+              onClick={() => { setActiveMedia('extras'); nav.setFocusedZone('media-extras'); }}
+              onMouseEnter={() => nav.hoverZone('media-extras')}
+              className={`p-3 rounded-lg flex flex-col items-center gap-2 border transition-all ${
+                activeMedia === 'extras'
+                  ? 'bg-gray-800 border-yellow-500/50 text-white shadow-lg'
+                  : 'bg-transparent border-transparent text-gray-500 hover:text-gray-300'
+              } ${nav.focusCls('media-extras')}`}
+            >
+              <div className="text-sm font-semibold">Extras ({extras.length})</div>
+            </button>
+          )}
         </div>
 
         {/* Center: Main Stage */}
         <div className="flex-1 flex flex-col p-8 gap-8 overflow-y-auto custom-scrollbar bg-[radial-gradient(circle_at_50%_0%,rgba(250,204,21,0.05),transparent_70%)]">
           
-          <div 
-            onClick={() => onFullscreen(activeMedia === 'videosna' ? game.screenshotFilename : (activeMedia === 'gameplay' ? game.screenshotFilename : activeMedia === 'titlescreen' ? game.titlescreenFilename : game.boxFrontFilename))}
-            onMouseEnter={() => nav.hoverZone('screenshot')}
-            className={`relative flex-1 min-h-[400px] bg-black rounded-2xl overflow-hidden shadow-2xl border border-gray-800 group/stage transition-all cursor-pointer ${nav.focusCls('screenshot')}`}
-          >
+          {activeMedia !== 'extras' && (
+            <div 
+              onClick={() => onFullscreen(activeMedia === 'videosna' ? game.screenshotFilename : (activeMedia === 'gameplay' ? game.screenshotFilename : activeMedia === 'titlescreen' ? game.titlescreenFilename : game.boxFrontFilename))}
+              onMouseEnter={() => nav.hoverZone('screenshot')}
+              className={`relative flex-1 min-h-[400px] bg-black rounded-2xl overflow-hidden shadow-2xl border border-gray-800 group/stage transition-all cursor-pointer ${nav.focusCls('screenshot')}`}
+            >
             {activeMedia === 'videosna' && game.videoSnapFilename ? (
               <video 
                 src={resolveMediaPath('screenshot', game.videoSnapFilename)} 
@@ -146,48 +171,56 @@ export function DigitalMuseumLayout({ game, onBack, nav, onFullscreen }: DetailL
               ⤢ Fullscreen
             </button>
             
-            <button
-              onClick={async () => {
-                const { searchEmuMovies, downloadEmuMoviesAsset } = await import('../../lib/emumovies');
-                if (!settings.emuMoviesUsername || !settings.emuMoviesPassword) {
-                  alert("Please configure EmuMovies credentials in Settings first!");
-                  return;
-                }
-                
-                try {
-                  alert(`Searching EmuMovies for '${game.name}'...`);
-                  const results = await searchEmuMovies(
-                    settings.emuMoviesUsername,
-                    settings.emuMoviesPassword,
-                    game.name,
-                    'Video'
-                  );
-                  
-                  if (results.length > 0) {
-                    const bestMatch = results[0];
-                    alert(`Found video! Downloading ${bestMatch.name}...`);
-                    const dlResult = await downloadEmuMoviesAsset(
-                      bestMatch.url,
-                      settings.scrapedMediaPath,
-                      `${game.id}_video.mp4`
-                    );
-                    if (dlResult.success) {
-                      alert("Download complete! Media saved to Scraped Media folder.");
-                    } else {
-                      alert("Download failed: " + dlResult.error);
-                    }
-                  } else {
-                    alert("No video snaps found for this game.");
-                  }
-                } catch (err) {
-                  alert("Scrape Error: " + err);
-                }
-              }}
-              className="absolute bottom-3 left-3 z-20 px-3 py-2 bg-blue-600/80 hover:bg-blue-600 text-white text-[10px] font-bold uppercase rounded border border-blue-500 transition-all backdrop-blur-sm shadow-xl"
-            >
-              🎬 Scrape EmuMovies
-            </button>
+            <ScrapeButton 
+              game={game} 
+              className="absolute bottom-3 left-3 z-30" 
+              onComplete={() => {
+                 // Refresh logic here if needed
+              }} 
+            />
           </div>
+        )}
+
+          {activeMedia === 'extras' && (
+            <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 animate-in fade-in slide-in-from-bottom-4 duration-500">
+              {extras.map((extra) => {
+                const isImage = /\.(jpg|jpeg|png|gif|webp)$/i.test(extra.path);
+                const fullPath = resolveMediaPath('extras', extra.path);
+                
+                return (
+                  <div 
+                    key={extra.id}
+                    className="group/extra relative aspect-square bg-gray-900 rounded-xl border border-gray-800 overflow-hidden hover:border-yellow-500/50 transition-all shadow-lg"
+                  >
+                    {isImage ? (
+                      <img 
+                        src={fullPath} 
+                        alt={extra.name}
+                        className="w-full h-full object-cover cursor-pointer"
+                        onClick={() => onFullscreen(extra.path)}
+                      />
+                    ) : (
+                      <div className="w-full h-full flex flex-col items-center justify-center p-4 gap-3">
+                         <div className="text-4xl">📄</div>
+                         <a 
+                           href={fullPath} 
+                           target="_blank" 
+                           rel="noreferrer"
+                           className="text-[10px] text-blue-400 hover:text-blue-300 font-bold uppercase text-center break-all px-2"
+                         >
+                            Open Documentation
+                         </a>
+                      </div>
+                    )}
+                    <div className="absolute bottom-0 left-0 right-0 p-2 bg-black/80 backdrop-blur-sm border-t border-white/5">
+                      <div className="text-[10px] font-bold text-white truncate">{extra.name}</div>
+                      <div className="text-[8px] text-yellow-500/70 font-black uppercase tracking-widest">{extra.type}</div>
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+          )}
 
           <div className="flex justify-between items-start gap-8">
             <div className="flex-1">

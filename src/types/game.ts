@@ -16,6 +16,13 @@ export interface Musician {
   nick: string | null;
 }
 
+export interface Extra {
+  id: string;
+  name: string;
+  path: string;
+  type: string;
+}
+
 export interface Game {
   id: number;
   name: string;
@@ -61,4 +68,5 @@ export interface Game {
   vTrueDriveEmu: boolean | null;
   vPalNtsc: string | null;
   memo: string | null;
+  extras?: Extra[];
 }

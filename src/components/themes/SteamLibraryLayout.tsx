@@ -10,9 +10,19 @@ import { PlayButton } from './PlayButton';
 import { DetailLayoutProps } from '../DetailView';
 import { MusicianPhoto } from '../MusicianPhoto';
 import { StatusRow } from '../StatusRow';
+import { getGameExtras } from '../../lib/tauri-bridge';
+import { ScrapeButton } from '../ScrapeButton';
+import { Extra } from '../../types/game';
+import { useState } from 'react';
 
 export function SteamLibraryLayout({ game, onBack, nav, onFullscreen }: DetailLayoutProps) {
   const { resolveMediaPath } = useSettings();
+  const [activeTab, setActiveTab ] = useState<'gallery' | 'details' | 'docs' | 'extras'>('gallery');
+  const [extras, setExtras] = useState<Extra[]>([]);
+
+  useEffect(() => {
+    getGameExtras(game.id).then(setExtras);
+  }, [game.id]);
 
   // Register theme actions
   useEffect(() => {
@@ -23,6 +33,7 @@ export function SteamLibraryLayout({ game, onBack, nav, onFullscreen }: DetailLa
     // Controller 'A' for fullscreen
     nav.registerAction('media-gameplay', () => onFullscreen(game.screenshotFilename));
     nav.registerAction('media-titlescreen', () => onFullscreen(game.titlescreenFilename));
+    nav.registerAction('media-extras', () => setActiveTab('extras'));
   }, [nav, onFullscreen, game]);
 
   const zoneLabels: Record<string, string> = {
@@ -31,6 +42,7 @@ export function SteamLibraryLayout({ game, onBack, nav, onFullscreen }: DetailLa
     sid: '🎵 Sid Player [A]',
     'media-gameplay': '🕹️ Gameplay Gallery [A]',
     'media-titlescreen': '🖼️ Title Gallery [A]',
+    'media-extras': '🎁 Extras Tab [A]',
   };
 
   return (
@@ -86,12 +98,13 @@ export function SteamLibraryLayout({ game, onBack, nav, onFullscreen }: DetailLa
               game.publisher?.name && game.publisher.name !== '(Not Published)' ? game.publisher.name : null,
               game.developer?.name && game.developer.name !== '(Unknown)' ? game.developer.name : null
             ].filter(Boolean).map((val, idx, arr) => (
-              <span key={val}>{val}{idx < arr.length - 1 && <span className="mx-2 text-[#3d4450]">•</span>}</span>
+              <span key={`${val}-${idx}`}>{val}{idx < arr.length - 1 && <span className="mx-2 text-[#3d4450]">•</span>}</span>
             ))}
           </div>
         </div>
 
-        <div className="relative z-20 pb-4 flex flex-col items-end shrink-0 w-[400px]">
+        <div className="relative z-20 pb-4 flex flex-col items-end justify-end gap-3 shrink-0 w-[400px]">
+          <ScrapeButton game={game} className="w-[180px]" />
           <PlayButton game={game} nav={nav} />
         </div>
       </div>
@@ -101,34 +114,96 @@ export function SteamLibraryLayout({ game, onBack, nav, onFullscreen }: DetailLa
         
         {/* Left column (Gallery) */}
         <div className="w-2/3 flex flex-col gap-8">
-           <div className="flex gap-1 border-b border-[#2a475e]">
-              <div className="px-4 py-2 text-white border-b-2 border-[#66c0f4] font-medium text-lg uppercase shadow-sm">Gallery</div>
-              <div className="px-4 py-2 text-gray-500 hover:text-white cursor-pointer font-medium text-lg uppercase transition-colors">Details</div>
-              <div className="px-4 py-2 text-gray-500 hover:text-white cursor-pointer font-medium text-lg uppercase transition-colors">Documents</div>
+            <div className="flex gap-1 border-b border-[#2a475e]">
+              <div 
+                onClick={() => setActiveTab('gallery')}
+                className={`px-4 py-2 cursor-pointer font-medium text-lg uppercase transition-colors ${activeTab === 'gallery' ? 'text-white border-b-2 border-[#66c0f4]' : 'text-gray-500 hover:text-white'}`}
+              >
+                Gallery
+              </div>
+              <div 
+                onClick={() => setActiveTab('details')}
+                className={`px-4 py-2 cursor-pointer font-medium text-lg uppercase transition-colors ${activeTab === 'details' ? 'text-white border-b-2 border-[#66c0f4]' : 'text-gray-500 hover:text-white'}`}
+              >
+                Details
+              </div>
+              <div 
+                 onClick={() => setActiveTab('docs')}
+                 className={`px-4 py-2 cursor-pointer font-medium text-lg uppercase transition-colors ${activeTab === 'docs' ? 'text-white border-b-2 border-[#66c0f4]' : 'text-gray-500 hover:text-white'}`}
+              >
+                Documents
+              </div>
+              {extras.length > 0 && (
+                <div 
+                   onClick={() => setActiveTab('extras')}
+                   onMouseEnter={() => nav.hoverZone('media-extras')}
+                   className={`px-4 py-2 cursor-pointer font-medium text-lg uppercase transition-colors ${nav.focusCls('media-extras')} ${activeTab === 'extras' ? 'text-white border-b-2 border-[#66c0f4]' : 'text-gray-500 hover:text-white'}`}
+                >
+                  Extras ({extras.length})
+                </div>
+              )}
            </div>
 
-           <div className="grid grid-cols-2 gap-4">
-              <div 
-                onClick={() => onFullscreen(game.screenshotFilename)}
-                onMouseEnter={() => nav.hoverZone('media-gameplay')}
-                className={`aspect-video bg-[#0f1922] rounded shadow-md border border-[#2a475e] flex items-center justify-center p-2 transition cursor-pointer relative group ${nav.focusCls('media-gameplay')}`}
-              >
-                {game.videoSnapFilename ? (
-                   <video src={resolveMediaPath('screenshot', game.videoSnapFilename)} autoPlay loop muted className="w-full h-full object-contain pointer-events-none" />
-                ) : (
-                   <ImageSlider type="screenshot" filename={game.screenshotFilename} alt="Screenshot" className="w-full h-full object-contain pointer-events-none" fallbackText="Gameplay" />
-                )}
-                <div className="absolute top-2 left-2 bg-black/80 px-2 rounded text-[10px] text-white">Main</div>
-              </div>
-              <div 
-                 onClick={() => onFullscreen(game.titlescreenFilename)}
-                 onMouseEnter={() => nav.hoverZone('media-titlescreen')}
-                 className={`aspect-video bg-[#0f1922] rounded shadow-md border border-[#2a475e] flex items-center justify-center p-2 transition cursor-pointer relative ${nav.focusCls('media-titlescreen')}`}
-              >
-                 <ImageWithFallback src={game.titlescreenFilename ? resolveMediaPath('screenshot', game.titlescreenFilename) : ''} alt="Title" className="w-full h-full object-contain pointer-events-none" fallbackText="Title Screen" />
-                 <div className="absolute top-2 left-2 bg-black/80 px-2 rounded text-[10px] text-white">Title</div>
-              </div>
-           </div>
+           {activeTab === 'gallery' && (
+             <div className="grid grid-cols-2 gap-4">
+                <div 
+                  onClick={() => onFullscreen(game.screenshotFilename)}
+                  onMouseEnter={() => nav.hoverZone('media-gameplay')}
+                  className={`aspect-video bg-[#0f1922] rounded shadow-md border border-[#2a475e] flex items-center justify-center p-2 transition cursor-pointer relative group ${nav.focusCls('media-gameplay')}`}
+                >
+                  {game.videoSnapFilename ? (
+                     <video src={resolveMediaPath('screenshot', game.videoSnapFilename)} autoPlay loop muted className="w-full h-full object-contain pointer-events-none" />
+                  ) : (
+                     <ImageSlider type="screenshot" filename={game.screenshotFilename} alt="Screenshot" className="w-full h-full object-contain pointer-events-none" fallbackText="Gameplay" />
+                  )}
+                  <div className="absolute top-2 left-2 bg-black/80 px-2 rounded text-[10px] text-white">Main</div>
+                </div>
+                <div 
+                   onClick={() => onFullscreen(game.titlescreenFilename)}
+                   onMouseEnter={() => nav.hoverZone('media-titlescreen')}
+                   className={`aspect-video bg-[#0f1922] rounded shadow-md border border-[#2a475e] flex items-center justify-center p-2 transition cursor-pointer relative ${nav.focusCls('media-titlescreen')}`}
+                >
+                   <ImageWithFallback src={game.titlescreenFilename ? resolveMediaPath('screenshot', game.titlescreenFilename) : ''} alt="Title" className="w-full h-full object-contain pointer-events-none" fallbackText="Title Screen" />
+                   <div className="absolute top-2 left-2 bg-black/80 px-2 rounded text-[10px] text-white">Title</div>
+                </div>
+             </div>
+           )}
+
+           {activeTab === 'extras' && (
+             <div className="flex flex-col gap-4 animate-in fade-in duration-500">
+                {extras.map(extra => {
+                  const isImage = /\.(jpg|jpeg|png|gif|webp)$/i.test(extra.path);
+                  const fullPath = resolveMediaPath('extras', extra.path);
+                  return (
+                    <div key={extra.id} className="bg-[#0f1922]/60 border border-[#2a475e] rounded p-4 flex gap-6 items-center group/extra hover:bg-[#0f1922] transition-colors">
+                      {isImage ? (
+                        <div className="w-32 h-20 shrink-0 bg-black rounded border border-[#2a475e] overflow-hidden cursor-pointer" onClick={() => onFullscreen(extra.path)}>
+                           <img src={fullPath} alt={extra.name} className="w-full h-full object-cover group-hover/extra:scale-110 transition-transform" />
+                        </div>
+                      ) : (
+                        <div className="w-32 h-20 shrink-0 bg-[#171d24] rounded border border-[#2a475e] flex items-center justify-center text-3xl">📄</div>
+                      )}
+                      
+                      <div className="flex-1 min-w-0">
+                         <div className="text-[#66c0f4] font-bold text-lg truncate group-hover/extra:text-white transition-colors">{extra.name}</div>
+                         <div className="flex items-center gap-3 mt-1">
+                            <span className="bg-[#2a475e] px-2 py-0.5 rounded text-[10px] text-[#66c0f4] font-black uppercase tracking-tighter">{extra.type}</span>
+                            {!isImage && (
+                              <a href={fullPath} target="_blank" rel="noreferrer" className="text-xs text-gray-500 hover:text-[#66c0f4] underline">View Document</a>
+                            )}
+                         </div>
+                      </div>
+                    </div>
+                  );
+                })}
+             </div>
+           )}
+
+           {(activeTab === 'details' || activeTab === 'docs') && (
+             <div className="p-12 bg-[#0f1922]/40 rounded-xl border border-[#2a475e]/30 text-center italic text-gray-500">
+                Detailed {activeTab} information is sourced directly from the Gamebase64 database records.
+             </div>
+           )}
         </div>
 
         {/* Right column (Metadata & credits) */}

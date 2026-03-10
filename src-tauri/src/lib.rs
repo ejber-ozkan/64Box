@@ -95,6 +95,16 @@ pub struct GameRow {
     pub memo: Option<String>,
 }
 
+/// A row from the SQLite Extras table
+#[derive(Debug, Serialize, Deserialize, Clone)]
+#[serde(rename_all = "camelCase")]
+pub struct ExtraRow {
+    pub id: String,
+    pub name: String,
+    pub path: String,
+    pub extra_type: String,
+}
+
 // ---------------------------------------------------------------------------
 // Commands — all in one module to avoid proc-macro symbol collisions
 // ---------------------------------------------------------------------------
@@ -610,6 +620,38 @@ pub mod commands {
         
         Ok(games)
     }
+
+    /// Get all extras for a specific game
+    #[tauri::command]
+    pub async fn get_game_extras(game_id: String) -> Result<Vec<super::ExtraRow>, String> {
+        use rusqlite::Connection;
+        let db_path = if std::path::Path::new("../gb64.sqlite").exists() {
+            "../gb64.sqlite"
+        } else if std::path::Path::new("gb64.sqlite").exists() {
+            "gb64.sqlite"
+        } else {
+            "../../gb64.sqlite"
+        };
+        let conn = Connection::open(db_path).map_err(|e| format!("DB error: {}", e))?;
+        let mut stmt = conn.prepare(
+            "SELECT EX_Id, Name, Path, Type FROM Extras WHERE GA_Id = ? ORDER BY DisplayOrder ASC"
+        ).map_err(|e| e.to_string())?;
+        
+        let extra_iter = stmt.query_map([game_id], |row| {
+            Ok(super::ExtraRow {
+                id: row.get(0)?,
+                name: row.get(1)?,
+                path: row.get(2)?,
+                extra_type: row.get(3)?,
+            })
+        }).map_err(|e| e.to_string())?;
+        
+        let mut extras = Vec::new();
+        for extra in extra_iter {
+            extras.push(extra.map_err(|e| e.to_string())?);
+        }
+        Ok(extras)
+    }
 }
 
 // ---------------------------------------------------------------------------
@@ -632,6 +674,7 @@ pub fn run() {
             commands::open_file_dialog,
             commands::get_db_games,
             commands::get_genres,
+            commands::get_game_extras,
         ])
         .run(tauri::generate_context!())
         .expect("error while running 64Box");

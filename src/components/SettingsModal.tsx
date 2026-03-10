@@ -19,8 +19,13 @@ export function SettingsView({ onBack }: SettingsViewProps) {
   const [localEmuMoviesPass, setLocalEmuMoviesPass] = useState(settings.emuMoviesPassword);
   const [localTheme, setLocalTheme]               = useState(settings.detailViewTheme);
   const [localScrapedMedia, setLocalScrapedMedia] = useState(settings.scrapedMediaPath);
+  const [localExtras, setLocalExtras]             = useState(settings.extrasPath);
   const [localHideAdult, setLocalHideAdult]       = useState(settings.hideAdultContent);
-  const [activeTab, setActiveTab]                 = useState<'appearance' | 'content' | 'paths' | 'emumovies' | 'maintenance' | 'about'>('appearance');
+  const [localActiveScraper, setLocalActiveScraper] = useState(settings.activeScraper);
+  const [localScreenScraperUser, setLocalScreenScraperUser] = useState(settings.screenScraperUsername);
+  const [localScreenScraperPass, setLocalScreenScraperPass] = useState(settings.screenScraperPassword);
+  const [localTheGamesDbKey, setLocalTheGamesDbKey] = useState(settings.theGamesDbApiKey);
+  const [activeTab, setActiveTab]                 = useState<'appearance' | 'content' | 'paths' | 'scrapers' | 'maintenance' | 'about'>('appearance');
   const [scanStatus, setScanStatus]               = useState<string | null>(null);
 
   const handleSave = () => {
@@ -34,7 +39,12 @@ export function SettingsView({ onBack }: SettingsViewProps) {
       emuMoviesPassword: localEmuMoviesPass,
       detailViewTheme: localTheme,
       scrapedMediaPath: localScrapedMedia,
+      extrasPath: localExtras,
       hideAdultContent: localHideAdult,
+      activeScraper: localActiveScraper,
+      screenScraperUsername: localScreenScraperUser,
+      screenScraperPassword: localScreenScraperPass,
+      theGamesDbApiKey: localTheGamesDbKey,
     });
     onBack();
   };
@@ -72,7 +82,7 @@ export function SettingsView({ onBack }: SettingsViewProps) {
     { id: 'appearance', label: '🎨 Appearance' },
     { id: 'content',    label: '🔞 Content' },
     { id: 'paths',      label: '📁 Local Paths' },
-    { id: 'emumovies', label: '🎬 EmuMovies' },
+    { id: 'scrapers',   label: '🖼️ Art & Info Scraper' },
     { id: 'maintenance', label: '🛠️ Maintenance' },
     { id: 'about',       label: 'ℹ️ About & Credits' },
   ] as const;
@@ -191,6 +201,7 @@ export function SettingsView({ onBack }: SettingsViewProps) {
                 {pathRow('Screenshots folder', localScreenshots, setLocalScreenshots, 'e.g. D:/GB64/Screenshots')}
                 {pathRow('C64Music folder', localSounds, setLocalSounds, 'e.g. D:/GB64/C64Music')}
                 {pathRow('Photos (Musicians) folder', localMusician, setLocalMusician, 'e.g. D:/GB64/Photos')}
+                {pathRow('Extras folder', localExtras, setLocalExtras, 'e.g. D:/GB64/Extras')}
                 <div className="text-[#66c0f4] font-bold text-xs uppercase tracking-widest border-t border-[#2a475e] pt-1.5 mb-2">
                   -------- Gamebase64 Folders
                 </div>
@@ -216,50 +227,108 @@ export function SettingsView({ onBack }: SettingsViewProps) {
             </>
           )}
 
-          {activeTab === 'emumovies' && (
-            <>
+          {activeTab === 'scrapers' && (
+            <div className="flex flex-col gap-6">
               <div className="bg-blue-900/20 border border-blue-700/40 rounded-lg p-4 text-sm text-blue-200">
-                <strong>EmuMovies Integration</strong><br />
-                Enter your EmuMovies login credentials to enable automatic downloading of video snaps,
-                gameplay clips, and additional media for your C64 games.
+                <strong>Art & Info Scraper Configuration</strong><br />
+                Select your preferred active scraper and provide credentials below. 
+                The active scraper will be used for one-click metadata and artwork discovery.
               </div>
-              <div className="flex flex-col gap-4">
-                <div>
-                  <label className="block text-gray-400 text-[10px] font-bold uppercase tracking-widest mb-1.5">EmuMovies Username</label>
-                  <input
-                    type="text"
-                    className="w-full bg-gray-950 border border-gray-700 rounded px-3 py-2 text-white focus:outline-none focus:border-blue-500 font-mono text-xs"
-                    value={localEmuMoviesUser}
-                    onChange={(e) => setLocalEmuMoviesUser(e.target.value)}
-                    placeholder="EmuMovies Username"
-                  />
-                </div>
-                <div>
-                  <label className="block text-gray-400 text-[10px] font-bold uppercase tracking-widest mb-1.5">EmuMovies Password</label>
-                  <input
-                    type="password"
-                    className="w-full bg-gray-950 border border-gray-700 rounded px-3 py-2 text-white focus:outline-none focus:border-blue-500 font-mono text-xs"
-                    value={localEmuMoviesPass}
-                    onChange={(e) => setLocalEmuMoviesPass(e.target.value)}
-                    placeholder="EmuMovies Password"
-                  />
-                </div>
-                <p className="text-[10px] text-gray-500 mt-1">
-                  You must have a <span className="text-blue-400">Developer Access</span> account or a regular account with a valid API key setup if using the legacy method.
-                </p>
+
+              <div className="grid grid-cols-3 gap-3">
+                {(['emumovies', 'screenscraper', 'thegamesdb'] as const).map(s => (
+                  <button
+                    key={s}
+                    onClick={() => setLocalActiveScraper(s)}
+                    className={`p-4 rounded-xl border flex flex-col items-center gap-2 transition-all ${
+                      localActiveScraper === s
+                        ? 'bg-blue-600 border-blue-400 text-white shadow-xl scale-105'
+                        : 'bg-gray-800 border-gray-700 text-gray-500 hover:text-gray-300'
+                    }`}
+                  >
+                    <span className="text-2xl">
+                      {s === 'emumovies' ? '🎬' : s === 'screenscraper' ? '🌐' : '👾'}
+                    </span>
+                    <span className="text-[10px] font-bold uppercase tracking-wider">
+                      {s === 'emumovies' ? 'EmuMovies' : s === 'screenscraper' ? 'ScreenScraper' : 'TheGamesDB'}
+                    </span>
+                  </button>
+                ))}
               </div>
-              <div className="bg-gray-900/50 border border-gray-700 rounded-lg p-4 flex flex-col gap-2">
-                <div className="text-[10px] text-gray-400 font-bold uppercase tracking-widest mb-1">What EmuMovies provides:</div>
-                <div className="grid grid-cols-2 gap-1 text-xs text-gray-300">
-                  <span>📽️ Video Snaps (MP4)</span>
-                  <span>📦 Box Art Front/Back</span>
-                  <span>🖼️ Title Screens</span>
-                  <span>🕹️ Gameplay Screenshots</span>
-                  <span>🎵 Game Music (MP3)</span>
-                  <span>📜 Clear Logos</span>
+
+              <div className="space-y-8 mt-4">
+                {/* EmuMovies Section */}
+                <div className={`p-6 rounded-2xl border transition-all ${localActiveScraper === 'emumovies' ? 'bg-gray-800 border-blue-500' : 'bg-gray-900/40 border-gray-800 opacity-60'}`}>
+                  <h3 className="text-white font-bold mb-4 flex items-center gap-2 text-sm uppercase tracking-widest">
+                    <span>🎬</span> EmuMovies Credentials
+                  </h3>
+                  <div className="grid grid-cols-2 gap-4">
+                    <div>
+                      <label className="block text-gray-500 text-[10px] font-bold uppercase tracking-widest mb-1.5">Username</label>
+                      <input
+                        type="text"
+                        className="w-full bg-gray-950 border border-gray-700 rounded px-3 py-2 text-white font-mono text-xs"
+                        value={localEmuMoviesUser}
+                        onChange={(e) => setLocalEmuMoviesUser(e.target.value)}
+                      />
+                    </div>
+                    <div>
+                      <label className="block text-gray-500 text-[10px] font-bold uppercase tracking-widest mb-1.5">Password</label>
+                      <input
+                        type="password"
+                        className="w-full bg-gray-950 border border-gray-700 rounded px-3 py-2 text-white font-mono text-xs"
+                        value={localEmuMoviesPass}
+                        onChange={(e) => setLocalEmuMoviesPass(e.target.value)}
+                      />
+                    </div>
+                  </div>
+                </div>
+
+                {/* ScreenScraper Section */}
+                <div className={`p-6 rounded-2xl border transition-all ${localActiveScraper === 'screenscraper' ? 'bg-gray-800 border-blue-500' : 'bg-gray-900/40 border-gray-800 opacity-60'}`}>
+                  <h3 className="text-white font-bold mb-4 flex items-center gap-2 text-sm uppercase tracking-widest">
+                    <span>🌐</span> ScreenScraper.fr Credentials
+                  </h3>
+                  <div className="grid grid-cols-2 gap-4">
+                    <div>
+                      <label className="block text-gray-500 text-[10px] font-bold uppercase tracking-widest mb-1.5">Username</label>
+                      <input
+                        type="text"
+                        className="w-full bg-gray-950 border border-gray-700 rounded px-3 py-2 text-white font-mono text-xs"
+                        value={localScreenScraperUser}
+                        onChange={(e) => setLocalScreenScraperUser(e.target.value)}
+                      />
+                    </div>
+                    <div>
+                      <label className="block text-gray-500 text-[10px] font-bold uppercase tracking-widest mb-1.5">Password</label>
+                      <input
+                        type="password"
+                        className="w-full bg-gray-950 border border-gray-700 rounded px-3 py-2 text-white font-mono text-xs"
+                        value={localScreenScraperPass}
+                        onChange={(e) => setLocalScreenScraperPass(e.target.value)}
+                      />
+                    </div>
+                  </div>
+                </div>
+
+                {/* TheGamesDB Section */}
+                <div className={`p-6 rounded-2xl border transition-all ${localActiveScraper === 'thegamesdb' ? 'bg-gray-800 border-blue-500' : 'bg-gray-900/40 border-gray-800 opacity-60'}`}>
+                  <h3 className="text-white font-bold mb-4 flex items-center gap-2 text-sm uppercase tracking-widest">
+                    <span>👾</span> TheGamesDB API Key
+                  </h3>
+                  <div>
+                    <label className="block text-gray-500 text-[10px] font-bold uppercase tracking-widest mb-1.5">Private API Key</label>
+                    <input
+                      type="password"
+                      className="w-full bg-gray-950 border border-gray-700 rounded px-3 py-2 text-white font-mono text-xs"
+                      value={localTheGamesDbKey}
+                      onChange={(e) => setLocalTheGamesDbKey(e.target.value)}
+                      placeholder="Enter your gamesdb.net API key"
+                    />
+                  </div>
                 </div>
               </div>
-            </>
+            </div>
           )}
 
           {activeTab === 'maintenance' && (

@@ -11,7 +11,8 @@ export type DetailZone =
   | 'media-gameplay'
   | 'media-titlescreen'
   | 'media-videosna'
-  | 'media-boxfront';
+  | 'media-boxfront'
+  | 'media-extras';
 
 type Direction = 'up' | 'down' | 'left' | 'right';
 

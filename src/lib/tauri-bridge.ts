@@ -210,6 +210,27 @@ export async function getGenres(): Promise<string[]> {
 }
 
 /**
+ * Fetch extras for a specific game from the database.
+ */
+export async function getGameExtras(gameId: number): Promise<import('../types/game').Extra[]> {
+  if (!isTauri()) {
+    return [];
+  }
+  try {
+    const rawExtras = await invoke<any[]>('get_game_extras', { gameId: gameId.toString() });
+    return rawExtras.map(ex => ({
+      id: ex.id,
+      name: ex.name,
+      path: ex.path,
+      type: ex.extraType,
+    }));
+  } catch (err) {
+    console.error('Failed to fetch extras:', err);
+    return [];
+  }
+}
+
+/**
  * Fetch games from the local SQLite database.
  * In browser mode (dev), this falls back to the mock games array.
  */

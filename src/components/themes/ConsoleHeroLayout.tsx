@@ -9,9 +9,19 @@ import { PlayButton } from './PlayButton';
 import { DetailLayoutProps } from '../DetailView';
 import { MusicianPhoto } from '../MusicianPhoto';
 import { StatusRow } from '../StatusRow';
+import { getGameExtras } from '../../lib/tauri-bridge';
+import { ScrapeButton } from '../ScrapeButton';
+import { Extra } from '../../types/game';
+import { useState } from 'react';
 
 export function ConsoleHeroLayout({ game, onBack, nav, onFullscreen }: DetailLayoutProps) {
   const { resolveMediaPath } = useSettings();
+  const [activeMedia, setActiveMedia] = useState<'gameplay' | 'titlescreen' | 'boxfront' | 'extras'>('gameplay');
+  const [extras, setExtras] = useState<Extra[]>([]);
+
+  useEffect(() => {
+    getGameExtras(game.id).then(setExtras);
+  }, [game.id]);
 
   const activeBg = game.videoSnapFilename 
     ? resolveMediaPath('screenshot', game.videoSnapFilename) 
@@ -24,9 +34,10 @@ export function ConsoleHeroLayout({ game, onBack, nav, onFullscreen }: DetailLay
     nav.registerAction('sid', () => document.getElementById('sid-play-btn')?.click());
     
     // Controller 'A' for fullscreen
-    nav.registerAction('media-gameplay', () => onFullscreen(game.screenshotFilename));
-    nav.registerAction('media-titlescreen', () => onFullscreen(game.titlescreenFilename));
-    nav.registerAction('media-boxfront', () => onFullscreen(game.boxFrontFilename));
+    nav.registerAction('media-gameplay', () => { setActiveMedia('gameplay'); onFullscreen(game.screenshotFilename); });
+    nav.registerAction('media-titlescreen', () => { setActiveMedia('titlescreen'); onFullscreen(game.titlescreenFilename); });
+    nav.registerAction('media-boxfront', () => { setActiveMedia('boxfront'); onFullscreen(game.boxFrontFilename); });
+    nav.registerAction('media-extras', () => setActiveMedia('extras'));
   }, [nav, onFullscreen, game]);
 
   const zoneLabels: Record<string, string> = {
@@ -36,6 +47,7 @@ export function ConsoleHeroLayout({ game, onBack, nav, onFullscreen }: DetailLay
     'media-gameplay': '🕹️ Gameplay [A]',
     'media-titlescreen': '🖼️ Title [A]',
     'media-boxfront': '📦 Box Art [A]',
+    'media-extras': '🎁 Extras [A]',
   };
 
   return (
@@ -113,12 +125,62 @@ export function ConsoleHeroLayout({ game, onBack, nav, onFullscreen }: DetailLay
               >
                  <ImageSlider type="screenshot" filename={game.boxFrontFilename} alt="Box Art" className="w-full h-full object-contain pointer-events-none" fallbackText="Box Art" />
               </div>
+
+              {extras.length > 0 && (
+                <div 
+                  onClick={() => setActiveMedia('extras')}
+                  onMouseEnter={() => nav.hoverZone('media-extras')}
+                  className={`h-32 w-32 shrink-0 bg-white/5 rounded-xl border border-white/10 p-4 flex flex-col items-center justify-center gap-2 hover:ring-2 ring-blue-500 transition-all cursor-pointer ${nav.focusCls('media-extras')}`}
+                >
+                   <div className="text-3xl">🎁</div>
+                   <div className="text-[10px] font-bold uppercase text-white/70">Extras ({extras.length})</div>
+                </div>
+              )}
            </div>
         </div>
 
         {/* Right Side: Frosted Glass Metadata Panel */}
         <div className="w-[400px] flex flex-col shrink-0 gap-6">
-           <div className="bg-white/5 backdrop-blur-xl border border-white/10 rounded-3xl p-8 shadow-2xl flex-1 flex flex-col transform transition translate-y-4 group-hover:translate-y-0 duration-700">
+           {activeMedia === 'extras' ? (
+             <div className="bg-white/5 backdrop-blur-xl border border-white/10 rounded-3xl p-6 shadow-2xl flex-1 flex flex-col overflow-y-auto custom-scrollbar">
+                <h2 className="text-2xl font-black text-white mb-6 uppercase tracking-tight flex items-center gap-3">
+                  <span className="text-blue-400">🎁</span> Game Extras
+                </h2>
+                <div className="space-y-4">
+                  {extras.map(extra => {
+                    const isImage = /\.(jpg|jpeg|png|gif|webp)$/i.test(extra.path);
+                    const fullPath = resolveMediaPath('extras', extra.path);
+                    return (
+                      <div key={extra.id} className="bg-white/5 rounded-2xl p-3 border border-white/10 group/item hover:bg-white/10 transition-all">
+                        {isImage ? (
+                          <div className="mb-2 rounded-xl overflow-hidden aspect-video bg-black cursor-pointer" onClick={() => onFullscreen(extra.path)}>
+                            <img src={fullPath} alt={extra.name} className="w-full h-full object-cover group-hover/item:scale-105 transition-transform duration-500" />
+                          </div>
+                        ) : (
+                          <div className="mb-2 rounded-xl p-4 bg-black/40 flex items-center justify-center text-3xl">📄</div>
+                        )}
+                        <div className="px-1">
+                          <div className="text-sm font-bold text-white truncate">{extra.name}</div>
+                          <div className="flex justify-between items-center mt-1">
+                             <span className="text-[10px] font-black text-blue-400 uppercase tracking-widest">{extra.type}</span>
+                             {!isImage && (
+                               <a href={fullPath} target="_blank" rel="noreferrer" className="text-[10px] text-white/50 hover:text-white underline font-medium">Open Dir</a>
+                             )}
+                          </div>
+                        </div>
+                      </div>
+                    );
+                  })}
+                </div>
+                <button 
+                  onClick={() => setActiveMedia('gameplay')}
+                  className="mt-6 w-full py-3 bg-white/10 hover:bg-white/20 rounded-xl text-white font-bold text-xs uppercase tracking-widest transition-all"
+                >
+                  Close Extras
+                </button>
+             </div>
+           ) : (
+             <div className="bg-white/5 backdrop-blur-xl border border-white/10 rounded-3xl p-8 shadow-2xl flex-1 flex flex-col transform transition translate-y-4 group-hover:translate-y-0 duration-700">
               <h1 className="text-5xl font-black text-white mb-2 leading-tight">{game.name}</h1>
               <div className="text-blue-400 font-semibold text-lg mb-8 uppercase tracking-wide">
                 {[
@@ -230,7 +292,8 @@ export function ConsoleHeroLayout({ game, onBack, nav, onFullscreen }: DetailLay
                 </div>
               </div>
 
-              <div className="mt-auto flex flex-col gap-5">
+              <div className="mt-auto flex flex-col gap-4">
+                 <ScrapeButton game={game} />
                  <PlayButton game={game} nav={nav} />
                  <div 
                     onMouseEnter={() => nav.hoverZone('sid')}
@@ -239,7 +302,8 @@ export function ConsoleHeroLayout({ game, onBack, nav, onFullscreen }: DetailLay
                     <SidPlayer filename={game.sidFilename} />
                  </div>
               </div>
-           </div>
+              </div>
+           )}
         </div>
       </div>
     </div>

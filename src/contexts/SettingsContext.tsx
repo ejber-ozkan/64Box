@@ -12,6 +12,11 @@ interface Settings {
   emuMoviesPassword: string;
   detailViewTheme: 'cia' | 'vic' | 'sx64';
   scrapedMediaPath: string;
+  extrasPath: string;
+  activeScraper: 'emumovies' | 'screenscraper' | 'thegamesdb';
+  screenScraperUsername: string;
+  screenScraperPassword: string;
+  theGamesDbApiKey: string;
   hideAdultContent: boolean;
   recentlyPlayedIds: string[];
 }
@@ -19,8 +24,8 @@ interface Settings {
 interface SettingsContextType {
   settings: Settings;
   updateSettings: (newSettings: Partial<Settings>) => void;
-  resolveMediaPath: (type: 'screenshot' | 'sound' | 'musician', filename: string) => string;
-  findAllVariants: (type: 'screenshot' | 'sound' | 'musician', filename: string) => Promise<string[]>;
+  resolveMediaPath: (type: 'screenshot' | 'sound' | 'musician' | 'extras', filename: string) => string;
+  findAllVariants: (type: 'screenshot' | 'sound' | 'musician' | 'extras', filename: string) => Promise<string[]>;
   markAsPlayed: (gameId: string) => void;
 }
 
@@ -32,9 +37,14 @@ const defaultSettings: Settings = {
   emulatorPath: '',
   emuMoviesUsername: '',
   emuMoviesPassword: '',
-  detailViewTheme: 'sx64',
-  scrapedMediaPath: 'media/scraped',
-  hideAdultContent: true,
+  detailViewTheme: 'cia',
+  scrapedMediaPath: '/media/scraped',
+  extrasPath: '/media/extras',
+  activeScraper: 'emumovies',
+  screenScraperUsername: '',
+  screenScraperPassword: '',
+  theGamesDbApiKey: '',
+  hideAdultContent: false,
   recentlyPlayedIds: [],
 };
 
@@ -71,7 +81,7 @@ export function SettingsProvider({ children }: { children: ReactNode }) {
     });
   };
 
-  const resolveMediaPath = (type: 'screenshot' | 'sound' | 'musician', filename: string) => {
+  const resolveMediaPath = (type: 'screenshot' | 'sound' | 'musician' | 'extras', filename: string) => {
     // In a real desktop app (Phase 3), Tauri would resolve these local absolute paths.
     // For web/MVP, we join the configured base path with the filename.
     switch (type) {
@@ -81,12 +91,14 @@ export function SettingsProvider({ children }: { children: ReactNode }) {
         return `${settings.soundsPath}/${filename}`;
       case 'musician':
         return `${settings.musicianPhotosPath}/${filename}`;
+      case 'extras' as any:
+        return `${settings.extrasPath}/${filename}`;
       default:
         return filename;
     }
   };
 
-  const findAllVariants = async (type: 'screenshot' | 'sound' | 'musician', filename: string) => {
+  const findAllVariants = async (type: 'screenshot' | 'sound' | 'musician' | 'extras', filename: string): Promise<string[]> => {
     if (typeof window === 'undefined') return [];
     
     // In browser web dev mode without Tauri API loaded, just return local resolve once
