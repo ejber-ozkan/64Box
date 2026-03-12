@@ -60,3 +60,8 @@ gb64.sqlite
 /.agent
 /.agents
 /skills-lock.json
+
+# One-off scripts and test logs
+/check_*.py
+/scripts/
+/src-tauri/test_output*.txt

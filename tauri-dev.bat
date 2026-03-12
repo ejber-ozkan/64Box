@@ -4,6 +4,14 @@ setlocal enabledelayedexpansion
 :: Ensure Cargo/Rust binaries added by Rustup are available in this shell session
 set PATH=%USERPROFILE%\.cargo\bin;%PATH%
 
+:: Check for node_modules in a clean clone
+if not exist "node_modules\" (
+    echo [64Box] ERROR: node_modules folder not found.
+    echo [64Box] Please run 'npm install' before starting the development server.
+    pause
+    exit /b 1
+)
+
 echo [64Box] Using Rust: 
 rustc --version
 cargo --version

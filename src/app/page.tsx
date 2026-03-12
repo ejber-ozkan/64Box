@@ -2,9 +2,9 @@
 
 import { useState, useEffect, useCallback, useRef } from 'react';
 import { Game } from '@/types/game';
-import { getDbGames } from '@/lib/tauri-bridge';
+import { getDbGames, exitApp } from '@/lib/tauri-bridge';
 import { sortGames } from '@/utils/sorting';
-import { useSettings } from '@/contexts/SettingsContext';
+import { useSettings, Settings } from '@/contexts/SettingsContext';
 import { GridView } from '@/components/GridView';
 import { ListView } from '@/components/ListView';
 import { ImageSlider } from '@/components/ImageSlider';
@@ -21,7 +21,8 @@ type ViewMode = 'grid' | 'list' | 'settings';
 const LETTERS = ['#', ...Array.from({ length: 26 }, (_, i) => String.fromCharCode(65 + i))];
 
 export default function Home() {
-  const [viewMode, setViewMode] = useState<ViewMode>('grid');
+  const { settings, markAsPlayed, resolveMediaPath, updateSettings } = useSettings();
+  const [viewMode, setViewMode] = useState<ViewMode>(settings.lastViewMode || 'grid');
   const [selectedGame, setSelectedGame] = useState<Game | null>(null);
   const [showFilters, setShowFilters] = useState(false);
   const [filters, setFilters] = useState<GameFilters>({});
@@ -31,7 +32,6 @@ export default function Home() {
   useEffect(() => {
     setMounted(true);
   }, []);
-  const { settings, markAsPlayed, resolveMediaPath } = useSettings();
 
   // Initialise filters from settings (e.g. hide adult content by default)
   useEffect(() => {
@@ -60,20 +60,71 @@ export default function Home() {
     }
   }, [focusedIndex, settings.recentlyPlayedIds.length]);
 
+  const [isRestored, setIsRestored] = useState(false);
+
   useEffect(() => {
     async function fetchGames() {
       // Pass the filters object to the backend
       const dbGames = await getDbGames(500, 0, filters);
       setGames(dbGames);
-      setFocusedIndex(-1); // reset focus on new data
+      
+      // Restore focus/selection after first fetch
+      if (!isRestored) {
+        if (settings.lastSelectedGameId) {
+          const found = dbGames.find(g => g.id.toString() === settings.lastSelectedGameId);
+          if (found) {
+            setFocusedIndex(dbGames.indexOf(found));
+            setSelectedGame(found);
+          } else {
+            // fetch it specifically if not in top 500
+            const single = await getDbGames(1, 0, { favoriteIds: [settings.lastSelectedGameId] });
+            if (single.length > 0) {
+              setSelectedGame(single[0]);
+            }
+          }
+        } else if (settings.lastFocusedIndex !== undefined) {
+          setFocusedIndex(settings.lastFocusedIndex);
+        }
+        setIsRestored(true);
+      } else {
+        // Only reset focus if we're NOT in a restoration phase
+        // and NOT looking at a specific game (detail view)
+        if (!selectedGame) {
+           setFocusedIndex(-1);
+        }
+      }
     }
     fetchGames();
-  }, [filters]);
+  }, [filters, isRestored]);
+
+  // Update settings when state changes
+  useEffect(() => {
+    if (isRestored) {
+       updateSettings({ lastFocusedIndex: focusedIndex >= 0 ? focusedIndex : 0 });
+    }
+  }, [focusedIndex, updateSettings, isRestored]);
+
+  useEffect(() => {
+     if (isRestored) {
+       updateSettings({ 
+         lastSelectedGameId: selectedGame?.id.toString() || null,
+         lastViewMode: viewMode === 'settings' ? settings.lastViewMode : viewMode
+       });
+     }
+  }, [selectedGame, viewMode, updateSettings, isRestored, settings.lastViewMode]);
 
   useEffect(() => {
     // Debounce search input
     const timer = setTimeout(() => {
-      setFilters(prev => ({ ...prev, searchQuery: searchInput || undefined }));
+      setFilters(prev => {
+        const newFilters = { ...prev, searchQuery: searchInput || undefined };
+        // If we are searching, clear browsing filters (letter, genre) to ensure a global search
+        if (searchInput.trim()) {
+           newFilters.letter = undefined;
+           newFilters.genre = undefined;
+        }
+        return newFilters;
+      });
     }, 400);
     return () => clearTimeout(timer);
   }, [searchInput]);
@@ -97,7 +148,8 @@ export default function Home() {
         let nextIdx = 0;
         if (btn === 'RB') nextIdx = curIdx + 1 >= LETTERS.length ? 0 : curIdx + 1;
         if (btn === 'LB') nextIdx = curIdx - 1 < 0 ? LETTERS.length - 1 : curIdx - 1;
-        setFilters(prev => ({ ...prev, letter: LETTERS[nextIdx] }));
+        setFilters(prev => ({ ...prev, letter: LETTERS[nextIdx], searchQuery: undefined }));
+        setSearchInput(''); // Clear search on letter jump
       }
 
         // Spatial navigation in Grid/List
@@ -164,6 +216,11 @@ export default function Home() {
       if (e.key === 'v' || e.key === 'V') {
         setViewMode(prev => prev === 'grid' ? 'list' : 'grid');
       }
+
+      if (e.key === 'Enter' && e.altKey) {
+        e.preventDefault();
+        updateSettings({ isFullscreen: !settings.isFullscreen });
+      }
       
       if (e.key === 'PageDown' || e.key === 'PageUp') {
         e.preventDefault();
@@ -172,8 +229,9 @@ export default function Home() {
            let nextIdx = 0;
            if (e.key === 'PageDown') nextIdx = curIdx + 1 >= LETTERS.length ? 0 : curIdx + 1;
            if (e.key === 'PageUp') nextIdx = curIdx - 1 < 0 ? LETTERS.length - 1 : curIdx - 1;
-           return { ...prev, letter: LETTERS[nextIdx] };
+           return { ...prev, letter: LETTERS[nextIdx], searchQuery: undefined };
         });
+        setSearchInput(''); // Clear search on keyboard jump
       }
 
       // Arrow spatial navigation
@@ -220,7 +278,39 @@ export default function Home() {
     };
     window.addEventListener('keydown', handleKeyDown);
     return () => window.removeEventListener('keydown', handleKeyDown);
-  }, [showFilters, selectedGame, viewMode, games, focusedIndex, filters.letter]);
+  }, [showFilters, selectedGame, viewMode, games, focusedIndex, filters.letter, handleGameSelect, settings.isFullscreen, settings.recentlyPlayedIds, updateSettings]);
+
+  useEffect(() => {
+    let timeoutId: any;
+    const handleResize = () => {
+      clearTimeout(timeoutId);
+      timeoutId = setTimeout(async () => {
+        const { getWindowSize } = await import('../lib/tauri-bridge');
+        const size = await getWindowSize();
+        if (size && !settings.isFullscreen) {
+          const config: Partial<Settings> = { 
+            windowWidth: size.width, 
+            windowHeight: size.height 
+          };
+          
+          // Only clear preset if the manual resize made it differ from the preset
+          if (settings.displayResolution !== 'default') {
+            const [pw, ph] = settings.displayResolution.split('x').map(Number);
+            if (pw !== size.width || ph !== size.height) {
+              config.displayResolution = 'default';
+            }
+          }
+          
+          updateSettings(config);
+        }
+      }, 500);
+    };
+    window.addEventListener('resize', handleResize);
+    return () => {
+      window.removeEventListener('resize', handleResize);
+      clearTimeout(timeoutId);
+    };
+  }, [settings.isFullscreen, updateSettings]);
 
   const handleSort = (column: keyof Game) => {
     const newDir = sortCol === column && sortDir === 'asc' ? 'desc' : 'asc';
@@ -296,6 +386,14 @@ export default function Home() {
           >
              ⚙️ <span className="text-[10px] opacity-50 hidden md:inline">START</span>
           </button>
+
+          <button 
+             onClick={() => exitApp()}
+             className="w-10 h-8 flex items-center justify-center text-red-500 hover:text-red-400 hover:bg-red-900/20 rounded-lg transition-colors ml-1"
+             title="Exit Application"
+          >
+             ⏻
+          </button>
         </div>
       </header>
 
@@ -303,7 +401,10 @@ export default function Home() {
       <div className="flex-1 overflow-auto pl-8 pr-4">
         <AlphabetJumpBar 
           activeLetter={filters.letter} 
-          onLetterSelect={(l) => setFilters(prev => ({ ...prev, letter: prev.letter === l ? undefined : l }))} 
+          onLetterSelect={(l) => {
+            setFilters(prev => ({ ...prev, letter: prev.letter === l ? undefined : l, searchQuery: undefined }));
+            setSearchInput(''); // Clear search box when browsing by letter
+          }} 
         />
         
         {/* Recently Played Shelf */}
@@ -371,7 +472,12 @@ export default function Home() {
         isOpen={showFilters} 
         onClose={() => setShowFilters(false)} 
         filters={filters} 
-        onChange={setFilters} 
+        onChange={(newFilters) => {
+          setFilters(newFilters);
+          if (newFilters.searchQuery === undefined) {
+             setSearchInput('');
+          }
+        }} 
       />
     </main>
   );

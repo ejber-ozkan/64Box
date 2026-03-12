@@ -20,12 +20,23 @@ export function PlayButton({ game, nav }: PlayButtonProps) {
   const romPath = `${settings.romsPath}/${game.gameFilename}`;
 
   const handlePlayNative = async () => {
-    if (!settings.emulatorPath) {
+    const isRetroarch = settings.preferredEmulator === 'retroarch';
+    const emulatorPath = isRetroarch ? settings.retroarchPath : settings.emulatorPath;
+
+    if (!emulatorPath) {
       setStatus('error');
-      setMessage('No emulator configured. Use Browser mode or set your x64sc.exe path in Settings.');
+      setMessage(`No emulator configured. Set your ${isRetroarch ? 'RetroArch' : 'VICE'} path in Settings.`);
       setTimeout(() => setStatus('idle'), 4000);
       return;
     }
+
+    if (isRetroarch && !settings.retroarchCorePath) {
+      setStatus('error');
+      setMessage('RetroArch requires a Core (DLL/SO). Please select one in Settings → Local Paths.');
+      setTimeout(() => setStatus('idle'), 6000);
+      return;
+    }
+
     if (!game.gameFilename) {
       setStatus('error');
       setMessage('No ROM file linked to this game.');
@@ -36,11 +47,12 @@ export function PlayButton({ game, nav }: PlayButtonProps) {
     setStatus('launching');
     try {
       const result = await launchEmulator({
-        emulator_path: settings.emulatorPath,
+        emulator_path: emulatorPath,
         rom_path: romPath,
         true_drive_emulation: game.trueDriveEmu ?? false,
         is_pal: game.isPal ?? true,
         game_id: game.id.toString(),
+        core_path: isRetroarch ? settings.retroarchCorePath : undefined,
       });
 
       if (result.success) {
@@ -117,7 +129,7 @@ export function PlayButton({ game, nav }: PlayButtonProps) {
             {message}
           </p>
         )}
-        {!settings.emulatorPath && status === 'idle' && (
+        {!(settings.preferredEmulator === 'retroarch' ? settings.retroarchPath : settings.emulatorPath) && status === 'idle' && (
           <p className="text-[10px] text-yellow-600 text-center">
             ⚠ Desktop emulator not set
           </p>

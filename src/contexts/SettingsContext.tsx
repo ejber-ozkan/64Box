@@ -1,9 +1,9 @@
 "use client";
 
-import React, { createContext, useContext, useState, ReactNode, useEffect } from 'react';
+import React, { createContext, useContext, useState, ReactNode, useEffect, useCallback } from 'react';
 import { getSecureSetting, saveSecureSetting } from '../lib/tauri-bridge';
 
-interface Settings {
+export interface Settings {
   screenshotsPath: string;
   soundsPath: string;
   musicianPhotosPath: string;
@@ -17,9 +17,23 @@ interface Settings {
   activeScraper: 'emumovies' | 'screenscraper' | 'thegamesdb';
   screenScraperUsername: string;
   screenScraperPassword: string;
+  screenScraperDevId: string;
+  screenScraperDevPassword: string;
   theGamesDbApiKey: string;
   hideAdultContent: boolean;
   recentlyPlayedIds: string[];
+  retroarchPath: string;
+  retroarchCorePath: string;
+  preferredEmulator: 'vice' | 'retroarch';
+  imageAnimation: 'none' | 'slide';
+  imageCycling: boolean;
+  lastSelectedGameId: string | null;
+  lastFocusedIndex: number;
+  lastViewMode: 'grid' | 'list';
+  isFullscreen: boolean;
+  displayResolution: string; // presets like "720p", "1080p", "default"
+  windowWidth: number;
+  windowHeight: number;
 }
 
 interface SettingsContextType {
@@ -44,14 +58,28 @@ const defaultSettings: Settings = {
   activeScraper: 'emumovies',
   screenScraperUsername: '',
   screenScraperPassword: '',
+  screenScraperDevId: '',
+  screenScraperDevPassword: '',
   theGamesDbApiKey: '',
   hideAdultContent: false,
   recentlyPlayedIds: [],
+  retroarchPath: '',
+  retroarchCorePath: '',
+  preferredEmulator: 'vice',
+  imageAnimation: 'none',
+  imageCycling: true,
+  lastSelectedGameId: null,
+  lastFocusedIndex: 0,
+  lastViewMode: 'grid',
+  isFullscreen: false,
+  displayResolution: 'default',
+  windowWidth: 1200,
+  windowHeight: 800,
 };
 
 const SettingsContext = createContext<SettingsContextType | undefined>(undefined);
 
-const SECURE_FIELDS = ['emuMoviesPassword', 'screenScraperPassword', 'theGamesDbApiKey'] as const;
+const SECURE_FIELDS = ['emuMoviesPassword', 'screenScraperPassword', 'screenScraperDevPassword', 'theGamesDbApiKey'] as const;
 
 export function SettingsProvider({ children }: { children: ReactNode }) {
   const [isLoaded, setIsLoaded] = useState(false);
@@ -116,8 +144,33 @@ export function SettingsProvider({ children }: { children: ReactNode }) {
     }
   }, []);
 
-  const updateSettings = (newSettings: Partial<Settings>) => {
+  // Apply window settings when they change
+  useEffect(() => {
+    if (isLoaded) {
+      import('../lib/tauri-bridge').then(({ setWindowMode }) => {
+        let w = settings.windowWidth;
+        let h = settings.windowHeight;
+
+        // Overlay preset if not "default"
+        if (settings.displayResolution !== 'default') {
+          const [pw, ph] = settings.displayResolution.split('x').map(Number);
+          if (!isNaN(pw) && !isNaN(ph)) {
+            w = pw;
+            h = ph;
+          }
+        }
+        
+        setWindowMode(settings.isFullscreen, w, h);
+      });
+    }
+  }, [isLoaded, settings.isFullscreen, settings.displayResolution, settings.windowWidth, settings.windowHeight]);
+
+  const updateSettings = useCallback((newSettings: Partial<Settings>) => {
     setSettings((prev) => {
+      // Check if anything actually changed to avoid unnecessary state updates
+      const hasChange = Object.entries(newSettings).some(([k, v]) => prev[k as keyof Settings] !== v);
+      if (!hasChange) return prev;
+
       const updated = { ...prev, ...newSettings };
       
       // 1. Persist sensitive fields to Secure storage (Rust/SQLite)
@@ -132,7 +185,7 @@ export function SettingsProvider({ children }: { children: ReactNode }) {
         try {
           const toSave = { ...updated };
           // Remove secure fields from localStorage object
-          SECURE_FIELDS.forEach(field => delete toSave[field]);
+          SECURE_FIELDS.forEach(field => delete toSave[field as keyof Settings]);
           localStorage.setItem('gb64_settings', JSON.stringify(toSave));
         } catch (e) {
           console.error('Failed to save settings to localStorage', e);
@@ -140,12 +193,10 @@ export function SettingsProvider({ children }: { children: ReactNode }) {
       }
       return updated;
     });
-  };
+  }, []);
 
 
-  const resolveMediaPath = (type: 'screenshot' | 'sound' | 'musician' | 'extras', filename: string) => {
-    // In a real desktop app (Phase 3), Tauri would resolve these local absolute paths.
-    // For web/MVP, we join the configured base path with the filename.
+  const resolveMediaPath = useCallback((type: 'screenshot' | 'sound' | 'musician' | 'extras', filename: string) => {
     switch (type) {
       case 'screenshot':
         return `${settings.screenshotsPath}/${filename}`;
@@ -158,12 +209,11 @@ export function SettingsProvider({ children }: { children: ReactNode }) {
       default:
         return filename;
     }
-  };
+  }, [settings.screenshotsPath, settings.soundsPath, settings.musicianPhotosPath, settings.extrasPath]);
 
-  const findAllVariants = async (type: 'screenshot' | 'sound' | 'musician' | 'extras', filename: string): Promise<string[]> => {
+  const findAllVariants = useCallback(async (type: 'screenshot' | 'sound' | 'musician' | 'extras', filename: string): Promise<string[]> => {
     if (typeof window === 'undefined') return [];
     
-    // In browser web dev mode without Tauri API loaded, just return local resolve once
     try {
       const { findAllMediaVariants, getMediaUrl } = await import('../lib/tauri-bridge');
       let baseDir = settings.screenshotsPath;
@@ -172,24 +222,28 @@ export function SettingsProvider({ children }: { children: ReactNode }) {
 
       const variants = await findAllMediaVariants(baseDir, filename);
       
-      // Map to object URLs to bypass Tauri asset scope restrictions for dynamically selected folders
       const urls = await Promise.all(variants.map(v => getMediaUrl(v)));
       return urls;
     } catch {
       return [resolveMediaPath(type, filename)];
     }
-  };
+  }, [settings.screenshotsPath, settings.soundsPath, settings.musicianPhotosPath, resolveMediaPath]);
   
-  const markAsPlayed = (gameId: string) => {
+  const markAsPlayed = useCallback((gameId: string) => {
     setSettings(prev => {
       const newList = [gameId, ...prev.recentlyPlayedIds.filter(id => id !== gameId)].slice(0, 12);
+      // Only update if the list actually changed (different head or different content)
+      if (prev.recentlyPlayedIds[0] === gameId && prev.recentlyPlayedIds.length === newList.length) {
+         return prev;
+      }
+      
       const updated = { ...prev, recentlyPlayedIds: newList };
       if (typeof window !== 'undefined') {
         localStorage.setItem('gb64_settings', JSON.stringify(updated));
       }
       return updated;
     });
-  };
+  }, []);
 
   return (
     <SettingsContext.Provider value={{ settings, updateSettings, resolveMediaPath, findAllVariants, markAsPlayed }}>

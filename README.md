@@ -6,7 +6,9 @@ A cross-platform (Windows, Mac, Linux) modern frontend for the **GameBase64** Co
 - **Modern Next.js Frontend**: Fluid, gallery-style layouts mimicking modern gaming libraries. Fully responsive and supports Gamepad/Keyboard navigation.
 - **Deep Metadata Browsing**: Integrated search by year, publisher, musician, and smart genres, powered by a fast local SQLite database.
 - **WASM Browser Emulation**: Play games directly inside the app using an offline-bundled EmulatorJS core without any external configuration.
-- **Native Emulator Bridge**: Connect to an external `x64sc` (VICE) installation for high-accuracy native desktop emulation.
+- **Native Emulator Bridge**: Connect to an external `x64sc` (VICE) or **RetroArch** installation for high-accuracy native desktop emulation.
+- **Smart Multi-Disk Handling**: Automatically unzips games on-the-fly and generates `.vfl` (VICE) or `.m3u` (RetroArch) playlists for multi-disk games to ensure seamless booting.
+- **Categorized Extras Gallery**: Integrated support for the **GameBase64 Extras** collection. Automatically groups Adverts, Books, Maps, and Manuals into a premium gallery view, while allowing alternate game versions (Disks/Tapes) to be launched directly.
 - **SID Support**: Native `.sid` chiptune playback directly within the game galleries.
 
 ## 1. Prerequisites
@@ -89,7 +91,12 @@ You can find the compiled installers and executables in `src-tauri/target/releas
 ## Post-Setup Configuration
 Once the app boots successfully, open the **Settings** menu via the top header bar:
 1. Ensure the paths to your extracted GameBase64 `Screenshots`, `Games`, `BoxArt`, `Video` and `Sid` folders are set correctly.
-2. If you want to use the native emulator capability, select the absolute path to your `x64sc` (VICE) executable.
+2. Under **Local Paths**, select your preferred emulator (VICE or RetroArch).
+3. If using **VICE**, point to your `x64sc.exe` executable. 
+4. If using **RetroArch**, point to your `retroarch.exe` **and** select a C64 core (e.g., `vice_x64sc_libretro.dll`) from your cores directory.
+5. **Extras Collection**: Point this to your unzipped GameBase64 Extras folder. The app will automatically scan and categorize items like "Adverts", "Maps", "Tips", and "Carts" (alternate game versions).
+
+Note: The application handles temporary extraction of zipped games and creates the necessary playlist files (`.vfl` or `.m3u`) automatically before launching. Images in the Extras folder are displayed in a high-resolution lightbox, while PDFs and docs are opened via your system's default viewer.
 
 ## 6. Skills used to build this
 ```bash
@@ -99,6 +106,7 @@ npx skills add https://github.com/vercel-labs/agent-skills --skill vercel-react-
 npx skills add https://github.com/vercel-labs/agent-skills --skill vercel-composition-patterns
 npx skills add https://github.com/vercel-labs/agent-skills --skill deploy-to-vercel
 npx skills add https://github.com/bitxeno/sqlite-data-skill --skill 'SQLiteData Usage Guide'
+npx skills add https://github.com/apollographql/skills --skill rust-best-practices
 ```
 
 Skills I created

@@ -12,6 +12,7 @@ import { StatusRow } from '../StatusRow';
 import { getGameExtras } from '../../lib/tauri-bridge';
 import { ScrapeButton } from '../ScrapeButton';
 import { Extra } from '../../types/game';
+import { ExtrasDetail } from '../ExtrasDetail';
 import { useState } from 'react';
 
 export function ConsoleHeroLayout({ game, onBack, nav, onFullscreen }: DetailLayoutProps) {
@@ -84,14 +85,14 @@ export function ConsoleHeroLayout({ game, onBack, nav, onFullscreen }: DetailLay
         </div>
       </div>
 
-      <div className="relative z-10 flex flex-1 overflow-hidden px-12 pb-12 gap-12 max-w-[1800px] mx-auto w-full">
+      <div className="relative z-10 flex flex-1 overflow-hidden px-12 xl:px-16 2xl:px-24 pb-12 gap-12 xl:gap-16 max-w-[2000px] mx-auto w-full transition-all">
         {/* Left Side: Massive Gameplay/Video Stage */}
         <div className="flex-1 flex flex-col justify-end">
            {/* Primary Video / Image */}
            <div 
              onClick={() => onFullscreen(game.screenshotFilename)}
              onMouseEnter={() => nav.hoverZone('media-gameplay')}
-             className={`aspect-video w-full rounded-2xl overflow-hidden shadow-2xl shadow-black/50 border border-white/10 mb-8 bg-black transition-all cursor-pointer group/media ${nav.focusCls('media-gameplay')}`}
+             className={`aspect-[4/3] w-full max-w-[1200px] mx-auto max-h-[65vh] rounded-3xl overflow-hidden shadow-[0_35px_60px_-15px_rgba(0,0,0,0.8)] border border-white/10 mb-10 bg-black transition-all cursor-pointer group/media ${nav.focusCls('media-gameplay')}`}
            >
               {game.videoSnapFilename ? (
                 <video 
@@ -111,21 +112,8 @@ export function ConsoleHeroLayout({ game, onBack, nav, onFullscreen }: DetailLay
 
            {/* Carousel Strip */}
            <div className="flex gap-4 overflow-x-auto pb-4 hide-scrollbar">
-              <div 
-                onClick={() => onFullscreen(game.titlescreenFilename)}
-                onMouseEnter={() => nav.hoverZone('media-titlescreen')}
-                className={`h-32 w-48 shrink-0 bg-white/5 rounded-xl border border-white/10 p-2 overflow-hidden hover:ring-2 ring-blue-500 transition-all cursor-pointer ${nav.focusCls('media-titlescreen')}`}
-              >
-                 <ImageSlider type="screenshot" filename={game.titlescreenFilename} alt="Title" className="w-full h-full object-contain pointer-events-none" fallbackText="Title Screen" />
-              </div>
-              <div 
-                onClick={() => onFullscreen(game.boxFrontFilename)}
-                onMouseEnter={() => nav.hoverZone('media-boxfront')}
-                className={`h-32 w-24 shrink-0 bg-white/5 rounded-xl border border-white/10 p-2 overflow-hidden hover:ring-2 ring-blue-500 transition-all cursor-pointer ${nav.focusCls('media-boxfront')}`}
-              >
-                 <ImageSlider type="screenshot" filename={game.boxFrontFilename} alt="Box Art" className="w-full h-full object-contain pointer-events-none" fallbackText="Box Art" />
-              </div>
-
+              {/* Gameplay (Main focus) implicitly handled by activeMedia state, but let's represent the others */}
+              
               {extras.length > 0 && (
                 <div 
                   onClick={() => setActiveMedia('extras')}
@@ -136,42 +124,33 @@ export function ConsoleHeroLayout({ game, onBack, nav, onFullscreen }: DetailLay
                    <div className="text-[10px] font-bold uppercase text-white/70">Extras ({extras.length})</div>
                 </div>
               )}
+
+              <div 
+                onClick={() => onFullscreen(game.titlescreenFilename)}
+                onMouseEnter={() => nav.hoverZone('media-titlescreen')}
+                className={`h-32 w-48 shrink-0 bg-white/5 rounded-xl border border-white/10 p-2 overflow-hidden hover:ring-2 ring-blue-500 transition-all cursor-pointer ${nav.focusCls('media-titlescreen')}`}
+              >
+                 <ImageSlider type="screenshot" filename={game.titlescreenFilename} alt="Title" className="w-full h-full object-contain pointer-events-none" fallbackText="Title Screen" />
+              </div>
+              
+              <div 
+                onClick={() => onFullscreen(game.boxFrontFilename)}
+                onMouseEnter={() => nav.hoverZone('media-boxfront')}
+                className={`h-32 w-24 shrink-0 bg-white/5 rounded-xl border border-white/10 p-2 overflow-hidden hover:ring-2 ring-blue-500 transition-all cursor-pointer ${nav.focusCls('media-boxfront')}`}
+              >
+                 <ImageSlider type="screenshot" filename={game.boxFrontFilename} alt="Box Art" className="w-full h-full object-contain pointer-events-none" fallbackText="Box Art" />
+              </div>
            </div>
         </div>
 
         {/* Right Side: Frosted Glass Metadata Panel */}
-        <div className="w-[400px] flex flex-col shrink-0 gap-6">
+        <div className="w-[400px] xl:w-[480px] 2xl:w-[560px] flex flex-col shrink-0 gap-8 transition-all">
            {activeMedia === 'extras' ? (
              <div className="bg-white/5 backdrop-blur-xl border border-white/10 rounded-3xl p-6 shadow-2xl flex-1 flex flex-col overflow-y-auto custom-scrollbar">
                 <h2 className="text-2xl font-black text-white mb-6 uppercase tracking-tight flex items-center gap-3">
                   <span className="text-blue-400">🎁</span> Game Extras
                 </h2>
-                <div className="space-y-4">
-                  {extras.map(extra => {
-                    const isImage = /\.(jpg|jpeg|png|gif|webp)$/i.test(extra.path);
-                    const fullPath = resolveMediaPath('extras', extra.path);
-                    return (
-                      <div key={extra.id} className="bg-white/5 rounded-2xl p-3 border border-white/10 group/item hover:bg-white/10 transition-all">
-                        {isImage ? (
-                          <div className="mb-2 rounded-xl overflow-hidden aspect-video bg-black cursor-pointer" onClick={() => onFullscreen(extra.path)}>
-                            <img src={fullPath} alt={extra.name} className="w-full h-full object-cover group-hover/item:scale-105 transition-transform duration-500" />
-                          </div>
-                        ) : (
-                          <div className="mb-2 rounded-xl p-4 bg-black/40 flex items-center justify-center text-3xl">📄</div>
-                        )}
-                        <div className="px-1">
-                          <div className="text-sm font-bold text-white truncate">{extra.name}</div>
-                          <div className="flex justify-between items-center mt-1">
-                             <span className="text-[10px] font-black text-blue-400 uppercase tracking-widest">{extra.type}</span>
-                             {!isImage && (
-                               <a href={fullPath} target="_blank" rel="noreferrer" className="text-[10px] text-white/50 hover:text-white underline font-medium">Open Dir</a>
-                             )}
-                          </div>
-                        </div>
-                      </div>
-                    );
-                  })}
-                </div>
+                <ExtrasDetail game={game} extras={extras} />
                 <button 
                   onClick={() => setActiveMedia('gameplay')}
                   className="mt-6 w-full py-3 bg-white/10 hover:bg-white/20 rounded-xl text-white font-bold text-xs uppercase tracking-widest transition-all"
@@ -180,9 +159,9 @@ export function ConsoleHeroLayout({ game, onBack, nav, onFullscreen }: DetailLay
                 </button>
              </div>
            ) : (
-             <div className="bg-white/5 backdrop-blur-xl border border-white/10 rounded-3xl p-8 shadow-2xl flex-1 flex flex-col transform transition translate-y-4 group-hover:translate-y-0 duration-700">
-              <h1 className="text-5xl font-black text-white mb-2 leading-tight">{game.name}</h1>
-              <div className="text-blue-400 font-semibold text-lg mb-8 uppercase tracking-wide">
+             <div className="bg-white/5 backdrop-blur-xl border border-white/10 rounded-3xl p-10 2xl:p-12 shadow-2xl flex-1 flex flex-col transform transition translate-y-4 group-hover:translate-y-0 duration-700">
+              <h1 className="text-5xl xl:text-6xl 2xl:text-7xl font-black text-white mb-3 leading-none tracking-tighter">{game.name}</h1>
+              <div className="text-blue-400 font-semibold text-lg xl:text-xl mb-10 uppercase tracking-widest opacity-90">
                 {[
                   game.year,
                   game.publisher?.name && game.publisher.name !== '(Not Published)' ? game.publisher.name : null,
@@ -191,41 +170,41 @@ export function ConsoleHeroLayout({ game, onBack, nav, onFullscreen }: DetailLay
               </div>
               
               <div className="space-y-4 mb-8">
-                <div className="flex justify-between items-center border-b border-white/10 pb-4">
+                <div className="flex justify-between items-center border-b border-white/10 pb-5 text-sm xl:text-base">
                   <span className="text-gray-400">Genre</span>
                   <span className="text-white font-medium">{game.parentGenre} / {game.subGenre}</span>
                 </div>
 
                 {game.publisher?.name && game.publisher.name !== '(Not Published)' && (
-                  <div className="flex justify-between items-center border-b border-white/10 pb-4">
+                  <div className="flex justify-between items-center border-b border-white/10 pb-5 text-sm xl:text-base">
                     <span className="text-gray-400">Publisher</span>
                     <span className="text-white font-medium">{game.publisher.name}</span>
                   </div>
                 )}
 
                 {game.musician?.name && (
-                  <div className="flex justify-between items-center border-b border-white/10 pb-4">
+                  <div className="flex justify-between items-center border-b border-white/10 pb-5 text-sm xl:text-base">
                     <span className="text-gray-400">Musician</span>
-                    <div className="flex items-center gap-3">
+                    <div className="flex items-center gap-4">
                       <div className="text-right">
                         <div className="text-white font-medium">{game.musician.name}</div>
-                        {game.musician.nick && <div className="text-blue-400 text-[10px] font-mono">&quot;{game.musician.nick}&quot;</div>}
+                        {game.musician.nick && <div className="text-blue-400 text-[11px] font-mono tracking-tighter">&quot;{game.musician.nick}&quot;</div>}
                       </div>
                       <MusicianPhoto 
                         photoFilename={game.musician.photoPath} 
                         musicianName={game.musician.name} 
-                        className="w-10 h-10 shadow-lg border border-white/10"
+                        className="w-12 h-12 shadow-lg border border-white/10"
                       />
                     </div>
                   </div>
                 )}
 
-                <div className="flex justify-between items-center border-b border-white/10 pb-4">
+                <div className="flex justify-between items-center border-b border-white/10 pb-5 text-sm xl:text-base">
                   <span className="text-gray-400">Control</span>
                   <span className="text-white font-medium">{game.control || 'Joystick'}</span>
                 </div>
 
-                <div className="flex justify-between items-center border-b border-white/10 pb-4">
+                <div className="flex justify-between items-center border-b border-white/10 pb-5 text-sm xl:text-base">
                   <span className="text-gray-400">Players</span>
                   <span className="text-white font-medium">
                     {game.playersFrom === game.playersTo ? game.playersFrom : `${game.playersFrom}-${game.playersTo}`}
@@ -233,9 +212,9 @@ export function ConsoleHeroLayout({ game, onBack, nav, onFullscreen }: DetailLay
                   </span>
                 </div>
 
-                <div className="flex justify-between items-center border-b border-white/10 pb-4">
+                <div className="flex justify-between items-center border-b border-white/10 pb-5 text-sm xl:text-base">
                   <span className="text-gray-400">Rating</span>
-                  <span className="text-yellow-500 font-bold">
+                  <span className="text-yellow-500 font-black tracking-widest">
                     {(() => {
                       const r = parseInt(game.reviewRating || "0");
                       if (r <= 0) return 'NR';
@@ -262,21 +241,21 @@ export function ConsoleHeroLayout({ game, onBack, nav, onFullscreen }: DetailLay
                   </div>
                 ) : null}
 
-                <div className="bg-white/5 rounded-2xl p-4 flex flex-col gap-3">
-                  <div className="text-[10px] text-gray-500 uppercase tracking-widest font-bold mb-1">Version Details</div>
-                  <div className="flex justify-between text-xs">
+                <div className="bg-white/5 rounded-3xl p-6 xl:p-8 flex flex-col gap-4">
+                  <div className="text-[11px] 2xl:text-xs text-gray-400 uppercase tracking-widest font-black mb-1">Version Details</div>
+                  <div className="flex justify-between text-xs xl:text-sm">
                     <span className="text-gray-400">Version By</span>
                     <span className="text-blue-300 font-medium">{game.versionBy || '---'}</span>
                   </div>
-                  <div className="flex justify-between text-xs">
+                  <div className="flex justify-between text-xs xl:text-sm">
                     <span className="text-gray-400">PAL / NTSC</span>
                     <span className="text-yellow-400 font-medium">{game.vPalNtsc || '---'}</span>
                   </div>
-                  <div className="flex justify-between text-xs">
+                  <div className="flex justify-between text-xs xl:text-sm">
                     <span className="text-gray-400">Trainers</span>
                     <span className="text-white font-medium">{game.vTrainers || '0'}</span>
                   </div>
-                  <div className="flex justify-between text-xs">
+                  <div className="flex justify-between text-xs xl:text-sm">
                     <span className="text-gray-400">Size</span>
                     <span className="text-white font-medium">{game.vLength ? `${game.vLength} Blocks` : '---'}</span>
                   </div>

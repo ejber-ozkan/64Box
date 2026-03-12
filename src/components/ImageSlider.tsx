@@ -12,7 +12,7 @@ interface ImageSliderProps {
 }
 
 export function ImageSlider({ filename, type, alt, className = '', fallbackText = 'No Image' }: ImageSliderProps) {
-  const { findAllVariants } = useSettings();
+  const { settings, findAllVariants } = useSettings();
   const [images, setImages] = useState<string[]>([]);
   const [currentIndex, setCurrentIndex] = useState(0);
   const [hasError, setHasError] = useState(false);
@@ -37,12 +37,12 @@ export function ImageSlider({ filename, type, alt, className = '', fallbackText 
 
   // Support cycling through images
   useEffect(() => {
-    if (images.length <= 1) return;
+    if (!settings.imageCycling || images.length <= 1) return;
     const timer = setInterval(() => {
       setCurrentIndex(prev => (prev + 1) % images.length);
     }, 3500); // cycle every 3.5s
     return () => clearInterval(timer);
-  }, [images.length]);
+  }, [images.length, settings.imageCycling]);
 
   if (!filename || images.length === 0 || hasError) {
     return (
@@ -55,23 +55,35 @@ export function ImageSlider({ filename, type, alt, className = '', fallbackText 
     );
   }
 
+  const isSlide = settings.imageAnimation === 'slide';
+
   return (
-    // eslint-disable-next-line @next/next/no-img-element
-    <img
-      src={images[currentIndex]}
-      alt={`${alt} ${currentIndex + 1}`}
-      className={`object-cover ${className} transition-opacity duration-500`}
-      onError={() => {
-        if (images.length === 1) {
-            setHasError(true);
-        } else {
-            // Remove the broken image and move to next
-            setImages(prev => prev.filter((_, i) => i !== currentIndex));
-            setCurrentIndex(prev => prev % (images.length - 1 || 1));
-        }
-      }}
-      loading="lazy"
-      data-testid="image-element"
-    />
+    <div className={`relative overflow-hidden ${className}`}>
+        <div 
+            className={`flex w-full h-full transition-all duration-700 ease-in-out ${!isSlide ? 'transition-none' : ''}`}
+            style={{ 
+                transform: isSlide ? `translateX(-${currentIndex * 100}%)` : 'none' 
+            }}
+        >
+            {images.map((src, idx) => (
+                <div key={`${src}-${idx}`} className="w-full h-full shrink-0">
+                    <img
+                        src={src}
+                        alt={`${alt} ${idx + 1}`}
+                        className={`w-full h-full ${className} ${!isSlide && currentIndex !== idx ? 'hidden' : ''} ${!isSlide ? 'animate-in fade-in duration-500' : ''}`}
+                        onError={() => {
+                            if (images.length === 1) {
+                                setHasError(true);
+                            } else {
+                                setImages(prev => prev.filter((_, i) => i !== idx));
+                                setCurrentIndex(prev => prev % (images.length - 1 || 1));
+                            }
+                        }}
+                        loading="lazy"
+                    />
+                </div>
+            ))}
+        </div>
+    </div>
   );
 }

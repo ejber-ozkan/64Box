@@ -24,9 +24,9 @@ export interface DetailLayoutProps {
 const DIGITAL_MUSEUM_CONFIG: NavigationConfig = {
   'media-videosna':    { right: 'screenshot', down: 'media-titlescreen' },
   'media-titlescreen': { right: 'screenshot', up: 'media-videosna', down: 'media-gameplay' },
-  'media-gameplay':    { right: 'screenshot', up: 'media-titlescreen', down: 'media-boxfront' },
-  'media-boxfront':    { right: 'screenshot', up: 'media-gameplay', down: 'media-extras' },
-  'media-extras':      { right: 'screenshot', up: 'media-boxfront' },
+  'media-gameplay':    { right: 'screenshot', up: 'media-titlescreen', down: 'media-extras' },
+  'media-extras':      { right: 'screenshot', up: 'media-gameplay', down: 'media-boxfront' },
+  'media-boxfront':    { right: 'screenshot', up: 'media-extras' },
   'screenshot':        { left: 'media-gameplay', right: 'play' },
   'play':              { left: 'screenshot', right: 'play-web', down: 'sid' },
   'play-web':          { left: 'play', down: 'sid' },
@@ -34,27 +34,27 @@ const DIGITAL_MUSEUM_CONFIG: NavigationConfig = {
 };
 
 const CONSOLE_HERO_CONFIG: NavigationConfig = {
-  'media-gameplay':    { down: 'media-titlescreen', right: 'play' },
-  'media-titlescreen': { up: 'media-gameplay', right: 'media-boxfront' },
-  'media-boxfront':    { left: 'media-titlescreen', right: 'play', up: 'media-gameplay' },
+  'media-gameplay':    { down: 'media-extras', right: 'play' },
+  'media-extras':      { up: 'media-gameplay', down: 'media-titlescreen', right: 'play' },
+  'media-titlescreen': { up: 'media-extras', right: 'media-boxfront' },
+  'media-boxfront':    { left: 'media-titlescreen', right: 'play', up: 'media-extras' },
   'play':              { left: 'media-gameplay', right: 'play-web', down: 'sid' },
   'play-web':          { left: 'play', down: 'sid' },
   'sid':               { left: 'media-gameplay', up: 'play' },
-  'screenshot':        { left: 'media-gameplay', right: 'play' }, // fallback
-  'media-videosna':    { right: 'play', down: 'media-titlescreen' },
-  'media-extras':      { up: 'media-boxfront', left: 'media-gameplay' },
+  'screenshot':        { left: 'media-gameplay', right: 'play' },
+  'media-videosna':    { right: 'play', down: 'media-extras' },
 };
 
 const STEAM_LIBRARY_CONFIG: NavigationConfig = {
   'play':              { right: 'play-web', down: 'media-gameplay', left: 'media-gameplay' },
   'play-web':          { left: 'play', down: 'media-gameplay' },
-  'media-gameplay':    { up: 'play', right: 'media-titlescreen', down: 'sid' },
-  'media-titlescreen': { up: 'play', left: 'media-gameplay', down: 'sid' },
+  'media-gameplay':    { up: 'play', right: 'media-extras', down: 'sid' },
+  'media-extras':      { up: 'play', left: 'media-gameplay', right: 'media-titlescreen', down: 'sid' },
+  'media-titlescreen': { up: 'play', left: 'media-extras', down: 'sid' },
   'sid':               { up: 'media-gameplay' },
   'screenshot':        { down: 'sid' },
-  'media-videosna':    { right: 'media-titlescreen', down: 'sid' },
+  'media-videosna':    { right: 'media-extras', down: 'sid' },
   'media-boxfront':    { right: 'play' },
-  'media-extras':      { up: 'media-boxfront', left: 'media-gameplay' },
 };
 
 export function DetailView({ game, onBack }: DetailViewProps) {

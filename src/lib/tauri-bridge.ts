@@ -50,6 +50,7 @@ export interface LaunchRequest {
   true_drive_emulation: boolean;
   is_pal: boolean;
   game_id?: string;
+  core_path?: string;
 }
 
 export interface LaunchResult {
@@ -138,7 +139,9 @@ export async function getAssetUrl(absolutePath: string): Promise<string> {
     return absolutePath;
   }
   const { convertFileSrc } = await import('@tauri-apps/api/core');
-  return convertFileSrc(absolutePath);
+  // Normalize windows paths to use forward slashes for the internal URL conversion
+  const normalized = absolutePath.replace(/\\/g, '/');
+  return convertFileSrc(normalized);
 }
 
 /**
@@ -189,6 +192,49 @@ export async function openFileDialog(): Promise<string | null> {
     return null;
   }
   return invoke<string | null>('open_file_dialog');
+}
+
+/**
+ * Exit the application immediately.
+ */
+export async function exitApp(): Promise<void> {
+  if (!isTauri()) {
+    console.warn('[tauri-bridge] exitApp: not in Tauri');
+    return;
+  }
+  return invoke<void>('exit_app');
+}
+
+/**
+ * Update window display mode (fullscreen/windowed) and resolution.
+ */
+export async function setWindowMode(fullscreen: boolean, width?: number, height?: number): Promise<void> {
+  if (!isTauri()) {
+    console.warn('[tauri-bridge] setWindowMode: not in Tauri - Mode:', { fullscreen, width, height });
+    return;
+  }
+  return invoke<void>('set_window_mode', { fullscreen, width, height });
+}
+
+/**
+ * Get current window dimensions.
+ */
+export async function getWindowSize(): Promise<{ width: number, height: number } | null> {
+  if (!isTauri()) return null;
+  return invoke<{ width: number, height: number }>('get_window_size');
+}
+
+/**
+ * Open a file or folder using the default OS handler.
+ */
+export async function openFile(path: string): Promise<void> {
+  if (!isTauri()) {
+    console.warn('[tauri-bridge] openFile: not in Tauri - path:', path);
+    window.open(path, '_blank');
+    return;
+  }
+  const { open } = await import('@tauri-apps/plugin-shell');
+  return open(path);
 }
 
 export interface GameFilters {

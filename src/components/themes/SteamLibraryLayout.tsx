@@ -13,6 +13,7 @@ import { StatusRow } from '../StatusRow';
 import { getGameExtras } from '../../lib/tauri-bridge';
 import { ScrapeButton } from '../ScrapeButton';
 import { Extra } from '../../types/game';
+import { ExtrasDetail } from '../ExtrasDetail';
 import { useState } from 'react';
 
 export function SteamLibraryLayout({ game, onBack, nav, onFullscreen }: DetailLayoutProps) {
@@ -71,7 +72,7 @@ export function SteamLibraryLayout({ game, onBack, nav, onFullscreen }: DetailLa
       </div>
 
       {/* Top Banner section */}
-      <div className="relative h-64 border-b border-[#2a475e] shrink-0 bg-[#0f1922] overflow-hidden flex items-end p-6 gap-6">
+      <div className="relative h-64 xl:h-80 2xl:h-96 border-b border-[#2a475e] shrink-0 bg-[#0f1922] overflow-hidden flex items-end p-8 xl:p-10 gap-8 xl:gap-10 transition-all">
         <div 
            className="absolute inset-0 opacity-20 transition-opacity duration-1000"
            style={{ 
@@ -85,14 +86,14 @@ export function SteamLibraryLayout({ game, onBack, nav, onFullscreen }: DetailLa
         
         <div 
           onClick={() => onFullscreen(game.boxFrontFilename)}
-          className="relative z-20 h-48 w-36 shrink-0 rounded shadow-[0_4px_16px_rgba(0,0,0,0.8)] bg-black border border-[#2a475e] group cursor-pointer hover:border-[#66c0f4] transition-colors"
+          className="relative z-20 h-48 xl:h-56 2xl:h-64 w-36 xl:w-44 2xl:w-52 shrink-0 rounded shadow-[0_4px_25px_rgba(0,0,0,0.9)] bg-black border border-[#2a475e] group cursor-pointer hover:border-[#66c0f4] transition-all"
         >
           <ImageWithFallback src={game.boxFrontFilename ? resolveMediaPath('screenshot', game.boxFrontFilename) : ''} alt="Box Art" className="w-full h-full object-contain pointer-events-none" fallbackText="Box Front" />
         </div>
 
-        <div className="relative z-20 pb-4 flex-1">
-          <h1 className="text-4xl font-light text-white mb-2">{game.name}</h1>
-          <div className="flex items-center gap-4 text-xs font-semibold uppercase tracking-wider text-[#66c0f4]">
+        <div className="relative z-20 pb-4 xl:pb-6 flex-1">
+          <h1 className="text-4xl xl:text-5xl 2xl:text-6xl font-light text-white mb-3 tracking-tight">{game.name}</h1>
+          <div className="flex items-center gap-4 text-xs xl:text-sm font-semibold uppercase tracking-wider text-[#66c0f4]">
             {[
               game.year,
               game.publisher?.name && game.publisher.name !== '(Not Published)' ? game.publisher.name : null,
@@ -103,14 +104,14 @@ export function SteamLibraryLayout({ game, onBack, nav, onFullscreen }: DetailLa
           </div>
         </div>
 
-        <div className="relative z-20 pb-4 flex flex-col items-end justify-end gap-3 shrink-0 w-[400px]">
-          <ScrapeButton game={game} className="w-[180px]" />
+        <div className="relative z-20 pb-4 xl:pb-6 flex flex-col items-end justify-end gap-4 shrink-0 w-[400px] xl:w-[450px]">
+          <ScrapeButton game={game} className="w-[180px] xl:w-[200px]" />
           <PlayButton game={game} nav={nav} />
         </div>
       </div>
 
       {/* Main Content Area */}
-      <div className="flex-1 overflow-y-auto p-8 max-w-[1200px] w-full mx-auto flex gap-8">
+      <div className="flex-1 overflow-y-auto p-8 xl:p-12 max-w-[1600px] 2xl:max-w-[1800px] w-full mx-auto flex gap-10 xl:gap-14 transition-all">
         
         {/* Left column (Gallery) */}
         <div className="w-2/3 flex flex-col gap-8">
@@ -121,6 +122,15 @@ export function SteamLibraryLayout({ game, onBack, nav, onFullscreen }: DetailLa
               >
                 Gallery
               </div>
+              {extras.length > 0 && (
+                <div 
+                   onClick={() => setActiveTab('extras')}
+                   onMouseEnter={() => nav.hoverZone('media-extras')}
+                   className={`px-6 py-3 cursor-pointer font-medium text-lg xl:text-xl uppercase transition-all ${nav.focusCls('media-extras')} ${activeTab === 'extras' ? 'text-white border-b-2 border-[#66c0f4]' : 'text-gray-500 hover:text-white'}`}
+                >
+                  Extras ({extras.length})
+                </div>
+              )}
               <div 
                 onClick={() => setActiveTab('details')}
                 className={`px-4 py-2 cursor-pointer font-medium text-lg uppercase transition-colors ${activeTab === 'details' ? 'text-white border-b-2 border-[#66c0f4]' : 'text-gray-500 hover:text-white'}`}
@@ -133,15 +143,6 @@ export function SteamLibraryLayout({ game, onBack, nav, onFullscreen }: DetailLa
               >
                 Documents
               </div>
-              {extras.length > 0 && (
-                <div 
-                   onClick={() => setActiveTab('extras')}
-                   onMouseEnter={() => nav.hoverZone('media-extras')}
-                   className={`px-4 py-2 cursor-pointer font-medium text-lg uppercase transition-colors ${nav.focusCls('media-extras')} ${activeTab === 'extras' ? 'text-white border-b-2 border-[#66c0f4]' : 'text-gray-500 hover:text-white'}`}
-                >
-                  Extras ({extras.length})
-                </div>
-              )}
            </div>
 
            {activeTab === 'gallery' && (
@@ -170,32 +171,8 @@ export function SteamLibraryLayout({ game, onBack, nav, onFullscreen }: DetailLa
            )}
 
            {activeTab === 'extras' && (
-             <div className="flex flex-col gap-4 animate-in fade-in duration-500">
-                {extras.map(extra => {
-                  const isImage = /\.(jpg|jpeg|png|gif|webp)$/i.test(extra.path);
-                  const fullPath = resolveMediaPath('extras', extra.path);
-                  return (
-                    <div key={extra.id} className="bg-[#0f1922]/60 border border-[#2a475e] rounded p-4 flex gap-6 items-center group/extra hover:bg-[#0f1922] transition-colors">
-                      {isImage ? (
-                        <div className="w-32 h-20 shrink-0 bg-black rounded border border-[#2a475e] overflow-hidden cursor-pointer" onClick={() => onFullscreen(extra.path)}>
-                           <img src={fullPath} alt={extra.name} className="w-full h-full object-cover group-hover/extra:scale-110 transition-transform" />
-                        </div>
-                      ) : (
-                        <div className="w-32 h-20 shrink-0 bg-[#171d24] rounded border border-[#2a475e] flex items-center justify-center text-3xl">📄</div>
-                      )}
-                      
-                      <div className="flex-1 min-w-0">
-                         <div className="text-[#66c0f4] font-bold text-lg truncate group-hover/extra:text-white transition-colors">{extra.name}</div>
-                         <div className="flex items-center gap-3 mt-1">
-                            <span className="bg-[#2a475e] px-2 py-0.5 rounded text-[10px] text-[#66c0f4] font-black uppercase tracking-tighter">{extra.type}</span>
-                            {!isImage && (
-                              <a href={fullPath} target="_blank" rel="noreferrer" className="text-xs text-gray-500 hover:text-[#66c0f4] underline">View Document</a>
-                            )}
-                         </div>
-                      </div>
-                    </div>
-                  );
-                })}
+             <div className="flex-1 overflow-x-hidden">
+                <ExtrasDetail game={game} extras={extras} />
              </div>
            )}
 

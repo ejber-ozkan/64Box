@@ -11,6 +11,7 @@ import { MusicianPhoto } from '../MusicianPhoto';
 import { StatusRow } from '../StatusRow';
 import { getGameExtras } from '../../lib/tauri-bridge';
 import { ScrapeButton } from '../ScrapeButton';
+import { ExtrasDetail } from '../ExtrasDetail';
 
 export function DigitalMuseumLayout({ game, onBack, nav, onFullscreen }: DetailLayoutProps) {
   const { settings, resolveMediaPath } = useSettings();
@@ -101,50 +102,65 @@ export function DigitalMuseumLayout({ game, onBack, nav, onFullscreen }: DetailL
 
       <main className="flex-1 flex overflow-hidden">
         {/* Left Sidebar: Media Selector */}
-        <div className="w-64 bg-gray-900/50 border-r border-gray-800 flex flex-col p-4 gap-4 overflow-y-auto custom-scrollbar">
-          <div className="text-[10px] font-bold text-gray-500 uppercase tracking-widest mb-2 px-2">Collection Media</div>
+        <div className="w-64 xl:w-72 2xl:w-80 bg-gray-900/50 border-r border-gray-800 flex flex-col p-6 gap-5 overflow-y-auto custom-scrollbar transition-all">
+          <div className="text-[11px] 2xl:text-xs font-bold text-gray-500 uppercase tracking-widest mb-2 px-2">Collection Media</div>
           
-          {(['gameplay', 'titlescreen', 'videosna', 'boxfront'] as const).map((type) => {
+          {/* Gameplay first */}
+          <button
+            onClick={() => { setActiveMedia('gameplay'); nav.setFocusedZone('media-gameplay'); }}
+            onMouseEnter={() => nav.hoverZone('media-gameplay')}
+            className={`p-3 rounded-lg flex flex-col items-center gap-2 border transition-all ${
+              activeMedia === 'gameplay'
+                ? 'bg-gray-800 border-yellow-500/50 text-white shadow-lg'
+                : 'bg-transparent border-transparent text-gray-500 hover:text-gray-300'
+            } ${nav.focusCls('media-gameplay')}`}
+          >
+            <div className="text-sm font-semibold capitalize">Gameplay</div>
+          </button>
+
+          {/* Extras second */}
+          {extras.length > 0 && (
+            <button
+              onClick={() => { setActiveMedia('extras'); nav.setFocusedZone('media-extras'); }}
+              onMouseEnter={() => nav.hoverZone('media-extras')}
+              className={`p-4 rounded-xl flex flex-col items-center gap-2 border transition-all ${
+                activeMedia === 'extras'
+                  ? 'bg-gray-800 border-yellow-500/50 text-white shadow-lg'
+                  : 'bg-transparent border-transparent text-gray-500 hover:text-gray-300'
+              } ${nav.focusCls('media-extras')}`}
+            >
+              <div className="text-sm 2xl:text-base font-semibold">Extras ({extras.length})</div>
+            </button>
+          )}
+
+          {/* Others following */}
+          {(['titlescreen', 'videosna', 'boxfront'] as const).map((type) => {
             const zone = mediaToZone[type] as any;
             return (
               <button
                 key={type}
                 onClick={() => { setActiveMedia(type); nav.setFocusedZone(zone); }}
                 onMouseEnter={() => nav.hoverZone(zone)}
-                className={`p-3 rounded-lg flex flex-col items-center gap-2 border transition-all ${
+                className={`p-4 rounded-xl flex flex-col items-center gap-2 border transition-all ${
                   activeMedia === type
                     ? 'bg-gray-800 border-yellow-500/50 text-white shadow-lg'
                     : 'bg-transparent border-transparent text-gray-500 hover:text-gray-300'
                 } ${nav.focusCls(zone)}`}
               >
-                <div className="text-sm font-semibold capitalize">{type}</div>
+                <div className="text-sm 2xl:text-base font-semibold capitalize">{type}</div>
               </button>
             );
           })}
-
-          {extras.length > 0 && (
-            <button
-              onClick={() => { setActiveMedia('extras'); nav.setFocusedZone('media-extras'); }}
-              onMouseEnter={() => nav.hoverZone('media-extras')}
-              className={`p-3 rounded-lg flex flex-col items-center gap-2 border transition-all ${
-                activeMedia === 'extras'
-                  ? 'bg-gray-800 border-yellow-500/50 text-white shadow-lg'
-                  : 'bg-transparent border-transparent text-gray-500 hover:text-gray-300'
-              } ${nav.focusCls('media-extras')}`}
-            >
-              <div className="text-sm font-semibold">Extras ({extras.length})</div>
-            </button>
-          )}
         </div>
 
         {/* Center: Main Stage */}
-        <div className="flex-1 flex flex-col p-8 gap-8 overflow-y-auto custom-scrollbar bg-[radial-gradient(circle_at_50%_0%,rgba(250,204,21,0.05),transparent_70%)]">
+        <div className="flex-1 flex flex-col p-8 xl:p-12 2xl:p-16 gap-10 overflow-y-auto custom-scrollbar bg-[radial-gradient(circle_at_50%_0%,rgba(250,204,21,0.05),transparent_70%)]">
           
           {activeMedia !== 'extras' && (
             <div 
               onClick={() => onFullscreen(activeMedia === 'videosna' ? game.screenshotFilename : (activeMedia === 'gameplay' ? game.screenshotFilename : activeMedia === 'titlescreen' ? game.titlescreenFilename : game.boxFrontFilename))}
               onMouseEnter={() => nav.hoverZone('screenshot')}
-              className={`relative flex-1 min-h-[400px] bg-black rounded-2xl overflow-hidden shadow-2xl border border-gray-800 group/stage transition-all cursor-pointer ${nav.focusCls('screenshot')}`}
+              className={`relative mx-auto w-full max-w-[1400px] aspect-[4/3] max-h-[70vh] bg-black rounded-3xl overflow-hidden shadow-2xl border border-gray-800 group/stage transition-all cursor-pointer ${nav.focusCls('screenshot')}`}
             >
             {activeMedia === 'videosna' && game.videoSnapFilename ? (
               <video 
@@ -182,50 +198,13 @@ export function DigitalMuseumLayout({ game, onBack, nav, onFullscreen }: DetailL
         )}
 
           {activeMedia === 'extras' && (
-            <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 animate-in fade-in slide-in-from-bottom-4 duration-500">
-              {extras.map((extra) => {
-                const isImage = /\.(jpg|jpeg|png|gif|webp)$/i.test(extra.path);
-                const fullPath = resolveMediaPath('extras', extra.path);
-                
-                return (
-                  <div 
-                    key={extra.id}
-                    className="group/extra relative aspect-square bg-gray-900 rounded-xl border border-gray-800 overflow-hidden hover:border-yellow-500/50 transition-all shadow-lg"
-                  >
-                    {isImage ? (
-                      <img 
-                        src={fullPath} 
-                        alt={extra.name}
-                        className="w-full h-full object-cover cursor-pointer"
-                        onClick={() => onFullscreen(extra.path)}
-                      />
-                    ) : (
-                      <div className="w-full h-full flex flex-col items-center justify-center p-4 gap-3">
-                         <div className="text-4xl">📄</div>
-                         <a 
-                           href={fullPath} 
-                           target="_blank" 
-                           rel="noreferrer"
-                           className="text-[10px] text-blue-400 hover:text-blue-300 font-bold uppercase text-center break-all px-2"
-                         >
-                            Open Documentation
-                         </a>
-                      </div>
-                    )}
-                    <div className="absolute bottom-0 left-0 right-0 p-2 bg-black/80 backdrop-blur-sm border-t border-white/5">
-                      <div className="text-[10px] font-bold text-white truncate">{extra.name}</div>
-                      <div className="text-[8px] text-yellow-500/70 font-black uppercase tracking-widest">{extra.type}</div>
-                    </div>
-                  </div>
-                );
-              })}
-            </div>
+            <ExtrasDetail game={game} extras={extras} />
           )}
 
           <div className="flex justify-between items-start gap-8">
             <div className="flex-1">
-              <h1 className="text-6xl font-black text-white mb-2 tracking-tighter">{game.name}</h1>
-              <div className="flex flex-wrap items-center gap-x-4 gap-y-2 text-sm font-medium text-yellow-500/80">
+              <h1 className="text-6xl xl:text-7xl 2xl:text-8xl font-black text-white mb-4 tracking-tighter leading-none">{game.name}</h1>
+              <div className="flex flex-wrap items-center gap-x-6 gap-y-3 text-sm xl:text-base 2xl:text-lg font-medium text-yellow-500/80">
                 <div className="flex items-center gap-2">
                   <span className="text-yellow-500">{game.year || '----'}</span>
                   {game.publisher?.name && game.publisher.name !== '(Not Published)' && (
@@ -290,7 +269,7 @@ export function DigitalMuseumLayout({ game, onBack, nav, onFullscreen }: DetailL
         </div>
 
         {/* Right Sidebar: Quick Actions & Metadata */}
-        <div className="w-80 bg-gray-900/50 border-l border-gray-800 p-6 flex flex-col gap-8 overflow-y-auto custom-scrollbar">
+        <div className="w-80 xl:w-96 2xl:w-[450px] bg-gray-900/50 border-l border-gray-800 p-8 2xl:p-10 flex flex-col gap-10 overflow-y-auto custom-scrollbar transition-all">
           
           {/* Action Buttons */}
           <div className="flex flex-col gap-4">
@@ -305,20 +284,20 @@ export function DigitalMuseumLayout({ game, onBack, nav, onFullscreen }: DetailL
           </div>
 
           {/* Quick Info */}
-          <div className="space-y-4">
-            <div className="text-[10px] font-bold text-gray-500 uppercase tracking-widest px-1">Game Data</div>
-            <div className="bg-gray-800/50 rounded-xl p-4 border border-gray-800 flex flex-col gap-2">
-              <div className="flex justify-between text-xs">
+          <div className="space-y-6">
+            <div className="text-[11px] 2xl:text-xs font-bold text-gray-500 uppercase tracking-widest px-1">Game Data</div>
+            <div className="bg-gray-800/50 rounded-2xl p-6 border border-gray-800 flex flex-col gap-4 transition-all">
+              <div className="flex justify-between text-xs 2xl:text-sm">
                 <span className="text-gray-500">Genre</span>
                 <span className="text-white font-medium">{game.parentGenre}</span>
               </div>
-              <div className="flex justify-between text-xs">
+              <div className="flex justify-between text-xs 2xl:text-sm">
                 <span className="text-gray-500">Sub-Genre</span>
                 <span className="text-white font-medium">{game.subGenre}</span>
               </div>
-              <div className="flex justify-between text-xs">
+              <div className="flex justify-between text-xs 2xl:text-sm">
                 <span className="text-gray-500">Rating</span>
-                <span className="text-yellow-500 font-bold">
+                <span className="text-yellow-500 font-bold text-[10px] 2xl:text-xs">
                   {(() => {
                     const r = parseInt(game.reviewRating || "0");
                     if (r <= 0) return 'UNRATED';
@@ -327,11 +306,11 @@ export function DigitalMuseumLayout({ game, onBack, nav, onFullscreen }: DetailL
                   })()}
                 </span>
               </div>
-              <div className="flex justify-between text-xs">
+              <div className="flex justify-between text-xs 2xl:text-sm">
                 <span className="text-gray-500">Control</span>
                 <span className="text-white font-medium">{game.control || 'Joystick'}</span>
               </div>
-              <div className="flex justify-between text-xs">
+              <div className="flex justify-between text-xs 2xl:text-sm">
                 <span className="text-gray-500">Players</span>
                 <span className="text-white font-medium">
                   {game.playersFrom === game.playersTo ? game.playersFrom : `${game.playersFrom}-${game.playersTo}`}
@@ -339,29 +318,29 @@ export function DigitalMuseumLayout({ game, onBack, nav, onFullscreen }: DetailL
                 </span>
               </div>
               {game.languages?.length > 0 && (
-                <div className="flex justify-between text-xs">
+                <div className="flex justify-between text-xs 2xl:text-sm">
                   <span className="text-gray-500">Languages</span>
                   <span className="text-white font-medium">{game.languages.join(', ')}</span>
                 </div>
               )}
             </div>
 
-            <div className="text-[10px] font-bold text-gray-500 uppercase tracking-widest px-1 pt-4">Version Info</div>
-            <div className="bg-gray-800/20 rounded-xl p-4 border border-gray-800 flex flex-col gap-2">
-              <div className="flex justify-between text-xs">
+            <div className="text-[11px] 2xl:text-xs font-bold text-gray-500 uppercase tracking-widest px-1 pt-6">Version Info</div>
+            <div className="bg-gray-800/20 rounded-2xl p-6 border border-gray-800 flex flex-col gap-4">
+              <div className="flex justify-between text-xs 2xl:text-sm">
                 <span className="text-gray-500">Version By</span>
                 <span className="text-blue-400 font-medium">{game.versionBy || '---'}</span>
               </div>
-              <div className="flex justify-between text-xs">
+              <div className="flex justify-between text-xs 2xl:text-sm">
                 <span className="text-gray-500">PAL / NTSC</span>
                 <span className="text-yellow-400 font-medium">{game.vPalNtsc || '---'}</span>
               </div>
-              <div className="flex justify-between text-xs">
+              <div className="flex justify-between text-xs 2xl:text-sm">
                 <span className="text-gray-500">Trainers</span>
                 <span className="text-white font-medium">{game.vTrainers || '0'}</span>
               </div>
-              <div className="flex justify-between text-xs">
-                <span className="text-gray-500">Size</span>
+              <div className="flex justify-between text-xs 2xl:text-sm">
+                <span className="text-gray-400">Size</span>
                 <span className="text-white font-medium">{game.vLength ? `${game.vLength} Blocks` : '---'}</span>
               </div>
               <div className="h-px bg-gray-800 my-1" />

@@ -50,10 +50,13 @@ export function ScrapeButton({ game, className, onComplete }: ScrapeButtonProps)
            alert(`Scraped video from EmuMovies for ${game.name}`);
         }
       } else if (activeScraper === 'screenscraper') {
+        console.log('[Scraper] Using ScreenScraper with User:', settings.screenScraperUsername);
         results = await searchScreenScraper(
           settings.screenScraperUsername,
           settings.screenScraperPassword,
-          game.name // ScreenScraper can search by name if no romname
+          game.gameFilename || game.name,
+          settings.screenScraperDevId,
+          settings.screenScraperDevPassword
         );
         if (results) {
            alert(`Found ${results.name} on ScreenScraper with ${results.media.length} assets.`);
@@ -88,34 +91,16 @@ export function ScrapeButton({ game, className, onComplete }: ScrapeButtonProps)
   return (
     <div className={`flex flex-col gap-2 ${className}`}>
       <button
-        onClick={handleScrape}
-        disabled={isScraping}
-        className={`relative flex items-center gap-3 px-4 py-2.5 rounded-xl font-bold text-xs uppercase tracking-widest transition-all shadow-lg overflow-hidden group ${
-          isScraping 
-            ? 'bg-gray-700 text-gray-400 cursor-not-allowed' 
-            : 'bg-blue-600 hover:bg-blue-500 text-white border border-blue-400/30'
-        }`}
+        disabled={true}
+        className="relative flex items-center gap-3 px-4 py-2.5 rounded-xl font-bold text-xs uppercase tracking-widest transition-all shadow-lg overflow-hidden bg-gray-800 text-gray-500 border border-gray-700 cursor-not-allowed opacity-60"
       >
-        {isScraping && (
-           <div className="absolute inset-0 bg-blue-400/20 animate-pulse"></div>
-        )}
-        
-        <span className="text-lg group-hover:rotate-12 transition-transform">
-          {isScraping ? '⌛' : '🛰️'}
-        </span>
-        
+        <span className="text-lg">🛰️</span>
         <div className="flex flex-col items-start leading-tight">
-          <span>{isScraping ? 'Scraping...' : 'Art & Info Scraper'}</span>
-          <span className="text-[9px] opacity-70 font-black">
-            via {scraperLabels[settings.activeScraper]}
+          <span>Art & Info Scraper</span>
+          <span className="text-[9px] opacity-70 font-black tracking-tighter">
+            (Coming Soon)
           </span>
         </div>
-
-        {missingCount > 0 && !isScraping && (
-          <div className="ml-auto bg-yellow-500 text-black px-1.5 py-0.5 rounded-md text-[9px] font-black animate-bounce">
-            {missingCount} Missing
-          </div>
-        )}
       </button>
     </div>
   );
