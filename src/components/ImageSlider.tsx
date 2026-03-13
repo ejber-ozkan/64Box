@@ -60,9 +60,11 @@ export function ImageSlider({ filename, type, alt, className = '', fallbackText 
   return (
     <div className={`relative overflow-hidden ${className}`}>
         <div 
-            className={`flex w-full h-full transition-all duration-700 ease-in-out ${!isSlide ? 'transition-none' : ''}`}
+            className={`flex w-full h-full transition-all duration-700 ease-in-out ${settings.bigBoxAnimateVertical ? 'flex-col' : ''} ${!isSlide ? 'transition-none' : ''}`}
             style={{ 
-                transform: isSlide ? `translateX(-${currentIndex * 100}%)` : 'none' 
+                transform: isSlide 
+                  ? (settings.bigBoxAnimateVertical ? `translateY(-${currentIndex * 100}%)` : `translateX(-${currentIndex * 100}%)`)
+                  : 'none' 
             }}
         >
             {images.map((src, idx) => (

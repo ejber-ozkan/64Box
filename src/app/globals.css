@@ -25,10 +25,10 @@ body {
   font-family: Arial, Helvetica, sans-serif;
 }
 
-.custom-scrollbar-hidden::-webkit-scrollbar {
-  display: none;
-}
-.custom-scrollbar-hidden {
+.custom-scrollbar-hidden, .no-scrollbar {
   -ms-overflow-style: none;
   scrollbar-width: none;
+}
+.custom-scrollbar-hidden::-webkit-scrollbar, .no-scrollbar::-webkit-scrollbar {
+  display: none;
 }

@@ -43,6 +43,7 @@ pub struct GameFilters {
     pub genre: Option<String>,
     pub favorite_ids: Option<Vec<String>>,
     pub hide_adult: Option<bool>,
+    pub is_classic: Option<bool>,
 }
 
 /// A row from the SQLite GameView

@@ -36,6 +36,9 @@ export function SettingsView({ onBack }: SettingsViewProps) {
   const [localImageCycling, setLocalImageCycling] = useState(settings.imageCycling);
   const [localFullscreen, setLocalFullscreen]     = useState(settings.isFullscreen);
   const [localResolution, setLocalResolution]     = useState(settings.displayResolution);
+  const [localMouseHover, setLocalMouseHover]     = useState(settings.mouseHoverSelection);
+  const [localScrollNav, setLocalScrollNav]       = useState(settings.scrollNavigation);
+  const [localBigBoxAnimate, setLocalBigBoxAnimate] = useState(settings.bigBoxAnimateVertical);
   const [activeTab, setActiveTab]                 = useState<'appearance' | 'content' | 'paths' | 'scrapers' | 'maintenance' | 'about'>('appearance');
   const [scanStatus, setScanStatus]               = useState<string | null>(null);
   const { isMouseMode, onGamepadInput } = useInputMode();
@@ -70,9 +73,12 @@ export function SettingsView({ onBack }: SettingsViewProps) {
       imageCycling: localImageCycling,
       isFullscreen: localFullscreen,
       displayResolution: localResolution,
+      mouseHoverSelection: localMouseHover,
+      scrollNavigation: localScrollNav,
+      bigBoxAnimateVertical: localBigBoxAnimate,
     });
     onBack();
-  }, [updateSettings, onBack, localScreenshots, localSounds, localMusician, localRoms, localEmulator, localEmuMoviesUser, localEmuMoviesPass, localTheme, localScrapedMedia, localExtras, localHideAdult, localActiveScraper, localScreenScraperUser, localScreenScraperPass, localScreenScraperDevId, localScreenScraperDevPass, localTheGamesDbKey, localRetroarch, localRetroarchCore, localPreferredEmu, localImageAnim, localImageCycling, localFullscreen, localResolution]);
+  }, [updateSettings, onBack, localScreenshots, localSounds, localMusician, localRoms, localEmulator, localEmuMoviesUser, localEmuMoviesPass, localTheme, localScrapedMedia, localExtras, localHideAdult, localActiveScraper, localScreenScraperUser, localScreenScraperPass, localScreenScraperDevId, localScreenScraperDevPass, localTheGamesDbKey, localRetroarch, localRetroarchCore, localPreferredEmu, localImageAnim, localImageCycling, localFullscreen, localResolution, localMouseHover, localScrollNav, localBigBoxAnimate]);
 
   // Handle Keyboard - Esc to save
   useEffect(() => {
@@ -119,7 +125,7 @@ export function SettingsView({ onBack }: SettingsViewProps) {
       if (dir === 'DOWN') setFocusedIdx(p => (p < max ? p + 1 : 0));
     } else {
       const itemCounts: Record<string, number> = {
-        appearance: 12, 
+        appearance: 14, 
         content: 1,    
         paths: 19,     
         scrapers: 10,  
@@ -405,6 +411,71 @@ export function SettingsView({ onBack }: SettingsViewProps) {
                     </div>
                     <p className="text-[9px] text-gray-500 mt-2 italic">Note: These only apply in windowed mode. Fullscreen uses your primary monitor resolution.</p>
                   </div>
+                </div>
+              </div>
+
+              <div className="mt-8">
+                <div className="text-xs text-gray-500 uppercase tracking-widest font-bold mb-4">Mouse & Interaction</div>
+                <div className="bg-gray-800/50 rounded-xl p-5 border border-gray-700 space-y-6">
+                  <label className="flex items-center justify-between cursor-pointer group">
+                    <div>
+                      <div className="text-white font-semibold flex items-center gap-2 text-sm">
+                        🖱️ Mouse Hover Selection
+                      </div>
+                      <div className="text-[10px] text-gray-400 mt-1 max-w-sm">
+                        Automatically focus items when the mouse pointer moves over them. Turn off if your mouse is too sensitive.
+                      </div>
+                    </div>
+                    <button
+                      onClick={() => setLocalMouseHover(prev => !prev)}
+                      onMouseEnter={() => isMouseMode && (setNavZone('content'), setFocusedIdx(12))}
+                      className={`relative w-12 h-6 rounded-full transition-colors shrink-0 ml-6 focus-idx-12 ${
+                        (localMouseHover && (navZone !== 'content' || focusedIdx !== 12)) || (navZone === 'content' && focusedIdx === 12) ? 'bg-blue-600 ring-2 ring-blue-400' : 'bg-gray-600'
+                      }`}
+                    >
+                      <span className={`absolute top-0.5 left-0.5 w-5 h-5 rounded-full bg-white shadow transition-transform ${localMouseHover ? 'translate-x-6' : 'translate-x-0'}`} />
+                    </button>
+                  </label>
+
+                  <label className="flex items-center justify-between cursor-pointer group">
+                    <div>
+                      <div className="text-white font-semibold flex items-center gap-2 text-sm">
+                        💎 Scroll Wheel Navigation
+                      </div>
+                      <div className="text-[10px] text-gray-400 mt-1 max-w-sm">
+                        Use the mouse scroll button (wheel) to move up and down through menu items.
+                      </div>
+                    </div>
+                    <button
+                      onClick={() => setLocalScrollNav(prev => !prev)}
+                      onMouseEnter={() => isMouseMode && (setNavZone('content'), setFocusedIdx(13))}
+                      className={`relative w-12 h-6 rounded-full transition-colors shrink-0 ml-6 focus-idx-13 ${
+                        (localScrollNav && (navZone !== 'content' || focusedIdx !== 13)) || (navZone === 'content' && focusedIdx === 13) ? 'bg-blue-600 ring-2 ring-blue-400' : 'bg-gray-600'
+                      }`}
+                    >
+                      <span className={`absolute top-0.5 left-0.5 w-5 h-5 rounded-full bg-white shadow transition-transform ${localScrollNav ? 'translate-x-6' : 'translate-x-0'}`} />
+                    </button>
+                  </label>
+
+                  <label className="flex items-center justify-between cursor-pointer group border-t border-gray-800 pt-6">
+                    <div>
+                      <div className="text-white font-semibold flex items-center gap-2 text-sm">
+                        ↕️ BigBox Vertical Animation
+                      </div>
+                      <div className="text-[10px] text-gray-400 mt-1 max-w-sm">
+                        Enable smooth sliding animations when swapping between game rails in BigBox mode.
+                      </div>
+                    </div>
+                    <button
+                      onClick={() => setLocalBigBoxAnimate(prev => !prev)}
+                      onMouseEnter={() => isMouseMode && (setNavZone('content'), setFocusedIdx(14))}
+                      className={`relative w-12 h-6 rounded-full transition-colors shrink-0 ml-6 focus-idx-14 ${
+                        (localBigBoxAnimate && (navZone !== 'content' || focusedIdx !== 14)) || (navZone === 'content' && focusedIdx === 14) ? 'bg-blue-600 ring-2 ring-blue-400' : 'bg-gray-600'
+                      }`}
+                    >
+                      <span className={`absolute top-0.5 left-0.5 w-5 h-5 rounded-full bg-white shadow transition-transform ${localBigBoxAnimate ? 'translate-x-6' : 'translate-x-0'}`} />
+                    </button>
+                  </label>
                 </div>
               </div>
             </>
@@ -716,42 +787,12 @@ export function SettingsView({ onBack }: SettingsViewProps) {
 
           {activeTab === 'maintenance' && (
             <div className="flex flex-col gap-6">
+{/* 
                <div className="bg-gray-800 rounded-xl p-6 border border-gray-700">
                   <h3 className="text-white font-bold mb-2 flex items-center gap-2">🕹️ ROM Scanner</h3>
-                  <p className="text-xs text-gray-400 mb-4">
-                    Scans your configured ROMs directory for compatible Commodore 64 files (.d64, .t64, .crt, etc.)
-                    and matches them against the Gamebase64 database using CRC32 hashes.
-                  </p>
-                  <button
-                    onClick={async () => {
-                      if (!settings.romsPath) {
-                        setScanStatus("Error: Set your ROMs path first!");
-                        return;
-                      }
-                      setScanStatus("Scanning directory...");
-                      try {
-                        const { scanRomDirectory } = await import('../lib/tauri-bridge');
-                        const results = await scanRomDirectory(settings.romsPath);
-                        setScanStatus(`Found ${results.length} ROM files. Matching against database...`);
-                        // In a real app, we'd then call a Rust command to update the DB with these paths.
-                        setTimeout(() => setScanStatus(`Scan Complete! Found and matched ${results.length} files.`), 2000);
-                      } catch (err) {
-                        setScanStatus(`Scan Failed: ${err}`);
-                      }
-                    }}
-                    onMouseEnter={() => isMouseMode && (setNavZone('content'), setFocusedIdx(0))}
-                    className={`px-4 py-2 rounded font-bold text-xs uppercase transition shadow-lg focus-idx-0 ${
-                      navZone === 'content' && focusedIdx === 0 ? 'bg-white text-black' : 'bg-emerald-600 hover:bg-emerald-500 text-white'
-                    }`}
-                  >
-                    Start Full ROM Scan
-                  </button>
-                  {scanStatus && (
-                    <div className="mt-4 p-3 bg-gray-950 rounded border border-gray-800 text-[10px] font-mono text-emerald-400 leading-tight">
-                      {scanStatus}
-                    </div>
-                  )}
+                  ...
                </div>
+*/}
 
                <div className="bg-gray-800 rounded-xl p-6 border border-gray-700 opacity-50">
                   <h3 className="text-white font-bold mb-2 flex items-center gap-2">🧼 Database Cleanup</h3>

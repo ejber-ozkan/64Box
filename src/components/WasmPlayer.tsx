@@ -3,6 +3,7 @@
 import { useEffect, useRef, useState } from 'react';
 import { createPortal } from 'react-dom';
 import { readFileBytes } from '../lib/tauri-bridge';
+import { useInputMode } from '../hooks/useInputMode';
 
 interface WasmPlayerProps {
   romPath: string;
@@ -14,6 +15,7 @@ export function WasmPlayer({ romPath, onClose, core = 'vice_x64' }: WasmPlayerPr
   const iframeRef = useRef<HTMLIFrameElement>(null);
   const [error, setError] = useState<string | null>(null);
   const [loadingStatus, setLoadingStatus] = useState<string>('Reading ROM file...');
+  const { showMouse } = useInputMode();
 
   useEffect(() => {
     async function init() {
@@ -53,11 +55,11 @@ export function WasmPlayer({ romPath, onClose, core = 'vice_x64' }: WasmPlayerPr
   }, [romPath, core]);
 
   const content = (
-    <div className="fixed inset-0 z-[9999] bg-black flex flex-col items-center justify-center">
+    <div className={`fixed inset-0 z-[9999] bg-black flex flex-col items-center justify-center transition-all ${!showMouse ? 'cursor-none' : ''}`}>
       <div className="w-full h-full relative group">
         <button 
           onClick={onClose}
-          className="absolute top-4 right-4 z-[10000] px-4 py-2 bg-red-600/80 hover:bg-red-500 text-white rounded font-bold shadow-lg transition-all opacity-0 group-hover:opacity-100 focus:opacity-100"
+          className={`absolute top-4 right-4 z-[10000] px-4 py-2 bg-red-600/80 hover:bg-red-500 text-white rounded font-bold shadow-lg transition-all ${showMouse ? 'opacity-0 group-hover:opacity-100' : 'opacity-0 pointer-events-none'}`}
         >
           Exit Game [B]
         </button>

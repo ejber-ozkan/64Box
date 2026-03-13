@@ -34,6 +34,9 @@ export interface Settings {
   displayResolution: string; // presets like "720p", "1080p", "default"
   windowWidth: number;
   windowHeight: number;
+  mouseHoverSelection: boolean;
+  scrollNavigation: boolean;
+  bigBoxAnimateVertical: boolean;
 }
 
 interface SettingsContextType {
@@ -75,6 +78,9 @@ const defaultSettings: Settings = {
   displayResolution: 'default',
   windowWidth: 1200,
   windowHeight: 800,
+  mouseHoverSelection: true,
+  scrollNavigation: true,
+  bigBoxAnimateVertical: true,
 };
 
 const SettingsContext = createContext<SettingsContextType | undefined>(undefined);

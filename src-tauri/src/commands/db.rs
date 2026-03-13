@@ -88,6 +88,13 @@ pub async fn get_db_games(
                 query.push_str(" AND g.Adult = 'False'");
             }
         }
+        if let Some(classic) = f.is_classic {
+            if classic {
+                query.push_str(" AND gv.isClassic = 1");
+            } else {
+                query.push_str(" AND gv.isClassic = 0");
+            }
+        }
         if let Some(fav_ids) = f.favorite_ids {
             if !fav_ids.is_empty() {
                 let placeholders = fav_ids.iter().map(|_| "?").collect::<Vec<_>>().join(",");

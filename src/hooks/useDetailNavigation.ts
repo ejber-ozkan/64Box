@@ -3,6 +3,8 @@
 import { useState, useRef, useEffect, useCallback } from 'react';
 import { useGamepad } from './useGamepad';
 
+import { useSettings } from '../contexts/SettingsContext';
+
 export type DetailZone =
   | 'play'
   | 'play-web'
@@ -33,9 +35,11 @@ interface DetailNavProps {
   onBack: () => void;
   initialZone?: DetailZone;
   config: NavigationConfig;
+  enabled?: boolean;
 }
 
-export function useDetailNavigation({ onBack, initialZone = 'play', config }: DetailNavProps): DetailNavigationHook {
+export function useDetailNavigation({ onBack, initialZone = 'play', config, enabled = true }: DetailNavProps): DetailNavigationHook {
+  const { settings } = useSettings();
   const [focusedZone, setFocusedZoneState] = useState<DetailZone>(initialZone);
   const focusedZoneRef = useRef<DetailZone>(initialZone);
   const actionsRef = useRef<Partial<Record<DetailZone, () => void>>>({});
@@ -48,17 +52,6 @@ export function useDetailNavigation({ onBack, initialZone = 'play', config }: De
     console.log(`[useDetailNavigation] ${msg}`);
     setLastAction(msg);
   };
-
-  useEffect(() => {
-    const onMouseMove = () => {
-      if (!isMouseModeRef.current) {
-        isMouseModeRef.current = true;
-        setIsMouseMode(true);
-      }
-    };
-    window.addEventListener('mousemove', onMouseMove);
-    return () => window.removeEventListener('mousemove', onMouseMove);
-  }, []);
 
   const setControllerMode = useCallback(() => {
     if (isMouseModeRef.current) {
@@ -73,7 +66,6 @@ export function useDetailNavigation({ onBack, initialZone = 'play', config }: De
   }, []);
 
   const moveZone = useCallback((dir: Direction) => {
-    setControllerMode();
     const cur = focusedZoneRef.current;
     const next = config[cur]?.[dir];
     if (next) {
@@ -82,10 +74,9 @@ export function useDetailNavigation({ onBack, initialZone = 'play', config }: De
     } else {
       debug(`No exit ${dir} from ${cur}`);
     }
-  }, [setFocusedZone, setControllerMode, config]);
+  }, [setFocusedZone, config]);
 
   const activateFocused = useCallback(() => {
-    setControllerMode();
     const zone = focusedZoneRef.current;
     const action = actionsRef.current[zone];
     if (action) {
@@ -94,15 +85,49 @@ export function useDetailNavigation({ onBack, initialZone = 'play', config }: De
     } else {
       debug(`No action for ${zone}`);
     }
-  }, [setControllerMode]);
+  }, []);
 
   const registerAction = useCallback((zone: DetailZone, action: () => void) => {
     actionsRef.current[zone] = action;
   }, []);
 
   const hoverZone = useCallback((zone: DetailZone) => {
-    if (isMouseModeRef.current) setFocusedZone(zone);
-  }, [setFocusedZone]);
+    // If we're in "scroll only" mode (meaning mouseHoverSelection is false), we skip hover selection
+    if (settings.mouseHoverSelection && isMouseModeRef.current) {
+      setFocusedZone(zone);
+    }
+  }, [setFocusedZone, settings.mouseHoverSelection]);
+
+  useEffect(() => {
+    const onMouseMove = () => {
+      if (!isMouseModeRef.current) {
+        isMouseModeRef.current = true;
+        setIsMouseMode(true);
+      }
+    };
+    
+    const handleWheel = (e: WheelEvent) => {
+      if (!enabled || !settings.scrollNavigation) return;
+
+      if (!isMouseModeRef.current) {
+        isMouseModeRef.current = true;
+        setIsMouseMode(true);
+      }
+      
+      if (e.deltaY > 0) {
+        moveZone('down');
+      } else if (e.deltaY < 0) {
+        moveZone('up');
+      }
+    };
+
+    window.addEventListener('mousemove', onMouseMove);
+    window.addEventListener('wheel', handleWheel, { passive: true });
+    return () => {
+      window.removeEventListener('mousemove', onMouseMove);
+      window.removeEventListener('wheel', handleWheel);
+    };
+  }, [moveZone, settings.scrollNavigation]);
 
   // Combined Controller Handler
   useGamepad({
@@ -120,6 +145,7 @@ export function useDetailNavigation({ onBack, initialZone = 'play', config }: De
   // Keyboard fallbacks
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
+      if (!enabled) return;
       if (document.activeElement?.tagName === 'INPUT') return;
 
       if (e.key === 'ArrowLeft')  { e.preventDefault(); moveZone('left'); }

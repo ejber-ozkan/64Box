@@ -17,7 +17,7 @@ export function PlayButton({ game, nav }: PlayButtonProps) {
   const [message, setMessage] = useState('');
   const [showWasm, setShowWasm] = useState(false);
 
-  const romPath = `${settings.romsPath}/${game.gameFilename}`;
+  const romPath = `${settings.romsPath}/${game.filename}`;
 
   const handlePlayNative = async () => {
     const isRetroarch = settings.preferredEmulator === 'retroarch';

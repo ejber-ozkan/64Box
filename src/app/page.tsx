@@ -15,6 +15,7 @@ import { AlphabetJumpBar } from '@/components/AlphabetJumpBar';
 import { GameFilters } from '@/lib/tauri-bridge';
 import { useGamepad } from '@/hooks/useGamepad';
 import { useInputMode } from '@/hooks/useInputMode';
+import { BigBoxView } from '@/components/BigBoxView';
 
 type ViewMode = 'grid' | 'list' | 'settings';
 
@@ -27,7 +28,7 @@ export default function Home() {
   const [showFilters, setShowFilters] = useState(false);
   const [filters, setFilters] = useState<GameFilters>({});
   const [mounted, setMounted] = useState(false);
-  const { isMouseMode, onGamepadInput } = useInputMode();
+  const { isMouseMode, onGamepadInput, showMouse } = useInputMode();
   
   useEffect(() => {
     setMounted(true);
@@ -133,6 +134,8 @@ export default function Home() {
   useGamepad({
     onButtonDown: (btn) => {
       onGamepadInput();
+      if (settings.isFullscreen) return; // BigBoxView handles its own input
+      
       if (btn === 'Y') setShowFilters(prev => !prev);
       if (btn === 'X') setViewMode(prev => prev === 'grid' ? 'list' : 'grid');
       if (btn === 'START') setViewMode('settings');
@@ -306,11 +309,49 @@ export default function Home() {
       }, 500);
     };
     window.addEventListener('resize', handleResize);
+
+    const handleWheel = (e: WheelEvent) => {
+      if (!settings.scrollNavigation || showFilters || selectedGame || viewMode === 'settings') return;
+
+      if (!isMouseMode) onMouseMove();
+      
+      const cols = viewMode === 'list' ? 1 : 
+                    (typeof window !== 'undefined' ? (window.innerWidth >= 1024 ? 6 : (window.innerWidth >= 768 ? 4 : 2)) : 6);
+      
+      const recentCount = settings.recentlyPlayedIds.length;
+      const minIdx = recentCount > 0 ? -recentCount : 0;
+      const maxIdx = games.length - 1;
+
+      if (e.deltaY > 0) { // Scroll Down
+        setFocusedIndex(p => {
+          if (p < 0) return 0;
+          return Math.min(p + cols, maxIdx);
+        });
+      } else if (e.deltaY < 0) { // Scroll Up
+        setFocusedIndex(p => {
+          if (p >= 0 && p < cols && recentCount > 0) {
+            const ratio = p / Math.max(cols - 1, 1);
+            const shelfIdx = Math.floor(ratio * (recentCount - 1));
+            return shelfIdx - recentCount;
+          }
+          return Math.max(p - cols, minIdx);
+        });
+      }
+    };
+
+    const onMouseMove = () => {
+        // useInputMode setMode logic is already attached globaly in useInputMode's useEffect
+        // but we might need to trigger it if we want immediate feedback
+    };
+
+    window.addEventListener('wheel', handleWheel, { passive: true });
+
     return () => {
       window.removeEventListener('resize', handleResize);
+      window.removeEventListener('wheel', handleWheel);
       clearTimeout(timeoutId);
     };
-  }, [settings.isFullscreen, updateSettings]);
+  }, [settings.isFullscreen, settings.scrollNavigation, updateSettings, showFilters, selectedGame, viewMode, isMouseMode, games, settings.recentlyPlayedIds.length]);
 
   const handleSort = (column: keyof Game) => {
     const newDir = sortCol === column && sortDir === 'asc' ? 'desc' : 'asc';
@@ -337,8 +378,25 @@ export default function Home() {
     );
   }
 
+  if (settings.isFullscreen) {
+    return (
+      <BigBoxView 
+        settings={settings}
+        onSelectGame={handleGameSelect}
+        searchInput={searchInput}
+        onSearchChange={setSearchInput}
+        onShowSettings={() => setViewMode('settings')}
+        onBack={() => updateSettings({ isFullscreen: false })}
+        filters={filters}
+        onFiltersChange={setFilters}
+      />
+    );
+  }
+
   return (
-    <main className="min-h-screen bg-gray-900 text-white flex flex-col font-sans">
+    <main className={`min-h-screen bg-gray-900 text-white flex flex-col font-sans transition-all ${
+      settings.isFullscreen && !showMouse ? 'cursor-none' : ''
+    }`}>
       {/* Header */}
       <header className="bg-gray-800 border-b border-gray-700 px-6 py-4 flex items-center justify-between sticky top-0 z-10 shadow-md">
         <div className="flex items-center gap-3">
@@ -455,7 +513,7 @@ export default function Home() {
             games={games} 
             onSelectGame={handleGameSelect} 
             focusedIndex={focusedIndex >= 0 ? focusedIndex : -1} 
-            onFocusChange={isMouseMode ? setFocusedIndex : undefined}
+            onFocusChange={isMouseMode && settings.mouseHoverSelection ? setFocusedIndex : undefined}
           />
         ) : (
           <ListView 
@@ -463,7 +521,7 @@ export default function Home() {
             onSelectGame={handleGameSelect} 
             onSort={handleSort} 
             focusedIndex={focusedIndex >= 0 ? focusedIndex : -1}
-            onFocusChange={isMouseMode ? setFocusedIndex : undefined}
+            onFocusChange={isMouseMode && settings.mouseHoverSelection ? setFocusedIndex : undefined}
           />
         )}
       </div>

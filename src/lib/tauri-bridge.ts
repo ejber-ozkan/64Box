@@ -243,6 +243,7 @@ export interface GameFilters {
   genre?: string;
   favoriteIds?: string[];
   hideAdult?: boolean;
+  isClassic?: boolean;
 }
 
 export async function getGenres(): Promise<string[]> {

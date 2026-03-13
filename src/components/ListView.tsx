@@ -16,7 +16,7 @@ export function ListView({ games, onSelectGame, onSort, focusedIndex = -1, onFoc
     if (focusedIndex >= 0 && tbodyRef.current) {
       const child = tbodyRef.current.children[focusedIndex] as HTMLElement;
       if (child) {
-        child.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        child.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
       }
     }
   }, [focusedIndex]);

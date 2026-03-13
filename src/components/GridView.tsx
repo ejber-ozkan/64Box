@@ -21,7 +21,7 @@ export function GridView({ games, onSelectGame, focusedIndex = -1, onFocusChange
     if (focusedIndex >= 0 && containerRef.current) {
       const child = containerRef.current.children[focusedIndex] as HTMLElement;
       if (child) {
-        child.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        child.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
       }
     }
   }, [focusedIndex]);

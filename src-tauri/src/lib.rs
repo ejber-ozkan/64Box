@@ -32,6 +32,10 @@ pub fn run() {
             commands::db::save_secure_setting,
             commands::db::get_secure_setting,
         ])
+        .setup(|_app| {
+            let _ = database::init_secure_table();
+            Ok(())
+        })
         .run(tauri::generate_context!())
         .expect("error while running 64Box");
 }
