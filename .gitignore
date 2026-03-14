@@ -43,6 +43,7 @@ next-env.d.ts
 # 64Box Specific Database & Media
 GBC_v19.mdb
 gb64.sqlite
+gb64.sqlite.bk
 /gb64_export/
 /CSV_FILES_GBC_v19/
 /64BoxMedia/

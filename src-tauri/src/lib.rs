@@ -1,7 +1,7 @@
+pub mod commands;
+pub mod database;
 pub mod models;
 pub mod security;
-pub mod database;
-pub mod commands;
 
 // ---------------------------------------------------------------------------
 // Application entry point
@@ -33,7 +33,7 @@ pub fn run() {
             commands::db::get_secure_setting,
         ])
         .setup(|_app| {
-            let _ = database::init_secure_table();
+            let _ = database::init_database();
             Ok(())
         })
         .run(tauri::generate_context!())

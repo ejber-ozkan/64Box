@@ -23,18 +23,20 @@ vi.mock('../lib/tauri-bridge', () => ({
 describe('SidPlayer Component', () => {
 
   beforeEach(() => {
-    vi.stubGlobal('jsSID', vi.fn().mockImplementation(() => ({
-      loadstart: vi.fn(),
-      setvolume: vi.fn(),
-      pause: vi.fn()
-    })));
+    function MockSidPlayer(this: { loadstart: ReturnType<typeof vi.fn>; setvolume: ReturnType<typeof vi.fn>; pause: ReturnType<typeof vi.fn> }) {
+      this.loadstart = vi.fn();
+      this.setvolume = vi.fn();
+      this.pause = vi.fn();
+    }
+
+    vi.stubGlobal('jsSID', MockSidPlayer);
   });
 
   afterEach(() => {
     vi.clearAllMocks();
     vi.unstubAllGlobals();
     if (typeof window !== 'undefined') {
-      delete (window as any).SIDplayer;
+      delete window.SIDplayer;
     }
   });
 

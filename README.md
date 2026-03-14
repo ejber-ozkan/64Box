@@ -77,7 +77,10 @@ Because of copyright and sheer size, the GameBase64 database (`.mdb`) and its me
 This application utilizes a highly optimized SQLite database (`gb64.sqlite`) generated from the original Access (`.mdb`) file. The conversion scripts are included.
 
 ### For Windows:
-Ensure you natively have Windows ODBC drivers for Access, or check scripts for PowerShell dependencies.
+Ensure you have the Microsoft Access Database Engine / Access ODBC components installed. Microsoft provides the official download here:
+- [Microsoft Access Database Engine 2016 Redistributable](https://www.microsoft.com/en-us/download/details.aspx?id=54920)
+
+Microsoft notes on that page that support ended on **October 14, 2025**, but it remains the official download source for the MDB export tooling used here.
 ```bash
 # This uses the Windows ODBC driver to export the MDB to CSV, then to SQLite
 .\scripts\import_gb64.bat
@@ -101,6 +104,8 @@ node ./scripts/convert_csv_to_sqlite.js
 ```
 
 This will produce `gb64.sqlite` in the project root.
+
+The conversion step also creates the SQLite performance indexes, the persisted `GameCoverIndex` lookup table, and the `GameSearchIndex` FTS5 full-text search table used by the app for faster browsing and metadata search. If you open an older database with a newer build of the app, the Tauri backend will create any missing support objects automatically on startup.
 
 ## 4. Running the Application in Development
 

@@ -35,7 +35,7 @@ pub struct LaunchRequest {
     pub core_path: Option<String>,
 }
 
-#[derive(Debug, Deserialize, Default)]
+#[derive(Debug, Deserialize, Default, Clone)]
 #[serde(rename_all = "camelCase")]
 pub struct GameFilters {
     pub search_query: Option<String>,

@@ -1,9 +1,9 @@
-use sha2::{Sha256, Digest};
 use aes_gcm::{
     aead::{Aead, KeyInit},
-    Aes256Gcm, Nonce as AesIv
+    Aes256Gcm, Nonce as AesIv,
 };
-use base64::{Engine as _, engine::general_purpose};
+use base64::{engine::general_purpose, Engine as _};
+use sha2::{Digest, Sha256};
 
 pub fn get_encryption_key() -> [u8; 32] {
     let uid = machine_uid::get().unwrap_or_else(|_| "fixed-fallback-uid".to_string());
@@ -19,33 +19,33 @@ pub fn get_encryption_key() -> [u8; 32] {
 pub fn encrypt_value(value: &str) -> Result<String, String> {
     let key = get_encryption_key();
     let cipher = Aes256Gcm::new_from_slice(&key).map_err(|e| e.to_string())?;
-    
+
     // In a real production app, use a unique initialization vector per encryption.
-    let iv_bytes = &key[0..12]; 
+    let iv_bytes = &key[0..12];
     let iv = AesIv::from_slice(iv_bytes);
-    
+
     let ciphertext = cipher
         .encrypt(iv, value.as_bytes())
         .map_err(|e| e.to_string())?;
-        
+
     Ok(general_purpose::STANDARD.encode(ciphertext))
 }
 
 pub fn decrypt_value(encrypted_base64: &str) -> Result<String, String> {
     let key = get_encryption_key();
     let cipher = Aes256Gcm::new_from_slice(&key).map_err(|e| e.to_string())?;
-    
+
     let ciphertext = general_purpose::STANDARD
         .decode(encrypted_base64)
         .map_err(|e| e.to_string())?;
-        
+
     let iv_bytes = &key[0..12];
     let iv = AesIv::from_slice(iv_bytes);
-    
+
     let plaintext = cipher
         .decrypt(iv, ciphertext.as_slice())
         .map_err(|e| e.to_string())?;
-        
+
     String::from_utf8(plaintext).map_err(|e| e.to_string())
 }
 
@@ -81,7 +81,7 @@ mod tests {
     fn test_invalid_decrypt() {
         let res = decrypt_value("not-base64");
         assert!(res.is_err());
-        
+
         // Valid base64 but invalid ciphertext format (too short for GCM, or bad tag)
         let res2 = decrypt_value("SGVsbG8="); // "Hello" base64 encoded
         assert!(res2.is_err());
@@ -95,7 +95,7 @@ mod tests {
     fn test_tamper_detection() {
         let original = "secret_password";
         let encrypted = encrypt_value(original).unwrap();
-        
+
         // Modify one character in the base64 string
         let mut tampered = encrypted.clone();
         if tampered.len() > 10 {
@@ -103,7 +103,7 @@ mod tests {
             let new_char = if last_char == 'A' { 'B' } else { 'A' };
             tampered.push(new_char);
         }
-        
+
         let result = decrypt_value(&tampered);
         // Should fail because AES-GCM tags won't match or base64 decoding might fail if we hit padding
         assert!(result.is_err());

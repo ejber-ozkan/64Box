@@ -1,5 +1,5 @@
+use crate::models::{ResolvedPath, ScannedRom};
 use std::path::{Path, PathBuf};
-use crate::models::{ScannedRom, ResolvedPath};
 
 #[tauri::command]
 pub async fn scan_rom_directory(directory: String) -> Result<Vec<ScannedRom>, String> {
@@ -71,31 +71,40 @@ pub async fn scan_rom_directory(directory: String) -> Result<Vec<ScannedRom>, St
 }
 
 #[tauri::command]
-pub async fn download_media_asset(url: String, dest_dir: String, filename: String) -> Result<ResolvedPath, String> {
+pub async fn download_media_asset(
+    url: String,
+    dest_dir: String,
+    filename: String,
+) -> Result<ResolvedPath, String> {
     let dest = PathBuf::from(&dest_dir);
     if !dest.exists() {
         std::fs::create_dir_all(&dest).map_err(|e| format!("Could not create directory: {}", e))?;
     }
-    
+
     let safe_filename = filename.replace("\\", "/");
     let full_path = dest.join(PathBuf::from(&safe_filename));
-    
+
     if let Some(parent) = full_path.parent() {
         if !parent.exists() {
-            std::fs::create_dir_all(parent).map_err(|e| format!("Could not create sub-directory: {}", e))?;
+            std::fs::create_dir_all(parent)
+                .map_err(|e| format!("Could not create sub-directory: {}", e))?;
         }
     }
 
     let response = reqwest::get(&url)
         .await
         .map_err(|e| format!("Failed to download {}: {}", url, e))?;
-        
+
     if !response.status().is_success() {
-        return Err(format!("Download failed with status: {}", response.status()));
+        return Err(format!(
+            "Download failed with status: {}",
+            response.status()
+        ));
     }
-    
+
     let bytes = response.bytes().await.map_err(|e| e.to_string())?;
-    std::fs::write(&full_path, bytes).map_err(|e| format!("Failed to write file {}: {}", full_path.display(), e))?;
+    std::fs::write(&full_path, bytes)
+        .map_err(|e| format!("Failed to write file {}: {}", full_path.display(), e))?;
 
     Ok(ResolvedPath {
         exists: true,
@@ -121,18 +130,20 @@ pub async fn resolve_media_path(base_dir: String, filename: String) -> ResolvedP
 pub async fn find_all_media_variants(base_dir: String, filename: String) -> Vec<String> {
     let mut results = Vec::new();
     let full = PathBuf::from(&base_dir).join(&filename);
-    
+
     if full.exists() {
         results.push(full.to_string_lossy().to_string());
     }
 
     let path = Path::new(&filename);
-    if let (Some(stem), Some(ext), Some(parent)) = (path.file_stem(), path.extension(), path.parent()) {
+    if let (Some(stem), Some(ext), Some(parent)) =
+        (path.file_stem(), path.extension(), path.parent())
+    {
         let stem_str = stem.to_string_lossy();
         let ext_str = ext.to_string_lossy();
         for i in 1..=9 {
             let mut found_any = false;
-            
+
             let variant_name = format!("{}_{}.{}", stem_str, i, ext_str);
             let variant_full = PathBuf::from(&base_dir).join(parent).join(&variant_name);
             if variant_full.exists() {
@@ -153,7 +164,7 @@ pub async fn find_all_media_variants(base_dir: String, filename: String) -> Vec<
             }
         }
     }
-    
+
     results
 }
 
@@ -171,8 +182,9 @@ mod tests {
 
         let res = resolve_media_path(
             dir.path().to_string_lossy().to_string(),
-            "test.png".to_string()
-        ).await;
+            "test.png".to_string(),
+        )
+        .await;
 
         assert!(res.exists);
         assert!(res.absolute_path.contains("test.png"));
@@ -182,15 +194,12 @@ mod tests {
     async fn test_find_all_media_variants() {
         let dir = tempdir().unwrap();
         let base = dir.path().to_string_lossy().to_string();
-        
+
         File::create(dir.path().join("game.png")).unwrap();
         File::create(dir.path().join("game_1.png")).unwrap();
         File::create(dir.path().join("game_a.png")).unwrap();
 
-        let variants = find_all_media_variants(
-            base,
-            "game.png".to_string()
-        ).await;
+        let variants = find_all_media_variants(base, "game.png".to_string()).await;
 
         assert_eq!(variants.len(), 3);
         assert!(variants.iter().any(|v| v.contains("game.png")));
@@ -202,7 +211,7 @@ mod tests {
     async fn test_scan_rom_directory() {
         let dir = tempdir().unwrap();
         let base = dir.path().to_string_lossy().to_string();
-        
+
         // Valid ROM
         File::create(dir.path().join("game.d64")).unwrap();
         // Valid but uppercase
@@ -215,7 +224,7 @@ mod tests {
         File::create(sub.join("nested.prg")).unwrap();
 
         let roms = scan_rom_directory(base).await.unwrap();
-        
+
         // Should find 3 roms (game.d64, GAME2.T64, nested.prg)
         assert_eq!(roms.len(), 3);
         assert!(roms.iter().any(|r| r.filename == "game.d64"));
@@ -232,7 +241,9 @@ mod tests {
     #[tokio::test]
     async fn test_scan_rom_directory_empty() {
         let dir = tempdir().unwrap();
-        let roms = scan_rom_directory(dir.path().to_string_lossy().to_string()).await.unwrap();
+        let roms = scan_rom_directory(dir.path().to_string_lossy().to_string())
+            .await
+            .unwrap();
         assert_eq!(roms.len(), 0);
     }
 
@@ -241,8 +252,10 @@ mod tests {
         let dir = tempdir().unwrap();
         let file_path = dir.path().join("test.bin");
         std::fs::write(&file_path, b"hello").unwrap();
-        
-        let bytes = read_file_bytes(file_path.to_string_lossy().to_string()).await.unwrap();
+
+        let bytes = read_file_bytes(file_path.to_string_lossy().to_string())
+            .await
+            .unwrap();
         assert_eq!(bytes, b"hello");
     }
 }

@@ -3,6 +3,7 @@
 import React, { useRef, useEffect } from 'react';
 import { Game } from '../types/game';
 import { BigBoxTileMedia } from './BigBoxTileMedia';
+import { getPrimaryStudioLabel } from '../lib/game-display';
 
 interface HorizontalRailProps {
   title: string;
@@ -15,12 +16,6 @@ interface HorizontalRailProps {
   loop?: boolean;
   isMouseFocusEnabled?: boolean;
   isFavorite?: (gameId: string) => boolean;
-}
-
-function getRailStudioLabel(game: Game) {
-  const publisher = game.publisher?.name && game.publisher.name !== '(Not Published)' ? game.publisher.name : '';
-  const developer = game.developer?.name && game.developer.name !== '(Unknown)' ? game.developer.name : '';
-  return publisher || developer || 'Unknown';
 }
 
 export function HorizontalRail({ 
@@ -77,7 +72,8 @@ export function HorizontalRail({
 
       <div 
         ref={scrollRef}
-        className="flex gap-8 overflow-x-hidden px-[8%] py-5 scroll-smooth"
+        className="no-scrollbar flex gap-8 overflow-x-auto overflow-y-hidden px-[8%] py-10 scroll-smooth"
+        style={{ msOverflowStyle: 'none', scrollbarWidth: 'none' }}
       >
         {displayGames.map((game, idx) => {
           const isFocused = isActive && (idx === internalSelectedIndex);
@@ -122,7 +118,7 @@ export function HorizontalRail({
                   {game.name}
                 </div>
                 <div className="text-xs text-white/60 font-medium mt-1 truncate">
-                  {getRailStudioLabel(game)}
+                  {getPrimaryStudioLabel(game)}
                 </div>
               </div>
 

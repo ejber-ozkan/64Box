@@ -2,6 +2,27 @@
 
 All notable changes to this project will be documented in this file.
 
+## [0.2] - 2026-03-14
+
+### Added
+- Split major frontend hotspots into focused hooks and subcomponents for BigBox, Steam detail, settings, and the library shell.
+- Added architecture review notes documenting new component and hook boundaries.
+- Added explicit SQLite support indexes, persisted `GameCoverIndex`, and FTS5-backed `GameSearchIndex`.
+- Added backend fallback so older databases without `GameSearchIndex` still search through the legacy `LIKE` path instead of failing.
+- Added frontend and backend tests for new navigation, helper, and database support logic.
+
+### Changed
+- Reworked game list loading to fetch ordered IDs first and hydrate detail rows separately, removing wide-row sorting from the hot path.
+- Updated the database import flow so fresh MDB/CSV imports create indexes, cover lookup, and FTS support objects automatically.
+- Updated runtime DB initialization so older local databases self-heal support tables and indexes on app startup.
+- Normalized surfaced app versioning to `0.2.0`.
+- Expanded Windows setup docs with the official Microsoft Access Database Engine download link.
+
+### Fixed
+- Fixed search failures on older local databases where `GameSearchIndex` was missing.
+- Fixed remaining database hot paths around cover lookup and search latency.
+- Fixed root local backup file handling by ignoring `gb64.sqlite.bk`.
+
 ## [0.1] - 2026-03-14
 
 ### Added

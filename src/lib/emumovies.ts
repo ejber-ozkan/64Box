@@ -8,7 +8,6 @@
  * System Name for C64: "Commodore 64"
  */
 
-const EMUMOVIES_BASE = 'https://api.emumovies.com/api'; // or api.gamesdbase.com
 const C64_SYSTEM = 'Commodore_64';
 
 let currentSessionId: string | null = null;
@@ -19,6 +18,14 @@ export interface EmuMoviesSearchResult {
   mediaType: string;
   url: string;
   previewUrl: string;
+}
+
+export async function getVideoSnapUrl(userOrApi: string, apiOrGameName: string, maybeGameName?: string): Promise<string | null> {
+  const user = maybeGameName ? userOrApi : '';
+  const api = maybeGameName ? apiOrGameName : userOrApi;
+  const gameName = maybeGameName ?? apiOrGameName;
+  const results = await searchEmuMovies(user, api, gameName, 'Video');
+  return results[0]?.url || null;
 }
 
 /**
@@ -99,7 +106,7 @@ export async function downloadEmuMoviesAsset(
   destDir: string,
   filename: string
 ): Promise<{ success: boolean; localPath?: string; error?: string }> {
-  const isTauri = typeof window !== 'undefined' && (window as any).__TAURI_INTERNALS__ !== undefined;
+  const isTauri = typeof window !== 'undefined' && '__TAURI_INTERNALS__' in window;
 
   if (!isTauri) {
     return { success: true, localPath: url };
@@ -107,7 +114,7 @@ export async function downloadEmuMoviesAsset(
 
   try {
     const { invoke } = await import('@tauri-apps/api/core');
-    const result = await invoke<any>(
+    const result = await invoke<{ absolute_path: string }>(
       'download_media_asset',
       { url, destDir, filename }
     );

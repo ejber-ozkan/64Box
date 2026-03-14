@@ -26,9 +26,12 @@ body {
 }
 
 .custom-scrollbar-hidden, .no-scrollbar {
-  -ms-overflow-style: none;
-  scrollbar-width: none;
+  -ms-overflow-style: none !important;
+  scrollbar-width: none !important;
 }
 .custom-scrollbar-hidden::-webkit-scrollbar, .no-scrollbar::-webkit-scrollbar {
-  display: none;
+  width: 0 !important;
+  height: 0 !important;
+  display: none !important;
+  background: transparent !important;
 }
