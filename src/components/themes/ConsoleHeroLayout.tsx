@@ -1,7 +1,6 @@
 "use client";
 
-import { useEffect } from 'react';
-import { Game } from '../../types/game';
+import { useEffect, useMemo, useCallback } from 'react';
 import { useSettings } from '../../contexts/SettingsContext';
 import { ImageSlider } from '../ImageSlider';
 import { SidPlayer } from '../SidPlayer';
@@ -28,6 +27,25 @@ export function ConsoleHeroLayout({ game, onBack, nav, onFullscreen }: DetailLay
     ? resolveMediaPath('screenshot', game.videoSnapFilename) 
     : (game.screenshotFilename ? resolveMediaPath('screenshot', game.screenshotFilename) : '');
 
+  const availableMedia = useMemo(() => {
+    const items: Array<{ id: 'gameplay' | 'titlescreen' | 'boxfront' | 'extras'; zone: 'media-gameplay' | 'media-titlescreen' | 'media-boxfront' | 'media-extras' }> = [
+      { id: 'gameplay', zone: 'media-gameplay' },
+    ];
+    if (extras.length > 0) items.push({ id: 'extras', zone: 'media-extras' });
+    if (game.titlescreenFilename) items.push({ id: 'titlescreen', zone: 'media-titlescreen' });
+    if (game.boxFrontFilename || game.coverPath) items.push({ id: 'boxfront', zone: 'media-boxfront' });
+    return items;
+  }, [extras.length, game.boxFrontFilename, game.coverPath, game.titlescreenFilename]);
+
+  const cycleMedia = useCallback((direction: 'previous' | 'next') => {
+    const currentIndex = Math.max(availableMedia.findIndex((item) => item.id === activeMedia), 0);
+    const delta = direction === 'next' ? 1 : -1;
+    const nextIndex = (currentIndex + delta + availableMedia.length) % availableMedia.length;
+    const nextMedia = availableMedia[nextIndex];
+    setActiveMedia(nextMedia.id);
+    nav.setFocusedZone(nextMedia.zone);
+  }, [activeMedia, availableMedia, nav]);
+
   // Register theme actions
   useEffect(() => {
     nav.registerAction('play', () => document.getElementById('play-game-btn')?.click());
@@ -39,11 +57,16 @@ export function ConsoleHeroLayout({ game, onBack, nav, onFullscreen }: DetailLay
     nav.registerAction('media-titlescreen', () => { setActiveMedia('titlescreen'); onFullscreen(game.titlescreenFilename); });
     nav.registerAction('media-boxfront', () => { setActiveMedia('boxfront'); onFullscreen(game.boxFrontFilename); });
     nav.registerAction('media-extras', () => setActiveMedia('extras'));
-  }, [nav, onFullscreen, game]);
+    nav.registerTabActions({
+      previous: () => cycleMedia('previous'),
+      next: () => cycleMedia('next'),
+    });
+  }, [cycleMedia, nav, onFullscreen, game]);
 
   const zoneLabels: Record<string, string> = {
-    play: '▶ Play Desktop [A]',
-    'play-web': '▶ Play Browser [A]',
+    play: '▶ Launch Emulator [A]',
+    'play-web': '▶ Play Embedded [A]',
+    favorite: '♥ Favorite [A]',
     sid: '🎵 SID Music [A]',
     'media-gameplay': '🕹️ Gameplay [A]',
     'media-titlescreen': '🖼️ Title [A]',
@@ -108,6 +131,15 @@ export function ConsoleHeroLayout({ game, onBack, nav, onFullscreen }: DetailLay
                   className="w-full h-full object-cover"
                 />
               )}
+           </div>
+
+           <div className="mx-auto mb-8 w-full max-w-[1200px] flex flex-col gap-4 lg:flex-row lg:items-start">
+             <div className="w-full max-w-[360px]">
+               <PlayButton game={game} nav={nav} />
+             </div>
+             <div className="w-full max-w-[220px]">
+               <ScrapeButton game={game} />
+             </div>
            </div>
 
            {/* Carousel Strip */}
@@ -272,8 +304,6 @@ export function ConsoleHeroLayout({ game, onBack, nav, onFullscreen }: DetailLay
               </div>
 
               <div className="mt-auto flex flex-col gap-4">
-                 <ScrapeButton game={game} />
-                 <PlayButton game={game} nav={nav} />
                  <div 
                     onMouseEnter={() => nav.hoverZone('sid')}
                     className={`rounded-xl transition-all ${nav.focusCls('sid')}`}

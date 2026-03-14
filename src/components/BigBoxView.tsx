@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useEffect, useCallback, useRef } from 'react';
+import React, { useState, useEffect, useCallback, useMemo, useRef } from 'react';
 import { Game } from '../types/game';
 import { Settings } from '../contexts/SettingsContext';
 import { HorizontalRail } from './HorizontalRail';
@@ -8,7 +8,7 @@ import { getDbGames, exitApp } from '../lib/tauri-bridge';
 import { useFavorites } from '../hooks/useFavorites';
 import { useGamepad } from '../hooks/useGamepad';
 import { useInputMode } from '../hooks/useInputMode';
-import { ImageSlider } from './ImageSlider';
+import { BigBoxTileMedia } from './BigBoxTileMedia';
 import { GameFilters } from '../lib/tauri-bridge';
 
 interface BigBoxViewProps {
@@ -31,6 +31,16 @@ type RailCategory = {
   letter?: string;
 };
 
+type KeyEventLike = Pick<KeyboardEvent, 'key'> | Pick<React.KeyboardEvent, 'key'>;
+
+const LETTERS = ['#', 'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z'] as const;
+
+function getRailStudioLabel(game: Game) {
+  const publisher = game.publisher?.name && game.publisher.name !== '(Not Published)' ? game.publisher.name : '';
+  const developer = game.developer?.name && game.developer.name !== '(Unknown)' ? game.developer.name : '';
+  return publisher || developer || 'Unknown';
+}
+
 export function BigBoxView({
   settings,
   onSelectGame,
@@ -41,7 +51,7 @@ export function BigBoxView({
   filters,
   onFiltersChange,
 }: BigBoxViewProps) {
-  const { favorites } = useFavorites();
+  const { favorites, toggleFavorite, isFavorite } = useFavorites();
   const { isMouseMode, onGamepadInput } = useInputMode();
   const [activeRailIndex, setActiveRailIndex] = useState(0); // -1 = Header
   const [activeHeaderRow, setActiveHeaderRow] = useState(0); // 0: Buttons, 1: Genres, 2: Letters
@@ -56,11 +66,41 @@ export function BigBoxView({
   const [totalGameCount, setTotalGameCount] = useState(0);
   const [loading, setLoading] = useState(true);
 
-  const letters = ['#', 'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z'];
-  const HEADER_HEIGHT = 320;
+  const HEADER_HEIGHT_FALLBACK = 320;
 
   const containerRef = useRef<HTMLDivElement>(null);
+  const headerRef = useRef<HTMLElement>(null);
   const lastEscTime = useRef<number>(0);
+  const pendingSectionDirectionRef = useRef<'up' | 'down' | null>(null);
+
+  const getHeaderHeight = useCallback(() => {
+    return headerRef.current?.offsetHeight ?? HEADER_HEIGHT_FALLBACK;
+  }, []);
+
+  const getGridColumns = useCallback(() => {
+    if (typeof window === 'undefined') return 6;
+    if (window.innerWidth >= 1536) return 6;
+    if (window.innerWidth >= 1280) return 5;
+    if (window.innerWidth >= 1024) return 4;
+    if (window.innerWidth >= 640) return 2;
+    return 1;
+  }, []);
+
+  const scrollElementBelowHeader = useCallback((element: HTMLElement, extraOffset = 0) => {
+    const container = containerRef.current;
+    if (!container) return;
+
+    const headerHeight = getHeaderHeight();
+    const containerRect = container.getBoundingClientRect();
+    const elementRect = element.getBoundingClientRect();
+    const targetTop =
+      container.scrollTop + elementRect.top - containerRect.top - headerHeight - extraOffset;
+
+    container.scrollTo({
+      top: Math.max(0, targetTop),
+      behavior: 'smooth',
+    });
+  }, [getHeaderHeight]);
 
   // Double Esc Exit
   useEffect(() => {
@@ -116,7 +156,7 @@ export function BigBoxView({
 
         // 4. Initialize Alphabet Rails structure (titles only, no games yet)
         if (!query) {
-          const rails: RailCategory[] = letters.map(l => ({
+          const rails: RailCategory[] = LETTERS.map(l => ({
             id: `alpha-${l}`,
             title: l === '#' ? '0-9 & Symbols' : `Letter ${l}`,
             games: [],
@@ -143,7 +183,25 @@ export function BigBoxView({
       }
     }
     initData();
-  }, [settings.recentlyPlayedIds, favorites.length, searchInput, filters]);
+  }, [settings.recentlyPlayedIds, favorites, searchInput, filters]);
+
+  const rails = useMemo<RailCategory[]>(() => {
+    if (searchInput) {
+      return [...alphabetRails];
+    }
+
+    const nextRails: RailCategory[] = [];
+    if (recentGames.length > 0) nextRails.push({ id: 'recent', title: 'Recent Games', games: recentGames, type: 'recent', scale: 'large' });
+    if (favoriteGames.length > 0) nextRails.push({ id: 'favorites', title: 'Your Favorites', games: favoriteGames, type: 'favorites' });
+    if (classicGames.length > 0) nextRails.push({ id: 'classics', title: 'Legendary Classics', games: classicGames, type: 'classics' });
+    nextRails.push(...alphabetRails);
+    return nextRails;
+  }, [searchInput, alphabetRails, recentGames, favoriteGames, classicGames]);
+
+  const currentRail = activeRailIndex >= 0 ? rails[activeRailIndex] : null;
+  const currentRailId = currentRail?.id ?? null;
+  const currentRailType = currentRail?.type ?? null;
+  const currentFocusedIndex = currentRail ? (railFocusIndices[currentRail.id] || 0) : 0;
 
   // Vertical Lazy Loading Logic
   useEffect(() => {
@@ -165,27 +223,15 @@ export function BigBoxView({
     if (currentRail.letter) {
       loadRailGames(currentRail.id, currentRail.letter);
     }
-  }, [activeRailIndex, alphabetRails.length, filters, searchInput]);
+  }, [activeRailIndex, alphabetRails.length, filters, searchInput, rails]);
 
-  // Combine logic
-  const rails: RailCategory[] = [];
-  
-  if (searchInput) {
-     rails.push(...alphabetRails); // alphabetRails contains the search result during search
-  } else {
-    if (recentGames.length > 0) rails.push({ id: 'recent', title: 'Recent Games', games: recentGames, type: 'recent', scale: 'large' });
-    if (favoriteGames.length > 0) rails.push({ id: 'favorites', title: 'Your Favorites', games: favoriteGames, type: 'favorites' });
-    if (classicGames.length > 0) rails.push({ id: 'classics', title: 'Legendary Classics', games: classicGames, type: 'classics' });
-    rails.push(...alphabetRails);
-  }
-
-  const handleKeyDown = useCallback((e: React.KeyboardEvent | { key: string }) => {
+  const handleKeyDown = useCallback((e: KeyEventLike) => {
     const isInputFocused = document.activeElement?.tagName === 'INPUT';
     
     const rowCounts = [
       3, // Row 0: Search, Settings, Exit
       genres.length, // Row 1: Genres
-      letters.length // Row 2: Letters
+      LETTERS.length // Row 2: Letters
     ];
 
     // If typing in search, only allow Escape or ArrowDown to exit focus
@@ -201,14 +247,14 @@ export function BigBoxView({
         return;
       }
       // Block all other keys from triggering game navigation while typing
-      if ((e as any).key !== 'Escape') return;
+      return;
     }
 
     const isHeaderActive = activeRailIndex === -1;
     const rail = rails[activeRailIndex];
     const curIdx = rail ? (railFocusIndices[rail.id] || 0) : 0;
     const isGrid = rail?.type === 'alphabet';
-    const cols = 10;
+    const cols = getGridColumns();
 
     if (e.key === 'ArrowDown') {
       if (isHeaderActive) {
@@ -223,15 +269,11 @@ export function BigBoxView({
         if (nextIdx < rail.games.length) {
           setRailFocusIndices(prev => ({ ...prev, [rail.id]: nextIdx }));
         } else {
-          // Entering next section at the top (column 0 or same column)
           const nextRailIdx = activeRailIndex + 1;
           if (nextRailIdx < rails.length) {
             const nextRail = rails[nextRailIdx];
-            const currentCol = curIdx % cols;
-            // For grids, try to stay in same column. For rails, always 0.
-            const targetIdx = nextRail.type === 'alphabet' ? Math.min(currentCol, nextRail.games.length - 1) : 0;
-            
-            setRailFocusIndices(prev => ({ ...prev, [nextRail.id]: targetIdx }));
+            pendingSectionDirectionRef.current = 'down';
+            setRailFocusIndices(prev => ({ ...prev, [nextRail.id]: 0 }));
             setActiveRailIndex(nextRailIdx);
           }
         }
@@ -239,7 +281,7 @@ export function BigBoxView({
         const nextRailIdx = activeRailIndex + 1;
         if (nextRailIdx < rails.length) {
           const nextRail = rails[nextRailIdx];
-          // Always land on top/start of next rail
+          pendingSectionDirectionRef.current = 'down';
           setRailFocusIndices(prev => ({ ...prev, [nextRail.id]: 0 }));
           setActiveRailIndex(nextRailIdx);
         }
@@ -260,20 +302,9 @@ export function BigBoxView({
           const prevRailIdx = activeRailIndex - 1;
           if (prevRailIdx >= 0) {
             const prevRail = rails[prevRailIdx];
-            const currentCol = curIdx % cols;
-            
-            if (prevRail.type === 'alphabet') {
-              // Target the BOTTOM ROW of the previous grid
-              const totalGames = prevRail.games.length;
-              const fullRows = Math.floor((totalGames - 1) / cols);
-              const targetIdx = Math.min(fullRows * cols + currentCol, totalGames - 1);
-              
-              setRailFocusIndices(prev => ({ ...prev, [prevRail.id]: targetIdx }));
-            } else {
-              // Horizontal rails: Land on last focused or last item
-              const targetIdx = railFocusIndices[prevRail.id] ?? 0;
-              setRailFocusIndices(prev => ({ ...prev, [prevRail.id]: targetIdx }));
-            }
+            pendingSectionDirectionRef.current = 'up';
+            const targetIdx = Math.max(prevRail.games.length - 1, 0);
+            setRailFocusIndices(prev => ({ ...prev, [prevRail.id]: targetIdx }));
             setActiveRailIndex(prevRailIdx);
           } else {
             setActiveRailIndex(-1);
@@ -284,12 +315,8 @@ export function BigBoxView({
         const prevRailIdx = activeRailIndex - 1;
         if (prevRailIdx >= 0) {
           const prevRail = rails[prevRailIdx];
-          if (prevRail.type === 'alphabet') {
-              // Moving from horizontal rail to a grid: land on its BOTTOM row
-              const totalGames = prevRail.games.length;
-              const fullRows = Math.floor((totalGames - 1) / cols);
-              setRailFocusIndices(prev => ({ ...prev, [prevRail.id]: Math.min(fullRows * cols, totalGames - 1) }));
-          }
+          pendingSectionDirectionRef.current = 'up';
+          setRailFocusIndices(prev => ({ ...prev, [prevRail.id]: Math.max(prevRail.games.length - 1, 0) }));
           setActiveRailIndex(prevRailIdx);
         } else {
           setActiveRailIndex(-1);
@@ -362,7 +389,7 @@ export function BigBoxView({
           onFiltersChange({ ...filters, genre: filters.genre === genre ? undefined : genre });
           setActiveRailIndex(0); // Jump to results
         } else if (activeHeaderRow === 2) {
-          const letter = letters[activeHeaderItemIndex];
+          const letter = LETTERS[activeHeaderItemIndex];
           const targetId = `alpha-${letter}`;
           const targetRailIdx = rails.findIndex(r => r.id === targetId);
           if (targetRailIdx !== -1) {
@@ -374,8 +401,13 @@ export function BigBoxView({
         const game = rail?.games[curIdx];
         if (game) onSelectGame(game);
       }
+    } else if (e.key === 'f' || e.key === 'F') {
+      const game = rail?.games[curIdx];
+      if (game) {
+        toggleFavorite(game.id.toString());
+      }
     }
-  }, [activeRailIndex, rails, railFocusIndices, onSelectGame, onShowSettings, activeHeaderItemIndex, activeHeaderRow, genres, letters, filters, onFiltersChange]);
+  }, [activeRailIndex, getGridColumns, rails, railFocusIndices, onSelectGame, onShowSettings, activeHeaderItemIndex, activeHeaderRow, genres, filters, onFiltersChange, toggleFavorite]);
 
   useGamepad({
     onButtonDown: (btn) => {
@@ -388,6 +420,7 @@ export function BigBoxView({
       if (btn === 'LB') handleKeyDown({ key: 'LB_RB_LEFT' });
       if (btn === 'RB') handleKeyDown({ key: 'LB_RB_RIGHT' });
       if (btn === 'A') handleKeyDown({ key: 'Enter' });
+      if (btn === 'Y') handleKeyDown({ key: 'F' });
       if (btn === 'START') onShowSettings();
       if (btn === 'B') {
         if (document.activeElement?.tagName === 'INPUT') {
@@ -399,35 +432,48 @@ export function BigBoxView({
     }
   });
 
-  useEffect(() => {
-    window.addEventListener('keydown', handleKeyDown as any);
-    return () => window.removeEventListener('keydown', handleKeyDown as any);
+  const handleWindowKeyDown = useCallback((event: KeyboardEvent) => {
+    handleKeyDown(event);
   }, [handleKeyDown]);
+
+  useEffect(() => {
+    window.addEventListener('keydown', handleWindowKeyDown);
+    return () => window.removeEventListener('keydown', handleWindowKeyDown);
+  }, [handleWindowKeyDown]);
 
   // Main Section Jump Scroller
   // Uses manual offset calculation for absolute precision under the sticky header
   useEffect(() => {
     if (containerRef.current) {
       if (activeRailIndex === -1) {
+        pendingSectionDirectionRef.current = null;
         containerRef.current.scrollTo({ top: 0, behavior: 'smooth' });
       } else {
         const mainEl = containerRef.current.querySelector('main');
         if (mainEl) {
           const railEl = mainEl.children[activeRailIndex] as HTMLElement;
           if (railEl) {
-            const targetTop = railEl.offsetTop - HEADER_HEIGHT;
-            containerRef.current.scrollTo({
-              top: targetTop,
-              behavior: 'smooth'
-            });
+            const anchorEl = railEl.querySelector('[data-rail-anchor]') as HTMLElement | null;
+            const gridEl = railEl.querySelector('.grid');
+            const tile = gridEl?.children[currentFocusedIndex] as HTMLElement | undefined;
+            const sectionDirection = pendingSectionDirectionRef.current;
+
+            if (sectionDirection === 'up' && tile && currentRailType === 'alphabet') {
+              tile.scrollIntoView({ behavior: 'smooth', block: 'end' });
+            } else {
+              scrollElementBelowHeader(anchorEl ?? railEl);
+            }
+
+            pendingSectionDirectionRef.current = null;
           }
         }
       }
     }
-  }, [activeRailIndex]);
+  }, [activeRailIndex, currentFocusedIndex, currentRailType, scrollElementBelowHeader]);
   
-  // Vertical Tile Tracker
-  // Keeps the focused tile visible within the grid without fighting section jumps
+  // Keeps the focused tile visible while navigating within an alphabet grid.
+  // Section jumps are handled by the effect above and should not be re-adjusted
+  // when the rail lazily loads its game data.
   const lastRail = useRef(activeRailIndex);
   useEffect(() => {
     const isJump = lastRail.current !== activeRailIndex;
@@ -435,44 +481,35 @@ export function BigBoxView({
 
     // Jumping is handled by the Main Section effect above
     if (isJump || activeRailIndex === -1) return;
+    if (currentRailType !== 'alphabet' || !containerRef.current || !currentRailId) return;
 
-    const rail = rails[activeRailIndex];
-    if (rail?.type !== 'alphabet' || !containerRef.current) return;
-
-    const focusedIdx = railFocusIndices[rail.id] || 0;
+    const headerHeight = getHeaderHeight();
+    const containerRect = containerRef.current.getBoundingClientRect();
     const mainEl = containerRef.current.querySelector('main');
     const railEl = mainEl?.children[activeRailIndex] as HTMLElement;
     const gridEl = railEl?.querySelector('.grid');
-    const tile = gridEl?.children[focusedIdx] as HTMLElement;
+    const tile = gridEl?.children[currentFocusedIndex] as HTMLElement;
 
     if (tile) {
       const rect = tile.getBoundingClientRect();
+      const visibleTop = containerRect.top + headerHeight;
       const footerBuffer = 80;
       
-      if (rect.top < HEADER_HEIGHT) {
+      if (rect.top < visibleTop) {
         // Only scroll if we are moving UP and hit the header border
-        tile.scrollIntoView({ behavior: 'smooth', block: 'start' });
-        // After scrollIntoView, we might need a manual nudge if block:start hit the physical top
-        setTimeout(() => {
-           if (containerRef.current && railEl && tile) {
-             const target = (railEl.offsetTop + tile.offsetTop) - HEADER_HEIGHT;
-             if (Math.abs(containerRef.current.scrollTop - target) > 5) {
-                containerRef.current.scrollTo({ top: target, behavior: 'smooth' });
-             }
-           }
-        }, 300);
-      } else if (rect.bottom > window.innerHeight - footerBuffer) {
+        scrollElementBelowHeader(tile, 12);
+      } else if (rect.bottom > containerRect.bottom - footerBuffer) {
         // Scroll into view at bottom
         tile.scrollIntoView({ behavior: 'smooth', block: 'end' });
       }
     }
-  }, [activeRailIndex, railFocusIndices, rails]);
+  }, [activeRailIndex, currentFocusedIndex, currentRailId, currentRailType, getHeaderHeight, scrollElementBelowHeader]);
 
   return (
     <div 
       ref={containerRef}
       className="fixed inset-0 bg-[#0a0a0f] text-white flex flex-col overflow-y-auto no-scrollbar select-none scroll-smooth"
-      onKeyDown={handleKeyDown as any}
+      onKeyDown={handleKeyDown}
       tabIndex={0}
     >
       {/* Cinematic Background Blur */}
@@ -482,7 +519,7 @@ export function BigBoxView({
       </div>
 
       {/* Top Bar - Fixed */}
-      <header className="sticky top-0 z-50 bg-[#0a0a0f]/90 backdrop-blur-3xl border-b border-white/5 flex flex-col">
+      <header ref={headerRef} className="sticky top-0 z-50 border-b border-white/5 bg-[linear-gradient(180deg,rgba(7,11,18,0.96),rgba(10,10,15,0.82))] backdrop-blur-3xl flex flex-col shadow-[0_20px_60px_rgba(2,6,23,0.45)]">
         {/* Row 0: Search & Buttons */}
         <div className="px-12 py-6 flex items-center justify-between">
           <div className="flex items-center gap-6">
@@ -490,7 +527,7 @@ export function BigBoxView({
               <h1 className="text-4xl font-black italic tracking-tighter text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-indigo-600 leading-none">
                 64Box
               </h1>
-              <div className="text-[10px] font-bold tracking-[0.3em] uppercase text-white/40 ml-1">Commodore 64 Edition</div>
+              <div className="text-[10px] font-bold tracking-[0.3em] uppercase text-white/40 ml-1">GB64 Frontend</div>
             </div>
             
             <div className="h-8 w-px bg-white/10 mx-4"></div>
@@ -596,7 +633,7 @@ export function BigBoxView({
         <div className="px-12 pb-6 flex items-center gap-2 overflow-x-hidden border-t border-white/5 pt-4 justify-center max-w-full">
           <div className="text-[10px] font-black text-white/20 uppercase tracking-[0.2em] mr-4 shrink-0">Jump To</div>
           <div className="flex items-center gap-0.5 overflow-x-auto no-scrollbar scroll-smooth flex-1 justify-center">
-            {letters.map((l, i) => {
+            {LETTERS.map((l, i) => {
               const isFocused = activeRailIndex === -1 && activeHeaderRow === 2 && activeHeaderItemIndex === i;
               return (
                 <button
@@ -638,17 +675,18 @@ export function BigBoxView({
 
             if (rail.type === 'alphabet') {
               return (
-                <div key={rail.id} className={`flex flex-col gap-6 py-12 transition-all duration-700 scroll-mt-[340px] ${isActive ? 'opacity-100' : 'opacity-20 translate-y-4'}`}>
-                  <div className="flex items-center gap-4 px-12">
-                    <h2 className={`text-4xl font-black uppercase tracking-tighter ${isActive ? 'text-blue-400' : 'text-gray-600'}`}>
+                <div key={rail.id} className={`flex flex-col gap-8 py-14 transition-all duration-700 scroll-mt-[340px] ${isActive ? 'opacity-100' : 'opacity-25 translate-y-4'}`}>
+                  <div data-rail-anchor className="flex items-center gap-4 px-12">
+                    <h2 className={`text-4xl font-black uppercase tracking-tighter ${isActive ? 'text-blue-300' : 'text-gray-600'}`}>
                       {rail.title}
                     </h2>
-                    <div className={`h-px flex-1 bg-gradient-to-r ${isActive ? 'from-blue-900 via-blue-500 to-transparent' : 'from-gray-800 to-transparent'}`}></div>
+                    <div className={`h-px flex-1 bg-gradient-to-r ${isActive ? 'from-sky-400/70 via-cyan-300/40 to-transparent' : 'from-gray-800 to-transparent'}`}></div>
                   </div>
                   
-                  <div className="grid grid-cols-2 md:grid-cols-5 lg:grid-cols-10 gap-4 px-12">
+                  <div className="grid grid-cols-1 gap-8 px-12 sm:grid-cols-2 lg:grid-cols-4 xl:grid-cols-5 2xl:grid-cols-6 2xl:px-16">
                     {rail.games.map((game, gIdx) => {
                       const isFocused = isActive && (gIdx === focusedIdx);
+                      const hasArtwork = Boolean(game.coverPath || game.screenshotFilename);
                       return (
                         <div 
                           key={`${rail.id}-${game.id}-${gIdx}`}
@@ -659,23 +697,31 @@ export function BigBoxView({
                               setRailFocusIndices(prev => ({ ...prev, [rail.id]: gIdx }));
                             }
                           }}
-                          className={`aspect-[1.6] bg-gray-950 rounded-lg overflow-hidden border transition-all cursor-pointer relative group ${
+                          className={`group relative aspect-[1.75] cursor-pointer overflow-hidden rounded-[26px] border border-white/10 bg-[#09111b] shadow-[0_18px_60px_rgba(2,6,23,0.45)] transition-all duration-500 ${
                             isFocused 
-                              ? 'border-blue-400 scale-110 z-10 shadow-[0_0_30px_rgba(59,130,246,0.4)]' 
-                              : 'border-white/5 hover:border-white/20'
+                              ? `${hasArtwork ? 'scale-[1.3]' : 'scale-110'} z-10 border-cyan-300/80 shadow-[0_28px_80px_rgba(56,189,248,0.35)]`
+                              : 'hover:-translate-y-1 hover:border-white/20'
                           }`}
                         >
-                          <ImageSlider
-                            type="screenshot"
-                            filename={game.screenshotFilename}
-                            alt={game.name}
-                            className="w-full h-full object-cover"
-                          />
-                          <div className={`absolute inset-0 bg-black/60 flex flex-col justify-end p-2 transition-opacity ${isFocused ? 'opacity-100' : 'opacity-0 group-hover:opacity-100'}`}>
-                             <div className="text-[10px] font-bold text-white truncate leading-tight">{game.name}</div>
+                          {isFavorite(game.id.toString()) && (
+                            <div className="absolute right-4 top-4 z-10 flex h-10 w-10 items-center justify-center rounded-full border border-pink-300/60 bg-black/55 text-lg text-pink-300 shadow-[0_12px_30px_rgba(15,23,42,0.45)] backdrop-blur-md">
+                              ♥
+                            </div>
+                          )}
+                          <BigBoxTileMedia game={game} className="absolute inset-0" />
+                          <div className={`absolute inset-x-0 bottom-0 flex flex-col gap-1 border-t border-white/10 bg-[linear-gradient(180deg,rgba(2,6,23,0.08),rgba(2,6,23,0.92))] p-4 transition-all duration-500 ${isFocused ? 'translate-y-0' : ''}`}>
+                             <div className="text-[10px] font-black uppercase tracking-[0.24em] text-cyan-200/80">
+                               {game.year || 'Classic'} {game.parentGenre ? `• ${game.parentGenre}` : ''}
+                             </div>
+                             <div className="text-base font-black leading-tight text-white line-clamp-2">
+                               {game.name}
+                             </div>
+                             <div className="text-xs font-medium text-white/60 truncate">
+                               {getRailStudioLabel(game)}
+                             </div>
                           </div>
                           {isFocused && (
-                            <div className="absolute inset-0 ring-2 ring-blue-500 ring-inset pointer-events-none"></div>
+                            <div className="pointer-events-none absolute inset-0 ring-2 ring-cyan-300/70 ring-inset"></div>
                           )}
                         </div>
                       );
@@ -698,6 +744,7 @@ export function BigBoxView({
                     setActiveRailIndex(idx);
                     setRailFocusIndices(prev => ({ ...prev, [rail.id]: fIdx }));
                   }}
+                  isFavorite={isFavorite}
                   tileScale={rail.scale}
                   loop={rail.games.length > 6}
                 />
@@ -712,6 +759,7 @@ export function BigBoxView({
          <div className="flex items-center gap-8 text-[10px] font-black text-white/40 tracking-[0.2em] uppercase">
             <div className="flex items-center gap-2"><span className="w-5 h-5 bg-white/10 rounded flex items-center justify-center text-white">A</span> SELECT</div>
             <div className="flex items-center gap-2"><span className="w-5 h-5 bg-white/10 rounded flex items-center justify-center text-white">B</span> BACK</div>
+            <div className="flex items-center gap-2"><span className="w-5 h-5 bg-white/10 rounded flex items-center justify-center text-white">Y</span> FAVORITE</div>
          </div>
          
          <div className="text-[10px] font-black text-white/20 tracking-[0.2em] uppercase">

@@ -7,10 +7,18 @@ interface ImageWithFallbackProps {
   alt: string;
   className?: string;
   fallbackText?: string;
+  fit?: 'cover' | 'contain';
 }
 
-export function ImageWithFallback({ src, alt, className = '', fallbackText = 'No Image' }: ImageWithFallbackProps) {
+export function ImageWithFallback({
+  src,
+  alt,
+  className = '',
+  fallbackText = 'No Image',
+  fit = 'cover',
+}: ImageWithFallbackProps) {
   const [hasError, setHasError] = useState(false);
+  const fitClass = fit === 'contain' ? 'object-contain' : 'object-cover';
 
   if (!src || hasError) {
     return (
@@ -28,7 +36,7 @@ export function ImageWithFallback({ src, alt, className = '', fallbackText = 'No
     <img
       src={src}
       alt={alt}
-      className={`object-cover ${className}`}
+      className={`${fitClass} ${className}`}
       onError={() => setHasError(true)}
       loading="lazy"
       data-testid="image-element"

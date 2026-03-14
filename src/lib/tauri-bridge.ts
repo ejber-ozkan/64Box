@@ -312,6 +312,7 @@ export async function getDbGames(limit: number = 50, offset: number = 0, filters
       gameFilename: row.gameFilename ?? null,
       screenshotFilename: row.screenshotFilename ?? null,
       boxFrontFilename: row.boxFrontFilename ?? null,
+      coverPath: row.coverPath ?? null,
       titlescreenFilename: row.titlescreenFilename ?? null,
       videoSnapFilename: row.videoSnapFilename ?? null,
       sidFilename: row.sidFilename ?? null,

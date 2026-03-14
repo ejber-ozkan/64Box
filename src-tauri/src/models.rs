@@ -56,6 +56,7 @@ pub struct GameRow {
     pub game_filename: Option<String>,
     pub screenshot_filename: Option<String>,
     pub box_front_filename: Option<String>,
+    pub cover_path: Option<String>,
     pub titlescreen_filename: Option<String>,
     pub video_snap_filename: Option<String>,
     pub sid_filename: Option<String>,

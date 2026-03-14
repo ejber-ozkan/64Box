@@ -1,6 +1,9 @@
 # 64Box
 
-A cross-platform (Windows, Mac, Linux) modern frontend for the **GameBase64** Commodore 64 game database, built with Tauri, Rust, Next.js, and EmulatorJS. 
+A cross-platform (Windows, Mac, Linux) modern frontend for the **GameBase64** Commodore 64 game database. 
+
+> This project is a frontend for the GB64 Collection, the long-running Commodore 64 database project maintained by the GB64 Team. To learn more about the original project, visit [gb64.com](https://gb64.com/).  
+> `gb64.com ©1997-2022 The GB64 Team`
 
 ## Features
 - **Modern Next.js Frontend**: Fluid, gallery-style layouts mimicking modern gaming libraries. Fully responsive and supports Gamepad/Keyboard navigation.
@@ -10,6 +13,44 @@ A cross-platform (Windows, Mac, Linux) modern frontend for the **GameBase64** Co
 - **Smart Multi-Disk Handling**: Automatically unzips games on-the-fly and generates `.vfl` (VICE) or `.m3u` (RetroArch) playlists for multi-disk games to ensure seamless booting.
 - **Categorized Extras Gallery**: Integrated support for the **GameBase64 Extras** collection. Automatically groups Adverts, Books, Maps, and Manuals into a premium gallery view, while allowing alternate game versions (Disks/Tapes) to be launched directly.
 - **SID Support**: Native `.sid` chiptune playback directly within the game galleries.
+
+## Screenshots
+
+### BigBox Search
+![BigBox search results](docs/images/bigbox-search-results.png)
+
+### BigBox Rails
+![BigBox home rails](docs/images/bigbox-home-rails.png)
+
+### BigBox Letter Jump
+![BigBox scroll by letter](docs/images/bigbox-scroll-letter.png)
+
+### Detail View: Gallery
+![Detail view gallery tab](docs/images/detail-gallery.png)
+
+### Detail View: Extras
+![Detail view extras tab](docs/images/detail-extras.png)
+
+### Detail View: Extras Gallery
+![Detail view extras gallery tab](docs/images/detail-extras-gallery.png)
+
+## Controls and Shortcuts
+
+### Controller
+- **Library / Grid / List**: `D-pad` or `Left Stick` moves focus, `A` opens the focused game, `B` goes back or closes the current panel, `X` toggles Grid/List view, `Y` toggles favorite on the focused game, `LB` / `RB` jump by letter, and `Start` opens Settings.
+- **BigBox**: `D-pad` or `Left Stick` moves through header rows, rails, and tiles, `A` activates the focused item, `B` goes back or exits the search field, `Y` toggles favorite on the focused game, `LB` / `RB` move between sections, and `Start` opens Settings.
+- **Single Game Detail View**: `D-pad` or `Left Stick` moves between play buttons, gallery items, tabs, SID player, and favorite button, `A` activates the focused item, `B` goes back, `Y` toggles favorite, and `LB` / `RB` switch tabs or media sections.
+- **Settings**: `D-pad` or `Left Stick` navigates, `A` selects, `LB` / `RB` switch settings tabs, and `B` or `Start` saves and closes.
+
+### Keyboard
+- **Library / Grid / List**: `Arrow keys` move focus, `Enter` opens the focused game, `F` toggles favorite, `Shift+F` opens Filters, `V` toggles Grid/List view, `S` opens Settings, `PageUp` / `PageDown` jump by letter, and `Alt+Enter` toggles fullscreen.
+- **BigBox**: `Arrow keys` navigate header rows, rails, and tiles, `Enter` activates the focused item, `F` toggles favorite, and `Esc` exits the search box or, when pressed twice quickly, exits the app.
+- **Single Game Detail View**: `Arrow keys` navigate, `Enter` or `Space` activates the focused item, `F` toggles favorite, `Tab` / `Shift+Tab` or `PageUp` / `PageDown` or `[` / `]` switch tabs, and `Esc` or `Backspace` goes back.
+- **Settings**: `Arrow keys` navigate, `Enter` selects, and `Esc` saves and closes.
+
+### Notes
+- In the single game view, if fullscreen media is open, `B`, `Esc`, or `Backspace` closes the fullscreen viewer before returning to the previous screen.
+- In the library view, bumper and page-based letter jumps clear the active text search and switch back to alphabet browsing.
 
 ## 1. Prerequisites
 

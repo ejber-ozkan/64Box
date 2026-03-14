@@ -37,9 +37,10 @@ pub async fn get_db_games(
             mu.Photo as musician_photo,
             mu.Nick as musician_nick,
             mu.Grp as musician_group,
-            pr.Musician as coder_name,
-            ar.Musician as graphics_name,
-            cr.Developer as version_by,
+            cover.cover_path as cover_path,
+            pr.Programmer as coder_name,
+            ar.Artist as graphics_name,
+            ver.Developer as version_by,
             g.V_Trainers as v_trainers,
             g.V_Length as v_length,
             CASE WHEN g.V_LoadingScreen = '1' THEN 1 ELSE 0 END as v_loading_screen,
@@ -51,18 +52,41 @@ pub async fn get_db_games(
         FROM GameView gv 
         JOIN Games g ON gv.id = g.GA_Id 
         LEFT JOIN Musicians mu ON g.MU_Id = mu.MU_Id
-        LEFT JOIN Musicians pr ON g.PR_Id = pr.MU_Id
-        LEFT JOIN Musicians ar ON g.AR_Id = ar.MU_Id
-        LEFT JOIN Developers cr ON g.CR_Id = cr.DE_Id
+        LEFT JOIN (
+            SELECT
+                GA_Id,
+                MIN(Path) as cover_path
+            FROM Extras
+            WHERE LOWER(REPLACE(Path, '\\', '/')) LIKE 'cover/%'
+              AND (
+                  LOWER(Path) LIKE '%.jpg'
+                  OR LOWER(Path) LIKE '%.jpeg'
+                  OR LOWER(Path) LIKE '%.png'
+                  OR LOWER(Path) LIKE '%.webp'
+                  OR LOWER(Path) LIKE '%.gif'
+                  OR LOWER(Path) LIKE '%.bmp'
+              )
+            GROUP BY GA_Id
+        ) cover ON cover.GA_Id = g.GA_Id
+        LEFT JOIN Programmers pr ON g.PR_Id = pr.PR_Id
+        LEFT JOIN Artists ar ON g.AR_Id = ar.AR_Id
+        LEFT JOIN Developers ver ON g.DE_Id = ver.DE_Id
         WHERE 1=1".to_string();
     let mut params: Vec<String> = Vec::new();
 
     if let Some(f) = filters {
         if let Some(sq) = f.search_query {
             if !sq.is_empty() {
-                query.push_str(" AND (LOWER(gv.name) LIKE ? OR LOWER(gv.developer_name) LIKE ? OR LOWER(gv.publisher_name) LIKE ? OR LOWER(gv.musician_name) LIKE ?)");
+                query.push_str(
+                    " AND (LOWER(gv.name) LIKE ? \
+                    OR LOWER(gv.developer_name) LIKE ? \
+                    OR LOWER(gv.publisher_name) LIKE ? \
+                    OR LOWER(gv.musician_name) LIKE ? \
+                    OR LOWER(COALESCE(pr.Programmer, '')) LIKE ? \
+                    OR LOWER(COALESCE(ar.Artist, '')) LIKE ?)"
+                );
                 let pattern = format!("%{}%", sq.to_lowercase());
-                for _ in 0..4 {
+                for _ in 0..6 {
                     params.push(pattern.clone());
                 }
             }
@@ -122,6 +146,7 @@ pub async fn get_db_games(
             game_filename: row.get("gameFilename")?,
             screenshot_filename: row.get("screenshotFilename")?,
             box_front_filename: row.get("boxFrontFilename")?,
+            cover_path: row.get("cover_path")?,
             titlescreen_filename: row.get("titlescreenFilename")?,
             video_snap_filename: row.get("videoSnapFilename")?,
             sid_filename: row.get("sidFilename")?,
@@ -294,12 +319,16 @@ mod tests {
         
         {
             let conn = Connection::open(&db_path).unwrap();
-            conn.execute("CREATE TABLE Games (GA_Id TEXT, MU_Id TEXT, PR_Id TEXT, AR_Id TEXT, CR_Id TEXT, Adult TEXT, Control TEXT, PlayersFrom TEXT, PlayersTo TEXT, PlayersSim TEXT, Comment TEXT, ReviewRating TEXT, V_Trainers TEXT, V_Length TEXT, V_LoadingScreen TEXT, V_HighScoreSaver TEXT, V_IncludedDocs TEXT, V_TrueDriveEmu TEXT, V_PalNTSC TEXT, MemoText TEXT)", []).unwrap();
+            conn.execute("CREATE TABLE Games (GA_Id TEXT, MU_Id TEXT, PR_Id TEXT, AR_Id TEXT, CR_Id TEXT, DE_Id TEXT, Adult TEXT, Control TEXT, PlayersFrom TEXT, PlayersTo TEXT, PlayersSim TEXT, Comment TEXT, ReviewRating TEXT, V_Trainers TEXT, V_Length TEXT, V_LoadingScreen TEXT, V_HighScoreSaver TEXT, V_IncludedDocs TEXT, V_TrueDriveEmu TEXT, V_PalNTSC TEXT, MemoText TEXT)", []).unwrap();
             conn.execute("CREATE TABLE GameView (id TEXT, name TEXT, filename TEXT, gameFilename TEXT, screenshotFilename TEXT, boxFrontFilename TEXT, titlescreenFilename TEXT, videoSnapFilename TEXT, sidFilename TEXT, crc TEXT, year TEXT, isPal INTEGER, isNtsc INTEGER, trueDriveEmu INTEGER, isClassic INTEGER, parentGenre TEXT, subGenre TEXT, developer_name TEXT, publisher_name TEXT, musician_name TEXT, languages TEXT)", []).unwrap();
             conn.execute("CREATE TABLE Musicians (MU_Id TEXT, Photo TEXT, Nick TEXT, Grp TEXT, Musician TEXT)", []).unwrap();
+            conn.execute("CREATE TABLE Programmers (PR_Id TEXT, Programmer TEXT)", []).unwrap();
+            conn.execute("CREATE TABLE Artists (AR_Id TEXT, Artist TEXT)", []).unwrap();
             conn.execute("CREATE TABLE Developers (DE_Id TEXT, Developer TEXT)", []).unwrap();
+            conn.execute("CREATE TABLE Extras (GA_Id TEXT, Path TEXT)", []).unwrap();
 
-            conn.execute("INSERT INTO Games (GA_Id, Adult) VALUES (?, ?)", ["1", "False"]).unwrap();
+            conn.execute("INSERT INTO Artists (AR_Id, Artist) VALUES (?, ?)", ["gfx1", "Ejber Ozkan"]).unwrap();
+            conn.execute("INSERT INTO Games (GA_Id, AR_Id, Adult) VALUES (?, ?, ?)", ["1", "gfx1", "False"]).unwrap();
             conn.execute("INSERT INTO GameView (id, name, filename, parentGenre, subGenre, isPal, isNtsc, trueDriveEmu, isClassic) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)", 
                 rusqlite::params!["1", "Maniac Mansion", "maniac.d64", "Action", "Adventure", 1, 0, 0, 1]).unwrap();
         }
@@ -331,6 +360,13 @@ mod tests {
         let res_sq = get_db_games(Some(10), Some(0), Some(filters_sq)).await.unwrap();
         assert_eq!(res_sq.len(), 1);
 
+        let filters_graphics = GameFilters {
+            search_query: Some("Ejber".to_string()),
+            ..Default::default()
+        };
+        let res_graphics = get_db_games(Some(10), Some(0), Some(filters_graphics)).await.unwrap();
+        assert_eq!(res_graphics.len(), 1);
+
         // Test hide adult
         let filters_adult = GameFilters {
             hide_adult: Some(true),
@@ -350,10 +386,13 @@ mod tests {
         
         {
             let conn = Connection::open(&db_path).unwrap();
-            conn.execute("CREATE TABLE Games (GA_Id TEXT, MU_Id TEXT, PR_Id TEXT, AR_Id TEXT, CR_Id TEXT, Adult TEXT, Control TEXT, PlayersFrom TEXT, PlayersTo TEXT, PlayersSim TEXT, Comment TEXT, ReviewRating TEXT, V_Trainers TEXT, V_Length TEXT, V_LoadingScreen TEXT, V_HighScoreSaver TEXT, V_IncludedDocs TEXT, V_TrueDriveEmu TEXT, V_PalNTSC TEXT, MemoText TEXT)", []).unwrap();
+            conn.execute("CREATE TABLE Games (GA_Id TEXT, MU_Id TEXT, PR_Id TEXT, AR_Id TEXT, CR_Id TEXT, DE_Id TEXT, Adult TEXT, Control TEXT, PlayersFrom TEXT, PlayersTo TEXT, PlayersSim TEXT, Comment TEXT, ReviewRating TEXT, V_Trainers TEXT, V_Length TEXT, V_LoadingScreen TEXT, V_HighScoreSaver TEXT, V_IncludedDocs TEXT, V_TrueDriveEmu TEXT, V_PalNTSC TEXT, MemoText TEXT)", []).unwrap();
             conn.execute("CREATE TABLE GameView (id TEXT, name TEXT, filename TEXT, gameFilename TEXT, screenshotFilename TEXT, boxFrontFilename TEXT, titlescreenFilename TEXT, videoSnapFilename TEXT, sidFilename TEXT, crc TEXT, year TEXT, isPal INTEGER, isNtsc INTEGER, trueDriveEmu INTEGER, isClassic INTEGER, parentGenre TEXT, subGenre TEXT, developer_name TEXT, publisher_name TEXT, musician_name TEXT, languages TEXT)", []).unwrap();
             conn.execute("CREATE TABLE Musicians (MU_Id TEXT, Photo TEXT, Nick TEXT, Grp TEXT, Musician TEXT)", []).unwrap();
+            conn.execute("CREATE TABLE Programmers (PR_Id TEXT, Programmer TEXT)", []).unwrap();
+            conn.execute("CREATE TABLE Artists (AR_Id TEXT, Artist TEXT)", []).unwrap();
             conn.execute("CREATE TABLE Developers (DE_Id TEXT, Developer TEXT)", []).unwrap();
+            conn.execute("CREATE TABLE Extras (GA_Id TEXT, Path TEXT)", []).unwrap();
             
             conn.execute("INSERT INTO Games (GA_Id, Adult) VALUES (?, ?)", ["1", "False"]).unwrap();
             conn.execute("INSERT INTO GameView (id, name, filename, parentGenre, subGenre, isPal, isNtsc, trueDriveEmu, isClassic) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)", 
@@ -379,10 +418,13 @@ mod tests {
         
         {
             let conn = Connection::open(&db_path).unwrap();
-            conn.execute("CREATE TABLE Games (GA_Id TEXT, MU_Id TEXT, PR_Id TEXT, AR_Id TEXT, CR_Id TEXT, Adult TEXT, Control TEXT, PlayersFrom TEXT, PlayersTo TEXT, PlayersSim TEXT, Comment TEXT, ReviewRating TEXT, V_Trainers TEXT, V_Length TEXT, V_LoadingScreen TEXT, V_HighScoreSaver TEXT, V_IncludedDocs TEXT, V_TrueDriveEmu TEXT, V_PalNTSC TEXT, MemoText TEXT)", []).unwrap();
+            conn.execute("CREATE TABLE Games (GA_Id TEXT, MU_Id TEXT, PR_Id TEXT, AR_Id TEXT, CR_Id TEXT, DE_Id TEXT, Adult TEXT, Control TEXT, PlayersFrom TEXT, PlayersTo TEXT, PlayersSim TEXT, Comment TEXT, ReviewRating TEXT, V_Trainers TEXT, V_Length TEXT, V_LoadingScreen TEXT, V_HighScoreSaver TEXT, V_IncludedDocs TEXT, V_TrueDriveEmu TEXT, V_PalNTSC TEXT, MemoText TEXT)", []).unwrap();
             conn.execute("CREATE TABLE GameView (id TEXT, name TEXT, filename TEXT, gameFilename TEXT, screenshotFilename TEXT, boxFrontFilename TEXT, titlescreenFilename TEXT, videoSnapFilename TEXT, sidFilename TEXT, crc TEXT, year TEXT, isPal INTEGER, isNtsc INTEGER, trueDriveEmu INTEGER, isClassic INTEGER, parentGenre TEXT, subGenre TEXT, developer_name TEXT, publisher_name HEX, musician_name TEXT, languages TEXT)", []).unwrap();
             conn.execute("CREATE TABLE Musicians (MU_Id TEXT, Photo TEXT, Nick TEXT, Grp TEXT, Musician TEXT)", []).unwrap();
+            conn.execute("CREATE TABLE Programmers (PR_Id TEXT, Programmer TEXT)", []).unwrap();
+            conn.execute("CREATE TABLE Artists (AR_Id TEXT, Artist TEXT)", []).unwrap();
             conn.execute("CREATE TABLE Developers (DE_Id TEXT, Developer TEXT)", []).unwrap();
+            conn.execute("CREATE TABLE Extras (GA_Id TEXT, Path TEXT)", []).unwrap();
             
             for i in 1..=5 {
                 let id = i.to_string();

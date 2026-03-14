@@ -1,16 +1,26 @@
 "use client";
 
-import { useState, useEffect, useCallback, useRef } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { useSettings } from '../contexts/SettingsContext';
 import { openDirectoryDialog, openFileDialog } from '../lib/tauri-bridge';
 import { useGamepad } from '../hooks/useGamepad';
 import { useInputMode } from '../hooks/useInputMode';
 
+const SETTINGS_TABS = [
+  { id: 'appearance', label: '🎨 Appearance' },
+  { id: 'content', label: '🔞 Content' },
+  { id: 'paths', label: '📁 Local Paths' },
+  { id: 'scrapers', label: '🖼️ Scrapers (Coming Soon)' },
+  { id: 'maintenance', label: '🛠️ Maintenance' },
+  { id: 'about', label: 'ℹ️ About & Credits' },
+] as const;
+
 interface SettingsViewProps {
   onBack: () => void;
+  onOpenTigerHeli?: () => void | Promise<void>;
 }
 
-export function SettingsView({ onBack }: SettingsViewProps) {
+export function SettingsView({ onBack, onOpenTigerHeli }: SettingsViewProps) {
   const { settings, updateSettings } = useSettings();
   const [localScreenshots, setLocalScreenshots]   = useState(settings.screenshotsPath);
   const [localSounds, setLocalSounds]             = useState(settings.soundsPath);
@@ -40,7 +50,6 @@ export function SettingsView({ onBack }: SettingsViewProps) {
   const [localScrollNav, setLocalScrollNav]       = useState(settings.scrollNavigation);
   const [localBigBoxAnimate, setLocalBigBoxAnimate] = useState(settings.bigBoxAnimateVertical);
   const [activeTab, setActiveTab]                 = useState<'appearance' | 'content' | 'paths' | 'scrapers' | 'maintenance' | 'about'>('appearance');
-  const [scanStatus, setScanStatus]               = useState<string | null>(null);
   const { isMouseMode, onGamepadInput } = useInputMode();
 
   // Navigation state
@@ -114,13 +123,13 @@ export function SettingsView({ onBack }: SettingsViewProps) {
     }
     if (dir === 'LEFT' && navZone === 'content') {
       setNavZone('tabs');
-      const curTabIdx = tabs.findIndex(t => t.id === activeTab);
+      const curTabIdx = SETTINGS_TABS.findIndex(t => t.id === activeTab);
       setFocusedIdx(curTabIdx);
       return;
     }
 
     if (navZone === 'tabs') {
-      const max = tabs.length - 1;
+      const max = SETTINGS_TABS.length - 1;
       if (dir === 'UP') setFocusedIdx(p => (p > 0 ? p - 1 : max));
       if (dir === 'DOWN') setFocusedIdx(p => (p < max ? p + 1 : 0));
     } else {
@@ -130,13 +139,13 @@ export function SettingsView({ onBack }: SettingsViewProps) {
         paths: 19,     
         scrapers: 10,  
         maintenance: 1, 
-        about: 0
+        about: 3
       };
       const max = (itemCounts[activeTab] || 1) - 1;
       if (dir === 'UP') setFocusedIdx(p => (p > 0 ? p - 1 : max));
       if (dir === 'DOWN') setFocusedIdx(p => (p < max ? p + 1 : 0));
     }
-  }, [navZone, activeTab]);
+  }, [activeTab, focusedIdx, navZone]);
 
   const handleSelect = useCallback(() => {
      if (navZone === 'header') {
@@ -145,7 +154,7 @@ export function SettingsView({ onBack }: SettingsViewProps) {
        return;
      }
      if (navZone === 'tabs') {
-       setActiveTab(tabs[focusedIdx].id);
+       setActiveTab(SETTINGS_TABS[focusedIdx].id);
        setNavZone('content');
        setFocusedIdx(0);
      } else {
@@ -155,7 +164,7 @@ export function SettingsView({ onBack }: SettingsViewProps) {
          el.click();
        }
      }
-  }, [navZone, focusedIdx, activeTab, onBack, handleSave]);
+  }, [focusedIdx, navZone, onBack, handleSave]);
 
   // Combined listeners
   useEffect(() => {
@@ -180,9 +189,9 @@ export function SettingsView({ onBack }: SettingsViewProps) {
       if (btn === 'A') handleSelect();
       
       if (btn === 'RB' || btn === 'LB') {
-        const tabList = tabs.map(t => t.id);
+        const tabList = SETTINGS_TABS.map(t => t.id);
         const curIdx = tabList.indexOf(activeTab);
-        let nextIdx = btn === 'RB' ? (curIdx + 1) % tabList.length : (curIdx - 1 + tabList.length) % tabList.length;
+        const nextIdx = btn === 'RB' ? (curIdx + 1) % tabList.length : (curIdx - 1 + tabList.length) % tabList.length;
         setActiveTab(tabList[nextIdx]);
         if (navZone === 'tabs') setFocusedIdx(nextIdx);
       }
@@ -226,15 +235,6 @@ export function SettingsView({ onBack }: SettingsViewProps) {
     </div>
   );
 
-  const tabs = [
-    { id: 'appearance', label: '🎨 Appearance' },
-    { id: 'content',    label: '🔞 Content' },
-    { id: 'paths',      label: '📁 Local Paths' },
-    { id: 'scrapers',   label: '🖼️ Scrapers (Coming Soon)' },
-    { id: 'maintenance', label: '🛠️ Maintenance' },
-    { id: 'about',       label: 'ℹ️ About & Credits' },
-  ] as const;
-
   return (
     <div className="flex flex-col h-full bg-gray-950 w-full min-h-screen overflow-hidden">
       {/* Header */}
@@ -268,7 +268,7 @@ export function SettingsView({ onBack }: SettingsViewProps) {
         <div className="w-64 flex flex-col gap-2 overflow-y-auto pr-2 pb-10">
           <div className="text-xs text-gray-500 uppercase tracking-widest font-bold mb-2 px-2">Configuration Categories</div>
           
-          {tabs.map((t, idx) => (
+          {SETTINGS_TABS.map((t, idx) => (
             <button
               key={t.id}
               onClick={() => setActiveTab(t.id)}
@@ -492,7 +492,7 @@ export function SettingsView({ onBack }: SettingsViewProps) {
                         🔞 Hide Adult Content
                       </div>
                       <div className="text-xs text-gray-400 mt-1 max-w-sm">
-                        Hides games marked as adult in the Gamebase64 database (223 games). This includes titles like "Sex Games", "Blue Angel 69", etc. Recommended to keep ON.
+                        Hides games marked as adult in the Gamebase64 database (223 games). This includes titles like &quot;Sex Games&quot;, &quot;Blue Angel 69&quot;, etc. Recommended to keep ON.
                       </div>
                     </div>
                     <button
@@ -507,7 +507,7 @@ export function SettingsView({ onBack }: SettingsViewProps) {
                   </label>
                 </div>
                 <p className="text-xs text-gray-500">
-                  Adult content filter is applied globally whenever you browse or search games. It uses the official Gamebase64 Adult flag field. Toggling requires hitting "Save Configuration" to take effect.
+                  Adult content filter is applied globally whenever you browse or search games. It uses the official Gamebase64 Adult flag field. Toggling requires hitting &quot;Save Configuration&quot; to take effect.
                 </p>
               </div>
             </>
@@ -813,13 +813,53 @@ export function SettingsView({ onBack }: SettingsViewProps) {
                 <p className="text-sm text-gray-300 mb-4">
                   A modern Commodore 64 library and launcher.
                 </p>
+                <div className="mb-4 rounded-xl border border-blue-500/20 bg-blue-500/5 p-4">
+                  <h4 className="mb-2 text-xs font-bold uppercase tracking-widest text-blue-300">Acknowledgement</h4>
+                  <p className="text-sm leading-relaxed text-gray-300">
+                    64Box is a frontend for the GB64 Collection. Massive thanks to the GameBase64 project and the GB64 Team for decades of preservation, documentation, and community work around Commodore 64 history.
+                  </p>
+                  <p className="mt-2 text-xs italic text-gray-400">
+                    gb64.com ©1997-2022 The GB64 Team
+                  </p>
+                </div>
+                <div className="mb-4 rounded-xl border border-pink-500/20 bg-pink-500/5 p-4">
+                  <h4 className="mb-2 text-xs font-bold uppercase tracking-widest text-pink-300">Project Credits</h4>
+                  <p className="text-sm text-gray-300">
+                    AI Wrangler &amp; Manipulator: <span className="font-semibold text-white">Ejber Ozkan</span>
+                  </p>
+                  <p className="mt-2 text-sm text-gray-300">
+                    My game is here too! 
+                  </p>
+                  <button
+                    type="button"
+                    onClick={() => void onOpenTigerHeli?.()}
+                    onMouseEnter={() => isMouseMode && (setNavZone('content'), setFocusedIdx(2))}
+                    className={`mt-3 inline-flex items-center rounded-lg border px-3 py-2 text-xs font-semibold uppercase tracking-wider transition-colors focus-idx-2 ${
+                      navZone === 'content' && focusedIdx === 2
+                        ? 'border-emerald-400 bg-emerald-500/15 text-emerald-100'
+                        : 'border-emerald-500/20 text-emerald-300 hover:text-emerald-200'
+                    }`}
+                  >
+                    Open Tiger Heli →
+                  </button>
+                </div>
                 <div className="space-y-4">
                   <div>
                     <h4 className="text-xs text-gray-500 uppercase tracking-widest font-bold mb-2">Open Source License</h4>
                     <p className="text-xs text-gray-400 leading-relaxed mb-2">
                       This project is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.
                     </p>
-                    <a href="https://github.com/ejber-ozkan/64Box" target="_blank" rel="noopener noreferrer" className="text-blue-400 hover:text-blue-300 text-xs font-mono">
+                    <a
+                      href="https://github.com/ejber-ozkan/64Box"
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      onMouseEnter={() => isMouseMode && (setNavZone('content'), setFocusedIdx(0))}
+                      className={`inline-flex items-center rounded-lg border px-3 py-2 text-xs font-mono transition-colors focus-idx-0 ${
+                        navZone === 'content' && focusedIdx === 0
+                          ? 'border-blue-500 bg-blue-600/20 text-blue-200'
+                          : 'border-blue-500/20 text-blue-400 hover:text-blue-300'
+                      }`}
+                    >
                       View Source Code on GitHub →
                     </a>
                   </div>
@@ -828,6 +868,21 @@ export function SettingsView({ onBack }: SettingsViewProps) {
 
               <div className="bg-gray-900/50 rounded-xl p-6 border border-gray-800">
                 <h3 className="text-white font-bold mb-4 flex items-center gap-2">Third-Party Credits</h3>
+                <div className="mb-6 flex flex-wrap gap-3">
+                  <a
+                    href="https://gb64.com/"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    onMouseEnter={() => isMouseMode && (setNavZone('content'), setFocusedIdx(1))}
+                    className={`inline-flex items-center rounded-lg border px-3 py-2 text-xs font-semibold uppercase tracking-wider transition-colors focus-idx-1 ${
+                      navZone === 'content' && focusedIdx === 1
+                        ? 'border-cyan-400 bg-cyan-500/15 text-cyan-100'
+                        : 'border-cyan-500/20 text-cyan-300 hover:text-cyan-200'
+                    }`}
+                  >
+                    Visit GB64 →
+                  </a>
+                </div>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                   <div className="space-y-2">
                     <h4 className="text-xs text-blue-400 uppercase tracking-widest font-bold">Emulation Engine</h4>
@@ -840,8 +895,8 @@ export function SettingsView({ onBack }: SettingsViewProps) {
                   <div className="space-y-2">
                     <h4 className="text-xs text-blue-400 uppercase tracking-widest font-bold">Metadata & Media</h4>
                     <div className="text-xs text-gray-300">
-                      <p className="font-bold">Gamebase64 Database</p>
-                      <p className="text-gray-500 mt-1 italic">Historical C64 preserve data</p>
+                      <p className="font-bold">GB64 / GameBase64</p>
+                      <p className="text-gray-500 mt-1 italic">Historical C64 preservation, metadata, and documentation</p>
                     </div>
                   </div>
 

@@ -5,10 +5,11 @@ import { launchEmulator } from '../../lib/tauri-bridge';
 import { useSettings } from '../../contexts/SettingsContext';
 import { Game } from '../../types/game';
 import { WasmPlayer } from '../WasmPlayer';
+import { DetailNavigationHook } from '../../hooks/useDetailNavigation';
 
 interface PlayButtonProps {
   game: Game;
-  nav?: any;
+  nav?: DetailNavigationHook;
 }
 
 export function PlayButton({ game, nav }: PlayButtonProps) {
@@ -17,7 +18,11 @@ export function PlayButton({ game, nav }: PlayButtonProps) {
   const [message, setMessage] = useState('');
   const [showWasm, setShowWasm] = useState(false);
 
-  const romPath = `${settings.romsPath}/${game.filename}`;
+  const romRelativePath = game.filename || game.gameFilename || '';
+  const romPath = [settings.romsPath, romRelativePath]
+    .map((segment) => segment.replace(/\\/g, '/').replace(/^\/+|\/+$/g, ''))
+    .filter(Boolean)
+    .join('/');
 
   const handlePlayNative = async () => {
     const isRetroarch = settings.preferredEmulator === 'retroarch';
@@ -37,7 +42,7 @@ export function PlayButton({ game, nav }: PlayButtonProps) {
       return;
     }
 
-    if (!game.gameFilename) {
+    if (!romRelativePath) {
       setStatus('error');
       setMessage('No ROM file linked to this game.');
       setTimeout(() => setStatus('idle'), 4000);
@@ -70,21 +75,21 @@ export function PlayButton({ game, nav }: PlayButtonProps) {
   };
 
   const buttonStyles: Record<typeof status, string> = {
-    idle:      'bg-gradient-to-b from-green-500 to-green-700 hover:from-green-400 hover:to-green-600 text-white shadow-lg shadow-green-900/30 border border-green-500/50',
+    idle:      'bg-[linear-gradient(180deg,#2dd4bf,#0f766e)] hover:from-teal-300 hover:to-teal-600 text-white shadow-lg shadow-teal-950/40 border border-teal-300/40',
     launching: 'bg-gray-700 text-gray-400 cursor-not-allowed border border-gray-600/50',
     success:   'bg-green-800 text-green-200 border border-green-700/50',
     error:     'bg-red-900 text-red-200 border border-red-800/50',
   };
 
   const buttonLabel: Record<typeof status, string> = {
-    idle:      '▶ Desktop',
-    launching: '⏳...  ',
-    success:   '✓ Ok ',
-    error:     '✗ Err',
+    idle:      'Launch Emulator',
+    launching: 'Launching',
+    success:   'Launched',
+    error:     'Launch Failed',
   };
 
   const handlePlayWeb = () => {
-    if (!game.gameFilename) {
+    if (!romRelativePath) {
       setStatus('error');
       setMessage('No ROM file linked to this game.');
       setTimeout(() => setStatus('idle'), 4000);
@@ -96,7 +101,7 @@ export function PlayButton({ game, nav }: PlayButtonProps) {
   return (
     <>
       <div className="flex flex-col gap-2">
-        <div className="flex flex-row gap-2 w-full">
+        <div className="grid grid-cols-1 gap-3 w-full">
           <div
             onMouseEnter={() => nav && nav.hoverZone('play')}
             className={`flex-1 rounded-lg transition-all ${nav ? nav.focusCls('play') : ''}`}
@@ -105,9 +110,18 @@ export function PlayButton({ game, nav }: PlayButtonProps) {
               id="play-game-btn"
               onClick={handlePlayNative}
               disabled={status === 'launching'}
-              className={`w-full h-full py-3 px-2 rounded-lg font-bold text-xs sm:text-sm uppercase tracking-wider transition-all ${buttonStyles[status]}`}
+              className={`grid min-h-[104px] w-full grid-cols-[52px_minmax(0,1fr)_auto] items-center gap-4 rounded-2xl px-5 py-4 text-left font-bold transition-all ${buttonStyles[status]}`}
             >
-              {buttonLabel[status]}
+              <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full bg-black/20 text-xl">▶</span>
+              <span className="flex min-w-0 flex-col">
+                <span className="text-[12px] uppercase tracking-[0.14em] leading-tight sm:whitespace-nowrap">{buttonLabel[status]}</span>
+                  <span className="text-[11px] font-medium normal-case tracking-normal text-white/80">
+                    Native desktop emulator
+                  </span>
+              </span>
+              <span className="shrink-0 text-right text-[10px] uppercase tracking-[0.16em] text-white/70 xl:text-xs">
+                {settings.preferredEmulator === 'retroarch' ? 'RetroArch' : 'VICE'}
+              </span>
             </button>
           </div>
           <div
@@ -117,9 +131,16 @@ export function PlayButton({ game, nav }: PlayButtonProps) {
             <button
               id="play-browser-btn"
               onClick={handlePlayWeb}
-              className="w-full h-full py-3 px-2 rounded-lg font-bold text-xs sm:text-sm uppercase tracking-wider transition-all bg-blue-600/20 text-blue-400 hover:bg-blue-600/40 border border-blue-600/30"
+              className="grid min-h-[104px] w-full grid-cols-[52px_minmax(0,1fr)_auto] items-center gap-4 rounded-2xl border border-sky-400/30 bg-sky-500/15 px-5 py-4 text-left font-bold text-sky-100 transition-all hover:bg-sky-500/25"
             >
-              ▶ Browser
+              <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full bg-black/20 text-xl">▸</span>
+              <span className="flex min-w-0 flex-col">
+                <span className="text-[12px] uppercase tracking-[0.14em] leading-tight sm:whitespace-nowrap">Play Embedded</span>
+                  <span className="text-[11px] font-medium normal-case tracking-normal text-sky-100/80">
+                    In-app emulator
+                  </span>
+              </span>
+              <span className="shrink-0 text-right text-[10px] uppercase tracking-[0.16em] text-sky-100/70 xl:text-xs">Instant</span>
             </button>
           </div>
         </div>
@@ -137,9 +158,9 @@ export function PlayButton({ game, nav }: PlayButtonProps) {
       </div>
 
       {showWasm && (
-        <WasmPlayer 
-          romPath={romPath} 
-          onClose={() => setShowWasm(false)} 
+        <WasmPlayer
+          romPath={romPath}
+          onClose={() => setShowWasm(false)}
         />
       )}
     </>

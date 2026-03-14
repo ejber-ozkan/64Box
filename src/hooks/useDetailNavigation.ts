@@ -8,6 +8,7 @@ import { useSettings } from '../contexts/SettingsContext';
 export type DetailZone =
   | 'play'
   | 'play-web'
+  | 'favorite'
   | 'sid'
   | 'screenshot'
   | 'media-gameplay'
@@ -26,6 +27,8 @@ export interface DetailNavigationHook {
   isFocused: (zone: DetailZone) => boolean;
   focusCls: (zone: DetailZone) => string;
   registerAction: (zone: DetailZone, action: () => void) => void;
+  registerTabActions: (actions: { previous?: () => void; next?: () => void }) => void;
+  registerDirectionalOverride: (zone: DetailZone, handler: (dir: Direction) => boolean) => void;
   hoverZone: (zone: DetailZone) => void;
   isMouseMode: boolean;
   lastAction: string;
@@ -43,6 +46,8 @@ export function useDetailNavigation({ onBack, initialZone = 'play', config, enab
   const [focusedZone, setFocusedZoneState] = useState<DetailZone>(initialZone);
   const focusedZoneRef = useRef<DetailZone>(initialZone);
   const actionsRef = useRef<Partial<Record<DetailZone, () => void>>>({});
+  const tabActionsRef = useRef<{ previous?: () => void; next?: () => void }>({});
+  const directionalOverridesRef = useRef<Partial<Record<DetailZone, (dir: Direction) => boolean>>>({});
   
   const [lastAction, setLastAction] = useState<string>('Ready');
   const [isMouseMode, setIsMouseMode] = useState(true);
@@ -52,6 +57,13 @@ export function useDetailNavigation({ onBack, initialZone = 'play', config, enab
     console.log(`[useDetailNavigation] ${msg}`);
     setLastAction(msg);
   };
+
+  const hasBlockingModal = useCallback(() => {
+    if (typeof document === 'undefined') {
+      return false;
+    }
+    return Boolean(document.querySelector('[data-detail-modal="open"]'));
+  }, []);
 
   const setControllerMode = useCallback(() => {
     if (isMouseModeRef.current) {
@@ -67,6 +79,11 @@ export function useDetailNavigation({ onBack, initialZone = 'play', config, enab
 
   const moveZone = useCallback((dir: Direction) => {
     const cur = focusedZoneRef.current;
+    const override = directionalOverridesRef.current[cur];
+    if (override?.(dir)) {
+      debug(`Handled ${dir} in ${cur}`);
+      return;
+    }
     const next = config[cur]?.[dir];
     if (next) {
       debug(`Moved ${dir} to ${next}`);
@@ -91,6 +108,14 @@ export function useDetailNavigation({ onBack, initialZone = 'play', config, enab
     actionsRef.current[zone] = action;
   }, []);
 
+  const registerTabActions = useCallback((actions: { previous?: () => void; next?: () => void }) => {
+    tabActionsRef.current = actions;
+  }, []);
+
+  const registerDirectionalOverride = useCallback((zone: DetailZone, handler: (dir: Direction) => boolean) => {
+    directionalOverridesRef.current[zone] = handler;
+  }, []);
+
   const hoverZone = useCallback((zone: DetailZone) => {
     // If we're in "scroll only" mode (meaning mouseHoverSelection is false), we skip hover selection
     if (settings.mouseHoverSelection && isMouseModeRef.current) {
@@ -107,7 +132,7 @@ export function useDetailNavigation({ onBack, initialZone = 'play', config, enab
     };
     
     const handleWheel = (e: WheelEvent) => {
-      if (!enabled || !settings.scrollNavigation) return;
+      if (!enabled || hasBlockingModal() || !settings.scrollNavigation) return;
 
       if (!isMouseModeRef.current) {
         isMouseModeRef.current = true;
@@ -127,12 +152,23 @@ export function useDetailNavigation({ onBack, initialZone = 'play', config, enab
       window.removeEventListener('mousemove', onMouseMove);
       window.removeEventListener('wheel', handleWheel);
     };
-  }, [moveZone, settings.scrollNavigation]);
+  }, [enabled, hasBlockingModal, moveZone, settings.scrollNavigation]);
 
   // Combined Controller Handler
   useGamepad({
     onButtonDown: (btn) => {
+      if (!enabled || hasBlockingModal()) {
+        return;
+      }
       setControllerMode();
+      if (btn === 'LB') {
+        debug('Previous tab');
+        tabActionsRef.current.previous?.();
+      }
+      if (btn === 'RB') {
+        debug('Next tab');
+        tabActionsRef.current.next?.();
+      }
       if (btn === 'LEFT')  moveZone('left');
       if (btn === 'RIGHT') moveZone('right');
       if (btn === 'UP')    moveZone('up');
@@ -145,9 +181,39 @@ export function useDetailNavigation({ onBack, initialZone = 'play', config, enab
   // Keyboard fallbacks
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
-      if (!enabled) return;
+      if (!enabled || hasBlockingModal()) return;
       if (document.activeElement?.tagName === 'INPUT') return;
 
+      if (e.key === 'Tab') {
+        e.preventDefault();
+        setControllerMode();
+        if (e.shiftKey) {
+          debug('Previous tab');
+          tabActionsRef.current.previous?.();
+        } else {
+          debug('Next tab');
+          tabActionsRef.current.next?.();
+        }
+        return;
+      }
+
+      if (e.key === 'PageUp' || e.key === '[') {
+        e.preventDefault();
+        setControllerMode();
+        debug('Previous tab');
+        tabActionsRef.current.previous?.();
+        return;
+      }
+
+      if (e.key === 'PageDown' || e.key === ']') {
+        e.preventDefault();
+        setControllerMode();
+        debug('Next tab');
+        tabActionsRef.current.next?.();
+        return;
+      }
+
+      setControllerMode();
       if (e.key === 'ArrowLeft')  { e.preventDefault(); moveZone('left'); }
       if (e.key === 'ArrowRight') { e.preventDefault(); moveZone('right'); }
       if (e.key === 'ArrowUp')    { e.preventDefault(); moveZone('up'); }
@@ -157,7 +223,7 @@ export function useDetailNavigation({ onBack, initialZone = 'play', config, enab
     };
     window.addEventListener('keydown', handleKeyDown);
     return () => window.removeEventListener('keydown', handleKeyDown);
-  }, [moveZone, activateFocused, onBack]);
+  }, [activateFocused, enabled, hasBlockingModal, moveZone, onBack, setControllerMode]);
 
   const isFocused = useCallback((zone: DetailZone) => focusedZone === zone, [focusedZone]);
 
@@ -167,5 +233,5 @@ export function useDetailNavigation({ onBack, initialZone = 'play', config, enab
       : ''
   , [focusedZone]);
 
-  return { focusedZone, setFocusedZone, isFocused, focusCls, registerAction, hoverZone, isMouseMode, lastAction };
+  return { focusedZone, setFocusedZone, isFocused, focusCls, registerAction, registerTabActions, registerDirectionalOverride, hoverZone, isMouseMode, lastAction };
 }

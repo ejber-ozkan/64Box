@@ -1,7 +1,7 @@
 "use client";
 
-import { useState, useEffect } from 'react';
-import { Game, Extra } from '../../types/game';
+import { useState, useEffect, useMemo, useCallback } from 'react';
+import { Extra } from '../../types/game';
 import { useSettings } from '../../contexts/SettingsContext';
 import { ImageSlider } from '../ImageSlider';
 import { SidPlayer } from '../SidPlayer';
@@ -13,8 +13,16 @@ import { getGameExtras } from '../../lib/tauri-bridge';
 import { ScrapeButton } from '../ScrapeButton';
 import { ExtrasDetail } from '../ExtrasDetail';
 
+const MEDIA_TO_ZONE = {
+  gameplay: 'media-gameplay',
+  titlescreen: 'media-titlescreen',
+  videosna: 'media-videosna',
+  boxfront: 'media-boxfront',
+  extras: 'media-extras',
+} as const;
+
 export function DigitalMuseumLayout({ game, onBack, nav, onFullscreen }: DetailLayoutProps) {
-  const { settings, resolveMediaPath } = useSettings();
+  const { resolveMediaPath } = useSettings();
   const [activeMedia, setActiveMedia] = useState<'gameplay' | 'titlescreen' | 'videosna' | 'boxfront' | 'extras'>('gameplay');
   const [extras, setExtras] = useState<Extra[]>([]);
 
@@ -23,13 +31,25 @@ export function DigitalMuseumLayout({ game, onBack, nav, onFullscreen }: DetailL
   }, [game.id]);
 
   // Map media types to navigation zones
-  const mediaToZone: Record<string, any> = {
-    gameplay: 'media-gameplay',
-    titlescreen: 'media-titlescreen',
-    videosna: 'media-videosna',
-    boxfront: 'media-boxfront',
-    extras: 'media-extras',
-  };
+  const availableMedia = useMemo(() => {
+    const items: Array<{ id: 'gameplay' | 'titlescreen' | 'videosna' | 'boxfront' | 'extras'; zone: keyof typeof MEDIA_TO_ZONE; label: string }> = [
+      { id: 'gameplay', zone: 'gameplay', label: 'Gameplay' },
+    ];
+    if (extras.length > 0) items.push({ id: 'extras', zone: 'extras', label: `Extras (${extras.length})` });
+    if (game.titlescreenFilename) items.push({ id: 'titlescreen', zone: 'titlescreen', label: 'Title Screen' });
+    if (game.videoSnapFilename) items.push({ id: 'videosna', zone: 'videosna', label: 'Video' });
+    if (game.boxFrontFilename || game.coverPath) items.push({ id: 'boxfront', zone: 'boxfront', label: 'Box Art' });
+    return items;
+  }, [extras.length, game.boxFrontFilename, game.coverPath, game.titlescreenFilename, game.videoSnapFilename]);
+
+  const cycleMedia = useCallback((direction: 'previous' | 'next') => {
+    const currentIndex = Math.max(availableMedia.findIndex((item) => item.id === activeMedia), 0);
+    const delta = direction === 'next' ? 1 : -1;
+    const nextIndex = (currentIndex + delta + availableMedia.length) % availableMedia.length;
+    const nextMedia = availableMedia[nextIndex];
+    setActiveMedia(nextMedia.id);
+    nav.setFocusedZone(MEDIA_TO_ZONE[nextMedia.zone]);
+  }, [activeMedia, availableMedia, nav]);
 
   // Register theme actions
   useEffect(() => {
@@ -61,10 +81,16 @@ export function DigitalMuseumLayout({ game, onBack, nav, onFullscreen }: DetailL
     nav.registerAction('media-videosna', () => setActiveMedia('videosna'));
     nav.registerAction('media-boxfront', () => setActiveMedia('boxfront'));
     nav.registerAction('media-extras', () => setActiveMedia('extras'));
-  }, [nav, activeMedia, game, onFullscreen]);
+    nav.registerTabActions({
+      previous: () => cycleMedia('previous'),
+      next: () => cycleMedia('next'),
+    });
+  }, [activeMedia, cycleMedia, nav, game, onFullscreen]);
 
   const zoneLabels: Record<string, string> = {
-    play: '▶ Play Game [A]',
+    play: '▶ Launch Emulator [A]',
+    'play-web': '▶ Play Embedded [A]',
+    favorite: '♥ Favorite [A]',
     sid: '🎵 SID Music [A]',
     screenshot: '🔍 View Fullscreen [A]',
     'media-gameplay': '🖼️ Gameplay [A]',
@@ -103,51 +129,27 @@ export function DigitalMuseumLayout({ game, onBack, nav, onFullscreen }: DetailL
       <main className="flex-1 flex overflow-hidden">
         {/* Left Sidebar: Media Selector */}
         <div className="w-64 xl:w-72 2xl:w-80 bg-gray-900/50 border-r border-gray-800 flex flex-col p-6 gap-5 overflow-y-auto custom-scrollbar transition-all">
+          <div className="space-y-3">
+            <PlayButton game={game} nav={nav} />
+            <ScrapeButton game={game} />
+          </div>
+
           <div className="text-[11px] 2xl:text-xs font-bold text-gray-500 uppercase tracking-widest mb-2 px-2">Collection Media</div>
           
-          {/* Gameplay first */}
-          <button
-            onClick={() => { setActiveMedia('gameplay'); nav.setFocusedZone('media-gameplay'); }}
-            onMouseEnter={() => nav.hoverZone('media-gameplay')}
-            className={`p-3 rounded-lg flex flex-col items-center gap-2 border transition-all ${
-              activeMedia === 'gameplay'
-                ? 'bg-gray-800 border-yellow-500/50 text-white shadow-lg'
-                : 'bg-transparent border-transparent text-gray-500 hover:text-gray-300'
-            } ${nav.focusCls('media-gameplay')}`}
-          >
-            <div className="text-sm font-semibold capitalize">Gameplay</div>
-          </button>
-
-          {/* Extras second */}
-          {extras.length > 0 && (
-            <button
-              onClick={() => { setActiveMedia('extras'); nav.setFocusedZone('media-extras'); }}
-              onMouseEnter={() => nav.hoverZone('media-extras')}
-              className={`p-4 rounded-xl flex flex-col items-center gap-2 border transition-all ${
-                activeMedia === 'extras'
-                  ? 'bg-gray-800 border-yellow-500/50 text-white shadow-lg'
-                  : 'bg-transparent border-transparent text-gray-500 hover:text-gray-300'
-              } ${nav.focusCls('media-extras')}`}
-            >
-              <div className="text-sm 2xl:text-base font-semibold">Extras ({extras.length})</div>
-            </button>
-          )}
-
-          {/* Others following */}
-          {(['titlescreen', 'videosna', 'boxfront'] as const).map((type) => {
-            const zone = mediaToZone[type] as any;
+          {availableMedia.map(({ id, zone, label }) => {
+            const zoneId = MEDIA_TO_ZONE[zone];
             return (
               <button
-                key={type}
-                onClick={() => { setActiveMedia(type); nav.setFocusedZone(zone); }}
-                onMouseEnter={() => nav.hoverZone(zone)}
+                key={id}
+                onClick={() => { setActiveMedia(id); nav.setFocusedZone(zoneId); }}
+                onMouseEnter={() => nav.hoverZone(zoneId)}
                 className={`p-4 rounded-xl flex flex-col items-center gap-2 border transition-all ${
-                  activeMedia === type
+                  activeMedia === id
                     ? 'bg-gray-800 border-yellow-500/50 text-white shadow-lg'
                     : 'bg-transparent border-transparent text-gray-500 hover:text-gray-300'
-                } ${nav.focusCls(zone)}`}
+                } ${nav.focusCls(zoneId)}`}
               >
-                <div className="text-sm 2xl:text-base font-semibold capitalize">{type}</div>
+                <div className="text-sm 2xl:text-base font-semibold">{label}</div>
               </button>
             );
           })}
@@ -187,13 +189,6 @@ export function DigitalMuseumLayout({ game, onBack, nav, onFullscreen }: DetailL
               ⤢ Fullscreen
             </button>
             
-            <ScrapeButton 
-              game={game} 
-              className="absolute bottom-3 left-3 z-30" 
-              onComplete={() => {
-                 // Refresh logic here if needed
-              }} 
-            />
           </div>
         )}
 
@@ -271,16 +266,11 @@ export function DigitalMuseumLayout({ game, onBack, nav, onFullscreen }: DetailL
         {/* Right Sidebar: Quick Actions & Metadata */}
         <div className="w-80 xl:w-96 2xl:w-[450px] bg-gray-900/50 border-l border-gray-800 p-8 2xl:p-10 flex flex-col gap-10 overflow-y-auto custom-scrollbar transition-all">
           
-          {/* Action Buttons */}
-          <div className="flex flex-col gap-4">
-            <PlayButton game={game} nav={nav} />
-
-            <div
-              onMouseEnter={() => nav.hoverZone('sid')}
-              className={`rounded-lg transition-all ${nav.focusCls('sid')}`}
-            >
-              <SidPlayer filename={game.sidFilename} />
-            </div>
+          <div
+            onMouseEnter={() => nav.hoverZone('sid')}
+            className={`rounded-lg transition-all ${nav.focusCls('sid')}`}
+          >
+            <SidPlayer filename={game.sidFilename} />
           </div>
 
           {/* Quick Info */}

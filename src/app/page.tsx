@@ -16,13 +16,15 @@ import { GameFilters } from '@/lib/tauri-bridge';
 import { useGamepad } from '@/hooks/useGamepad';
 import { useInputMode } from '@/hooks/useInputMode';
 import { BigBoxView } from '@/components/BigBoxView';
+import { useFavorites } from '@/hooks/useFavorites';
 
 type ViewMode = 'grid' | 'list' | 'settings';
 
 const LETTERS = ['#', ...Array.from({ length: 26 }, (_, i) => String.fromCharCode(65 + i))];
 
 export default function Home() {
-  const { settings, markAsPlayed, resolveMediaPath, updateSettings } = useSettings();
+  const { settings, markAsPlayed, updateSettings } = useSettings();
+  const { isFavorite, toggleFavorite } = useFavorites();
   const [viewMode, setViewMode] = useState<ViewMode>(settings.lastViewMode || 'grid');
   const [selectedGame, setSelectedGame] = useState<Game | null>(null);
   const [showFilters, setShowFilters] = useState(false);
@@ -96,7 +98,7 @@ export default function Home() {
       }
     }
     fetchGames();
-  }, [filters, isRestored]);
+  }, [filters, isRestored, selectedGame, settings.lastFocusedIndex, settings.lastSelectedGameId]);
 
   // Update settings when state changes
   useEffect(() => {
@@ -136,7 +138,12 @@ export default function Home() {
       onGamepadInput();
       if (settings.isFullscreen) return; // BigBoxView handles its own input
       
-      if (btn === 'Y') setShowFilters(prev => !prev);
+      if (btn === 'Y') {
+        if (!showFilters && !selectedGame && viewMode !== 'settings' && toggleFocusedFavorite()) {
+          return;
+        }
+        setShowFilters(prev => !prev);
+      }
       if (btn === 'X') setViewMode(prev => prev === 'grid' ? 'list' : 'grid');
       if (btn === 'START') setViewMode('settings');
 
@@ -204,13 +211,56 @@ export default function Home() {
     markAsPlayed(game.id.toString());
   }, [markAsPlayed]);
 
+  const openTigerHeliFromSettings = useCallback(async () => {
+    const tigerHeli = await getDbGames(1, 0, { favoriteIds: ['7933'] });
+    const game = tigerHeli[0];
+    if (!game) {
+      console.warn('Tiger Heli (7933) was not found in the local database.');
+      return;
+    }
+
+    setViewMode('grid');
+    handleGameSelect(game);
+  }, [handleGameSelect]);
+
+  const getFocusedLibraryGame = useCallback((): Game | null => {
+    const recentCount = settings.recentlyPlayedIds.length;
+
+    if (focusedIndex < 0) {
+      const recentId = settings.recentlyPlayedIds[recentCount + focusedIndex];
+      return games.find((game) => game.id.toString() === recentId) ?? null;
+    }
+
+    if (focusedIndex >= 0 && focusedIndex < games.length) {
+      return games[focusedIndex];
+    }
+
+    return null;
+  }, [focusedIndex, games, settings.recentlyPlayedIds]);
+
+  const toggleFocusedFavorite = useCallback(() => {
+    const focusedGame = getFocusedLibraryGame();
+    if (!focusedGame) {
+      return false;
+    }
+
+    toggleFavorite(focusedGame.id.toString());
+    return true;
+  }, [getFocusedLibraryGame, toggleFavorite]);
+
   // Keyboard fallbacks
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
       // Don't intercept if they are typing in the search box
       if (document.activeElement?.tagName === 'INPUT') return;
 
-      if (e.key === 'f' || e.key === 'F') {
+      if ((e.key === 'f' || e.key === 'F') && !e.shiftKey) {
+        if (!showFilters && !selectedGame && viewMode !== 'settings' && toggleFocusedFavorite()) {
+          e.preventDefault();
+          return;
+        }
+      }
+      if ((e.key === 'f' || e.key === 'F') && e.shiftKey) {
         setShowFilters(prev => !prev);
       }
       if (e.key === 's' || e.key === 'S') {
@@ -281,10 +331,10 @@ export default function Home() {
     };
     window.addEventListener('keydown', handleKeyDown);
     return () => window.removeEventListener('keydown', handleKeyDown);
-  }, [showFilters, selectedGame, viewMode, games, focusedIndex, filters.letter, handleGameSelect, settings.isFullscreen, settings.recentlyPlayedIds, updateSettings]);
+  }, [showFilters, selectedGame, viewMode, games, focusedIndex, filters.letter, handleGameSelect, settings.isFullscreen, settings.recentlyPlayedIds, toggleFocusedFavorite, updateSettings]);
 
   useEffect(() => {
-    let timeoutId: any;
+    let timeoutId: ReturnType<typeof setTimeout> | undefined;
     const handleResize = () => {
       clearTimeout(timeoutId);
       timeoutId = setTimeout(async () => {
@@ -351,7 +401,7 @@ export default function Home() {
       window.removeEventListener('wheel', handleWheel);
       clearTimeout(timeoutId);
     };
-  }, [settings.isFullscreen, settings.scrollNavigation, updateSettings, showFilters, selectedGame, viewMode, isMouseMode, games, settings.recentlyPlayedIds.length]);
+  }, [settings.displayResolution, settings.isFullscreen, settings.scrollNavigation, updateSettings, showFilters, selectedGame, viewMode, isMouseMode, games, settings.recentlyPlayedIds.length]);
 
   const handleSort = (column: keyof Game) => {
     const newDir = sortCol === column && sortDir === 'asc' ? 'desc' : 'asc';
@@ -363,7 +413,7 @@ export default function Home() {
   if (viewMode === 'settings') {
     return (
       <main className="min-h-screen bg-gray-950 text-white font-sans selection:bg-blue-600/50 flex flex-col">
-        <SettingsView onBack={() => setViewMode('grid')} />
+        <SettingsView onBack={() => setViewMode('grid')} onOpenTigerHeli={openTigerHeliFromSettings} />
       </main>
     )
   }
@@ -419,7 +469,7 @@ export default function Home() {
              onClick={() => setShowFilters(true)}
              className={`px-4 py-1.5 rounded-full text-xs uppercase tracking-widest font-bold border transition shadow hover:bg-gray-700 ${Object.keys(filters).length > 0 ? 'bg-blue-900/40 text-blue-400 border-blue-700/50' : 'bg-gray-800 text-gray-400 border-gray-700'}`}
           >
-             Y Filters
+             Filters
           </button>
 
           <div className="flex bg-gray-950 p-1 rounded-lg ml-4">
@@ -492,6 +542,11 @@ export default function Home() {
                         : 'border-gray-800 hover:border-gray-600'
                       }`}
                     >
+                      {isFavorite(g.id.toString()) && (
+                        <div className="absolute right-3 top-3 z-10 flex h-8 w-8 items-center justify-center rounded-full border border-pink-300/60 bg-black/60 text-sm text-pink-300 shadow-lg backdrop-blur-md">
+                          ♥
+                        </div>
+                      )}
                       <ImageSlider
                         type="screenshot"
                         filename={g.screenshotFilename}
@@ -522,6 +577,7 @@ export default function Home() {
             onSort={handleSort} 
             focusedIndex={focusedIndex >= 0 ? focusedIndex : -1}
             onFocusChange={isMouseMode && settings.mouseHoverSelection ? setFocusedIndex : undefined}
+            isFavorite={isFavorite}
           />
         )}
       </div>

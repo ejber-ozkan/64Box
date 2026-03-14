@@ -1,8 +1,8 @@
 "use client";
 
-import React, { useRef, useEffect, useState, useCallback } from 'react';
+import React, { useRef, useEffect } from 'react';
 import { Game } from '../types/game';
-import { ImageSlider } from './ImageSlider';
+import { BigBoxTileMedia } from './BigBoxTileMedia';
 
 interface HorizontalRailProps {
   title: string;
@@ -14,6 +14,13 @@ interface HorizontalRailProps {
   tileScale?: 'large' | 'normal';
   loop?: boolean;
   isMouseFocusEnabled?: boolean;
+  isFavorite?: (gameId: string) => boolean;
+}
+
+function getRailStudioLabel(game: Game) {
+  const publisher = game.publisher?.name && game.publisher.name !== '(Not Published)' ? game.publisher.name : '';
+  const developer = game.developer?.name && game.developer.name !== '(Unknown)' ? game.developer.name : '';
+  return publisher || developer || 'Unknown';
 }
 
 export function HorizontalRail({ 
@@ -25,25 +32,15 @@ export function HorizontalRail({
   onFocusChange,
   tileScale = 'normal',
   loop = true,
-  isMouseFocusEnabled = true
+  isMouseFocusEnabled = true,
+  isFavorite
 }: HorizontalRailProps) {
   const scrollRef = useRef<HTMLDivElement>(null);
   
   // For infinite looping, we triple the items
   const displayGames = loop ? [...games, ...games, ...games] : games;
   const originalCount = games.length;
-  
-  // Map our internal focused index (relative to 3x array) to the actual display
-  // We want the focus to stay in the MIDDLE set of the triple-array
-  const [internalSelectedIndex, setInternalSelectedIndex] = useState(loop ? originalCount + focusedIndex : focusedIndex);
-
-  useEffect(() => {
-    if (loop) {
-      setInternalSelectedIndex(originalCount + focusedIndex);
-    } else {
-      setInternalSelectedIndex(focusedIndex);
-    }
-  }, [focusedIndex, originalCount, loop]);
+  const internalSelectedIndex = loop ? originalCount + focusedIndex : focusedIndex;
 
   // Scroll into view logic
   useEffect(() => {
@@ -70,20 +67,22 @@ export function HorizontalRail({
   const isLarge = tileScale === 'large';
 
   return (
-    <div className={`flex flex-col gap-3 py-6 transition-opacity duration-500 ${isActive ? 'opacity-100' : 'opacity-40'}`}>
-      <div className="flex items-center gap-4 px-12">
-        <h2 className={`text-2xl font-black uppercase tracking-tighter ${isActive ? 'text-blue-400' : 'text-gray-500'}`}>
+    <div className={`flex flex-col gap-4 py-8 transition-opacity duration-500 ${isActive ? 'opacity-100' : 'opacity-45'}`}>
+      <div data-rail-anchor className="flex items-center gap-4 px-12">
+        <h2 className={`text-3xl font-black uppercase tracking-tighter ${isActive ? 'text-blue-300' : 'text-gray-500'}`}>
           {title}
         </h2>
-        <div className={`h-px flex-1 bg-gradient-to-r ${isActive ? 'from-blue-900 via-blue-500 to-transparent' : 'from-gray-800 to-transparent'}`}></div>
+        <div className={`h-px flex-1 bg-gradient-to-r ${isActive ? 'from-sky-400/70 via-cyan-300/40 to-transparent' : 'from-gray-800 to-transparent'}`}></div>
       </div>
 
       <div 
         ref={scrollRef}
-        className="flex gap-6 overflow-x-hidden px-[10%] scroll-smooth py-4"
+        className="flex gap-8 overflow-x-hidden px-[8%] py-5 scroll-smooth"
       >
         {displayGames.map((game, idx) => {
           const isFocused = isActive && (idx === internalSelectedIndex);
+          const hasArtwork = Boolean(game.coverPath || game.screenshotFilename);
+          const favorited = isFavorite?.(game.id.toString()) ?? false;
           
           return (
             <div
@@ -99,31 +98,31 @@ export function HorizontalRail({
                   }
                 }
               }}
-              className={`shrink-0 transition-all duration-300 relative group cursor-pointer rounded-xl overflow-hidden border-2 ${
-                isLarge ? 'w-[450px] aspect-[1.8]' : 'w-[280px] aspect-[1.6]'
+              className={`group relative shrink-0 cursor-pointer overflow-hidden rounded-[26px] border border-white/10 bg-[#09111b] shadow-[0_18px_60px_rgba(2,6,23,0.45)] transition-all duration-500 ${
+                isLarge ? 'w-[560px] aspect-[1.9]' : 'w-[380px] aspect-[1.78]'
               } ${
                 isFocused 
-                  ? 'border-blue-400 scale-110 z-10 shadow-[0_0_40px_rgba(59,130,246,0.5)]' 
-                  : 'border-white/5 hover:border-white/20'
+                  ? `${hasArtwork ? 'scale-[1.3]' : 'scale-110'} z-10 border-cyan-300/80 shadow-[0_28px_80px_rgba(56,189,248,0.35)]`
+                  : 'hover:-translate-y-1 hover:border-white/20'
               }`}
             >
-              <ImageSlider
-                type="screenshot"
-                filename={game.screenshotFilename}
-                alt={game.name}
-                className="w-full h-full object-cover"
-              />
+              <BigBoxTileMedia game={game} className="absolute inset-0" />
+
+              {favorited && (
+                <div className="absolute right-4 top-4 z-10 flex h-10 w-10 items-center justify-center rounded-full border border-pink-300/60 bg-black/55 text-lg text-pink-300 shadow-[0_12px_30px_rgba(15,23,42,0.45)] backdrop-blur-md">
+                  ♥
+                </div>
+              )}
               
-              {/* Overlay with info */}
-              <div className={`absolute inset-0 bg-gradient-to-t from-black via-black/20 to-transparent transition-opacity duration-500 flex flex-col justify-end p-6 ${
-                isFocused ? 'opacity-100' : 'opacity-0 group-hover:opacity-100'
-              }`}>
-                <div className="text-sm font-black text-blue-400 uppercase tracking-widest mb-1">{game.year || 'Classic'}</div>
-                <div className={`${isLarge ? 'text-2xl' : 'text-lg'} font-black text-white leading-tight truncate`}>
+              <div className="absolute inset-x-0 bottom-0 flex flex-col gap-1 border-t border-white/10 bg-[linear-gradient(180deg,rgba(2,6,23,0.08),rgba(2,6,23,0.92))] p-6">
+                <div className="text-[11px] font-black uppercase tracking-[0.24em] text-cyan-200/80">
+                  {game.year || 'Classic'} {game.parentGenre ? `• ${game.parentGenre}` : ''}
+                </div>
+                <div className={`${isLarge ? 'text-3xl' : 'text-xl'} font-black leading-tight text-white`}>
                   {game.name}
                 </div>
                 <div className="text-xs text-white/60 font-medium mt-1 truncate">
-                  {game.developer?.name || game.publisher?.name || 'Commodore 64'}
+                  {getRailStudioLabel(game)}
                 </div>
               </div>
 

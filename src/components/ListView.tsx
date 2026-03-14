@@ -7,9 +7,10 @@ interface ListViewProps {
   onSort: (column: keyof Game) => void;
   focusedIndex?: number;
   onFocusChange?: (index: number) => void;
+  isFavorite?: (gameId: string) => boolean;
 }
 
-export function ListView({ games, onSelectGame, onSort, focusedIndex = -1, onFocusChange }: ListViewProps) {
+export function ListView({ games, onSelectGame, onSort, focusedIndex = -1, onFocusChange, isFavorite }: ListViewProps) {
   const tbodyRef = useRef<HTMLTableSectionElement>(null);
 
   useEffect(() => {
@@ -34,6 +35,7 @@ export function ListView({ games, onSelectGame, onSort, focusedIndex = -1, onFoc
         <tbody ref={tbodyRef}>
           {games.map((game, index) => {
             const isFocused = focusedIndex === index;
+            const favorited = isFavorite?.(game.id.toString()) ?? false;
             return (
             <tr
               key={game.id}
@@ -43,7 +45,12 @@ export function ListView({ games, onSelectGame, onSort, focusedIndex = -1, onFoc
                 isFocused ? 'bg-blue-900/50 outline outline-2 outline-blue-500' : 'hover:bg-gray-600'
               }`}
             >
-              <td className="px-4 py-2 font-medium text-white">{game.name}</td>
+              <td className="px-4 py-2 font-medium text-white">
+                <div className="flex items-center gap-2">
+                  <span className={`text-sm ${favorited ? 'text-pink-400' : 'text-gray-600'}`}>{favorited ? '♥' : '♡'}</span>
+                  <span>{game.name}</span>
+                </div>
+              </td>
               <td className="px-4 py-2">{game.year || '-'}</td>
               <td className="px-4 py-2">{game.developer?.name || '-'}</td>
               <td className="px-4 py-2">{game.parentGenre}</td>

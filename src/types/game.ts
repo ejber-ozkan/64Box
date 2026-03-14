@@ -30,6 +30,7 @@ export interface Game {
   gameFilename: string | null;   // ROM file (.d64, .t64 etc) for launch via VICE
   screenshotFilename: string | null;
   boxFrontFilename: string | null;
+  coverPath?: string | null;
   titlescreenFilename: string | null;
   videoSnapFilename: string | null;
   sidFilename: string | null;

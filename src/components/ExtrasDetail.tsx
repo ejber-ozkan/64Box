@@ -10,9 +10,11 @@ import { ImageWithFallback } from './ImageWithFallback';
 interface ExtrasDetailProps {
   game: Game;
   extras: Extra[];
+  visibleCategories?: ExtraGroup['category'][];
+  hideEmptyState?: boolean;
 }
 
-export function ExtrasDetail({ game, extras }: ExtrasDetailProps) {
+export function ExtrasDetail({ game, extras, visibleCategories, hideEmptyState = false }: ExtrasDetailProps) {
   const { settings } = useSettings();
   const [groupedExtras, setGroupedExtras] = useState<ExtraGroup[]>([]);
   const [launchStatus, setLaunchStatus] = useState<string | null>(null);
@@ -21,7 +23,12 @@ export function ExtrasDetail({ game, extras }: ExtrasDetailProps) {
     setGroupedExtras(groupExtras(extras));
   }, [extras]);
 
-  if (extras.length === 0) {
+  const visibleGroups = visibleCategories
+    ? groupedExtras.filter((group) => visibleCategories.includes(group.category))
+    : groupedExtras;
+
+  if (extras.length === 0 || visibleGroups.length === 0) {
+    if (hideEmptyState) return null;
     return (
       <div className="flex flex-col items-center justify-center py-12 text-gray-500 opacity-50">
         <span className="text-4xl mb-4">🗂️</span>
@@ -81,7 +88,7 @@ export function ExtrasDetail({ game, extras }: ExtrasDetailProps) {
         </div>
       )}
 
-      {groupedExtras.map(group => (
+      {visibleGroups.map(group => (
         <div key={group.category} className="space-y-4">
           <div className="flex items-center gap-3">
             <h3 className="text-white font-bold text-xs uppercase tracking-[0.2em] opacity-80">{group.label}</h3>
@@ -201,7 +208,8 @@ function VisualExtraCard({ extra, extrasPath }: { extra: Extra; extrasPath: stri
              <ImageWithFallback
                 src={url}
                 alt={extra.name}
-                className="max-w-full max-h-[85vh] object-contain shadow-2xl rounded-lg"
+                fit="contain"
+                className="max-w-full max-h-[85vh] shadow-2xl rounded-lg"
              />
              <div className="text-center">
                 <h2 className="text-white font-bold text-xl">{extra.name}</h2>
