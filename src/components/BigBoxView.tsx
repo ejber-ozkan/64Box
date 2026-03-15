@@ -1,24 +1,26 @@
 "use client";
 
-import React, { useState } from 'react';
+import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { Game } from '../types/game';
 import { Settings } from '../contexts/SettingsContext';
-import { HorizontalRail } from './HorizontalRail';
-import { exitApp } from '../lib/tauri-bridge';
 import { useFavorites } from '../hooks/useFavorites';
 import { useInputMode } from '../hooks/useInputMode';
 import { GameFilters } from '../lib/tauri-bridge';
 import { BigBoxHeader } from './bigbox/BigBoxHeader';
 import { BigBoxAlphabetRail } from './bigbox/BigBoxAlphabetRail';
 import { BigBoxFooter } from './bigbox/BigBoxFooter';
+import { BigBoxExitPrompt } from './bigbox/BigBoxExitPrompt';
+import { HorizontalRail } from './HorizontalRail';
 import { useBigBoxLibraryData } from '../hooks/useBigBoxLibraryData';
 import { useBigBoxNavigation } from '../hooks/useBigBoxNavigation';
 import { useBigBoxScrollSync } from '../hooks/useBigBoxScrollSync';
+import { ControllerSearchKeyboard } from './ControllerSearchKeyboard';
+import { playRotatingUiSoundEffect, playUiSoundEffect, playUiSoundEffectAndWait } from '../lib/ui-sound-effects';
 
 interface BigBoxViewProps {
   settings: Settings;
   onSelectGame: (game: Game) => void;
-  onBack?: () => void;
+  onRequestExit: (snapshot: { dontAskAgain: boolean; focusedGameId: string | null; railId: string | null }) => void;
   searchInput: string;
   onSearchChange: (val: string) => void;
   onShowSettings: () => void;
@@ -29,7 +31,7 @@ interface BigBoxViewProps {
 export function BigBoxView({
   settings,
   onSelectGame,
-  onBack,
+  onRequestExit,
   searchInput,
   onSearchChange,
   onShowSettings,
@@ -42,6 +44,10 @@ export function BigBoxView({
   const [activeHeaderRow, setActiveHeaderRow] = useState(0);
   const [activeHeaderItemIndex, setActiveHeaderItemIndex] = useState(0);
   const [railFocusIndices, setRailFocusIndices] = useState<Record<string, number>>({});
+  const [isControllerKeyboardOpen, setIsControllerKeyboardOpen] = useState(false);
+  const [isExitPromptOpen, setIsExitPromptOpen] = useState(false);
+  const [hasRestoredPosition, setHasRestoredPosition] = useState(false);
+  const classicTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   const { genres, loading, rails, totalGameCount } = useBigBoxLibraryData({
     activeRailIndex,
@@ -50,8 +56,140 @@ export function BigBoxView({
     recentlyPlayedIds: settings.recentlyPlayedIds,
     searchInput,
   });
+
+  const currentRail = activeRailIndex >= 0 ? rails[activeRailIndex] : null;
+  const currentFocusedIndex = currentRail ? (railFocusIndices[currentRail.id] ?? 0) : 0;
+  const currentFocusedGame = currentRail?.games[currentFocusedIndex] ?? null;
+  const isInteractionOverlayOpen = isControllerKeyboardOpen || isExitPromptOpen;
+
+  useEffect(() => {
+    if (typeof window === 'undefined') {
+      return;
+    }
+
+    if (window.sessionStorage.getItem('gb64_bigbox_launch_sound_played')) {
+      return;
+    }
+
+    window.sessionStorage.setItem('gb64_bigbox_launch_sound_played', '1');
+    void playRotatingUiSoundEffect('bigbox-launch', ['open-app-1', 'open-app-2'], 0.6);
+  }, []);
+
+  useEffect(() => {
+    const timeoutRef = classicTimeoutRef;
+    return () => {
+      const classicTimeout = timeoutRef.current;
+      if (classicTimeout) {
+        clearTimeout(classicTimeout);
+      }
+    };
+  }, []);
+
+  useEffect(() => {
+    if (hasRestoredPosition || rails.length === 0 || searchInput.trim()) {
+      return;
+    }
+
+    const frameId = window.requestAnimationFrame(() => {
+      if (!settings.lastBigBoxRailId) {
+        setHasRestoredPosition(true);
+        return;
+      }
+
+      const targetRailIndex = rails.findIndex((rail) => rail.id === settings.lastBigBoxRailId);
+      if (targetRailIndex === -1) {
+        setHasRestoredPosition(true);
+        return;
+      }
+
+      setActiveRailIndex(targetRailIndex);
+
+      const targetRail = rails[targetRailIndex];
+      if (!settings.lastBigBoxGameId) {
+        setHasRestoredPosition(true);
+        return;
+      }
+
+      const gameIndex = targetRail.games.findIndex(
+        (game) => game.id.toString() === settings.lastBigBoxGameId,
+      );
+
+      if (gameIndex >= 0) {
+        setRailFocusIndices((previous) => ({ ...previous, [targetRail.id]: gameIndex }));
+        setHasRestoredPosition(true);
+        return;
+      }
+
+      if (targetRail.type !== 'alphabet' || targetRail.games.length > 0) {
+        setHasRestoredPosition(true);
+      }
+    });
+
+    return () => window.cancelAnimationFrame(frameId);
+  }, [
+    hasRestoredPosition,
+    rails,
+    searchInput,
+    settings.lastBigBoxGameId,
+    settings.lastBigBoxRailId,
+  ]);
+
+  const openExitPrompt = useCallback(() => {
+    if (isInteractionOverlayOpen) {
+      return;
+    }
+
+    if (!settings.confirmFullscreenExit) {
+      onRequestExit({
+        dontAskAgain: true,
+        focusedGameId: currentFocusedGame?.id.toString() ?? null,
+        railId: currentRail?.id ?? null,
+      });
+      return;
+    }
+
+    if (document.activeElement instanceof HTMLElement) {
+      document.activeElement.blur();
+    }
+    setIsExitPromptOpen(true);
+  }, [
+    currentFocusedGame?.id,
+    currentRail?.id,
+    isInteractionOverlayOpen,
+    onRequestExit,
+    settings.confirmFullscreenExit,
+  ]);
+
+  const handleSelectGame = useCallback((game: Game) => {
+    if (classicTimeoutRef.current) {
+      clearTimeout(classicTimeoutRef.current);
+    }
+
+    void (async () => {
+      await playUiSoundEffectAndWait('open-detail-1', 0.58);
+      if (game.isClassic) {
+        await playUiSoundEffect('classic-game', 0.62);
+      }
+    })();
+
+    onSelectGame(game);
+  }, [onSelectGame]);
+
+  const handleSearchChange = useCallback((value: string) => {
+    if (!searchInput.trim() && value.trim()) {
+      void playUiSoundEffect('search-filter', 0.42);
+    }
+    onSearchChange(value);
+  }, [onSearchChange, searchInput]);
+
+  const handleFiltersChange = useCallback((nextFilters: GameFilters) => {
+    if (filters.genre !== nextFilters.genre || filters.letter !== nextFilters.letter) {
+      void playUiSoundEffect('search-filter', 0.42);
+    }
+    onFiltersChange(nextFilters);
+  }, [filters.genre, filters.letter, onFiltersChange]);
+
   const {
-    currentFocusedIndex,
     currentRailId,
     currentRailType,
     focusHeader,
@@ -67,8 +205,9 @@ export function BigBoxView({
     activeRailIndex,
     filters,
     genres,
-    onBack,
-    onFiltersChange,
+    isControllerKeyboardOpen: isInteractionOverlayOpen,
+    onBack: openExitPrompt,
+    onFiltersChange: handleFiltersChange,
     onFocusSearchInput: () => {
       const input = headerRef.current?.querySelector('input');
       if (input) {
@@ -76,7 +215,19 @@ export function BigBoxView({
       }
     },
     onGamepadInput,
-    onSelectGame,
+    onLetterJump: () => {
+      void playUiSoundEffect('search-filter', 0.42);
+    },
+    onNavigationMove: () => {
+      void playUiSoundEffect('menu-move-1', 0.3);
+    },
+    onOpenControllerKeyboard: () => {
+      if (document.activeElement instanceof HTMLElement) {
+        document.activeElement.blur();
+      }
+      setIsControllerKeyboardOpen(true);
+    },
+    onSelectGame: handleSelectGame,
     onShowSettings,
     railFocusIndices,
     rails,
@@ -116,16 +267,42 @@ export function BigBoxView({
           activeRailIndex={activeRailIndex}
           filters={filters}
           genres={genres}
-          onExit={() => exitApp()}
-          onFiltersChange={onFiltersChange}
-          onJumpToRail={jumpToRail}
-          onSearchChange={onSearchChange}
+          onExit={openExitPrompt}
+          onFiltersChange={handleFiltersChange}
+          onJumpToRail={(railId) => {
+            void playUiSoundEffect('search-filter', 0.42);
+            jumpToRail(railId);
+          }}
+          onSearchChange={handleSearchChange}
           onSearchFocus={focusSearch}
           onSetHeaderFocus={focusHeader}
           onShowSettings={onShowSettings}
           searchInput={searchInput}
         />
       </header>
+
+      <ControllerSearchKeyboard
+        isOpen={isControllerKeyboardOpen}
+        onClose={() => setIsControllerKeyboardOpen(false)}
+        onGamepadInput={onGamepadInput}
+        onSearchChange={handleSearchChange}
+        searchInput={searchInput}
+      />
+
+      <BigBoxExitPrompt
+        key={isExitPromptOpen ? 'open' : 'closed'}
+        isOpen={isExitPromptOpen}
+        onCancel={() => setIsExitPromptOpen(false)}
+        onConfirm={(dontAskAgain) => {
+          setIsExitPromptOpen(false);
+          onRequestExit({
+            dontAskAgain,
+            focusedGameId: currentFocusedGame?.id.toString() ?? null,
+            railId: currentRail?.id ?? null,
+          });
+        }}
+        onGamepadInput={onGamepadInput}
+      />
 
       {/* Rails Container - wrapper clips any stubborn native scrollbar off-canvas */}
       <div className="z-10 flex-1 overflow-hidden">
@@ -162,7 +339,7 @@ export function BigBoxView({
                     onSelectGame={(gameId) => {
                       const game = rail.games.find((candidate) => candidate.id === gameId);
                       if (game) {
-                        onSelectGame(game);
+                        handleSelectGame(game);
                       }
                     }}
                     rail={rail}
@@ -175,7 +352,7 @@ export function BigBoxView({
                   <HorizontalRail
                     title={rail.title}
                     games={rail.games}
-                    onSelectGame={onSelectGame}
+                    onSelectGame={handleSelectGame}
                     focusedIndex={focusedIdx}
                     isActive={isActive}
                     isMouseFocusEnabled={isMouseMode}

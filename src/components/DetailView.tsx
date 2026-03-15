@@ -7,10 +7,14 @@ import { DigitalMuseumLayout } from './themes/DigitalMuseumLayout';
 import { ImageSlider } from './ImageSlider';
 import { ConsoleHeroLayout } from './themes/ConsoleHeroLayout';
 import { SteamLibraryLayout } from './themes/SteamLibraryLayout';
+import { WindowedConsoleHeroLayout } from './themes/window/WindowedConsoleHeroLayout';
+import { WindowedDigitalMuseumLayout } from './themes/window/WindowedDigitalMuseumLayout';
+import { WindowedSteamLibraryLayout } from './themes/window/WindowedSteamLibraryLayout';
 import { useDetailNavigation, DetailNavigationHook, NavigationConfig } from '../hooks/useDetailNavigation';
 import { useInputMode } from '../hooks/useInputMode';
 import { useGamepad } from '../hooks/useGamepad';
 import { useFavorites } from '../hooks/useFavorites';
+import { usePopupOpenSound } from '../hooks/usePopupOpenSound';
 
 interface DetailViewProps {
   game: Game;
@@ -65,17 +69,36 @@ const STEAM_LIBRARY_CONFIG: NavigationConfig = {
   'media-boxfront':    { right: 'play' },
 };
 
+const WINDOWED_DETAIL_CONFIG: NavigationConfig = {
+  'favorite':          { down: 'play' },
+  'play':              { up: 'favorite', right: 'play-web', down: 'media-gameplay' },
+  'play-web':          { up: 'favorite', left: 'play', down: 'sid' },
+  'media-gameplay':    { up: 'play', down: 'sid' },
+  'media-titlescreen': { up: 'play', down: 'sid' },
+  'media-videosna':    { up: 'play', down: 'sid' },
+  'media-boxfront':    { up: 'play', down: 'sid' },
+  'media-extras':      { up: 'play', down: 'sid' },
+  'sid':               { up: 'media-gameplay' },
+  'screenshot':        { up: 'media-gameplay' },
+};
+
 export function DetailView({ game, onBack }: DetailViewProps) {
   const { settings } = useSettings();
   const { isFavorite, toggleFavorite } = useFavorites();
   const [fullscreenImage, setFullscreenImage] = useState<string | null>(null);
   const { showMouse } = useInputMode();
   const favorited = isFavorite(game.id.toString());
+  usePopupOpenSound(Boolean(fullscreenImage), 'detail-fullscreen-image');
 
   const theme = settings.detailViewTheme || 'cia';
-  const config = theme === 'vic' ? CONSOLE_HERO_CONFIG : 
-                 theme === 'sx64' ? STEAM_LIBRARY_CONFIG : 
-                 DIGITAL_MUSEUM_CONFIG;
+  const isWindowedDetail = !settings.isFullscreen;
+  const config = isWindowedDetail
+    ? WINDOWED_DETAIL_CONFIG
+    : theme === 'vic'
+      ? CONSOLE_HERO_CONFIG
+      : theme === 'sx64'
+        ? STEAM_LIBRARY_CONFIG
+        : DIGITAL_MUSEUM_CONFIG;
 
   const nav = useDetailNavigation({ onBack, config, enabled: !fullscreenImage });
   const hasBlockingModal = () => typeof document !== 'undefined' && Boolean(document.querySelector('[data-detail-modal="open"]'));
@@ -139,16 +162,30 @@ export function DetailView({ game, onBack }: DetailViewProps) {
       isFavorite: favorited,
       onToggleFavorite: () => toggleFavorite(game.id.toString()),
     };
+    if (isWindowedDetail) {
+      switch (theme) {
+        case 'vic':
+          return <WindowedConsoleHeroLayout {...props} />;
+        case 'sx64':
+          return <WindowedSteamLibraryLayout {...props} />;
+        default:
+          return <WindowedDigitalMuseumLayout {...props} />;
+      }
+    }
+
     switch (theme) {
-      case 'vic':   return <ConsoleHeroLayout {...props} />;
-      case 'sx64':  return <SteamLibraryLayout {...props} />;
-      default:      return <DigitalMuseumLayout {...props} />;
+      case 'vic':
+        return <ConsoleHeroLayout {...props} />;
+      case 'sx64':
+        return <SteamLibraryLayout {...props} />;
+      default:
+        return <DigitalMuseumLayout {...props} />;
     }
   };
 
   return (
     <div className="relative h-full w-full">
-      {!fullscreenImage && theme !== 'sx64' && (
+      {!fullscreenImage && !isWindowedDetail && theme !== 'sx64' && (
         <button
           onClick={() => toggleFavorite(game.id.toString())}
           onMouseEnter={() => nav.hoverZone('favorite')}

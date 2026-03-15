@@ -23,10 +23,8 @@ interface UseLibraryShellInputProps {
   setFilters: Dispatch<SetStateAction<GameFilters>>;
   setFocusedIndex: Dispatch<SetStateAction<number>>;
   setSearchInput: Dispatch<SetStateAction<string>>;
-  setShowFilters: Dispatch<SetStateAction<boolean>>;
   setViewMode: Dispatch<SetStateAction<LibraryViewMode>>;
   settings: Pick<Settings, 'isFullscreen' | 'recentlyPlayedIds' | 'scrollNavigation'>;
-  showFilters: boolean;
   toggleFocusedFavorite: () => boolean;
   updateSettings: (settings: Partial<Settings>) => void;
   viewMode: LibraryViewMode;
@@ -44,10 +42,8 @@ export function useLibraryShellInput({
   setFilters,
   setFocusedIndex,
   setSearchInput,
-  setShowFilters,
   setViewMode,
   settings,
-  showFilters,
   toggleFocusedFavorite,
   updateSettings,
   viewMode,
@@ -58,17 +54,15 @@ export function useLibraryShellInput({
       if (settings.isFullscreen) return;
 
       if (button === 'Y') {
-        if (!showFilters && !selectedGame && viewMode !== 'settings' && toggleFocusedFavorite()) {
-          return;
+        if (!selectedGame && viewMode !== 'settings') {
+          toggleFocusedFavorite();
         }
-        setShowFilters((previous) => !previous);
       }
       if (button === 'X') setViewMode((previous) => (previous === 'grid' ? 'list' : 'grid'));
       if (button === 'START') setViewMode('settings');
 
       if (button === 'B') {
-        if (showFilters) setShowFilters(false);
-        else if (selectedGame) closeDetail();
+        if (selectedGame) closeDetail();
       }
 
       if (button === 'RB' || button === 'LB') {
@@ -77,7 +71,7 @@ export function useLibraryShellInput({
         setSearchInput('');
       }
 
-      if (!showFilters && !selectedGame && viewMode !== 'settings') {
+      if (!selectedGame && viewMode !== 'settings') {
         const columns = getLibraryColumnCount(viewMode);
         const recentCount = settings.recentlyPlayedIds.length;
         const minIndex = recentCount > 0 ? -recentCount : 0;
@@ -118,13 +112,10 @@ export function useLibraryShellInput({
       if (document.activeElement?.tagName === 'INPUT') return;
 
       if ((event.key === 'f' || event.key === 'F') && !event.shiftKey) {
-        if (!showFilters && !selectedGame && viewMode !== 'settings' && toggleFocusedFavorite()) {
+        if (!selectedGame && viewMode !== 'settings' && toggleFocusedFavorite()) {
           event.preventDefault();
           return;
         }
-      }
-      if ((event.key === 'f' || event.key === 'F') && event.shiftKey) {
-        setShowFilters((previous) => !previous);
       }
       if (event.key === 's' || event.key === 'S') {
         setViewMode('settings');
@@ -152,7 +143,7 @@ export function useLibraryShellInput({
         setSearchInput('');
       }
 
-      if (!showFilters && !selectedGame && viewMode !== 'settings') {
+      if (!selectedGame && viewMode !== 'settings') {
         const columns = getLibraryColumnCount(viewMode);
         const recentCount = settings.recentlyPlayedIds.length;
         const minIndex = recentCount > 0 ? -recentCount : 0;
@@ -203,11 +194,9 @@ export function useLibraryShellInput({
     setFilters,
     setFocusedIndex,
     setSearchInput,
-    setShowFilters,
     setViewMode,
     settings.isFullscreen,
     settings.recentlyPlayedIds,
-    showFilters,
     toggleFocusedFavorite,
     updateSettings,
     viewMode,
@@ -227,7 +216,7 @@ export function useLibraryShellInput({
     };
 
     const handleWheel = (event: WheelEvent) => {
-      if (!settings.scrollNavigation || showFilters || selectedGame || viewMode === 'settings') return;
+      if (!settings.scrollNavigation || selectedGame || viewMode === 'settings') return;
 
       const columns = getLibraryColumnCount(viewMode);
       const recentCount = settings.recentlyPlayedIds.length;
@@ -259,7 +248,6 @@ export function useLibraryShellInput({
     setFocusedIndex,
     settings.recentlyPlayedIds.length,
     settings.scrollNavigation,
-    showFilters,
     viewMode,
   ]);
 }

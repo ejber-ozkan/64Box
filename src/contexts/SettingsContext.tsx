@@ -37,6 +37,9 @@ export interface Settings {
   mouseHoverSelection: boolean;
   scrollNavigation: boolean;
   bigBoxAnimateVertical: boolean;
+  confirmFullscreenExit: boolean;
+  lastBigBoxRailId: string | null;
+  lastBigBoxGameId: string | null;
 }
 
 interface SettingsContextType {
@@ -81,6 +84,9 @@ const defaultSettings: Settings = {
   mouseHoverSelection: true,
   scrollNavigation: true,
   bigBoxAnimateVertical: true,
+  confirmFullscreenExit: true,
+  lastBigBoxRailId: null,
+  lastBigBoxGameId: null,
 };
 
 const SettingsContext = createContext<SettingsContextType | undefined>(undefined);
@@ -210,7 +216,7 @@ export function SettingsProvider({ children }: { children: ReactNode }) {
         return `${settings.soundsPath}/${filename}`;
       case 'musician':
         return `${settings.musicianPhotosPath}/${filename}`;
-      case 'extras' as any:
+      case 'extras':
         return `${settings.extrasPath}/${filename}`;
       default:
         return filename;

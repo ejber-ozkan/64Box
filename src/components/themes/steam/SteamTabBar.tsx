@@ -48,7 +48,7 @@ export function SteamTabBar({
           onMouseEnter={() => nav.hoverZone('media-extras')}
           className={getTabClass(visibleTab === 'extras', extrasFocused)}
         >
-          Extras ({extrasCount})
+          Extras Alt. ({extrasCount})
         </div>
       )}
       {hasGalleryExtras && (
@@ -57,7 +57,7 @@ export function SteamTabBar({
           onMouseEnter={() => nav.hoverZone('media-extras')}
           className={getTabClass(visibleTab === 'extras-gallery', extrasGalleryFocused)}
         >
-          Extras Alt. ({extrasGalleryCount})
+          Extras ({extrasGalleryCount})
         </div>
       )}
     </div>

@@ -35,3 +35,45 @@ body {
   display: none !important;
   background: transparent !important;
 }
+
+@keyframes app-launch-splash-fade {
+  0% {
+    opacity: 0;
+  }
+  18% {
+    opacity: 1;
+  }
+  72% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 0;
+  }
+}
+
+@keyframes app-launch-splash-image {
+  0% {
+    opacity: 0.35;
+    transform: scale(1.06);
+  }
+  22% {
+    opacity: 1;
+    transform: scale(1);
+  }
+  78% {
+    opacity: 1;
+    transform: scale(1);
+  }
+  100% {
+    opacity: 0.25;
+    transform: scale(0.98);
+  }
+}
+
+.app-launch-splash {
+  animation: app-launch-splash-fade 5s ease-in-out forwards;
+}
+
+.app-launch-splash-image {
+  animation: app-launch-splash-image 5s ease-in-out forwards;
+}

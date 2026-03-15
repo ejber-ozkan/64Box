@@ -1,6 +1,6 @@
 {
   "name": "vic40gamebox",
-  "version": "0.2.0",
+  "version": "0.3.0",
   "private": true,
   "scripts": {
     "dev": "next dev",
@@ -13,6 +13,7 @@
     "coverage:backend": "cargo llvm-cov --manifest-path src-tauri/Cargo.toml --ignore-filename-regex \"(lib\\\\.rs|main\\\\.rs|commands[/\\\\\\\\]system\\\\.rs)\" --fail-under-lines 80 -- --test-threads=1",
     "db:convert": "node scripts/convert_csv_to_sqlite.js",
     "db:import": ".\\scripts\\import_gb64.bat",
+    "sounds:convert": "node scripts/convert_ui_sounds_to_mp3.js",
     "tauri": "tauri",
     "tauri:dev": "tauri-dev.bat",
     "tauri:build": "tauri-build.bat",

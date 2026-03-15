@@ -2,6 +2,7 @@
 
 import { DetailNavigationHook } from '../../../hooks/useDetailNavigation';
 import { Game } from '../../../types/game';
+import { DetailGameTitle } from '../../detail/DetailGameTitle';
 
 interface SteamHeroProps {
   game: Game;
@@ -47,7 +48,10 @@ export function SteamHero({
           <span className="text-base leading-none">{isFavorite ? '♥' : '♡'}</span>
         </button>
         <div className="min-w-0 flex-1">
-          <h1 className="mb-2 text-2xl font-light tracking-tight text-white xl:text-3xl 2xl:text-4xl">{game.name}</h1>
+          <DetailGameTitle
+            className="mb-2 flex flex-wrap items-center gap-3 text-2xl font-light tracking-tight text-white xl:text-3xl 2xl:text-4xl"
+            title={game.name}
+          />
           <div className="flex flex-wrap items-center gap-y-2 text-xs xl:text-sm font-semibold uppercase tracking-wider text-[#66c0f4]">
             {[game.year, ...studios].filter(Boolean).map((value, index, values) => (
               <span key={`${value}-${index}`}>

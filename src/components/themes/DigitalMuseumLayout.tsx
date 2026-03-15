@@ -12,6 +12,7 @@ import { StatusRow } from '../StatusRow';
 import { getGameExtras } from '../../lib/tauri-bridge';
 import { ScrapeButton } from '../ScrapeButton';
 import { ExtrasDetail } from '../ExtrasDetail';
+import { DetailGameTitle } from '../detail/DetailGameTitle';
 
 const MEDIA_TO_ZONE = {
   gameplay: 'media-gameplay',
@@ -198,7 +199,10 @@ export function DigitalMuseumLayout({ game, onBack, nav, onFullscreen }: DetailL
 
           <div className="flex justify-between items-start gap-8">
             <div className="flex-1">
-              <h1 className="text-6xl xl:text-7xl 2xl:text-8xl font-black text-white mb-4 tracking-tighter leading-none">{game.name}</h1>
+              <DetailGameTitle
+                className="mb-4 flex flex-wrap items-center gap-4 text-6xl font-black tracking-tighter leading-none text-white xl:text-7xl 2xl:text-8xl"
+                title={game.name}
+              />
               <div className="flex flex-wrap items-center gap-x-6 gap-y-3 text-sm xl:text-base 2xl:text-lg font-medium text-yellow-500/80">
                 <div className="flex items-center gap-2">
                   <span className="text-yellow-500">{game.year || '----'}</span>

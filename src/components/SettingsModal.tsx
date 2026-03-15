@@ -5,6 +5,7 @@ import { useSettings } from '../contexts/SettingsContext';
 import { useGamepad } from '../hooks/useGamepad';
 import { useInputMode } from '../hooks/useInputMode';
 import { openDirectoryDialog, openFileDialog } from '../lib/tauri-bridge';
+import { playUiSoundEffect } from '../lib/ui-sound-effects';
 import { AboutSettingsTab } from './settings/AboutSettingsTab';
 import { AppearanceSettingsTab } from './settings/AppearanceSettingsTab';
 import { ContentSettingsTab } from './settings/ContentSettingsTab';
@@ -93,6 +94,8 @@ export function SettingsView({ onBack, onOpenTigerHeli }: SettingsViewProps) {
 
   const moveFocus = useCallback(
     (dir: 'UP' | 'DOWN' | 'LEFT' | 'RIGHT') => {
+      void playUiSoundEffect('menu-move-1', 0.28);
+
       if (navZone === 'header') {
         if (dir === 'DOWN') {
           setNavZone('tabs');

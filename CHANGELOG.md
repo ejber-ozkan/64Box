@@ -2,6 +2,25 @@
 
 All notable changes to this project will be documented in this file.
 
+## [0.3] - 2026-03-15
+
+### Added
+- Added a controller search keyboard overlay for BigBox fullscreen search, with live filtering and `B` to close without clearing the current query.
+- Added fullscreen BigBox UI sound effects, including launch, navigation, search/filter, detail-open, popup, view-switch, and rotating close cues.
+- Added a startup splash overlay using `c64days-wallpaper.png` and the `64Box` marque, shown on both windowed and BigBox launch.
+- Added shared detail-title rendering so all single-game themes now show trophy flanks around the game title.
+
+### Changed
+- Reworked windowed library mode to better match BigBox browsing, including branded header treatment, genre chips under search, and dedicated recent/favorites/classics shelves.
+- Split windowed single-game detail into responsive layouts across all themes, while keeping fullscreen/BigBox detail behavior separate.
+- Refined BigBox fullscreen exit handling so controller `B` opens a confirmation dialog, optionally persists “don’t ask again”, and waits for the close cue before quitting.
+- Updated surfaced app versioning to `0.3.0`.
+
+### Fixed
+- Fixed popup open sounds so conditionally mounted dialogs like the BigBox exit prompt now correctly play rotating popup audio on first open.
+- Fixed missing trophy styling on detail titles across fullscreen and windowed themes.
+- Fixed several windowed-library inconsistencies, including list-mode shelf separation, settings-button labeling, and window-only rail behavior.
+
 ## [0.2] - 2026-03-14
 
 ### Added

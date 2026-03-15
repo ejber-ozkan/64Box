@@ -16,10 +16,15 @@ interface UseBigBoxNavigationProps {
   activeRailIndex: number;
   filters: GameFilters;
   genres: string[];
+  isControllerKeyboardOpen: boolean;
   onBack?: () => void;
   onFiltersChange: (filters: GameFilters) => void;
   onFocusSearchInput: () => void;
   onGamepadInput: () => void;
+  onGenreSelect?: () => void;
+  onLetterJump?: () => void;
+  onNavigationMove?: () => void;
+  onOpenControllerKeyboard: () => void;
   onSelectGame: (game: Game) => void;
   onShowSettings: () => void;
   railFocusIndices: Record<string, number>;
@@ -37,10 +42,15 @@ export function useBigBoxNavigation({
   activeRailIndex,
   filters,
   genres,
+  isControllerKeyboardOpen,
   onBack,
   onFiltersChange,
   onFocusSearchInput,
   onGamepadInput,
+  onGenreSelect,
+  onLetterJump,
+  onNavigationMove,
+  onOpenControllerKeyboard,
   onSelectGame,
   onShowSettings,
   railFocusIndices,
@@ -93,6 +103,10 @@ export function useBigBoxNavigation({
   }, [setActiveRailIndex, setRailFocusIndices]);
 
   const handleKeyDown = useCallback((event: KeyEventLike) => {
+    if (isControllerKeyboardOpen) {
+      return;
+    }
+
     const isInputFocused = document.activeElement?.tagName === 'INPUT';
     const rowCounts = [3, genres.length, BIGBOX_LETTERS.length];
 
@@ -118,9 +132,11 @@ export function useBigBoxNavigation({
     if (event.key === 'ArrowDown') {
       if (isHeaderActive) {
         if (activeHeaderRow < 2) {
+          onNavigationMove?.();
           setActiveHeaderRow((previous) => previous + 1);
           setActiveHeaderItemIndex(0);
         } else {
+          onNavigationMove?.();
           setSectionJumpDirection(null);
           setActiveRailIndex(0);
         }
@@ -130,6 +146,7 @@ export function useBigBoxNavigation({
       if (isGrid) {
         const nextIndex = focusedIndex + columns;
         if (nextIndex < rail.games.length) {
+          onNavigationMove?.();
           setRailFocusIndices((previous) => ({ ...previous, [rail.id]: nextIndex }));
           return;
         }
@@ -138,6 +155,7 @@ export function useBigBoxNavigation({
       const nextRailIndex = activeRailIndex + 1;
       if (nextRailIndex < rails.length) {
         const nextRail = rails[nextRailIndex];
+        onNavigationMove?.();
         setSectionJumpDirection('down');
         setRailFocusIndices((previous) => ({ ...previous, [nextRail.id]: 0 }));
         setActiveRailIndex(nextRailIndex);
@@ -148,6 +166,7 @@ export function useBigBoxNavigation({
     if (event.key === 'ArrowUp') {
       if (isHeaderActive) {
         if (activeHeaderRow > 0) {
+          onNavigationMove?.();
           setActiveHeaderRow((previous) => previous - 1);
           setActiveHeaderItemIndex(0);
         }
@@ -157,6 +176,7 @@ export function useBigBoxNavigation({
       if (isGrid) {
         const nextIndex = focusedIndex - columns;
         if (nextIndex >= 0) {
+          onNavigationMove?.();
           setRailFocusIndices((previous) => ({ ...previous, [rail.id]: nextIndex }));
           return;
         }
@@ -165,6 +185,7 @@ export function useBigBoxNavigation({
       const previousRailIndex = activeRailIndex - 1;
       if (previousRailIndex >= 0) {
         const previousRail = rails[previousRailIndex];
+        onNavigationMove?.();
         setSectionJumpDirection('up');
         setRailFocusIndices((previous) => ({
           ...previous,
@@ -172,6 +193,7 @@ export function useBigBoxNavigation({
         }));
         setActiveRailIndex(previousRailIndex);
       } else {
+        onNavigationMove?.();
         focusHeader(2, 0);
       }
       return;
@@ -179,12 +201,15 @@ export function useBigBoxNavigation({
 
     if (event.key === 'ArrowRight') {
       if (isHeaderActive) {
+        onNavigationMove?.();
         setActiveHeaderItemIndex((previous) => (previous + 1) % rowCounts[activeHeaderRow]);
       } else if (isGrid) {
         if (focusedIndex < rail.games.length - 1) {
+          onNavigationMove?.();
           setRailFocusIndices((previous) => ({ ...previous, [rail.id]: focusedIndex + 1 }));
         }
       } else {
+        onNavigationMove?.();
         setRailFocusIndices((previous) => ({
           ...previous,
           [rail.id]: (focusedIndex + 1) % rail.games.length,
@@ -195,14 +220,17 @@ export function useBigBoxNavigation({
 
     if (event.key === 'ArrowLeft') {
       if (isHeaderActive) {
+        onNavigationMove?.();
         setActiveHeaderItemIndex(
           (previous) => (previous - 1 + rowCounts[activeHeaderRow]) % rowCounts[activeHeaderRow],
         );
       } else if (isGrid) {
         if (focusedIndex > 0) {
+          onNavigationMove?.();
           setRailFocusIndices((previous) => ({ ...previous, [rail.id]: focusedIndex - 1 }));
         }
       } else {
+        onNavigationMove?.();
         setRailFocusIndices((previous) => ({
           ...previous,
           [rail.id]: (focusedIndex - 1 + rail.games.length) % rail.games.length,
@@ -214,13 +242,16 @@ export function useBigBoxNavigation({
     if (event.key === 'LB_RB_RIGHT') {
       if (isHeaderActive) {
         if (activeHeaderRow < 2) {
+          onNavigationMove?.();
           setActiveHeaderRow((previous) => previous + 1);
           setActiveHeaderItemIndex(0);
         } else if (rails.length > 0) {
+          onNavigationMove?.();
           setSectionJumpDirection(null);
           setActiveRailIndex(0);
         }
       } else if (activeRailIndex < rails.length - 1) {
+        onNavigationMove?.();
         setSectionJumpDirection(null);
         setActiveRailIndex((previous) => previous + 1);
       }
@@ -230,12 +261,15 @@ export function useBigBoxNavigation({
     if (event.key === 'LB_RB_LEFT') {
       if (isHeaderActive) {
         if (activeHeaderRow > 0) {
+          onNavigationMove?.();
           setActiveHeaderRow((previous) => previous - 1);
           setActiveHeaderItemIndex(0);
         }
       } else if (activeRailIndex === 0) {
+        onNavigationMove?.();
         focusHeader(2, 0);
       } else {
+        onNavigationMove?.();
         setSectionJumpDirection(null);
         setActiveRailIndex((previous) => previous - 1);
       }
@@ -253,11 +287,13 @@ export function useBigBoxNavigation({
             exitApp();
           }
         } else if (activeHeaderRow === 1) {
+          onGenreSelect?.();
           const genre = genres[activeHeaderItemIndex];
           onFiltersChange({ ...filters, genre: filters.genre === genre ? undefined : genre });
           setSectionJumpDirection(null);
           setActiveRailIndex(0);
         } else if (activeHeaderRow === 2) {
+          onLetterJump?.();
           jumpToRail(`alpha-${BIGBOX_LETTERS[activeHeaderItemIndex]}`);
         }
         return;
@@ -287,8 +323,12 @@ export function useBigBoxNavigation({
     jumpToRail,
     onFiltersChange,
     onFocusSearchInput,
+    isControllerKeyboardOpen,
+    onGenreSelect,
     onSelectGame,
     onShowSettings,
+    onLetterJump,
+    onNavigationMove,
     rails,
     railFocusIndices,
     setActiveHeaderItemIndex,
@@ -309,7 +349,17 @@ export function useBigBoxNavigation({
 
   useGamepad({
     onButtonDown: (button) => {
+      if (isControllerKeyboardOpen) {
+        return;
+      }
+
       onGamepadInput();
+
+      const isSearchSelected =
+        activeRailIndex === -1 &&
+        activeHeaderRow === 0 &&
+        activeHeaderItemIndex === 0 &&
+        document.activeElement?.tagName !== 'INPUT';
 
       if (button === 'DPAD_UP' || button === 'UP') handleKeyDown({ key: 'ArrowUp' });
       if (button === 'DPAD_DOWN' || button === 'DOWN') handleKeyDown({ key: 'ArrowDown' });
@@ -317,7 +367,13 @@ export function useBigBoxNavigation({
       if (button === 'DPAD_RIGHT' || button === 'RIGHT') handleKeyDown({ key: 'ArrowRight' });
       if (button === 'LB') handleKeyDown({ key: 'LB_RB_LEFT' });
       if (button === 'RB') handleKeyDown({ key: 'LB_RB_RIGHT' });
-      if (button === 'A') handleKeyDown({ key: 'Enter' });
+      if (button === 'A') {
+        if (isSearchSelected) {
+          onOpenControllerKeyboard();
+        } else {
+          handleKeyDown({ key: 'Enter' });
+        }
+      }
       if (button === 'Y') handleKeyDown({ key: 'F' });
       if (button === 'START') onShowSettings();
       if (button === 'B') {

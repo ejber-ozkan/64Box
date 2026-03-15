@@ -4,6 +4,7 @@ import { useState, useRef, useEffect, useCallback } from 'react';
 import { useGamepad } from './useGamepad';
 
 import { useSettings } from '../contexts/SettingsContext';
+import { playUiSoundEffect } from '../lib/ui-sound-effects';
 
 export type DetailZone =
   | 'play'
@@ -81,11 +82,13 @@ export function useDetailNavigation({ onBack, initialZone = 'play', config, enab
     const cur = focusedZoneRef.current;
     const override = directionalOverridesRef.current[cur];
     if (override?.(dir)) {
+      void playUiSoundEffect('menu-move-1', 0.28);
       debug(`Handled ${dir} in ${cur}`);
       return;
     }
     const next = config[cur]?.[dir];
     if (next) {
+      void playUiSoundEffect('menu-move-1', 0.28);
       debug(`Moved ${dir} to ${next}`);
       setFocusedZone(next);
     } else {
@@ -162,10 +165,12 @@ export function useDetailNavigation({ onBack, initialZone = 'play', config, enab
       }
       setControllerMode();
       if (btn === 'LB') {
+        void playUiSoundEffect('menu-move-1', 0.28);
         debug('Previous tab');
         tabActionsRef.current.previous?.();
       }
       if (btn === 'RB') {
+        void playUiSoundEffect('menu-move-1', 0.28);
         debug('Next tab');
         tabActionsRef.current.next?.();
       }
@@ -188,9 +193,11 @@ export function useDetailNavigation({ onBack, initialZone = 'play', config, enab
         e.preventDefault();
         setControllerMode();
         if (e.shiftKey) {
+          void playUiSoundEffect('menu-move-1', 0.28);
           debug('Previous tab');
           tabActionsRef.current.previous?.();
         } else {
+          void playUiSoundEffect('menu-move-1', 0.28);
           debug('Next tab');
           tabActionsRef.current.next?.();
         }
@@ -200,6 +207,7 @@ export function useDetailNavigation({ onBack, initialZone = 'play', config, enab
       if (e.key === 'PageUp' || e.key === '[') {
         e.preventDefault();
         setControllerMode();
+        void playUiSoundEffect('menu-move-1', 0.28);
         debug('Previous tab');
         tabActionsRef.current.previous?.();
         return;
@@ -208,6 +216,7 @@ export function useDetailNavigation({ onBack, initialZone = 'play', config, enab
       if (e.key === 'PageDown' || e.key === ']') {
         e.preventDefault();
         setControllerMode();
+        void playUiSoundEffect('menu-move-1', 0.28);
         debug('Next tab');
         tabActionsRef.current.next?.();
         return;

@@ -6,6 +6,7 @@ import { groupExtras, ExtraGroup } from '../lib/extras';
 import { useSettings } from '../contexts/SettingsContext';
 import { getAssetUrl, openFile, launchEmulator } from '../lib/tauri-bridge';
 import { ImageWithFallback } from './ImageWithFallback';
+import { usePopupOpenSound } from '../hooks/usePopupOpenSound';
 
 interface ExtrasDetailProps {
   game: Game;
@@ -174,6 +175,7 @@ export function ExtrasDetail({ game, extras, visibleCategories, hideEmptyState =
 function VisualExtraCard({ extra, extrasPath }: { extra: Extra; extrasPath: string }) {
   const [url, setUrl] = useState<string>('');
   const [isFullscreen, setIsFullscreen] = useState(false);
+  usePopupOpenSound(isFullscreen, 'extras-visual-fullscreen');
 
   useEffect(() => {
     const cleanExtrasPath = (extrasPath || '').replace(/\\/g, '/').replace(/\/+$/, '');

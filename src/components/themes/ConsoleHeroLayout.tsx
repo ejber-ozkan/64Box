@@ -13,6 +13,7 @@ import { ScrapeButton } from '../ScrapeButton';
 import { Extra } from '../../types/game';
 import { ExtrasDetail } from '../ExtrasDetail';
 import { useState } from 'react';
+import { DetailGameTitle } from '../detail/DetailGameTitle';
 
 export function ConsoleHeroLayout({ game, onBack, nav, onFullscreen }: DetailLayoutProps) {
   const { resolveMediaPath } = useSettings();
@@ -192,7 +193,10 @@ export function ConsoleHeroLayout({ game, onBack, nav, onFullscreen }: DetailLay
              </div>
            ) : (
              <div className="bg-white/5 backdrop-blur-xl border border-white/10 rounded-3xl p-10 2xl:p-12 shadow-2xl flex-1 flex flex-col transform transition translate-y-4 group-hover:translate-y-0 duration-700">
-              <h1 className="text-5xl xl:text-6xl 2xl:text-7xl font-black text-white mb-3 leading-none tracking-tighter">{game.name}</h1>
+              <DetailGameTitle
+                className="mb-3 flex flex-wrap items-center gap-4 text-5xl font-black leading-none tracking-tighter text-white xl:text-6xl 2xl:text-7xl"
+                title={game.name}
+              />
               <div className="text-blue-400 font-semibold text-lg xl:text-xl mb-10 uppercase tracking-widest opacity-90">
                 {[
                   game.year,

@@ -1,6 +1,7 @@
 "use client";
 
 import { ImageWithFallback } from '../../ImageWithFallback';
+import { usePopupOpenSound } from '../../../hooks/usePopupOpenSound';
 
 interface SteamFullscreenExtraModalProps {
   caption: string;
@@ -15,6 +16,8 @@ export function SteamFullscreenExtraModal({
   src,
   title,
 }: SteamFullscreenExtraModalProps) {
+  usePopupOpenSound(true, 'steam-fullscreen-extra');
+
   return (
     <div
       data-detail-modal="open"

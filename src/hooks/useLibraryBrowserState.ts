@@ -14,7 +14,6 @@ export function useLibraryBrowserState() {
   const { toggleFavorite } = useFavorites();
   const [viewMode, setViewMode] = useState<LibraryViewMode>(settings.lastViewMode || 'grid');
   const [selectedGame, setSelectedGame] = useState<Game | null>(null);
-  const [showFilters, setShowFilters] = useState(false);
   const [filters, setFilters] = useState<GameFilters>({});
   const [games, setGames] = useState<Game[]>([]);
   const [focusedIndex, setFocusedIndex] = useState(-1);
@@ -190,10 +189,8 @@ export function useLibraryBrowserState() {
     setFocusedIndex,
     setSearchInput,
     setSelectedGame,
-    setShowFilters,
     setViewMode,
     shelfRef,
-    showFilters,
     toggleFocusedFavorite,
     viewMode,
   };
