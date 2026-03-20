@@ -1,0 +1,142 @@
+name: Release Bundles
+
+on:
+  workflow_dispatch:
+    inputs:
+      build_windows:
+        description: Build Windows bundles
+        required: false
+        type: boolean
+        default: true
+      build_linux:
+        description: Build Linux bundles
+        required: false
+        type: boolean
+        default: true
+      build_macos:
+        description: Build macOS bundles
+        required: false
+        type: boolean
+        default: true
+  push:
+    tags:
+      - "v*"
+
+concurrency:
+  group: release-bundles-${{ github.ref }}
+  cancel-in-progress: false
+
+permissions:
+  contents: read
+
+env:
+  CARGO_TERM_COLOR: always
+
+jobs:
+  build-windows:
+    if: github.event_name == 'push' || github.event.inputs.build_windows == 'true'
+    runs-on: windows-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+
+      - uses: dtolnay/rust-toolchain@stable
+
+      - uses: Swatinem/rust-cache@v2
+
+      - name: Install frontend dependencies
+        run: npm ci
+
+      - name: Build Tauri bundles
+        run: npx tauri build
+
+      - name: Upload Windows bundles
+        uses: actions/upload-artifact@v4
+        with:
+          name: 64box-windows-bundles
+          path: |
+            src-tauri/target/release/bundle/msi/**
+            src-tauri/target/release/bundle/nsis/**
+          if-no-files-found: error
+
+  build-linux:
+    if: github.event_name == 'push' || github.event.inputs.build_linux == 'true'
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install Linux system dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y \
+            build-essential \
+            curl \
+            file \
+            libayatana-appindicator3-dev \
+            libgtk-3-dev \
+            librsvg2-dev \
+            libwebkit2gtk-4.1-dev \
+            patchelf \
+            wget
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+
+      - uses: dtolnay/rust-toolchain@stable
+
+      - uses: Swatinem/rust-cache@v2
+
+      - name: Install frontend dependencies
+        run: npm ci
+
+      - name: Build Tauri bundles
+        run: npx tauri build
+
+      - name: Upload Linux bundles
+        uses: actions/upload-artifact@v4
+        with:
+          name: 64box-linux-bundles
+          path: |
+            src-tauri/target/release/bundle/appimage/**
+            src-tauri/target/release/bundle/deb/**
+            src-tauri/target/release/bundle/rpm/**
+          if-no-files-found: warn
+
+  build-macos:
+    if: github.event_name == 'push' || github.event.inputs.build_macos == 'true'
+    runs-on: macos-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+
+      - uses: dtolnay/rust-toolchain@stable
+
+      - uses: Swatinem/rust-cache@v2
+
+      - name: Install frontend dependencies
+        run: npm ci
+
+      - name: Build Tauri bundles
+        run: npx tauri build
+
+      - name: Upload macOS bundles
+        uses: actions/upload-artifact@v4
+        with:
+          name: 64box-macos-bundles
+          path: |
+            src-tauri/target/release/bundle/dmg/**
+            src-tauri/target/release/bundle/macos/**
+          if-no-files-found: error

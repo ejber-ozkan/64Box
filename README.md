@@ -134,6 +134,40 @@ npm run tauri build
 ```
 You can find the compiled installers and executables in `src-tauri/target/release/bundle/`.
 
+## 5.1 GitHub Actions Release Builds
+
+The repository includes a GitHub Actions workflow at `.github/workflows/release-bundles.yml` that builds native bundles for:
+- Windows
+- Linux
+- macOS
+
+It is intentionally quota-friendly for private repositories:
+- full 3-platform builds run automatically only when you push a version tag such as `v0.3`
+- manual runs (`workflow_dispatch`) let you choose which operating systems to build, so you can test only one platform when needed
+
+This is important because GitHub-hosted runner billing is weighted differently by platform:
+- Linux: `1x`
+- Windows: `2x`
+- macOS: `10x`
+
+Official GitHub billing reference:
+- [GitHub Actions billing](https://docs.github.com/en/billing/managing-billing-for-your-products/managing-billing-for-github-actions/about-billing-for-github-actions)
+
+GitHub's included monthly private-repo minutes are currently:
+- `2,000` minutes for Free / GitHub Free organizations
+- `3,000` minutes for Pro / Team style plans
+
+Practical release budgeting:
+- if each platform build takes about `15` minutes, one full release run costs about `195` billed minutes
+- that works out to roughly `10` full three-platform releases per month on a `2,000` minute allowance
+- or roughly `15` full three-platform releases per month on a `3,000` minute allowance
+
+If builds average closer to `20` minutes per job, that drops to roughly `7` releases/month on `2,000` minutes and `11` on `3,000`.
+
+For that reason, the recommended pattern is:
+1. use manual single-platform runs while iterating
+2. reserve full Windows + Linux + macOS builds for version tags and real releases
+
 ## Post-Setup Configuration
 Once the app boots successfully, open the **Settings** menu via the top header bar:
 1. Ensure the paths to your extracted GameBase64 `Screenshots`, `Games`, `BoxArt`, `Video` and `Sid` folders are set correctly.

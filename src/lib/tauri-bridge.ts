@@ -18,11 +18,17 @@
 // ---------------------------------------------------------------------------
 // Runtime detection
 // ---------------------------------------------------------------------------
+type TauriAwareWindow = Window & {
+  __TAURI_INTERNALS__?: unknown;
+  __TAURI_IPC__?: unknown;
+  __TAURI__?: unknown;
+};
+
 const isTauri = (): boolean =>
   typeof window !== 'undefined' && (
-    (window as any).__TAURI_INTERNALS__ !== undefined || 
-    (window as any).__TAURI_IPC__ !== undefined || 
-    (window as any).__TAURI__ !== undefined
+    (window as TauriAwareWindow).__TAURI_INTERNALS__ !== undefined || 
+    (window as TauriAwareWindow).__TAURI_IPC__ !== undefined || 
+    (window as TauriAwareWindow).__TAURI__ !== undefined
   );
 
 async function invoke<T>(command: string, payload?: Record<string, unknown>): Promise<T> {
@@ -61,6 +67,70 @@ export interface LaunchResult {
 export interface ResolvedPath {
   exists: boolean;
   absolute_path: string;
+}
+
+export interface DatabaseBootstrapStatus {
+  ready: boolean;
+  dbPath: string;
+  reason?: string | null;
+}
+
+export interface DatabaseImportResult {
+  dbPath: string;
+  exportedTables: number;
+  importedTables: number;
+}
+
+interface RawExtraRow {
+  id: string;
+  name: string;
+  path: string;
+  extraType: string;
+}
+
+interface RawGameRow {
+  id: string;
+  name: string;
+  filename: string;
+  gameFilename?: string | null;
+  screenshotFilename?: string | null;
+  boxFrontFilename?: string | null;
+  coverPath?: string | null;
+  titlescreenFilename?: string | null;
+  videoSnapFilename?: string | null;
+  sidFilename?: string | null;
+  crc?: string | null;
+  year?: string | null;
+  isPal: boolean;
+  isNtsc: boolean;
+  trueDriveEmu: boolean;
+  isClassic: boolean;
+  parentGenre: string;
+  subGenre: string;
+  developerName?: string | null;
+  publisherName?: string | null;
+  musicianName?: string | null;
+  musicianPhoto?: string | null;
+  musicianGroup?: string | null;
+  musicianNick?: string | null;
+  control?: string | null;
+  playersFrom?: string | null;
+  playersTo?: string | null;
+  playersSim?: string | null;
+  comment?: string | null;
+  reviewRating?: string | null;
+  languages?: string | null;
+  coderName?: string | null;
+  graphicsName?: string | null;
+  versionBy?: string | null;
+  vTrainers?: string | null;
+  vLength?: string | null;
+  vLoadingScreen?: boolean | null;
+  vHighScoreSaver?: boolean | null;
+  vIncludedDocs?: boolean | null;
+  vTrueDriveEmu?: boolean | null;
+  vPalNtsc?: string | null;
+  memo?: string | null;
 }
 
 // ---------------------------------------------------------------------------
@@ -194,6 +264,32 @@ export async function openFileDialog(): Promise<string | null> {
   return invoke<string | null>('open_file_dialog');
 }
 
+export async function openMdbFileDialog(): Promise<string | null> {
+  if (!isTauri()) {
+    console.warn('[tauri-bridge] openMdbFileDialog: not in Tauri');
+    return null;
+  }
+  return invoke<string | null>('open_mdb_file_dialog');
+}
+
+export async function getDatabaseBootstrapStatus(): Promise<DatabaseBootstrapStatus> {
+  if (!isTauri()) {
+    return {
+      ready: true,
+      dbPath: 'mock-db',
+      reason: null,
+    };
+  }
+  return invoke<DatabaseBootstrapStatus>('get_database_bootstrap_status');
+}
+
+export async function importDatabaseFromMdb(mdbPath: string): Promise<DatabaseImportResult> {
+  if (!isTauri()) {
+    throw new Error('Database import is only available in the desktop app');
+  }
+  return invoke<DatabaseImportResult>('import_database_from_mdb', { mdbPath });
+}
+
 /**
  * Exit the application immediately.
  */
@@ -264,7 +360,7 @@ export async function getGameExtras(gameId: number): Promise<import('../types/ga
     return [];
   }
   try {
-    const rawExtras = await invoke<any[]>('get_game_extras', { gameId: gameId.toString() });
+    const rawExtras = await invoke<RawExtraRow[]>('get_game_extras', { gameId: gameId.toString() });
     return rawExtras.map(ex => ({
       id: ex.id,
       name: ex.name,
@@ -289,7 +385,7 @@ export async function getDbGames(limit: number = 50, offset: number = 0, filters
   }
   
   try {
-    const rawGames = await invoke<any[]>('get_db_games', { limit, offset, filters });
+    const rawGames = await invoke<RawGameRow[]>('get_db_games', { limit, offset, filters });
     
     // Map the raw GameRow objects back into our nested Game interface
     const controlMap: Record<string, string> = {

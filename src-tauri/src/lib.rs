@@ -31,8 +31,12 @@ pub fn run() {
             commands::db::get_game_extras,
             commands::db::save_secure_setting,
             commands::db::get_secure_setting,
+            commands::setup::open_mdb_file_dialog,
+            commands::setup::get_database_bootstrap_status,
+            commands::setup::import_database_from_mdb,
         ])
-        .setup(|_app| {
+        .setup(|app| {
+            let _ = database::configure_runtime_db_path(app.handle());
             let _ = database::init_database();
             Ok(())
         })

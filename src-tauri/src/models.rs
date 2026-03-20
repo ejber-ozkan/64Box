@@ -103,3 +103,19 @@ pub struct ExtraRow {
     pub path: String,
     pub extra_type: String,
 }
+
+#[derive(Debug, Serialize, Deserialize, Clone)]
+#[serde(rename_all = "camelCase")]
+pub struct DatabaseBootstrapStatus {
+    pub ready: bool,
+    pub db_path: String,
+    pub reason: Option<String>,
+}
+
+#[derive(Debug, Serialize, Deserialize, Clone)]
+#[serde(rename_all = "camelCase")]
+pub struct DatabaseImportResult {
+    pub db_path: String,
+    pub exported_tables: usize,
+    pub imported_tables: usize,
+}

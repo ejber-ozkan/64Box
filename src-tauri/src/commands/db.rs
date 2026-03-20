@@ -10,6 +10,8 @@ const FILTERED_IDS_QUERY_PREFIX: &str = "
             g.Name as sort_name
         FROM Games g
         JOIN GameView gv ON gv.id = g.GA_Id
+        LEFT JOIN Programmers pr ON g.PR_Id = pr.PR_Id
+        LEFT JOIN Artists ar ON g.AR_Id = ar.AR_Id
         WHERE 1=1";
 
 const FILTERED_IDS_QUERY_SUFFIX: &str = "

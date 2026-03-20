@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useRef, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import { flushSync } from 'react-dom';
 import { exitApp, getGenres } from '@/lib/tauri-bridge';
 import { useSettings } from '@/contexts/SettingsContext';
@@ -18,14 +18,16 @@ import { LibraryHeader } from '@/components/library/LibraryHeader';
 import { WindowGameShelf } from '@/components/library/WindowGameShelf';
 import { WindowGameListSection } from '@/components/library/WindowGameListSection';
 import { AppLaunchSplash } from '@/components/AppLaunchSplash';
+import { DatabaseSetupView } from '@/components/setup/DatabaseSetupView';
 import { useWindowLibraryShelves } from '@/hooks/useWindowLibraryShelves';
+import { getDatabaseBootstrapStatus, importDatabaseFromMdb, openMdbFileDialog } from '@/lib/tauri-bridge';
 import {
   playRotatingUiSoundEffectAndWait,
   playUiSoundEffect,
   playUiSoundEffectAndWait,
 } from '@/lib/ui-sound-effects';
 
-export default function Home() {
+function LibraryApp() {
   const { settings, updateSettings } = useSettings();
   const { favorites, isFavorite } = useFavorites();
   const { isMouseMode, onGamepadInput, showMouse } = useInputMode();
@@ -276,4 +278,107 @@ export default function Home() {
       </main>
     </>
   );
+}
+
+export default function Home() {
+  const [bootstrapStatus, setBootstrapStatus] = useState<{
+    dbPath: string;
+    ready: boolean;
+    reason: string | null;
+  } | null>(null);
+  const [isCheckingSetup, setIsCheckingSetup] = useState(true);
+  const [isImporting, setIsImporting] = useState(false);
+  const [mdbPath, setMdbPath] = useState('');
+  const [setupError, setSetupError] = useState<string | null>(null);
+  const [setupSuccess, setSetupSuccess] = useState<string | null>(null);
+
+  const refreshBootstrapStatus = useCallback(async () => {
+    setIsCheckingSetup(true);
+    try {
+      const status = await getDatabaseBootstrapStatus();
+      setBootstrapStatus({
+        dbPath: status.dbPath,
+        ready: status.ready,
+        reason: status.reason ?? null,
+      });
+      if (status.ready) {
+        setSetupError(null);
+      }
+    } catch (error) {
+      setBootstrapStatus({
+        dbPath: '',
+        ready: false,
+        reason: null,
+      });
+      setSetupError(error instanceof Error ? error.message : 'Unable to verify database setup.');
+    } finally {
+      setIsCheckingSetup(false);
+    }
+  }, []);
+
+  useEffect(() => {
+    void refreshBootstrapStatus();
+  }, [refreshBootstrapStatus]);
+
+  const handleBrowseMdb = useCallback(async () => {
+    const selected = await openMdbFileDialog();
+    if (selected) {
+      setMdbPath(selected);
+      setSetupError(null);
+    }
+  }, []);
+
+  const handleImportDatabase = useCallback(async () => {
+    if (!mdbPath) {
+      setSetupError('Select the GameBase64 v19 MDB file first.');
+      return;
+    }
+
+    setIsImporting(true);
+    setSetupError(null);
+    setSetupSuccess(null);
+
+    try {
+      const result = await importDatabaseFromMdb(mdbPath);
+      setSetupSuccess(
+        `Imported ${result.importedTables} tables and prepared the GB64 database at ${result.dbPath}.`,
+      );
+      await refreshBootstrapStatus();
+    } catch (error) {
+      setSetupError(error instanceof Error ? error.message : 'Database import failed.');
+    } finally {
+      setIsImporting(false);
+    }
+  }, [mdbPath, refreshBootstrapStatus]);
+
+  if (isCheckingSetup || bootstrapStatus === null) {
+    return (
+      <main className="min-h-screen bg-[#06080f] text-white">
+        <div className="flex min-h-screen items-center justify-center">
+          <div className="flex flex-col items-center gap-5">
+            <div className="h-14 w-14 rounded-full border-4 border-cyan-400/15 border-t-cyan-300 animate-spin" />
+            <div className="text-sm font-black uppercase tracking-[0.24em] text-cyan-200/75">
+              Checking GB64 Database
+            </div>
+          </div>
+        </div>
+      </main>
+    );
+  }
+
+  if (!bootstrapStatus.ready) {
+    return (
+      <DatabaseSetupView
+        dbPath={bootstrapStatus.dbPath}
+        error={setupError ?? bootstrapStatus.reason}
+        importResult={setupSuccess}
+        isImporting={isImporting}
+        mdbPath={mdbPath}
+        onBrowse={handleBrowseMdb}
+        onImport={handleImportDatabase}
+      />
+    );
+  }
+
+  return <LibraryApp />;
 }
