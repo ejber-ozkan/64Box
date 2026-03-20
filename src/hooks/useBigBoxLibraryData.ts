@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useMemo, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import { Settings } from '../contexts/SettingsContext';
 import { Game } from '../types/game';
 import { GameFilters, getDbGames, getGenres } from '../lib/tauri-bridge';
@@ -24,6 +24,19 @@ interface UseBigBoxLibraryDataProps {
   searchInput: string;
 }
 
+const LETTER_RAIL_LOAD_DELAY_MS = 450;
+const LETTER_RAIL_PAGE_SIZE = 1000;
+const LETTER_RAIL_CACHE = new Map<string, Game[]>();
+
+function getAlphabetRailCacheKey(letter: string, filters: GameFilters, searchInput: string) {
+  return JSON.stringify({
+    genre: filters.genre ?? null,
+    hideAdult: filters.hideAdult ?? null,
+    letter,
+    searchInput: searchInput || null,
+  });
+}
+
 export function useBigBoxLibraryData({
   activeRailIndex,
   favorites,
@@ -38,6 +51,7 @@ export function useBigBoxLibraryData({
   const [alphabetRails, setAlphabetRails] = useState<BigBoxRailCategory[]>([]);
   const [totalGameCount, setTotalGameCount] = useState(0);
   const [loading, setLoading] = useState(true);
+  const activeLetterRequestRef = useRef(0);
 
   useEffect(() => {
     getGenres().then(setGenres);
@@ -75,7 +89,7 @@ export function useBigBoxLibraryData({
             BIGBOX_LETTERS.map((letter) => ({
               id: `alpha-${letter}`,
               title: letter === '#' ? '0-9 & Symbols' : `Letter ${letter}`,
-              games: [],
+              games: LETTER_RAIL_CACHE.get(getAlphabetRailCacheKey(letter, filters, searchInput)) ?? [],
               type: 'alphabet',
               letter,
             }))
@@ -124,16 +138,48 @@ export function useBigBoxLibraryData({
       return;
     }
 
-    async function loadRailGames(railId: string, letter: string) {
-      try {
-        const games = await getDbGames(1000, 0, { ...filters, letter, searchQuery: searchInput || undefined });
-        setAlphabetRails((previous) => previous.map((rail) => (rail.id === railId ? { ...rail, games } : rail)));
-      } catch (error) {
-        console.error(`Failed to lazy load ${letter}:`, error);
-      }
+    const cacheKey = getAlphabetRailCacheKey(currentRail.letter, filters, searchInput);
+    const cachedGames = LETTER_RAIL_CACHE.get(cacheKey);
+    if (cachedGames) {
+      setAlphabetRails((previous) =>
+        previous.map((rail) => (rail.id === currentRail.id ? { ...rail, games: cachedGames } : rail)),
+      );
+      return;
     }
 
-    void loadRailGames(currentRail.id, currentRail.letter);
+    const requestId = activeLetterRequestRef.current + 1;
+    activeLetterRequestRef.current = requestId;
+    let cancelled = false;
+
+    const timeoutId = window.setTimeout(() => {
+      void (async () => {
+        try {
+          const games = await getDbGames(LETTER_RAIL_PAGE_SIZE, 0, {
+            ...filters,
+            letter: currentRail.letter,
+            searchQuery: searchInput || undefined,
+          });
+
+          if (cancelled || activeLetterRequestRef.current !== requestId) {
+            return;
+          }
+
+          LETTER_RAIL_CACHE.set(cacheKey, games);
+          setAlphabetRails((previous) =>
+            previous.map((rail) => (rail.id === currentRail.id ? { ...rail, games } : rail)),
+          );
+        } catch (error) {
+          if (!cancelled) {
+            console.error(`Failed to lazy load ${currentRail.letter}:`, error);
+          }
+        }
+      })();
+    }, LETTER_RAIL_LOAD_DELAY_MS);
+
+    return () => {
+      cancelled = true;
+      window.clearTimeout(timeoutId);
+    };
   }, [activeRailIndex, alphabetRails.length, filters, rails, searchInput]);
 
   return {

@@ -30,6 +30,7 @@ export function SteamLibraryLayout({
     galleryCardRefs,
     galleryExtras,
     gallerySectionRef,
+    galleryScrollContainerRef,
     gallerySelectionIndex,
     gameplaySectionRef,
     handleLaunchExtra,
@@ -42,6 +43,8 @@ export function SteamLibraryLayout({
     launchableCardRefs,
     launchableExtras,
     launchableSelectionIndex,
+    imageGalleryIndexes,
+    openFullscreenGalleryExtra,
     selectTab,
     setFullscreenExtra,
     setGalleryItemIndex,
@@ -129,6 +132,7 @@ export function SteamLibraryLayout({
                   galleryCardRefs={galleryCardRefs}
                   galleryExtras={galleryExtras}
                   gallerySectionRef={gallerySectionRef}
+                  galleryScrollContainerRef={galleryScrollContainerRef}
                   gallerySelectionIndex={gallerySelectionIndex}
                   nav={nav}
                   onHoverCard={(index) => {
@@ -159,6 +163,27 @@ export function SteamLibraryLayout({
         <SteamFullscreenExtraModal
           caption={fullscreenExtra.caption}
           onClose={() => setFullscreenExtra(null)}
+          onNext={
+            imageGalleryIndexes.length > 1
+              ? () => {
+                  const currentImageListIndex = imageGalleryIndexes.indexOf(fullscreenExtra.index);
+                  const safeImageListIndex = currentImageListIndex >= 0 ? currentImageListIndex : 0;
+                  const nextImageListIndex = (safeImageListIndex + 1) % imageGalleryIndexes.length;
+                  void openFullscreenGalleryExtra(imageGalleryIndexes[nextImageListIndex]);
+                }
+              : undefined
+          }
+          onPrevious={
+            imageGalleryIndexes.length > 1
+              ? () => {
+                  const currentImageListIndex = imageGalleryIndexes.indexOf(fullscreenExtra.index);
+                  const safeImageListIndex = currentImageListIndex >= 0 ? currentImageListIndex : 0;
+                  const previousImageListIndex =
+                    (safeImageListIndex - 1 + imageGalleryIndexes.length) % imageGalleryIndexes.length;
+                  void openFullscreenGalleryExtra(imageGalleryIndexes[previousImageListIndex]);
+                }
+              : undefined
+          }
           src={fullscreenExtra.src}
           title={fullscreenExtra.title}
         />

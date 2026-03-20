@@ -23,6 +23,7 @@ import { Extra, Game } from '../../../types/game';
 export type SteamTab = 'gallery' | 'extras' | 'extras-gallery';
 
 export interface FullscreenExtraState {
+  index: number;
   src: string;
   title: string;
   caption: string;
@@ -54,6 +55,7 @@ export function useSteamDetailViewModel({
   const titleSectionRef = useRef<HTMLDivElement | null>(null);
   const heroControlsRef = useRef<HTMLDivElement | null>(null);
   const gallerySectionRef = useRef<HTMLDivElement | null>(null);
+  const galleryScrollContainerRef = useRef<HTMLDivElement | null>(null);
   const extrasSectionRef = useRef<HTMLDivElement | null>(null);
   const galleryCardRefs = useRef<Array<HTMLButtonElement | null>>([]);
   const launchableCardRefs = useRef<Array<HTMLButtonElement | null>>([]);
@@ -97,6 +99,16 @@ export function useSteamDetailViewModel({
     () => (groupedExtras.find((group) => group.category === 'games')?.items ?? []).filter(isLaunchableExtra),
     [groupedExtras]
   );
+  const imageGalleryIndexes = useMemo(
+    () =>
+      galleryExtras.reduce<number[]>((indexes, extra, index) => {
+        if (isImageExtra(extra)) {
+          indexes.push(index);
+        }
+        return indexes;
+      }, []),
+    [galleryExtras]
+  );
   const availableTabs = useMemo(() => {
     const tabs: SteamTab[] = ['gallery'];
     if (launchableExtras.length > 0) tabs.push('extras');
@@ -110,6 +122,7 @@ export function useSteamDetailViewModel({
   const hasTitleMedia = Boolean(game.titlescreenFilename);
   const hasBoxArt = Boolean(boxArtUrl);
   const hasGalleryExtras = galleryExtras.length > 0;
+  const hasSidMedia = Boolean(game.sidFilename);
   const galleryFocusZone = hasGameplayMedia ? 'media-gameplay' : hasTitleMedia ? 'media-titlescreen' : 'sid';
   const focusedGalleryExtra = galleryExtras[gallerySelectionIndex] ?? null;
   const focusedLaunchableExtra = launchableExtras[launchableSelectionIndex] ?? null;
@@ -123,10 +136,62 @@ export function useSteamDetailViewModel({
     return () => window.clearTimeout(timeoutId);
   }, [statusMessage]);
 
+  const showStatus = useCallback((message: string) => {
+    setStatusMessage(message);
+  }, []);
+
+  const openFullscreenGalleryExtra = useCallback(async (index: number) => {
+    if (!settings.extrasPath) {
+      showStatus('Set an Extras path in Settings to open gallery media.');
+      return;
+    }
+
+    const extra = galleryExtras[index];
+    if (!extra || !isImageExtra(extra)) {
+      return;
+    }
+
+    const fullPath = buildExtraAbsolutePath(settings.extrasPath, extra.path);
+    const assetUrl = await getAssetUrl(fullPath);
+    setFullscreenExtra({
+      index,
+      src: assetUrl,
+      title: extra.name,
+      caption: extra.path,
+    });
+  }, [galleryExtras, settings.extrasPath, showStatus]);
+
+  const cycleFullscreenGalleryExtra = useCallback((direction: -1 | 1) => {
+    if (!fullscreenExtra || imageGalleryIndexes.length <= 1) {
+      return;
+    }
+
+    const currentImageListIndex = imageGalleryIndexes.indexOf(fullscreenExtra.index);
+    const safeImageListIndex = currentImageListIndex >= 0 ? currentImageListIndex : 0;
+    const nextImageListIndex =
+      (safeImageListIndex + direction + imageGalleryIndexes.length) % imageGalleryIndexes.length;
+
+    void openFullscreenGalleryExtra(imageGalleryIndexes[nextImageListIndex]);
+  }, [fullscreenExtra, imageGalleryIndexes, openFullscreenGalleryExtra]);
+
   useGamepad({
     onButtonDown: (button) => {
-      if (fullscreenExtra && button === 'B') {
+      if (!fullscreenExtra) {
+        return;
+      }
+
+      if (button === 'B') {
         setFullscreenExtra(null);
+        return;
+      }
+
+      if (button === 'LEFT' || button === 'DPAD_LEFT') {
+        cycleFullscreenGalleryExtra(-1);
+        return;
+      }
+
+      if (button === 'RIGHT' || button === 'DPAD_RIGHT') {
+        cycleFullscreenGalleryExtra(1);
       }
     },
   });
@@ -137,6 +202,18 @@ export function useSteamDetailViewModel({
     }
 
     const handleKeyDown = (event: KeyboardEvent) => {
+      if (event.key === 'ArrowLeft') {
+        event.preventDefault();
+        cycleFullscreenGalleryExtra(-1);
+        return;
+      }
+
+      if (event.key === 'ArrowRight') {
+        event.preventDefault();
+        cycleFullscreenGalleryExtra(1);
+        return;
+      }
+
       if (event.key === 'Escape' || event.key === 'Backspace') {
         event.preventDefault();
         setFullscreenExtra(null);
@@ -145,19 +222,29 @@ export function useSteamDetailViewModel({
 
     window.addEventListener('keydown', handleKeyDown);
     return () => window.removeEventListener('keydown', handleKeyDown);
-  }, [fullscreenExtra]);
-
-  const showStatus = useCallback((message: string) => {
-    setStatusMessage(message);
-  }, []);
+  }, [cycleFullscreenGalleryExtra, fullscreenExtra]);
 
   useEffect(() => {
-    if (visibleTab === 'gallery' && nav.focusedZone === 'media-extras') {
-      galleryCardRefs.current[gallerySelectionIndex]?.scrollIntoView({
-        block: 'nearest',
-        inline: 'nearest',
-        behavior: 'smooth',
-      });
+    if (visibleTab === 'extras-gallery' && nav.focusedZone === 'media-extras') {
+      const selectedCard = galleryCardRefs.current[gallerySelectionIndex];
+      const scrollContainer = galleryScrollContainerRef.current;
+
+      if (selectedCard && scrollContainer) {
+        const cardTop = selectedCard.offsetTop;
+        const cardBottom = cardTop + selectedCard.offsetHeight;
+        const visibleTop = scrollContainer.scrollTop;
+        const visibleBottom = visibleTop + scrollContainer.clientHeight;
+
+        if (cardTop < visibleTop) {
+          scrollContainer.scrollTo({ top: cardTop, behavior: 'smooth' });
+        } else if (cardBottom > visibleBottom) {
+          scrollContainer.scrollTo({
+            top: cardTop,
+            behavior: 'smooth',
+          });
+        }
+      }
+
       gallerySectionRef.current?.scrollIntoView({ block: 'nearest', behavior: 'smooth' });
     }
 
@@ -189,19 +276,17 @@ export function useSteamDetailViewModel({
       return;
     }
 
-    const fullPath = buildExtraAbsolutePath(settings.extrasPath, extra.path);
     if (isImageExtra(extra)) {
-      const assetUrl = await getAssetUrl(fullPath);
-      setFullscreenExtra({
-        src: assetUrl,
-        title: extra.name,
-        caption: extra.path,
-      });
+      const targetIndex = galleryExtras.findIndex((candidate) => candidate.id === extra.id);
+      if (targetIndex >= 0) {
+        await openFullscreenGalleryExtra(targetIndex);
+      }
       return;
     }
 
+    const fullPath = buildExtraAbsolutePath(settings.extrasPath, extra.path);
     await openFile(fullPath);
-  }, [settings.extrasPath, showStatus]);
+  }, [galleryExtras, openFullscreenGalleryExtra, settings.extrasPath, showStatus]);
 
   const handleLaunchExtra = useCallback(async (extra: Extra) => {
     const isRetroarch = settings.preferredEmulator === 'retroarch';
@@ -258,6 +343,12 @@ export function useSteamDetailViewModel({
 
   const selectTab = useCallback((tab: SteamTab) => {
     setActiveTab(tab);
+    if (tab === 'extras-gallery') {
+      setGalleryItemIndex(0);
+      if (galleryScrollContainerRef.current) {
+        galleryScrollContainerRef.current.scrollTo({ top: 0, behavior: 'auto' });
+      }
+    }
     nav.setFocusedZone(tab === 'gallery' ? galleryFocusZone : 'media-extras');
   }, [galleryFocusZone, nav]);
 
@@ -309,8 +400,20 @@ export function useSteamDetailViewModel({
         return true;
       }
 
+      if (direction === 'left' && isGalleryTab && index % columns === 0) {
+        nav.setFocusedZone(hasGameplayMedia ? 'media-gameplay' : hasTitleMedia ? 'media-titlescreen' : 'play');
+        return true;
+      }
+
       if (direction === 'right' && index + 1 < items.length && index % columns !== columns - 1) {
         setIndex(index + 1);
+        return true;
+      }
+
+      if (direction === 'right' && isGalleryTab) {
+        if (hasSidMedia) {
+          nav.setFocusedZone('sid');
+        }
         return true;
       }
 
@@ -326,8 +429,10 @@ export function useSteamDetailViewModel({
         }
       }
 
-      if (direction === 'down' && index + columns < items.length) {
-        setIndex(index + columns);
+      if (direction === 'down') {
+        if (index + columns < items.length) {
+          setIndex(index + columns);
+        }
         return true;
       }
 
@@ -353,10 +458,12 @@ export function useSteamDetailViewModel({
     galleryExtras,
     gallerySelectionIndex,
     game.screenshotFilename,
+    game.sidFilename,
     game.titlescreenFilename,
     handleLaunchExtra,
     handleOpenGalleryExtra,
     hasGameplayMedia,
+    hasSidMedia,
     hasTitleMedia,
     launchableExtras,
     launchableSelectionIndex,
@@ -386,6 +493,7 @@ export function useSteamDetailViewModel({
     galleryExtras,
     galleryFocusZone,
     gallerySectionRef,
+    galleryScrollContainerRef,
     gallerySelectionIndex,
     gameplaySectionRef,
     handleLaunchExtra,
@@ -398,6 +506,8 @@ export function useSteamDetailViewModel({
     launchableCardRefs,
     launchableExtras,
     launchableSelectionIndex,
+    imageGalleryIndexes,
+    openFullscreenGalleryExtra,
     selectTab,
     setFullscreenExtra,
     setGalleryItemIndex,

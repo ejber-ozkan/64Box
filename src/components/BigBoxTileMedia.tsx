@@ -6,6 +6,7 @@ import { getMediaUrl, resolveMediaPath as resolveNativeMediaPath } from '../lib/
 import { Game } from '../types/game';
 
 interface BigBoxTileMediaProps {
+  enabled?: boolean;
   game: Game;
   className?: string;
 }
@@ -53,13 +54,17 @@ function getCoverUrl(extrasPath: string, coverPath: string) {
   return promise;
 }
 
-export function BigBoxTileMedia({ game, className = '' }: BigBoxTileMediaProps) {
+export function BigBoxTileMedia({ enabled = true, game, className = '' }: BigBoxTileMediaProps) {
   const { settings, findAllVariants } = useSettings();
   const [slides, setSlides] = useState<string[]>([]);
   const [currentIndex, setCurrentIndex] = useState(0);
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
+    if (!enabled) {
+      return;
+    }
+
     let cancelled = false;
 
     async function loadMedia() {
@@ -90,6 +95,7 @@ export function BigBoxTileMedia({ game, className = '' }: BigBoxTileMediaProps) 
       cancelled = true;
     };
   }, [
+    enabled,
     findAllVariants,
     game.coverPath,
     game.screenshotFilename,
@@ -98,6 +104,7 @@ export function BigBoxTileMedia({ game, className = '' }: BigBoxTileMediaProps) 
   ]);
 
   useEffect(() => {
+    if (!enabled) return;
     if (slides.length <= 1) return;
 
     const timer = window.setInterval(() => {
@@ -105,24 +112,27 @@ export function BigBoxTileMedia({ game, className = '' }: BigBoxTileMediaProps) 
     }, 3000);
 
     return () => window.clearInterval(timer);
-  }, [slides]);
+  }, [enabled, slides]);
+
+  const activeSlide = enabled ? (slides[currentIndex] ?? null) : null;
+  const showLoading = enabled && isLoading;
 
   return (
     <div className={`relative h-full w-full overflow-hidden bg-[#0f141d] ${className}`}>
       <div className="absolute inset-0 bg-[radial-gradient(circle_at_top,rgba(96,165,250,0.22),transparent_55%),linear-gradient(180deg,rgba(15,23,42,0.35),rgba(2,6,23,0.88))]" />
 
-      {slides.length > 0 && slides.map((src, idx) => (
+      {activeSlide ? (
         // eslint-disable-next-line @next/next/no-img-element
         <img
-          key={`${src}-${idx}`}
-          src={src}
+          key={activeSlide}
+          src={activeSlide}
           alt={game.name}
-          className={`absolute inset-0 h-full w-full object-cover transition-opacity duration-700 ${idx === currentIndex ? 'opacity-100' : 'opacity-0'}`}
+          className="absolute inset-0 h-full w-full object-cover transition-opacity duration-700 opacity-100"
           loading="lazy"
         />
-      ))}
+      ) : null}
 
-      {slides.length === 0 && !isLoading && (
+      {enabled && slides.length === 0 && !isLoading && (
         <div className="absolute inset-0 flex items-center justify-center bg-[linear-gradient(145deg,rgba(30,41,59,0.95),rgba(15,23,42,0.98))]">
           <div className="rounded-full border border-white/10 bg-white/5 px-4 py-2 text-[11px] font-black uppercase tracking-[0.3em] text-white/40">
             No Artwork
@@ -130,7 +140,7 @@ export function BigBoxTileMedia({ game, className = '' }: BigBoxTileMediaProps) 
         </div>
       )}
 
-      {isLoading && (
+      {showLoading && (
         <div className="absolute inset-0 animate-pulse bg-[linear-gradient(110deg,rgba(255,255,255,0.03),rgba(96,165,250,0.14),rgba(255,255,255,0.03))]" />
       )}
     </div>

@@ -129,6 +129,14 @@ export function useBigBoxNavigation({
     const isGrid = rail?.type === 'alphabet';
     const columns = getGridColumns();
 
+    if (!isHeaderActive && !rail) {
+      setSectionJumpDirection(null);
+      setActiveRailIndex(-1);
+      setActiveHeaderRow(2);
+      setActiveHeaderItemIndex(0);
+      return;
+    }
+
     if (event.key === 'ArrowDown') {
       if (isHeaderActive) {
         if (activeHeaderRow < 2) {
@@ -157,7 +165,10 @@ export function useBigBoxNavigation({
         const nextRail = rails[nextRailIndex];
         onNavigationMove?.();
         setSectionJumpDirection('down');
-        setRailFocusIndices((previous) => ({ ...previous, [nextRail.id]: 0 }));
+        setRailFocusIndices((previous) => ({
+          ...previous,
+          [nextRail.id]: previous[nextRail.id] ?? 0,
+        }));
         setActiveRailIndex(nextRailIndex);
       }
       return;
@@ -189,7 +200,8 @@ export function useBigBoxNavigation({
         setSectionJumpDirection('up');
         setRailFocusIndices((previous) => ({
           ...previous,
-          [previousRail.id]: Math.max(previousRail.games.length - 1, 0),
+          [previousRail.id]:
+            previous[previousRail.id] ?? Math.max(previousRail.games.length - 1, 0),
         }));
         setActiveRailIndex(previousRailIndex);
       } else {
@@ -208,7 +220,7 @@ export function useBigBoxNavigation({
           onNavigationMove?.();
           setRailFocusIndices((previous) => ({ ...previous, [rail.id]: focusedIndex + 1 }));
         }
-      } else {
+      } else if (rail.games.length > 0) {
         onNavigationMove?.();
         setRailFocusIndices((previous) => ({
           ...previous,
@@ -229,7 +241,7 @@ export function useBigBoxNavigation({
           onNavigationMove?.();
           setRailFocusIndices((previous) => ({ ...previous, [rail.id]: focusedIndex - 1 }));
         }
-      } else {
+      } else if (rail.games.length > 0) {
         onNavigationMove?.();
         setRailFocusIndices((previous) => ({
           ...previous,

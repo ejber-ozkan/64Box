@@ -2,6 +2,27 @@
 
 All notable changes to this project will be documented in this file.
 
+## [0.4] - 2026-03-20
+
+### Added
+- Added a packaged first-run database setup flow so shipped builds can prompt for `GBC_v19.mdb`, export it, build SQLite, and continue into the app without a developer-only import step.
+- Added GitHub Actions release automation for Linux and macOS tag builds while keeping Windows release bundling available as a local/manual path to save private Actions minutes.
+- Added more aggressive BigBox performance controls for rapid letter jumping, including delayed alphabet rail loading, rail caching, and deferred tile media mounting.
+
+### Changed
+- Moved the public release workflow to local Windows bundling plus GitHub-hosted Linux/macOS release builds.
+- Reworked windowed browsing to better match BigBox with branded header treatment, recent/favorites/classics sections, and cleaner list-mode separation.
+- Split responsive windowed detail layouts from fullscreen detail layouts so fullscreen theme changes no longer spill into window mode.
+- Improved Steam fullscreen extras gallery behavior with capped internal scrolling, left/right fullscreen image browsing, and contained artwork previews.
+- Updated surfaced app versioning to `0.4.0`.
+
+### Fixed
+- Fixed BigBox horizontal rail looping so wraparound on classics/recent/favorites rails no longer loses the focus ring or resets rail focus unexpectedly.
+- Fixed BigBox grid scrolling so long alphabet sections keep the focused tile in a more visible middle band.
+- Fixed multiple BigBox return-state issues when backing out of detail views so search, filters, rail position, and focused game are preserved more reliably.
+- Fixed fullscreen detail extras-gallery navigation so the highlighted item scrolls inside the gallery box and exits the region more naturally.
+- Fixed Steam/fullscreen extras artwork cropping by switching gallery cards to contained previews and resizing the gallery viewport to full visible rows.
+
 ## [0.3] - 2026-03-15
 
 ### Added

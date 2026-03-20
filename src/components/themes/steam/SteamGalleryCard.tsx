@@ -60,8 +60,8 @@ export const SteamGalleryCard = forwardRef<HTMLButtonElement, SteamGalleryCardPr
           <ImageWithFallback
             src={previewUrl}
             alt={extra.name}
-            fit="cover"
-            className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-[1.03]"
+            fit="contain"
+            className="h-full w-full bg-[#0b141d] p-2 object-contain transition-transform duration-500 group-hover:scale-[1.02]"
             fallbackText={extra.name}
           />
         ) : (
@@ -83,4 +83,3 @@ export const SteamGalleryCard = forwardRef<HTMLButtonElement, SteamGalleryCardPr
     </button>
   );
 });
-

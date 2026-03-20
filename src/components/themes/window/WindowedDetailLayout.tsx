@@ -230,6 +230,7 @@ export function WindowedDetailLayout({
 
               <DetailGameTitle
                 className="max-w-5xl flex flex-wrap items-center gap-4 text-3xl font-black tracking-tighter text-white md:text-5xl xl:text-6xl"
+                isClassic={game.isClassic}
                 title={game.name}
               />
               <div className={`mt-3 text-sm font-bold uppercase tracking-[0.18em] md:text-base ${palette.accentText}`}>

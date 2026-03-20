@@ -8,8 +8,8 @@
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+  --font-sans: "Segoe UI", "Trebuchet MS", Arial, Helvetica, sans-serif;
+  --font-mono: "Cascadia Mono", "Consolas", "Liberation Mono", "Courier New", monospace;
 }
 
 @media (prefers-color-scheme: dark) {

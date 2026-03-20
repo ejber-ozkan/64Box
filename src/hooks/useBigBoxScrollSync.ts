@@ -13,6 +13,8 @@ interface UseBigBoxScrollSyncProps {
 }
 
 const HEADER_HEIGHT_FALLBACK = 320;
+const GRID_FOOTER_BUFFER = 80;
+const GRID_CENTER_PADDING = 24;
 
 export function useBigBoxScrollSync({
   activeRailIndex,
@@ -46,6 +48,40 @@ export function useBigBoxScrollSync({
       behavior: 'smooth',
     });
   }, [getHeaderHeight]);
+
+  const scrollAlphabetTileToCenterBand = useCallback((tile: HTMLElement) => {
+    const container = scrollContainerRef.current;
+    if (!container) return;
+
+    const headerHeight = getHeaderHeight();
+    const containerRect = container.getBoundingClientRect();
+    const tileRect = tile.getBoundingClientRect();
+    const visibleTop = containerRect.top + headerHeight + GRID_CENTER_PADDING;
+    const visibleBottom = containerRect.bottom - GRID_FOOTER_BUFFER;
+    const visibleHeight = visibleBottom - visibleTop;
+
+    if (visibleHeight <= 0) {
+      scrollElementBelowHeader(tile, 12);
+      return;
+    }
+
+    const bandTop = visibleTop + visibleHeight * 0.25;
+    const bandBottom = visibleTop + visibleHeight * 0.75;
+    const tileCenter = tileRect.top + tileRect.height / 2;
+
+    if (tileCenter >= bandTop && tileCenter <= bandBottom) {
+      return;
+    }
+
+    const targetCenter = visibleTop + visibleHeight / 2;
+    const targetTop =
+      container.scrollTop + tileCenter - targetCenter;
+
+    container.scrollTo({
+      top: Math.max(0, targetTop),
+      behavior: 'smooth',
+    });
+  }, [getHeaderHeight, scrollElementBelowHeader]);
 
   useEffect(() => {
     const handleEsc = (event: KeyboardEvent) => {
@@ -82,8 +118,8 @@ export function useBigBoxScrollSync({
     const gridElement = railElement.querySelector('.grid');
     const tile = gridElement?.children[currentFocusedIndex] as HTMLElement | undefined;
 
-    if (sectionJumpDirection === 'up' && tile && currentRailType === 'alphabet') {
-      tile.scrollIntoView({ behavior: 'smooth', block: 'end' });
+    if (tile && currentRailType === 'alphabet') {
+      scrollAlphabetTileToCenterBand(tile);
     } else {
       scrollElementBelowHeader(anchorElement ?? railElement);
     }
@@ -94,6 +130,7 @@ export function useBigBoxScrollSync({
     currentFocusedIndex,
     currentRailType,
     onSectionJumpHandled,
+    scrollAlphabetTileToCenterBand,
     scrollElementBelowHeader,
     sectionJumpDirection,
   ]);
@@ -114,13 +151,13 @@ export function useBigBoxScrollSync({
     if (!tile) return;
 
     const rect = tile.getBoundingClientRect();
-    const visibleTop = containerRect.top + headerHeight;
-    const footerBuffer = 80;
+    const visibleTop = containerRect.top + headerHeight + GRID_CENTER_PADDING;
+    const footerBuffer = GRID_FOOTER_BUFFER;
 
     if (rect.top < visibleTop) {
-      scrollElementBelowHeader(tile, 12);
+      scrollAlphabetTileToCenterBand(tile);
     } else if (rect.bottom > containerRect.bottom - footerBuffer) {
-      tile.scrollIntoView({ behavior: 'smooth', block: 'end' });
+      scrollAlphabetTileToCenterBand(tile);
     }
   }, [
     activeRailIndex,
@@ -128,6 +165,7 @@ export function useBigBoxScrollSync({
     currentRailId,
     currentRailType,
     getHeaderHeight,
+    scrollAlphabetTileToCenterBand,
     scrollElementBelowHeader,
   ]);
 

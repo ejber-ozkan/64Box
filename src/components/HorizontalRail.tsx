@@ -31,17 +31,61 @@ export function HorizontalRail({
   isFavorite
 }: HorizontalRailProps) {
   const scrollRef = useRef<HTMLDivElement>(null);
+  const hasInitializedLoopPositionRef = useRef(false);
+  const currentCloneBaseRef = useRef(1);
+  const previousFocusedIndexRef = useRef(focusedIndex);
   
   // For infinite looping, we triple the items
   const displayGames = loop ? [...games, ...games, ...games] : games;
   const originalCount = games.length;
   const internalSelectedIndex = loop ? originalCount + focusedIndex : focusedIndex;
 
+  useEffect(() => {
+    hasInitializedLoopPositionRef.current = false;
+    currentCloneBaseRef.current = 1;
+  }, [title, originalCount, loop]);
+
   // Scroll into view logic
   useEffect(() => {
     if (isActive && scrollRef.current) {
       const parent = scrollRef.current;
-      const child = parent.children[internalSelectedIndex] as HTMLElement;
+      let targetIndex = internalSelectedIndex;
+      let shouldAnimate = true;
+
+      if (loop) {
+        if (!hasInitializedLoopPositionRef.current) {
+          shouldAnimate = false;
+          hasInitializedLoopPositionRef.current = true;
+          targetIndex = internalSelectedIndex;
+        } else {
+          const previousFocusedIndex = previousFocusedIndexRef.current;
+          const cloneSpan =
+            originalCount > 0
+              ? ((parent.children[originalCount] as HTMLElement | undefined)?.offsetLeft ?? 0) -
+                ((parent.children[0] as HTMLElement | undefined)?.offsetLeft ?? 0)
+              : 0;
+          const isWrapForward = previousFocusedIndex === originalCount - 1 && focusedIndex === 0;
+          const isWrapBackward = previousFocusedIndex === 0 && focusedIndex === originalCount - 1;
+
+          if (cloneSpan > 0 && currentCloneBaseRef.current >= 2 && isWrapForward) {
+            parent.scrollLeft -= cloneSpan;
+            currentCloneBaseRef.current -= 1;
+          } else if (cloneSpan > 0 && currentCloneBaseRef.current <= 0 && isWrapBackward) {
+            parent.scrollLeft += cloneSpan;
+            currentCloneBaseRef.current += 1;
+          }
+
+          if (isWrapForward) {
+            currentCloneBaseRef.current += 1;
+          } else if (isWrapBackward) {
+            currentCloneBaseRef.current -= 1;
+          }
+
+          targetIndex = currentCloneBaseRef.current * originalCount + focusedIndex;
+        }
+      }
+
+      const child = parent.children[targetIndex] as HTMLElement;
       if (child) {
         const parentRect = parent.getBoundingClientRect();
         const childRect = child.getBoundingClientRect();
@@ -51,11 +95,13 @@ export function HorizontalRail({
         
         parent.scrollTo({
           left: scrollLeft,
-          behavior: 'smooth'
+          behavior: shouldAnimate ? 'smooth' : 'auto'
         });
       }
+
+      previousFocusedIndexRef.current = focusedIndex;
     }
-  }, [internalSelectedIndex, isActive]);
+  }, [focusedIndex, internalSelectedIndex, isActive, loop, originalCount]);
 
   if (games.length === 0) return null;
 
@@ -76,7 +122,7 @@ export function HorizontalRail({
         style={{ msOverflowStyle: 'none', scrollbarWidth: 'none' }}
       >
         {displayGames.map((game, idx) => {
-          const isFocused = isActive && (idx === internalSelectedIndex);
+          const isFocused = isActive && (loop ? idx % originalCount === focusedIndex : idx === focusedIndex);
           const hasArtwork = Boolean(game.coverPath || game.screenshotFilename);
           const favorited = isFavorite?.(game.id.toString()) ?? false;
           

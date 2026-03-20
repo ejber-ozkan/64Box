@@ -101,12 +101,24 @@ export function useLibraryBrowserState() {
     return () => clearTimeout(timer);
   }, [searchInput]);
 
-  const closeDetail = useCallback(() => setSelectedGame(null), []);
+  const closeDetail = useCallback(() => {
+    if (selectedGame) {
+      const selectedIndex = games.findIndex((game) => game.id === selectedGame.id);
+      if (selectedIndex >= 0) {
+        setFocusedIndex(selectedIndex);
+      }
+    }
+    setSelectedGame(null);
+  }, [games, selectedGame]);
 
   const handleGameSelect = useCallback((game: Game) => {
+    const selectedIndex = games.findIndex((candidate) => candidate.id === game.id);
+    if (selectedIndex >= 0) {
+      setFocusedIndex(selectedIndex);
+    }
     setSelectedGame(game);
     markAsPlayed(game.id.toString());
-  }, [markAsPlayed]);
+  }, [games, markAsPlayed]);
 
   const getFocusedLibraryGame = useCallback((): Game | null => {
     const recentCount = settings.recentlyPlayedIds.length;

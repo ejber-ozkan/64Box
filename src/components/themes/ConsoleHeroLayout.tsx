@@ -183,7 +183,7 @@ export function ConsoleHeroLayout({ game, onBack, nav, onFullscreen }: DetailLay
                 <h2 className="text-2xl font-black text-white mb-6 uppercase tracking-tight flex items-center gap-3">
                   <span className="text-blue-400">🎁</span> Game Extras
                 </h2>
-                <ExtrasDetail game={game} extras={extras} />
+                <ExtrasDetail game={game} extras={extras} enableBigscreenGalleryUX />
                 <button 
                   onClick={() => setActiveMedia('gameplay')}
                   className="mt-6 w-full py-3 bg-white/10 hover:bg-white/20 rounded-xl text-white font-bold text-xs uppercase tracking-widest transition-all"
@@ -195,6 +195,7 @@ export function ConsoleHeroLayout({ game, onBack, nav, onFullscreen }: DetailLay
              <div className="bg-white/5 backdrop-blur-xl border border-white/10 rounded-3xl p-10 2xl:p-12 shadow-2xl flex-1 flex flex-col transform transition translate-y-4 group-hover:translate-y-0 duration-700">
               <DetailGameTitle
                 className="mb-3 flex flex-wrap items-center gap-4 text-5xl font-black leading-none tracking-tighter text-white xl:text-6xl 2xl:text-7xl"
+                isClassic={game.isClassic}
                 title={game.name}
               />
               <div className="text-blue-400 font-semibold text-lg xl:text-xl mb-10 uppercase tracking-widest opacity-90">

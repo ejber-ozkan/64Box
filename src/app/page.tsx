@@ -11,6 +11,7 @@ import { SettingsView } from '@/components/SettingsModal';
 import { AlphabetJumpBar } from '@/components/AlphabetJumpBar';
 import { useInputMode } from '@/hooks/useInputMode';
 import { BigBoxView } from '@/components/BigBoxView';
+import type { BigBoxSessionState } from '@/components/BigBoxView';
 import { useFavorites } from '@/hooks/useFavorites';
 import { useLibraryBrowserState } from '@/hooks/useLibraryBrowserState';
 import { useLibraryShellInput } from '@/hooks/useLibraryShellInput';
@@ -53,6 +54,7 @@ function LibraryApp() {
   } = useLibraryBrowserState();
   const [genres, setGenres] = useState<string[]>([]);
   const [showLaunchSplash, setShowLaunchSplash] = useState(true);
+  const [bigBoxSession, setBigBoxSession] = useState<BigBoxSessionState | null>(null);
   const previousFullscreenRef = useRef(settings.isFullscreen);
   const { classicGames, favoriteGames, recentGames } = useWindowLibraryShelves({
     favoriteIds: favorites,
@@ -145,6 +147,8 @@ function LibraryApp() {
         <BigBoxView 
           settings={settings}
           onSelectGame={handleGameSelect}
+          sessionState={bigBoxSession}
+          onSessionChange={setBigBoxSession}
           onRequestExit={({ dontAskAgain, focusedGameId, railId }) => {
             flushSync(() => {
               updateSettings({

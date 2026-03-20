@@ -20,7 +20,9 @@ import { playRotatingUiSoundEffect, playUiSoundEffect, playUiSoundEffectAndWait 
 interface BigBoxViewProps {
   settings: Settings;
   onSelectGame: (game: Game) => void;
+  onSessionChange: (session: BigBoxSessionState) => void;
   onRequestExit: (snapshot: { dontAskAgain: boolean; focusedGameId: string | null; railId: string | null }) => void;
+  sessionState?: BigBoxSessionState | null;
   searchInput: string;
   onSearchChange: (val: string) => void;
   onShowSettings: () => void;
@@ -28,10 +30,21 @@ interface BigBoxViewProps {
   onFiltersChange: (f: GameFilters) => void;
 }
 
+export interface BigBoxSessionState {
+  activeHeaderItemIndex: number;
+  activeHeaderRow: number;
+  activeRailIndex: number;
+  focusedGameId: string | null;
+  railFocusIndices: Record<string, number>;
+  railId: string | null;
+}
+
 export function BigBoxView({
   settings,
   onSelectGame,
+  onSessionChange,
   onRequestExit,
+  sessionState,
   searchInput,
   onSearchChange,
   onShowSettings,
@@ -40,13 +53,13 @@ export function BigBoxView({
 }: BigBoxViewProps) {
   const { favorites, toggleFavorite, isFavorite } = useFavorites();
   const { isMouseMode, onGamepadInput } = useInputMode();
-  const [activeRailIndex, setActiveRailIndex] = useState(0);
-  const [activeHeaderRow, setActiveHeaderRow] = useState(0);
-  const [activeHeaderItemIndex, setActiveHeaderItemIndex] = useState(0);
-  const [railFocusIndices, setRailFocusIndices] = useState<Record<string, number>>({});
+  const [activeRailIndex, setActiveRailIndex] = useState(sessionState?.activeRailIndex ?? 0);
+  const [activeHeaderRow, setActiveHeaderRow] = useState(sessionState?.activeHeaderRow ?? 0);
+  const [activeHeaderItemIndex, setActiveHeaderItemIndex] = useState(sessionState?.activeHeaderItemIndex ?? 0);
+  const [railFocusIndices, setRailFocusIndices] = useState<Record<string, number>>(sessionState?.railFocusIndices ?? {});
   const [isControllerKeyboardOpen, setIsControllerKeyboardOpen] = useState(false);
   const [isExitPromptOpen, setIsExitPromptOpen] = useState(false);
-  const [hasRestoredPosition, setHasRestoredPosition] = useState(false);
+  const [hasRestoredPosition, setHasRestoredPosition] = useState(Boolean(sessionState));
   const classicTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   const { genres, loading, rails, totalGameCount } = useBigBoxLibraryData({
@@ -61,6 +74,25 @@ export function BigBoxView({
   const currentFocusedIndex = currentRail ? (railFocusIndices[currentRail.id] ?? 0) : 0;
   const currentFocusedGame = currentRail?.games[currentFocusedIndex] ?? null;
   const isInteractionOverlayOpen = isControllerKeyboardOpen || isExitPromptOpen;
+
+  useEffect(() => {
+    onSessionChange({
+      activeHeaderItemIndex,
+      activeHeaderRow,
+      activeRailIndex,
+      focusedGameId: currentFocusedGame?.id.toString() ?? null,
+      railFocusIndices,
+      railId: currentRail?.id ?? null,
+    });
+  }, [
+    activeHeaderItemIndex,
+    activeHeaderRow,
+    activeRailIndex,
+    currentFocusedGame?.id,
+    currentRail?.id,
+    onSessionChange,
+    railFocusIndices,
+  ]);
 
   useEffect(() => {
     if (typeof window === 'undefined') {
@@ -90,13 +122,16 @@ export function BigBoxView({
       return;
     }
 
+    const targetRailId = sessionState?.railId ?? settings.lastBigBoxRailId;
+    const targetGameId = sessionState?.focusedGameId ?? settings.lastBigBoxGameId;
+
     const frameId = window.requestAnimationFrame(() => {
-      if (!settings.lastBigBoxRailId) {
+      if (!targetRailId) {
         setHasRestoredPosition(true);
         return;
       }
 
-      const targetRailIndex = rails.findIndex((rail) => rail.id === settings.lastBigBoxRailId);
+      const targetRailIndex = rails.findIndex((rail) => rail.id === targetRailId);
       if (targetRailIndex === -1) {
         setHasRestoredPosition(true);
         return;
@@ -105,13 +140,13 @@ export function BigBoxView({
       setActiveRailIndex(targetRailIndex);
 
       const targetRail = rails[targetRailIndex];
-      if (!settings.lastBigBoxGameId) {
+      if (!targetGameId) {
         setHasRestoredPosition(true);
         return;
       }
 
       const gameIndex = targetRail.games.findIndex(
-        (game) => game.id.toString() === settings.lastBigBoxGameId,
+        (game) => game.id.toString() === targetGameId,
       );
 
       if (gameIndex >= 0) {
@@ -130,6 +165,8 @@ export function BigBoxView({
     hasRestoredPosition,
     rails,
     searchInput,
+    sessionState?.focusedGameId,
+    sessionState?.railId,
     settings.lastBigBoxGameId,
     settings.lastBigBoxRailId,
   ]);
@@ -165,6 +202,26 @@ export function BigBoxView({
       clearTimeout(classicTimeoutRef.current);
     }
 
+    const selectedGameIndex = currentRail
+      ? currentRail.games.findIndex((candidate) => candidate.id === game.id)
+      : -1;
+    const resolvedFocusedIndex = selectedGameIndex >= 0 ? selectedGameIndex : currentFocusedIndex;
+    const nextRailFocusIndices = currentRail
+      ? {
+          ...railFocusIndices,
+          [currentRail.id]: resolvedFocusedIndex,
+        }
+      : railFocusIndices;
+
+    onSessionChange({
+      activeHeaderItemIndex,
+      activeHeaderRow,
+      activeRailIndex,
+      focusedGameId: game.id.toString(),
+      railFocusIndices: nextRailFocusIndices,
+      railId: currentRail?.id ?? null,
+    });
+
     void (async () => {
       await playUiSoundEffectAndWait('open-detail-1', 0.58);
       if (game.isClassic) {
@@ -173,7 +230,16 @@ export function BigBoxView({
     })();
 
     onSelectGame(game);
-  }, [onSelectGame]);
+  }, [
+    activeHeaderItemIndex,
+    activeHeaderRow,
+    activeRailIndex,
+    currentFocusedIndex,
+    currentRail,
+    onSelectGame,
+    onSessionChange,
+    railFocusIndices,
+  ]);
 
   const handleSearchChange = useCallback((value: string) => {
     if (!searchInput.trim() && value.trim()) {

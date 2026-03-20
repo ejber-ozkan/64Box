@@ -1,6 +1,6 @@
 "use client";
 
-import { MutableRefObject, RefObject } from 'react';
+import { MutableRefObject, RefObject, useEffect, useState } from 'react';
 import { DetailNavigationHook } from '../../../hooks/useDetailNavigation';
 import { SteamGalleryCard } from './SteamGalleryCard';
 import { Extra } from '../../../types/game';
@@ -8,6 +8,7 @@ import { Extra } from '../../../types/game';
 interface SteamExtrasGalleryPanelProps {
   extrasPath: string | undefined;
   galleryCardRefs: MutableRefObject<Array<HTMLButtonElement | null>>;
+  galleryScrollContainerRef: RefObject<HTMLDivElement | null>;
   galleryExtras: Extra[];
   gallerySectionRef: RefObject<HTMLDivElement | null>;
   gallerySelectionIndex: number;
@@ -20,6 +21,7 @@ interface SteamExtrasGalleryPanelProps {
 export function SteamExtrasGalleryPanel({
   extrasPath,
   galleryCardRefs,
+  galleryScrollContainerRef,
   galleryExtras,
   gallerySectionRef,
   gallerySelectionIndex,
@@ -28,6 +30,38 @@ export function SteamExtrasGalleryPanel({
   onOpenCard,
   visibleTab,
 }: SteamExtrasGalleryPanelProps) {
+  const [viewportHeight, setViewportHeight] = useState<number | null>(null);
+  const visibleRowCount = galleryExtras.length > 3 ? 2 : 1;
+  const rowGapPx = 16;
+
+  useEffect(() => {
+    let resizeObserver: ResizeObserver | null = null;
+
+    const updateViewportHeight = () => {
+      const firstCard = galleryCardRefs.current[0];
+      if (!firstCard) {
+        return;
+      }
+
+      const cardHeight = Math.ceil(firstCard.getBoundingClientRect().height);
+      const measuredHeight = Math.max(cardHeight * visibleRowCount + rowGapPx * (visibleRowCount - 1), 0);
+      setViewportHeight(measuredHeight);
+    };
+
+    updateViewportHeight();
+    const firstCard = galleryCardRefs.current[0];
+    if (firstCard && typeof ResizeObserver !== 'undefined') {
+      resizeObserver = new ResizeObserver(() => updateViewportHeight());
+      resizeObserver.observe(firstCard);
+    }
+
+    window.addEventListener('resize', updateViewportHeight);
+    return () => {
+      resizeObserver?.disconnect();
+      window.removeEventListener('resize', updateViewportHeight);
+    };
+  }, [galleryCardRefs, galleryExtras.length, visibleRowCount]);
+
   if (galleryExtras.length === 0) {
     return (
       <div className="p-12 bg-[#0f1922]/40 rounded-xl border border-[#2a475e]/30 text-center italic text-gray-500">
@@ -59,7 +93,12 @@ export function SteamExtrasGalleryPanel({
             {gallerySelectionIndex + 1} / {galleryExtras.length}
           </div>
         </div>
-        <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-3">
+        <div
+          ref={galleryScrollContainerRef}
+          className="overflow-y-auto pr-2 no-scrollbar"
+          style={viewportHeight ? { height: `${viewportHeight}px` } : undefined}
+        >
+          <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-3">
           {galleryExtras.map((extra, index) => (
             <SteamGalleryCard
               key={extra.id}
@@ -73,6 +112,7 @@ export function SteamExtrasGalleryPanel({
               onHover={() => onHoverCard(index)}
             />
           ))}
+          </div>
         </div>
       </div>
     </div>

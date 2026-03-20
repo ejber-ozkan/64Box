@@ -194,13 +194,14 @@ export function DigitalMuseumLayout({ game, onBack, nav, onFullscreen }: DetailL
         )}
 
           {activeMedia === 'extras' && (
-            <ExtrasDetail game={game} extras={extras} />
+            <ExtrasDetail game={game} extras={extras} enableBigscreenGalleryUX />
           )}
 
           <div className="flex justify-between items-start gap-8">
             <div className="flex-1">
               <DetailGameTitle
                 className="mb-4 flex flex-wrap items-center gap-4 text-6xl font-black tracking-tighter leading-none text-white xl:text-7xl 2xl:text-8xl"
+                isClassic={game.isClassic}
                 title={game.name}
               />
               <div className="flex flex-wrap items-center gap-x-6 gap-y-3 text-sm xl:text-base 2xl:text-lg font-medium text-yellow-500/80">

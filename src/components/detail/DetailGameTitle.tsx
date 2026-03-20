@@ -2,19 +2,24 @@
 
 interface DetailGameTitleProps {
   className?: string;
+  isClassic?: boolean;
   title: string;
 }
 
-export function DetailGameTitle({ className = '', title }: DetailGameTitleProps) {
+export function DetailGameTitle({ className = '', isClassic = false, title }: DetailGameTitleProps) {
   return (
     <h1 className={className}>
-      <span aria-hidden="true" className="shrink-0">
-        🏆
-      </span>
+      {isClassic ? (
+        <span aria-hidden="true" className="shrink-0">
+          🏆
+        </span>
+      ) : null}
       <span>{title}</span>
-      <span aria-hidden="true" className="shrink-0">
-        🏆
-      </span>
+      {isClassic ? (
+        <span aria-hidden="true" className="shrink-0">
+          🏆
+        </span>
+      ) : null}
     </h1>
   );
 }

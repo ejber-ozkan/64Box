@@ -50,6 +50,7 @@ export function SteamHero({
         <div className="min-w-0 flex-1">
           <DetailGameTitle
             className="mb-2 flex flex-wrap items-center gap-3 text-2xl font-light tracking-tight text-white xl:text-3xl 2xl:text-4xl"
+            isClassic={game.isClassic}
             title={game.name}
           />
           <div className="flex flex-wrap items-center gap-y-2 text-xs xl:text-sm font-semibold uppercase tracking-wider text-[#66c0f4]">

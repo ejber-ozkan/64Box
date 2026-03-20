@@ -1,5 +1,6 @@
 "use client";
 
+import { useEffect, useMemo, useState } from 'react';
 import { BigBoxTileMedia } from '../BigBoxTileMedia';
 import { getPrimaryStudioLabel } from '../../lib/game-display';
 import { BigBoxRailCategory } from '../../hooks/useBigBoxLibraryData';
@@ -23,6 +24,44 @@ export function BigBoxAlphabetRail({
   onSelectGame,
   rail,
 }: BigBoxAlphabetRailProps) {
+  const [settledRailId, setSettledRailId] = useState<string | null>(null);
+
+  const mediaWindow = useMemo(() => {
+    const mediaEnabled = isActive && rail.games.length > 0 && settledRailId === rail.id;
+    if (!isActive || !mediaEnabled) {
+      return { start: -1, end: -1 };
+    }
+
+    const columns = typeof window !== 'undefined'
+      ? window.innerWidth >= 1536
+        ? 6
+        : window.innerWidth >= 1280
+          ? 5
+          : window.innerWidth >= 1024
+            ? 4
+            : window.innerWidth >= 640
+              ? 2
+              : 1
+      : 6;
+    const padding = columns * 2;
+    return {
+      start: Math.max(0, focusedIdx - padding),
+      end: focusedIdx + padding,
+    };
+  }, [focusedIdx, isActive, rail.games.length, rail.id, settledRailId]);
+
+  useEffect(() => {
+    if (!isActive || rail.games.length === 0) {
+      return;
+    }
+
+    const timeoutId = window.setTimeout(() => {
+      setSettledRailId(rail.id);
+    }, 900);
+
+    return () => window.clearTimeout(timeoutId);
+  }, [isActive, rail.games.length, rail.id]);
+
   return (
     <div className={`flex flex-col gap-8 py-14 transition-all duration-700 scroll-mt-[340px] ${isActive ? 'opacity-100' : 'opacity-25 translate-y-4'}`}>
       <div data-rail-anchor className="flex items-center gap-4 px-12">
@@ -36,6 +75,7 @@ export function BigBoxAlphabetRail({
         {rail.games.map((game, gameIndex) => {
           const isFocused = isActive && gameIndex === focusedIdx;
           const hasArtwork = Boolean(game.coverPath || game.screenshotFilename);
+          const shouldRenderMedia = gameIndex >= mediaWindow.start && gameIndex <= mediaWindow.end;
           return (
             <div
               key={`${rail.id}-${game.id}-${gameIndex}`}
@@ -56,7 +96,7 @@ export function BigBoxAlphabetRail({
                   ♥
                 </div>
               )}
-              <BigBoxTileMedia game={game} className="absolute inset-0" />
+              <BigBoxTileMedia enabled={shouldRenderMedia} game={game} className="absolute inset-0" />
               <div className="absolute inset-x-0 bottom-0 flex flex-col gap-1 border-t border-white/10 bg-[linear-gradient(180deg,rgba(2,6,23,0.08),rgba(2,6,23,0.92))] p-4 transition-all duration-500">
                 <div className="text-[10px] font-black uppercase tracking-[0.24em] text-cyan-200/80">
                   {game.year || 'Classic'} {game.parentGenre ? `• ${game.parentGenre}` : ''}
@@ -78,4 +118,3 @@ export function BigBoxAlphabetRail({
     </div>
   );
 }
-
