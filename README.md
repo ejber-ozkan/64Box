@@ -5,6 +5,8 @@ A cross-platform (Windows, Mac, Linux) modern frontend for the **GameBase64** Co
 > This project is a frontend for the GB64 Collection, the long-running Commodore 64 database project maintained by the GB64 Team. To learn more about the original project, visit [gb64.com](https://gb64.com/).  
 > `gb64.com ©1997-2022 The GB64 Team`
 
+Download the latest build from the [GitHub Releases page](https://github.com/ejber-ozkan/64Box/releases/latest).
+
 ## Features
 - **Modern Frontend**: Window or Big Screen/FullScreen mode, Fluid, gallery-style layouts mimicking modern gaming libraries. Fully responsive and supports Gamepad/Keyboard navigation.
 - **Enhanced Search**: Integrated search by year, publisher, musician, 0-Z and smart genres.
@@ -13,7 +15,7 @@ A cross-platform (Windows, Mac, Linux) modern frontend for the **GameBase64** Co
 - **Smart Multi-Disk Handling**: Automatically unzips games on-the-fly and generates `.vfl` (VICE) or `.m3u` (RetroArch) playlists for multi-disk games to ensure seamless booting.
 - **Categorized Extras Gallery**: Integrated support for the **GameBase64 Extras** collection. Automatically groups Adverts, Books, Maps, and Manuals into a premium gallery view, while allowing alternate game versions (Disks/Tapes) to be launched directly.
 - **SID Support**: Native `.sid` chiptune playback directly within the game galleries.
-- **Initial Import wizar**: To help import the GabeBase Database for use.
+- **Initial Import wizard**: To help import the GambeBase Database for use.
 
 ## Screenshots
 
