@@ -14,7 +14,9 @@ import { SidPlayer } from '../../SidPlayer';
 import { StatusRow } from '../../StatusRow';
 import { PlayButton } from '../PlayButton';
 import { DetailGameTitle } from '../../detail/DetailGameTitle';
+import { DetailTitleBanner } from '../../detail/DetailTitleBanner';
 import type { DetailLayoutProps } from '../../DetailView';
+import { useResolvedBoxArtUrl } from '../../../hooks/useResolvedBoxArtUrl';
 
 type WindowedMediaId = 'gameplay' | 'titlescreen' | 'videosna' | 'boxfront';
 type WindowedDetailTab = 'gallery' | 'extras-alt' | 'extras';
@@ -87,6 +89,7 @@ export function WindowedDetailLayout({
   }, [game.id]);
 
   const studios = getGameStudios(game);
+  const headerArtworkUrl = useResolvedBoxArtUrl(game);
   const groupedExtras = useMemo(() => groupExtras(extras), [extras]);
   const launchableExtras = useMemo(
     () => (groupedExtras.find((group) => group.category === 'games')?.items ?? []).filter(isLaunchableExtra),
@@ -208,7 +211,11 @@ export function WindowedDetailLayout({
   return (
     <div className={`flex h-full min-h-screen w-full flex-col ${palette.background}`}>
       <div className="mx-auto flex w-full max-w-[1680px] flex-1 flex-col gap-6 px-4 py-5 md:px-6 xl:px-8">
-        <div className={`rounded-[28px] border ${palette.surface} px-5 py-5 shadow-[0_24px_80px_rgba(2,6,23,0.35)]`}>
+        <DetailTitleBanner
+          artUrl={headerArtworkUrl}
+          className={`rounded-[28px] border ${palette.surface} shadow-[0_24px_80px_rgba(2,6,23,0.35)]`}
+          contentClassName="px-5 py-5"
+        >
           <div className="flex flex-col gap-5 lg:flex-row lg:items-start lg:justify-between">
             <div className="min-w-0">
               <div className="mb-3 flex flex-wrap items-center gap-3">
@@ -231,9 +238,13 @@ export function WindowedDetailLayout({
               <DetailGameTitle
                 className="max-w-5xl flex flex-wrap items-center gap-4 text-3xl font-black tracking-tighter text-white md:text-5xl xl:text-6xl"
                 isClassic={game.isClassic}
+                outlined
                 title={game.name}
               />
-              <div className={`mt-3 text-sm font-bold uppercase tracking-[0.18em] md:text-base ${palette.accentText}`}>
+              <div
+                className={`mt-3 text-sm font-bold uppercase tracking-[0.18em] md:text-base ${palette.accentText}`}
+                style={headerArtworkUrl ? { textShadow: '0 2px 10px rgba(0, 0, 0, 0.9)' } : undefined}
+              >
                 {titleLine || 'GB64'}
               </div>
             </div>
@@ -242,7 +253,7 @@ export function WindowedDetailLayout({
               <PlayButton game={game} nav={nav} />
             </div>
           </div>
-        </div>
+        </DetailTitleBanner>
 
         <div className="grid min-h-0 flex-1 gap-6 xl:grid-cols-[minmax(0,1.55fr)_minmax(320px,0.85fr)]">
           <div className="min-w-0 space-y-6">

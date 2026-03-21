@@ -14,6 +14,7 @@ const STANDARD_MAP: GamepadButtonMap = {
   3: 'Y',      // Top button
   4: 'LB',     // L1
   5: 'RB',     // R1
+  6: 'LT',     // L2 / Left trigger
   9: 'START',  // Menu/Start
   12: 'UP',    // D-pad Up
   13: 'DOWN',  // D-pad Down
@@ -93,7 +94,10 @@ function pollGamepads() {
 
 export function useGamepad(handlers: GamepadHandlers) {
   const handlersRef = useRef(handlers);
-  handlersRef.current = handlers;
+
+  useEffect(() => {
+    handlersRef.current = handlers;
+  }, [handlers]);
 
   // Stable listener proxy that always calls the latest registered callback
   const listener = useRef<GamepadHandlers>({

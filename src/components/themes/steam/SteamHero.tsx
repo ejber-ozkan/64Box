@@ -3,13 +3,14 @@
 import { DetailNavigationHook } from '../../../hooks/useDetailNavigation';
 import { Game } from '../../../types/game';
 import { DetailGameTitle } from '../../detail/DetailGameTitle';
+import { DetailTitleBanner } from '../../detail/DetailTitleBanner';
 
 interface SteamHeroProps {
   game: Game;
   isFavorite: boolean;
   nav: DetailNavigationHook;
   onToggleFavorite: () => void;
-  screenshotUrl: string;
+  backgroundArtUrl: string;
   studios: string[];
 }
 
@@ -18,23 +19,16 @@ export function SteamHero({
   isFavorite,
   nav,
   onToggleFavorite,
-  screenshotUrl,
+  backgroundArtUrl,
   studios,
 }: SteamHeroProps) {
   return (
-    <div className="relative shrink-0 border-b border-[#2a475e] bg-[#0f1922] px-8 py-6 xl:px-10 xl:py-7 transition-all">
-      <div
-        className="absolute inset-0 opacity-20 transition-opacity duration-1000"
-        style={{
-          backgroundImage: screenshotUrl ? `url(${screenshotUrl})` : '',
-          backgroundSize: 'cover',
-          backgroundPosition: 'top center',
-          filter: 'saturate(0)',
-        }}
-      />
-      <div className="absolute inset-0 bg-gradient-to-t from-[#1b2838] to-transparent z-10" />
-
-      <div className="relative z-20 flex items-start gap-4 xl:gap-5">
+    <DetailTitleBanner
+      artUrl={backgroundArtUrl}
+      className="shrink-0 border-b border-[#2a475e] bg-[#0f1922]"
+      contentClassName="px-8 py-6 xl:px-10 xl:py-7 transition-all"
+    >
+      <div className="flex items-start gap-4 xl:gap-5">
         <button
           onClick={onToggleFavorite}
           onMouseEnter={() => nav.hoverZone('favorite')}
@@ -51,9 +45,13 @@ export function SteamHero({
           <DetailGameTitle
             className="mb-2 flex flex-wrap items-center gap-3 text-2xl font-light tracking-tight text-white xl:text-3xl 2xl:text-4xl"
             isClassic={game.isClassic}
+            outlined
             title={game.name}
           />
-          <div className="flex flex-wrap items-center gap-y-2 text-xs xl:text-sm font-semibold uppercase tracking-wider text-[#66c0f4]">
+          <div
+            className="flex flex-wrap items-center gap-y-2 text-xs xl:text-sm font-semibold uppercase tracking-wider text-[#66c0f4]"
+            style={backgroundArtUrl ? { textShadow: '0 2px 10px rgba(0, 0, 0, 0.9)' } : undefined}
+          >
             {[game.year, ...studios].filter(Boolean).map((value, index, values) => (
               <span key={`${value}-${index}`}>
                 {value}
@@ -63,6 +61,6 @@ export function SteamHero({
           </div>
         </div>
       </div>
-    </div>
+    </DetailTitleBanner>
   );
 }

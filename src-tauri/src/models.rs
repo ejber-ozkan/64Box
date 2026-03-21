@@ -41,6 +41,7 @@ pub struct GameFilters {
     pub search_query: Option<String>,
     pub letter: Option<String>,
     pub genre: Option<String>,
+    pub sub_genre: Option<String>,
     pub favorite_ids: Option<Vec<String>>,
     pub hide_adult: Option<bool>,
     pub is_classic: Option<bool>,

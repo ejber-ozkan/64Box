@@ -3,7 +3,7 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { Settings } from '../contexts/SettingsContext';
 import { Game } from '../types/game';
-import { GameFilters, getDbGames, getGenres } from '../lib/tauri-bridge';
+import { GameFilters, getDbGameCount, getDbGames, getGenres, getSubGenres } from '../lib/tauri-bridge';
 
 export const BIGBOX_LETTERS = ['#', 'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z'] as const;
 
@@ -31,6 +31,7 @@ const LETTER_RAIL_CACHE = new Map<string, Game[]>();
 function getAlphabetRailCacheKey(letter: string, filters: GameFilters, searchInput: string) {
   return JSON.stringify({
     genre: filters.genre ?? null,
+    subGenre: filters.subGenre ?? null,
     hideAdult: filters.hideAdult ?? null,
     letter,
     searchInput: searchInput || null,
@@ -45,6 +46,7 @@ export function useBigBoxLibraryData({
   searchInput,
 }: UseBigBoxLibraryDataProps) {
   const [genres, setGenres] = useState<string[]>([]);
+  const [subGenres, setSubGenres] = useState<string[]>([]);
   const [recentGames, setRecentGames] = useState<Game[]>([]);
   const [favoriteGames, setFavoriteGames] = useState<Game[]>([]);
   const [classicGames, setClassicGames] = useState<Game[]>([]);
@@ -58,14 +60,32 @@ export function useBigBoxLibraryData({
   }, []);
 
   useEffect(() => {
+    let cancelled = false;
+
+    async function loadSubGenres() {
+      const items = await getSubGenres(filters.genre);
+      if (!cancelled) {
+        setSubGenres(items);
+      }
+    }
+
+    void loadSubGenres();
+
+    return () => {
+      cancelled = true;
+    };
+  }, [filters.genre]);
+
+  useEffect(() => {
     async function initData() {
       setLoading(true);
       try {
         const query = searchInput || undefined;
-        setTotalGameCount(30000);
+        const libraryFilters = { ...filters, searchQuery: query };
+        const gameCountPromise = getDbGameCount(libraryFilters);
 
         if (recentlyPlayedIds.length > 0) {
-          const recent = await getDbGames(100, 0, { ...filters, favoriteIds: recentlyPlayedIds, searchQuery: query });
+          const recent = await getDbGames(100, 0, { ...libraryFilters, favoriteIds: recentlyPlayedIds });
           const sortedRecent = recentlyPlayedIds
             .map((id) => recent.find((game) => game.id.toString() === id))
             .filter((game): game is Game => Boolean(game));
@@ -75,13 +95,13 @@ export function useBigBoxLibraryData({
         }
 
         if (favorites.length > 0) {
-          const favoriteResults = await getDbGames(100, 0, { ...filters, favoriteIds: favorites, searchQuery: query });
+          const favoriteResults = await getDbGames(100, 0, { ...libraryFilters, favoriteIds: favorites });
           setFavoriteGames(favoriteResults);
         } else {
           setFavoriteGames([]);
         }
 
-        const classics = await getDbGames(100, 0, { ...filters, isClassic: true, searchQuery: query });
+        const classics = await getDbGames(100, 0, { ...libraryFilters, isClassic: true });
         setClassicGames(classics);
 
         if (!query) {
@@ -95,7 +115,7 @@ export function useBigBoxLibraryData({
             }))
           );
         } else {
-          const results = await getDbGames(500, 0, { ...filters, searchQuery: query });
+          const results = await getDbGames(500, 0, libraryFilters);
           setAlphabetRails([
             {
               id: 'search-results',
@@ -105,6 +125,8 @@ export function useBigBoxLibraryData({
             },
           ]);
         }
+
+        setTotalGameCount(await gameCountPromise);
       } catch (error) {
         console.error('BigBox init error:', error);
       } finally {
@@ -141,9 +163,19 @@ export function useBigBoxLibraryData({
     const cacheKey = getAlphabetRailCacheKey(currentRail.letter, filters, searchInput);
     const cachedGames = LETTER_RAIL_CACHE.get(cacheKey);
     if (cachedGames) {
-      setAlphabetRails((previous) =>
-        previous.map((rail) => (rail.id === currentRail.id ? { ...rail, games: cachedGames } : rail)),
-      );
+      setAlphabetRails((previous) => {
+        let changed = false;
+        const next = previous.map((rail) => {
+          if (rail.id !== currentRail.id || rail.games === cachedGames) {
+            return rail;
+          }
+
+          changed = true;
+          return { ...rail, games: cachedGames };
+        });
+
+        return changed ? next : previous;
+      });
       return;
     }
 
@@ -165,9 +197,19 @@ export function useBigBoxLibraryData({
           }
 
           LETTER_RAIL_CACHE.set(cacheKey, games);
-          setAlphabetRails((previous) =>
-            previous.map((rail) => (rail.id === currentRail.id ? { ...rail, games } : rail)),
-          );
+          setAlphabetRails((previous) => {
+            let changed = false;
+            const next = previous.map((rail) => {
+              if (rail.id !== currentRail.id || rail.games === games) {
+                return rail;
+              }
+
+              changed = true;
+              return { ...rail, games };
+            });
+
+            return changed ? next : previous;
+          });
         } catch (error) {
           if (!cancelled) {
             console.error(`Failed to lazy load ${currentRail.letter}:`, error);
@@ -186,6 +228,7 @@ export function useBigBoxLibraryData({
     genres,
     loading,
     rails,
+    subGenres,
     totalGameCount,
   };
 }

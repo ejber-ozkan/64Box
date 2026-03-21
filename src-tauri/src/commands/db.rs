@@ -192,6 +192,13 @@ impl GameQueryBuilder {
         self.params.push(offset.to_string());
         (self.filter_query, self.params)
     }
+
+    fn finish_count(self) -> (String, Vec<String>) {
+        (
+            format!("SELECT COUNT(*) FROM ({})", self.filter_query),
+            self.params,
+        )
+    }
 }
 
 fn build_game_query(
@@ -206,6 +213,7 @@ fn build_game_query(
         builder.push_search_filter(filters.search_query.as_deref());
         builder.push_letter_filter(filters.letter.as_deref());
         builder.push_exact_filter(" AND gv.parentGenre = ?", filters.genre.as_deref());
+        builder.push_exact_filter(" AND gv.subGenre = ?", filters.sub_genre.as_deref());
         builder.push_hide_adult_filter(filters.hide_adult.unwrap_or(false));
         builder.push_classic_filter(filters.is_classic);
 
@@ -215,6 +223,28 @@ fn build_game_query(
     }
 
     Some(builder.finish(limit, offset))
+}
+
+fn build_game_count_query(
+    filters: Option<GameFilters>,
+    search_mode: SearchMode,
+) -> Option<(String, Vec<String>)> {
+    let mut builder = GameQueryBuilder::new(search_mode);
+
+    if let Some(filters) = filters {
+        builder.push_search_filter(filters.search_query.as_deref());
+        builder.push_letter_filter(filters.letter.as_deref());
+        builder.push_exact_filter(" AND gv.parentGenre = ?", filters.genre.as_deref());
+        builder.push_exact_filter(" AND gv.subGenre = ?", filters.sub_genre.as_deref());
+        builder.push_hide_adult_filter(filters.hide_adult.unwrap_or(false));
+        builder.push_classic_filter(filters.is_classic);
+
+        if !builder.push_favorite_filter(filters.favorite_ids.as_deref()) {
+            return Some(("SELECT 0".to_string(), Vec::new()));
+        }
+    }
+
+    Some(builder.finish_count())
 }
 
 fn open_db_connection(context: &str) -> Result<Connection, String> {
@@ -291,6 +321,31 @@ pub async fn get_genres() -> Result<Vec<String>, String> {
 }
 
 #[tauri::command]
+pub async fn get_sub_genres(genre: Option<String>) -> Result<Vec<String>, String> {
+    let Some(selected_genre) = genre.filter(|value| !value.trim().is_empty()) else {
+        return Ok(Vec::new());
+    };
+
+    let conn = open_db_connection("DB error")?;
+    let mut stmt = conn
+        .prepare(
+            "SELECT DISTINCT subGenre
+             FROM GameView
+             WHERE parentGenre = ?1
+               AND subGenre IS NOT NULL
+               AND TRIM(subGenre) != ''
+             ORDER BY subGenre COLLATE NOCASE",
+        )
+        .map_err(|e| e.to_string())?;
+    let sub_genres: Vec<String> = stmt
+        .query_map([selected_genre], |row| row.get(0))
+        .map_err(|e| e.to_string())?
+        .filter_map(|r| r.ok())
+        .collect();
+    Ok(sub_genres)
+}
+
+#[tauri::command]
 pub async fn get_db_games(
     limit: Option<usize>,
     offset: Option<usize>,
@@ -352,6 +407,33 @@ pub async fn get_db_games(
     games.sort_by_key(|game| order_lookup.get(&game.id).copied().unwrap_or(usize::MAX));
 
     Ok(games)
+}
+
+#[tauri::command]
+pub async fn get_db_game_count(filters: Option<GameFilters>) -> Result<usize, String> {
+    let conn = open_db_connection("Database error")?;
+    let filters_for_retry = filters.clone();
+
+    let load_count = |search_mode: SearchMode, filters: Option<GameFilters>| -> Result<usize, String> {
+        let Some((query, params)) = build_game_count_query(filters, search_mode) else {
+            return Ok(0);
+        };
+
+        let mut stmt = conn
+            .prepare(&query)
+            .map_err(|e| format!("Prepare error: {}", e))?;
+
+        stmt.query_row(params_from_iter(params), |row| row.get::<_, usize>(0))
+            .map_err(|e| e.to_string())
+    };
+
+    match load_count(SearchMode::Fts, filters) {
+        Ok(count) => Ok(count),
+        Err(error) if error.contains("no such table: GameSearchIndex") => {
+            load_count(SearchMode::Like, filters_for_retry)
+        }
+        Err(error) => Err(error),
+    }
 }
 
 #[tauri::command]
@@ -543,6 +625,48 @@ mod tests {
     }
 
     #[tokio::test]
+    async fn test_get_sub_genres() {
+        let temp_db = NamedTempFile::new().unwrap();
+        let db_path = temp_db.path().to_string_lossy().to_string();
+        std::env::set_var("VIC40_DB_PATH", &db_path);
+
+        {
+            let conn = Connection::open(&db_path).unwrap();
+            conn.execute("CREATE TABLE GameView (parentGenre TEXT, subGenre TEXT)", [])
+                .unwrap();
+            conn.execute(
+                "INSERT INTO GameView (parentGenre, subGenre) VALUES (?, ?)",
+                ["Platform", "Arcade"],
+            )
+            .unwrap();
+            conn.execute(
+                "INSERT INTO GameView (parentGenre, subGenre) VALUES (?, ?)",
+                ["Platform", "Collect'em Up"],
+            )
+            .unwrap();
+            conn.execute(
+                "INSERT INTO GameView (parentGenre, subGenre) VALUES (?, ?)",
+                ["Shoot'em Up", "Vertical"],
+            )
+            .unwrap();
+        }
+
+        let platform_sub_genres = get_sub_genres(Some("Platform".to_string()))
+            .await
+            .expect("Failed to get sub-genres");
+        assert_eq!(platform_sub_genres.len(), 2);
+        assert!(platform_sub_genres.contains(&"Arcade".to_string()));
+        assert!(platform_sub_genres.contains(&"Collect'em Up".to_string()));
+
+        let no_filter_sub_genres = get_sub_genres(None)
+            .await
+            .expect("Failed to get sub-genres without a genre");
+        assert!(no_filter_sub_genres.is_empty());
+
+        std::env::remove_var("VIC40_DB_PATH");
+    }
+
+    #[tokio::test]
     async fn test_get_game_extras() {
         let temp_db = NamedTempFile::new().unwrap();
         let db_path = temp_db.path().to_string_lossy().to_string();
@@ -666,6 +790,16 @@ mod tests {
             .unwrap();
         assert_eq!(res_adult.len(), 1);
 
+        let filters_sub_genre = GameFilters {
+            genre: Some("Action".to_string()),
+            sub_genre: Some("Adventure".to_string()),
+            ..Default::default()
+        };
+        let res_sub_genre = get_db_games(Some(10), Some(0), Some(filters_sub_genre))
+            .await
+            .unwrap();
+        assert_eq!(res_sub_genre.len(), 1);
+
         std::env::remove_var("VIC40_DB_PATH");
     }
 
@@ -754,6 +888,77 @@ mod tests {
         let page3 = get_db_games(Some(2), Some(4), None).await.unwrap();
         assert_eq!(page3.len(), 1);
         assert_eq!(page3[0].name, "Game 5");
+
+        std::env::remove_var("VIC40_DB_PATH");
+    }
+
+    #[tokio::test]
+    async fn test_get_db_game_count() {
+        let temp_db = NamedTempFile::new().unwrap();
+        let db_path = temp_db.path().to_string_lossy().to_string();
+        std::env::set_var("VIC40_DB_PATH", &db_path);
+
+        {
+            let conn = Connection::open(&db_path).unwrap();
+            conn.execute("CREATE TABLE Games (GA_Id TEXT, Name TEXT, MU_Id TEXT, PR_Id TEXT, AR_Id TEXT, CR_Id TEXT, DE_Id TEXT, Adult TEXT, Control TEXT, PlayersFrom TEXT, PlayersTo TEXT, PlayersSim TEXT, Comment TEXT, ReviewRating TEXT, V_Trainers TEXT, V_Length TEXT, V_LoadingScreen TEXT, V_HighScoreSaver TEXT, V_IncludedDocs TEXT, V_TrueDriveEmu TEXT, V_PalNTSC TEXT, MemoText TEXT)", []).unwrap();
+            conn.execute("CREATE TABLE GameView (id TEXT, name TEXT, filename TEXT, gameFilename TEXT, screenshotFilename TEXT, boxFrontFilename TEXT, titlescreenFilename TEXT, videoSnapFilename TEXT, sidFilename TEXT, crc TEXT, year TEXT, isPal INTEGER, isNtsc INTEGER, trueDriveEmu INTEGER, isClassic INTEGER, parentGenre TEXT, subGenre TEXT, developer_name TEXT, publisher_name TEXT, musician_name TEXT, languages TEXT)", []).unwrap();
+            conn.execute("CREATE TABLE Musicians (MU_Id TEXT, Photo TEXT, Nick TEXT, Grp TEXT, Musician TEXT)", []).unwrap();
+            conn.execute("CREATE TABLE Programmers (PR_Id TEXT, Programmer TEXT)", []).unwrap();
+            conn.execute("CREATE TABLE Artists (AR_Id TEXT, Artist TEXT)", []).unwrap();
+            conn.execute("CREATE TABLE Developers (DE_Id TEXT, Developer TEXT)", []).unwrap();
+            conn.execute("CREATE TABLE Extras (GA_Id TEXT, Path TEXT)", []).unwrap();
+
+            conn.execute(
+                "INSERT INTO Games (GA_Id, Name, Adult) VALUES (?, ?, ?)",
+                ["1", "Alpha Mission", "False"],
+            )
+            .unwrap();
+            conn.execute(
+                "INSERT INTO Games (GA_Id, Name, Adult) VALUES (?, ?, ?)",
+                ["2", "Bubble Bobble", "False"],
+            )
+            .unwrap();
+            conn.execute(
+                "INSERT INTO Games (GA_Id, Name, Adult) VALUES (?, ?, ?)",
+                ["3", "California Games", "False"],
+            )
+            .unwrap();
+
+            conn.execute("INSERT INTO GameView (id, name, filename, parentGenre, subGenre, isPal, isNtsc, trueDriveEmu, isClassic) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)",
+                rusqlite::params!["1", "Alpha Mission", "alpha.d64", "Shoot'em Up", "Vertical", 1, 0, 0, 0]).unwrap();
+            conn.execute("INSERT INTO GameView (id, name, filename, parentGenre, subGenre, isPal, isNtsc, trueDriveEmu, isClassic) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)",
+                rusqlite::params!["2", "Bubble Bobble", "bubble.d64", "Platform", "Arcade", 1, 0, 0, 0]).unwrap();
+            conn.execute("INSERT INTO GameView (id, name, filename, parentGenre, subGenre, isPal, isNtsc, trueDriveEmu, isClassic) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)",
+                rusqlite::params!["3", "California Games", "california.d64", "Sports", "Misc", 1, 0, 0, 0]).unwrap();
+        }
+
+        let total = get_db_game_count(None).await.unwrap();
+        assert_eq!(total, 3);
+
+        let genre_filtered = get_db_game_count(Some(GameFilters {
+            genre: Some("Platform".to_string()),
+            ..Default::default()
+        }))
+        .await
+        .unwrap();
+        assert_eq!(genre_filtered, 1);
+
+        let search_filtered = get_db_game_count(Some(GameFilters {
+            search_query: Some("California".to_string()),
+            ..Default::default()
+        }))
+        .await
+        .unwrap();
+        assert_eq!(search_filtered, 1);
+
+        let sub_genre_filtered = get_db_game_count(Some(GameFilters {
+            genre: Some("Platform".to_string()),
+            sub_genre: Some("Arcade".to_string()),
+            ..Default::default()
+        }))
+        .await
+        .unwrap();
+        assert_eq!(sub_genre_filtered, 1);
 
         std::env::remove_var("VIC40_DB_PATH");
     }

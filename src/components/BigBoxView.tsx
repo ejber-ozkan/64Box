@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useCallback, useEffect, useRef, useState } from 'react';
+import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { Game } from '../types/game';
 import { Settings } from '../contexts/SettingsContext';
 import { useFavorites } from '../hooks/useFavorites';
@@ -15,7 +15,9 @@ import { useBigBoxLibraryData } from '../hooks/useBigBoxLibraryData';
 import { useBigBoxNavigation } from '../hooks/useBigBoxNavigation';
 import { useBigBoxScrollSync } from '../hooks/useBigBoxScrollSync';
 import { ControllerSearchKeyboard } from './ControllerSearchKeyboard';
+import { SubGenrePickerModal } from './SubGenrePickerModal';
 import { playRotatingUiSoundEffect, playUiSoundEffect, playUiSoundEffectAndWait } from '../lib/ui-sound-effects';
+import { getVisibleSubGenres } from '../lib/subgenre-display';
 
 interface BigBoxViewProps {
   settings: Settings;
@@ -59,10 +61,11 @@ export function BigBoxView({
   const [railFocusIndices, setRailFocusIndices] = useState<Record<string, number>>(sessionState?.railFocusIndices ?? {});
   const [isControllerKeyboardOpen, setIsControllerKeyboardOpen] = useState(false);
   const [isExitPromptOpen, setIsExitPromptOpen] = useState(false);
+  const [isSubGenrePickerOpen, setIsSubGenrePickerOpen] = useState(false);
   const [hasRestoredPosition, setHasRestoredPosition] = useState(Boolean(sessionState));
   const classicTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
-  const { genres, loading, rails, totalGameCount } = useBigBoxLibraryData({
+  const { genres, loading, rails, subGenres, totalGameCount } = useBigBoxLibraryData({
     activeRailIndex,
     favorites,
     filters,
@@ -73,7 +76,12 @@ export function BigBoxView({
   const currentRail = activeRailIndex >= 0 ? rails[activeRailIndex] : null;
   const currentFocusedIndex = currentRail ? (railFocusIndices[currentRail.id] ?? 0) : 0;
   const currentFocusedGame = currentRail?.games[currentFocusedIndex] ?? null;
-  const isInteractionOverlayOpen = isControllerKeyboardOpen || isExitPromptOpen;
+  const isInteractionOverlayOpen = isControllerKeyboardOpen || isExitPromptOpen || isSubGenrePickerOpen;
+  const isShowingFilteredCount = Boolean(searchInput.trim() || filters.genre || filters.subGenre);
+  const { hasOverflow, visibleSubGenres } = useMemo(
+    () => getVisibleSubGenres(subGenres, filters.subGenre, 10),
+    [filters.subGenre, subGenres],
+  );
 
   useEffect(() => {
     onSessionChange({
@@ -249,11 +257,18 @@ export function BigBoxView({
   }, [onSearchChange, searchInput]);
 
   const handleFiltersChange = useCallback((nextFilters: GameFilters) => {
-    if (filters.genre !== nextFilters.genre || filters.letter !== nextFilters.letter) {
+    if (
+      filters.genre !== nextFilters.genre ||
+      filters.subGenre !== nextFilters.subGenre ||
+      filters.letter !== nextFilters.letter
+    ) {
       void playUiSoundEffect('search-filter', 0.42);
     }
+    if (isSubGenrePickerOpen) {
+      setIsSubGenrePickerOpen(false);
+    }
     onFiltersChange(nextFilters);
-  }, [filters.genre, filters.letter, onFiltersChange]);
+  }, [filters.genre, filters.letter, filters.subGenre, isSubGenrePickerOpen, onFiltersChange]);
 
   const {
     currentRailId,
@@ -271,6 +286,7 @@ export function BigBoxView({
     activeRailIndex,
     filters,
     genres,
+    hasOverflowSubGenres: hasOverflow,
     isControllerKeyboardOpen: isInteractionOverlayOpen,
     onBack: openExitPrompt,
     onFiltersChange: handleFiltersChange,
@@ -293,6 +309,7 @@ export function BigBoxView({
       }
       setIsControllerKeyboardOpen(true);
     },
+    onOpenSubGenrePicker: () => setIsSubGenrePickerOpen(true),
     onSelectGame: handleSelectGame,
     onShowSettings,
     railFocusIndices,
@@ -302,6 +319,7 @@ export function BigBoxView({
     setActiveRailIndex,
     setRailFocusIndices,
     toggleFavorite,
+    visibleSubGenres,
   });
 
   const { scrollContainerRef, headerRef } = useBigBoxScrollSync({
@@ -333,8 +351,10 @@ export function BigBoxView({
           activeRailIndex={activeRailIndex}
           filters={filters}
           genres={genres}
+          hasOverflowSubGenres={hasOverflow}
           onExit={openExitPrompt}
           onFiltersChange={handleFiltersChange}
+          onOpenSubGenrePicker={() => setIsSubGenrePickerOpen(true)}
           onJumpToRail={(railId) => {
             void playUiSoundEffect('search-filter', 0.42);
             jumpToRail(railId);
@@ -344,6 +364,7 @@ export function BigBoxView({
           onSetHeaderFocus={focusHeader}
           onShowSettings={onShowSettings}
           searchInput={searchInput}
+          visibleSubGenres={visibleSubGenres}
         />
       </header>
 
@@ -368,6 +389,23 @@ export function BigBoxView({
           });
         }}
         onGamepadInput={onGamepadInput}
+      />
+
+      <SubGenrePickerModal
+        key={`${filters.genre ?? 'none'}:${filters.subGenre ?? 'none'}:${isSubGenrePickerOpen ? 'open' : 'closed'}`}
+        isOpen={isSubGenrePickerOpen}
+        onClose={() => setIsSubGenrePickerOpen(false)}
+        onGamepadInput={onGamepadInput}
+        onSelect={(subGenre) => {
+          handleFiltersChange({
+            ...filters,
+            subGenre,
+          });
+          setIsSubGenrePickerOpen(false);
+        }}
+        selectedSubGenre={filters.subGenre}
+        subGenres={subGenres}
+        title={filters.genre ? `${filters.genre} Sub-Genres` : 'Choose Sub-Genre'}
       />
 
       {/* Rails Container - wrapper clips any stubborn native scrollbar off-canvas */}
@@ -435,7 +473,7 @@ export function BigBoxView({
       </div>
 
       {/* Bottom Status Bar */}
-      <BigBoxFooter totalGameCount={totalGameCount} />
+      <BigBoxFooter isFiltered={isShowingFilteredCount} totalGameCount={totalGameCount} />
     </div>
   );
 }

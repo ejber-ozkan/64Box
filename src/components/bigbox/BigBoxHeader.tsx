@@ -9,14 +9,17 @@ interface BigBoxHeaderProps {
   activeRailIndex: number;
   filters: GameFilters;
   genres: string[];
+  hasOverflowSubGenres: boolean;
   onExit: () => void;
   onFiltersChange: (filters: GameFilters) => void;
+  onOpenSubGenrePicker: () => void;
   onJumpToRail: (railId: string) => void;
   onSearchChange: (value: string) => void;
   onSearchFocus: () => void;
   onSetHeaderFocus: (row: number, index: number) => void;
   onShowSettings: () => void;
   searchInput: string;
+  visibleSubGenres: string[];
 }
 
 export function BigBoxHeader({
@@ -25,15 +28,22 @@ export function BigBoxHeader({
   activeRailIndex,
   filters,
   genres,
+  hasOverflowSubGenres,
   onExit,
   onFiltersChange,
+  onOpenSubGenrePicker,
   onJumpToRail,
   onSearchChange,
   onSearchFocus,
   onSetHeaderFocus,
   onShowSettings,
   searchInput,
+  visibleSubGenres,
 }: BigBoxHeaderProps) {
+  const hasSubGenres = Boolean(filters.genre && (visibleSubGenres.length > 0 || hasOverflowSubGenres));
+  const subGenreRowIndex = 2;
+  const jumpRowIndex = hasSubGenres ? 3 : 2;
+
   return (
     <header className="sticky top-0 z-50 border-b border-white/5 bg-[linear-gradient(180deg,rgba(7,11,18,0.96),rgba(10,10,15,0.82))] backdrop-blur-3xl flex flex-col shadow-[0_20px_60px_rgba(2,6,23,0.45)]">
       <div className="px-12 py-6 flex items-center justify-between">
@@ -108,7 +118,13 @@ export function BigBoxHeader({
             return (
               <button
                 key={genre}
-                onClick={() => onFiltersChange({ ...filters, genre: filters.genre === genre ? undefined : genre })}
+                onClick={() =>
+                  onFiltersChange({
+                    ...filters,
+                    genre: filters.genre === genre ? undefined : genre,
+                    subGenre: undefined,
+                  })
+                }
                 onMouseEnter={() => onSetHeaderFocus(1, index)}
                 className={`px-4 py-1.5 rounded-md text-xs font-bold whitespace-nowrap transition-all border ${
                   isFocused
@@ -125,16 +141,66 @@ export function BigBoxHeader({
         </div>
       </div>
 
+      {hasSubGenres ? (
+        <div className="px-12 pb-4 flex items-center gap-2 overflow-x-hidden border-t border-white/5 pt-4 justify-center max-w-full">
+        <div className="text-[10px] font-black text-white/20 uppercase tracking-[0.2em] mr-4 shrink-0">Sub-Genre</div>
+        <div className="flex items-center gap-1 overflow-x-auto no-scrollbar scroll-smooth flex-1 justify-center">
+            {visibleSubGenres.map((subGenre, index) => {
+              const isSelected = filters.subGenre === subGenre;
+              const isFocused =
+                activeRailIndex === -1 && activeHeaderRow === subGenreRowIndex && activeHeaderItemIndex === index;
+              return (
+                <button
+                  key={subGenre}
+                  onClick={() =>
+                    onFiltersChange({
+                      ...filters,
+                      subGenre: filters.subGenre === subGenre ? undefined : subGenre,
+                    })
+                  }
+                  onMouseEnter={() => onSetHeaderFocus(subGenreRowIndex, index)}
+                  className={`px-4 py-1.5 rounded-md text-xs font-bold whitespace-nowrap transition-all border ${
+                    isFocused
+                      ? 'bg-cyan-600 border-cyan-400 text-white scale-105 shadow-lg z-10'
+                      : isSelected
+                        ? 'bg-cyan-900/40 border-cyan-500/50 text-cyan-300'
+                        : 'bg-white/5 border-white/5 text-white/40 hover:text-white hover:bg-white/10'
+                  }`}
+                >
+                  {subGenre}
+                </button>
+              );
+            })}
+            {hasOverflowSubGenres ? (
+              <button
+                type="button"
+                onClick={onOpenSubGenrePicker}
+                onMouseEnter={() => onSetHeaderFocus(subGenreRowIndex, visibleSubGenres.length)}
+                className={`px-4 py-1.5 rounded-md text-xs font-bold whitespace-nowrap transition-all border ${
+                  activeRailIndex === -1 &&
+                  activeHeaderRow === subGenreRowIndex &&
+                  activeHeaderItemIndex === visibleSubGenres.length
+                    ? 'bg-cyan-600 border-cyan-400 text-white scale-105 shadow-lg z-10'
+                    : 'bg-cyan-500/10 border-cyan-500/30 text-cyan-200 hover:bg-cyan-500/16'
+                }`}
+              >
+                More...
+              </button>
+            ) : null}
+          </div>
+        </div>
+      ) : null}
+
       <div className="px-12 pb-6 flex items-center gap-2 overflow-x-hidden border-t border-white/5 pt-4 justify-center max-w-full">
         <div className="text-[10px] font-black text-white/20 uppercase tracking-[0.2em] mr-4 shrink-0">Jump To</div>
         <div className="flex items-center gap-0.5 overflow-x-auto no-scrollbar scroll-smooth flex-1 justify-center">
           {BIGBOX_LETTERS.map((letter, index) => {
-            const isFocused = activeRailIndex === -1 && activeHeaderRow === 2 && activeHeaderItemIndex === index;
+            const isFocused = activeRailIndex === -1 && activeHeaderRow === jumpRowIndex && activeHeaderItemIndex === index;
             return (
               <button
                 key={letter}
                 onClick={() => onJumpToRail(`alpha-${letter}`)}
-                onMouseEnter={() => onSetHeaderFocus(2, index)}
+                onMouseEnter={() => onSetHeaderFocus(jumpRowIndex, index)}
                 className={`w-8 h-8 flex items-center justify-center rounded text-[11px] font-black transition-all border ${
                   isFocused
                     ? 'bg-white text-[#0a0a0f] border-white scale-125 z-10 shadow-xl'

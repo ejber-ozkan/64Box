@@ -23,6 +23,7 @@ export function SteamLibraryLayout({
   onToggleFavorite,
 }: DetailLayoutProps) {
   const { settings, resolveMediaPath } = useSettings();
+  const screenshotUrl = game.screenshotFilename ? resolveMediaPath('screenshot', game.screenshotFilename) : '';
   const {
     boxArtUrl,
     extrasSectionRef,
@@ -67,7 +68,7 @@ export function SteamLibraryLayout({
         isFavorite={isFavorite}
         nav={nav}
         onToggleFavorite={onToggleFavorite}
-        screenshotUrl={game.screenshotFilename ? resolveMediaPath('screenshot', game.screenshotFilename) : ''}
+        backgroundArtUrl={boxArtUrl || screenshotUrl}
         studios={studios}
       />
 

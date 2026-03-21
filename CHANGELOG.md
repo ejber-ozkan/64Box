@@ -2,6 +2,25 @@
 
 All notable changes to this project will be documented in this file.
 
+## [0.5] - 2026-03-21
+
+### Added
+- Added contextual sub-genre filtering to both windowed browsing and BigBox, including database queries for distinct sub-genres and filtered result counts.
+- Added shared detail-title banner artwork so available cover or box art can fill the top hero area across all single-game themes.
+- Added a reusable `More...` sub-genre picker for cases where a selected genre has too many sub-genres to fit comfortably in one header row.
+- Added a BigBox `LT` controller shortcut and footer hint so players can jump back to the top menu from anywhere in the library.
+
+### Changed
+- Reworked detail headers to prefer stretched banner artwork with stronger readability treatment for overlaid title text.
+- Updated BigBox and windowed browsing so active search or genre filters surface `GAMES FOUND` counts instead of the unfiltered library total.
+- Refined README feature wording to better describe fullscreen mode, enhanced search, and the import/setup flow.
+- Updated surfaced app versioning to `0.5.0`.
+
+### Fixed
+- Fixed BigBox/controller navigation friction when large sub-genre sets overflow the header by routing the full list through a dedicated picker.
+- Fixed repeated state-update loops in BigBox data loading and input-mode handling that could trigger `Maximum update depth exceeded` console errors.
+- Fixed gamepad hook lint/runtime hygiene by moving handler ref synchronization out of render and adding the missing left-trigger mapping.
+
 ## [0.4] - 2026-03-20
 
 ### Added

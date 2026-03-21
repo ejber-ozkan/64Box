@@ -93,6 +93,7 @@ export function useLibraryBrowserState() {
         if (searchInput.trim()) {
           nextFilters.letter = undefined;
           nextFilters.genre = undefined;
+          nextFilters.subGenre = undefined;
         }
         return nextFilters;
       });

@@ -13,6 +13,8 @@ import { getGameExtras } from '../../lib/tauri-bridge';
 import { ScrapeButton } from '../ScrapeButton';
 import { ExtrasDetail } from '../ExtrasDetail';
 import { DetailGameTitle } from '../detail/DetailGameTitle';
+import { DetailTitleBanner } from '../detail/DetailTitleBanner';
+import { useResolvedBoxArtUrl } from '../../hooks/useResolvedBoxArtUrl';
 
 const MEDIA_TO_ZONE = {
   gameplay: 'media-gameplay',
@@ -26,6 +28,7 @@ export function DigitalMuseumLayout({ game, onBack, nav, onFullscreen }: DetailL
   const { resolveMediaPath } = useSettings();
   const [activeMedia, setActiveMedia] = useState<'gameplay' | 'titlescreen' | 'videosna' | 'boxfront' | 'extras'>('gameplay');
   const [extras, setExtras] = useState<Extra[]>([]);
+  const headerArtworkUrl = useResolvedBoxArtUrl(game);
 
   useEffect(() => {
     getGameExtras(game.id).then(setExtras);
@@ -198,13 +201,21 @@ export function DigitalMuseumLayout({ game, onBack, nav, onFullscreen }: DetailL
           )}
 
           <div className="flex justify-between items-start gap-8">
-            <div className="flex-1">
+            <DetailTitleBanner
+              artUrl={headerArtworkUrl}
+              className="flex-1 rounded-[28px] border border-gray-800 bg-gray-950/70 shadow-2xl"
+              contentClassName="px-8 py-7 xl:px-10 xl:py-8"
+            >
               <DetailGameTitle
                 className="mb-4 flex flex-wrap items-center gap-4 text-6xl font-black tracking-tighter leading-none text-white xl:text-7xl 2xl:text-8xl"
                 isClassic={game.isClassic}
+                outlined
                 title={game.name}
               />
-              <div className="flex flex-wrap items-center gap-x-6 gap-y-3 text-sm xl:text-base 2xl:text-lg font-medium text-yellow-500/80">
+              <div
+                className="flex flex-wrap items-center gap-x-6 gap-y-3 text-sm font-medium text-yellow-500/80 xl:text-base 2xl:text-lg"
+                style={headerArtworkUrl ? { textShadow: '0 2px 10px rgba(0, 0, 0, 0.9)' } : undefined}
+              >
                 <div className="flex items-center gap-2">
                   <span className="text-yellow-500">{game.year || '----'}</span>
                   {game.publisher?.name && game.publisher.name !== '(Not Published)' && (
@@ -237,7 +248,7 @@ export function DigitalMuseumLayout({ game, onBack, nav, onFullscreen }: DetailL
                   </div>
                 ) : null}
               </div>
-            </div>
+            </DetailTitleBanner>
 
             {game.musician && (
               <div className="flex items-center gap-4 bg-gray-900/80 p-4 rounded-2xl border border-gray-800 shadow-xl min-w-[300px]">

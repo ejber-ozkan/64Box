@@ -14,11 +14,14 @@ import { Extra } from '../../types/game';
 import { ExtrasDetail } from '../ExtrasDetail';
 import { useState } from 'react';
 import { DetailGameTitle } from '../detail/DetailGameTitle';
+import { DetailTitleBanner } from '../detail/DetailTitleBanner';
+import { useResolvedBoxArtUrl } from '../../hooks/useResolvedBoxArtUrl';
 
 export function ConsoleHeroLayout({ game, onBack, nav, onFullscreen }: DetailLayoutProps) {
   const { resolveMediaPath } = useSettings();
   const [activeMedia, setActiveMedia] = useState<'gameplay' | 'titlescreen' | 'boxfront' | 'extras'>('gameplay');
   const [extras, setExtras] = useState<Extra[]>([]);
+  const headerArtworkUrl = useResolvedBoxArtUrl(game);
 
   useEffect(() => {
     getGameExtras(game.id).then(setExtras);
@@ -192,21 +195,32 @@ export function ConsoleHeroLayout({ game, onBack, nav, onFullscreen }: DetailLay
                 </button>
              </div>
            ) : (
-             <div className="bg-white/5 backdrop-blur-xl border border-white/10 rounded-3xl p-10 2xl:p-12 shadow-2xl flex-1 flex flex-col transform transition translate-y-4 group-hover:translate-y-0 duration-700">
-              <DetailGameTitle
-                className="mb-3 flex flex-wrap items-center gap-4 text-5xl font-black leading-none tracking-tighter text-white xl:text-6xl 2xl:text-7xl"
-                isClassic={game.isClassic}
-                title={game.name}
-              />
-              <div className="text-blue-400 font-semibold text-lg xl:text-xl mb-10 uppercase tracking-widest opacity-90">
-                {[
-                  game.year,
-                  game.publisher?.name && game.publisher.name !== '(Not Published)' ? game.publisher.name : null,
-                  game.developer?.name && game.developer.name !== '(Unknown)' ? game.developer.name : null
-                ].filter(Boolean).join(' • ')}
-              </div>
-              
-              <div className="space-y-4 mb-8">
+             <div className="bg-white/5 backdrop-blur-xl border border-white/10 rounded-3xl shadow-2xl flex-1 flex flex-col overflow-hidden transform transition translate-y-4 group-hover:translate-y-0 duration-700">
+              <DetailTitleBanner
+                artUrl={headerArtworkUrl}
+                className="border-b border-white/10 bg-black/20"
+                contentClassName="px-10 py-8 2xl:px-12 2xl:py-10"
+              >
+                <DetailGameTitle
+                  className="mb-3 flex flex-wrap items-center gap-4 text-5xl font-black leading-none tracking-tighter text-white xl:text-6xl 2xl:text-7xl"
+                  isClassic={game.isClassic}
+                  outlined
+                  title={game.name}
+                />
+                <div
+                  className="text-blue-400 font-semibold text-lg uppercase tracking-widest opacity-90 xl:text-xl"
+                  style={headerArtworkUrl ? { textShadow: '0 2px 10px rgba(0, 0, 0, 0.9)' } : undefined}
+                >
+                  {[
+                    game.year,
+                    game.publisher?.name && game.publisher.name !== '(Not Published)' ? game.publisher.name : null,
+                    game.developer?.name && game.developer.name !== '(Unknown)' ? game.developer.name : null
+                  ].filter(Boolean).join(' • ')}
+                </div>
+              </DetailTitleBanner>
+
+              <div className="flex flex-1 flex-col p-10 2xl:p-12">
+                <div className="space-y-4 mb-8">
                 <div className="flex justify-between items-center border-b border-white/10 pb-5 text-sm xl:text-base">
                   <span className="text-gray-400">Genre</span>
                   <span className="text-white font-medium">{game.parentGenre} / {game.subGenre}</span>
@@ -308,15 +322,16 @@ export function ConsoleHeroLayout({ game, onBack, nav, onFullscreen }: DetailLay
                 </div>
               </div>
 
-              <div className="mt-auto flex flex-col gap-4">
-                 <div 
-                    onMouseEnter={() => nav.hoverZone('sid')}
-                    className={`rounded-xl transition-all ${nav.focusCls('sid')}`}
-                 >
-                    <SidPlayer filename={game.sidFilename} />
-                 </div>
+                <div className="mt-auto flex flex-col gap-4">
+                   <div 
+                      onMouseEnter={() => nav.hoverZone('sid')}
+                      className={`rounded-xl transition-all ${nav.focusCls('sid')}`}
+                   >
+                      <SidPlayer filename={game.sidFilename} />
+                   </div>
+                </div>
               </div>
-              </div>
+             </div>
            )}
         </div>
       </div>

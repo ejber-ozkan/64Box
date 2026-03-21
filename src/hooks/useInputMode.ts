@@ -9,28 +9,41 @@ import { useEffect, useRef, useState, useCallback } from 'react';
 export function useInputMode() {
   const [isMouseMode, setIsMouseMode] = useState(false);
   const isMouseModeRef = useRef(false);
-  const [showMouse, setShowMouse] = useState(false);
+  const [showMouse, setShowMouse] = useState(true);
+  const showMouseRef = useRef(true);
   const idleTimerRef = useRef<NodeJS.Timeout | null>(null);
   const lastMousePosRef = useRef({ x: 0, y: 0 });
   const hasMovedRef = useRef(false);
 
-  const resetIdleTimer = useCallback(() => {
-    setShowMouse(true);
-    if (idleTimerRef.current) clearTimeout(idleTimerRef.current);
-    idleTimerRef.current = setTimeout(() => {
-      setShowMouse(false);
-    }, 3000);
+  const setShowMouseSafe = useCallback((visible: boolean) => {
+    if (showMouseRef.current === visible) {
+      return;
+    }
+
+    showMouseRef.current = visible;
+    setShowMouse(visible);
   }, []);
 
+  const resetIdleTimer = useCallback(() => {
+    setShowMouseSafe(true);
+    if (idleTimerRef.current) clearTimeout(idleTimerRef.current);
+    idleTimerRef.current = setTimeout(() => {
+      setShowMouseSafe(false);
+    }, 3000);
+  }, [setShowMouseSafe]);
+
   const setMode = useCallback((mode: boolean) => {
-    isMouseModeRef.current = mode;
-    setIsMouseMode(mode);
+    if (isMouseModeRef.current !== mode) {
+      isMouseModeRef.current = mode;
+      setIsMouseMode(mode);
+    }
+
     if (mode) resetIdleTimer();
     else {
-      setShowMouse(false);
+      setShowMouseSafe(false);
       if (idleTimerRef.current) clearTimeout(idleTimerRef.current);
     }
-  }, [resetIdleTimer]);
+  }, [resetIdleTimer, setShowMouseSafe]);
 
   useEffect(() => {
     const onMouseMove = (e: MouseEvent) => {
@@ -67,8 +80,9 @@ export function useInputMode() {
     window.addEventListener('mousedown', onMouseDown);
     window.addEventListener('wheel', onWheel, { passive: true });
 
-    // Initial timer
-    resetIdleTimer();
+    idleTimerRef.current = setTimeout(() => {
+      setShowMouseSafe(false);
+    }, 3000);
 
     return () => {
       window.removeEventListener('mousemove', onMouseMove);
@@ -77,7 +91,7 @@ export function useInputMode() {
       window.removeEventListener('wheel', onWheel);
       if (idleTimerRef.current) clearTimeout(idleTimerRef.current);
     };
-  }, [setMode, resetIdleTimer]);
+  }, [setMode, resetIdleTimer, setShowMouseSafe]);
 
   // Also flip mode when gamepad button fires (gamepads don't trigger keydown)
   const onGamepadInput = useCallback(() => {

@@ -6,13 +6,14 @@ A cross-platform (Windows, Mac, Linux) modern frontend for the **GameBase64** Co
 > `gb64.com ©1997-2022 The GB64 Team`
 
 ## Features
-- **Modern Next.js Frontend**: Fluid, gallery-style layouts mimicking modern gaming libraries. Fully responsive and supports Gamepad/Keyboard navigation.
-- **Deep Metadata Browsing**: Integrated search by year, publisher, musician, and smart genres, powered by a fast local SQLite database.
-- **WASM Browser Emulation**: Play games directly inside the app using an offline-bundled EmulatorJS core without any external configuration.
+- **Modern Frontend**: Window or Big Screen/FullScreen mode, Fluid, gallery-style layouts mimicking modern gaming libraries. Fully responsive and supports Gamepad/Keyboard navigation.
+- **Enhanced Search**: Integrated search by year, publisher, musician, 0-Z and smart genres.
+- **WASM Emulation**: Play games directly inside the app using an offline-bundled EmulatorJS core without any external configuration.
 - **Native Emulator Bridge**: Connect to an external `x64sc` (VICE) or **RetroArch** installation for high-accuracy native desktop emulation.
 - **Smart Multi-Disk Handling**: Automatically unzips games on-the-fly and generates `.vfl` (VICE) or `.m3u` (RetroArch) playlists for multi-disk games to ensure seamless booting.
 - **Categorized Extras Gallery**: Integrated support for the **GameBase64 Extras** collection. Automatically groups Adverts, Books, Maps, and Manuals into a premium gallery view, while allowing alternate game versions (Disks/Tapes) to be launched directly.
 - **SID Support**: Native `.sid` chiptune playback directly within the game galleries.
+- **Initial Import wizar**: To help import the GabeBase Database for use.
 
 ## Screenshots
 
@@ -133,13 +134,6 @@ To build a standalone executable/installer for your operating system:
 npm run tauri build
 ```
 You can find the compiled installers and executables in `src-tauri/target/release/bundle/`.
-
-## 5a. Release Build Strategy
-
-- **Windows release builds** are intended to be created locally on a Windows machine with `.\tauri-build.bat`. This avoids spending extra GitHub Actions minutes on the Windows job.
-- **Linux and macOS release builds** are created by GitHub Actions when you push a version tag like `v0.4.0`.
-- If you want a Windows build from GitHub Actions anyway, run the `Release Bundles` workflow manually and enable the `build_windows` input.
-
 
 ## Post-Setup Configuration
 Once the app boots successfully, open the **Settings** menu via the top header bar:

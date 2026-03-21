@@ -337,6 +337,7 @@ export interface GameFilters {
   searchQuery?: string;
   letter?: string;
   genre?: string;
+  subGenre?: string;
   favoriteIds?: string[];
   hideAdult?: boolean;
   isClassic?: boolean;
@@ -349,6 +350,44 @@ export async function getGenres(): Promise<string[]> {
   } catch {
     // Fallback to the known GB64 genres for browser dev mode
     return ["Adventure","Arcade","Board Game","Brain","Cards","Educational","Gambling","Miscellaneous","Racing","Shoot'em Up","Simulation","Sports","Strategy"];
+  }
+}
+
+export async function getSubGenres(genre?: string): Promise<string[]> {
+  if (!genre?.trim()) {
+    return [];
+  }
+
+  if (!isTauri()) {
+    const games = await getDbGames(5000, 0, { genre });
+    return Array.from(
+      new Set(
+        games
+          .map((game) => game.subGenre?.trim())
+          .filter((subGenre): subGenre is string => Boolean(subGenre)),
+      ),
+    ).sort((left, right) => left.localeCompare(right));
+  }
+
+  try {
+    return await invoke<string[]>('get_sub_genres', { genre });
+  } catch (err) {
+    console.error('Failed to get sub-genres from database:', err);
+    return [];
+  }
+}
+
+export async function getDbGameCount(filters?: GameFilters): Promise<number> {
+  if (!isTauri()) {
+    const games = await getDbGames(5000, 0, filters);
+    return games.length;
+  }
+
+  try {
+    return await invoke<number>('get_db_game_count', { filters });
+  } catch (err) {
+    console.error('Failed to get game count from database:', err);
+    return 0;
   }
 }
 

@@ -2,7 +2,14 @@
 
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { flushSync } from 'react-dom';
-import { exitApp, getGenres } from '@/lib/tauri-bridge';
+import {
+  exitApp,
+  getDatabaseBootstrapStatus,
+  getGenres,
+  getSubGenres,
+  importDatabaseFromMdb,
+  openMdbFileDialog,
+} from '@/lib/tauri-bridge';
 import { useSettings } from '@/contexts/SettingsContext';
 import { GridView } from '@/components/GridView';
 import { ListView } from '@/components/ListView';
@@ -21,7 +28,6 @@ import { WindowGameListSection } from '@/components/library/WindowGameListSectio
 import { AppLaunchSplash } from '@/components/AppLaunchSplash';
 import { DatabaseSetupView } from '@/components/setup/DatabaseSetupView';
 import { useWindowLibraryShelves } from '@/hooks/useWindowLibraryShelves';
-import { getDatabaseBootstrapStatus, importDatabaseFromMdb, openMdbFileDialog } from '@/lib/tauri-bridge';
 import {
   playRotatingUiSoundEffectAndWait,
   playUiSoundEffect,
@@ -53,6 +59,7 @@ function LibraryApp() {
     viewMode,
   } = useLibraryBrowserState();
   const [genres, setGenres] = useState<string[]>([]);
+  const [subGenres, setSubGenres] = useState<string[]>([]);
   const [showLaunchSplash, setShowLaunchSplash] = useState(true);
   const [bigBoxSession, setBigBoxSession] = useState<BigBoxSessionState | null>(null);
   const previousFullscreenRef = useRef(settings.isFullscreen);
@@ -66,6 +73,23 @@ function LibraryApp() {
   useEffect(() => {
     void getGenres().then(setGenres);
   }, []);
+
+  useEffect(() => {
+    let cancelled = false;
+
+    async function loadSubGenres() {
+      const items = await getSubGenres(filters.genre);
+      if (!cancelled) {
+        setSubGenres(items);
+      }
+    }
+
+    void loadSubGenres();
+
+    return () => {
+      cancelled = true;
+    };
+  }, [filters.genre]);
 
   useEffect(() => {
     const timeoutId = window.setTimeout(() => {
@@ -190,6 +214,7 @@ function LibraryApp() {
           onFiltersChange={setFilters}
           onOpenSettings={() => setViewMode('settings')}
           onSearchChange={setSearchInput}
+          subGenres={subGenres}
           onViewModeChange={setViewMode}
           searchInput={searchInput}
           viewMode={viewMode}
