@@ -16,6 +16,7 @@ import { PlayButton } from './PlayButton';
 
 export function SteamLibraryLayout({
   game,
+  fullscreenLayout,
   onBack,
   nav,
   onFullscreen,
@@ -58,28 +59,60 @@ export function SteamLibraryLayout({
   const studios = getGameStudios(game);
   const extrasTabFocused = nav.focusedZone === 'media-extras' && visibleTab === 'extras';
   const extrasGalleryTabFocused = nav.focusedZone === 'media-extras' && visibleTab === 'extras-gallery';
+  const layout = fullscreenLayout;
+  const useCompactControls = layout?.densityMode === 'compact';
+  const shellStyle = layout
+    ? {
+        gap: `${layout.detailSectionGap}px`,
+        maxWidth: `${layout.detailShellWidth}px`,
+        gridTemplateColumns: layout.detailUseStackedColumns
+          ? undefined
+          : `minmax(0,1fr) ${layout.detailSidebarWidth}px`,
+        padding: `${layout.detailPanelPadding}px ${layout.contentPaddingX}px ${layout.detailPanelPadding + 8}px`,
+      }
+    : undefined;
+  const mainGridStyle = layout
+    ? {
+        gap: `${layout.detailSectionGap}px`,
+        gridTemplateColumns: layout.detailUseStackedColumns
+          ? undefined
+          : `minmax(${useCompactControls ? 260 : 300}px, ${useCompactControls ? 280 : 320}px) minmax(0,1fr)`,
+      }
+    : undefined;
 
   return (
     <div className="flex flex-col h-full bg-[#1b2838] text-[#c6d4df] font-sans overflow-hidden">
-      <SteamTopBar focusedZone={nav.focusedZone} lastAction={nav.lastAction} zoneLabels={zoneLabels} onBack={onBack} />
+      <SteamTopBar focusedZone={nav.focusedZone} lastAction={nav.lastAction} layout={layout} zoneLabels={zoneLabels} onBack={onBack} />
+      
 
       <SteamHero
         game={game}
         isFavorite={isFavorite}
+        layout={layout}
         nav={nav}
         onToggleFavorite={onToggleFavorite}
         backgroundArtUrl={boxArtUrl || screenshotUrl}
         studios={studios}
       />
 
-      <div className="no-scrollbar flex-1 overflow-y-auto px-8 pb-8 pt-6 xl:px-10 xl:pb-10 xl:pt-6 w-full flex gap-8 xl:gap-10 transition-all">
-        <div className="min-w-0 flex-[1.7]">
-          <div className="grid gap-6 xl:grid-cols-[320px_minmax(0,1fr)] xl:items-start">
-            <div ref={heroControlsRef} className="xl:sticky xl:top-6 xl:self-start">
-              <PlayButton game={game} nav={nav} />
+      <div className={`no-scrollbar flex-1 w-full transition-all ${layout ? 'overflow-hidden' : 'overflow-y-auto px-8 pb-8 pt-6 xl:px-10 xl:pb-10 xl:pt-6 flex gap-8 xl:gap-10'}`}>
+        <div
+          className={`mx-auto w-full min-w-0 ${layout ? (layout.detailUseStackedColumns ? 'flex flex-col' : 'grid items-start') : 'flex gap-8 xl:gap-10'}`}
+          style={shellStyle}
+        >
+        <div className="min-w-0">
+          <div
+            className={`grid min-w-0 ${layout?.detailUseStackedColumns ? 'grid-cols-1' : 'xl:items-start'}`}
+            style={mainGridStyle}
+          >
+            <div
+              ref={heroControlsRef}
+              className={layout?.detailUseStackedColumns ? 'mb-2' : 'xl:sticky xl:top-6 xl:self-start'}
+            >
+              <PlayButton compact={useCompactControls} game={game} nav={nav} />
             </div>
 
-            <div className="flex flex-col gap-8">
+            <div className="min-w-0 flex flex-col gap-8">
               <SteamTabBar
                 extrasCount={launchableExtras.length}
                 extrasGalleryCount={galleryExtras.length}
@@ -87,6 +120,7 @@ export function SteamLibraryLayout({
                 extrasFocused={extrasTabFocused}
                 hasGalleryExtras={hasGalleryExtras}
                 hasLaunchableExtras={launchableExtras.length > 0}
+                layout={layout}
                 nav={nav}
                 onSelectTab={selectTab}
                 visibleTab={visibleTab}
@@ -101,6 +135,7 @@ export function SteamLibraryLayout({
                   hasGalleryExtras={hasGalleryExtras}
                   hasGameplayMedia={hasGameplayMedia}
                   hasTitleMedia={hasTitleMedia}
+                  layout={layout}
                   nav={nav}
                   onFullscreen={onFullscreen}
                   resolveScreenshotPath={(filename) => resolveMediaPath('screenshot', filename || '')}
@@ -135,6 +170,7 @@ export function SteamLibraryLayout({
                   gallerySectionRef={gallerySectionRef}
                   galleryScrollContainerRef={galleryScrollContainerRef}
                   gallerySelectionIndex={gallerySelectionIndex}
+                  layout={layout}
                   nav={nav}
                   onHoverCard={(index) => {
                     setGalleryItemIndex(index);
@@ -151,7 +187,8 @@ export function SteamLibraryLayout({
           </div>
         </div>
 
-        <SteamSidebar game={game} nav={nav} />
+        <SteamSidebar game={game} layout={layout} nav={nav} />
+        </div>
       </div>
 
       {statusMessage && (

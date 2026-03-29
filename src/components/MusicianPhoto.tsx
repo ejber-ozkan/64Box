@@ -1,5 +1,6 @@
 "use client";
 
+import type { CSSProperties } from 'react';
 import { useEffect, useState } from "react";
 import { useSettings } from "../contexts/SettingsContext";
 import { getMediaUrl, resolveMediaPath } from "../lib/tauri-bridge";
@@ -8,9 +9,10 @@ interface MusicianPhotoProps {
   photoFilename: string | null;
   musicianName: string;
   className?: string;
+  style?: CSSProperties;
 }
 
-export function MusicianPhoto({ photoFilename, musicianName, className = "" }: MusicianPhotoProps) {
+export function MusicianPhoto({ photoFilename, musicianName, className = "", style }: MusicianPhotoProps) {
   const { settings } = useSettings();
   const [photoUrl, setPhotoUrl] = useState<string | null>(null);
   const [error, setError] = useState(false);
@@ -47,7 +49,10 @@ export function MusicianPhoto({ photoFilename, musicianName, className = "" }: M
 
   if (!photoUrl || error) {
     return (
-      <div className={`flex items-center justify-center bg-gray-800 text-gray-500 rounded-full border border-gray-700 font-bold ${className}`}>
+      <div
+        className={`flex items-center justify-center bg-gray-800 text-gray-500 rounded-full border border-gray-700 font-bold ${className}`}
+        style={style}
+      >
         {musicianName.split(' ').map(n => n[0]).join('')}
       </div>
     );
@@ -58,6 +63,7 @@ export function MusicianPhoto({ photoFilename, musicianName, className = "" }: M
       src={photoUrl}
       alt={musicianName}
       className={`object-cover rounded-full border-2 border-blue-500/50 shadow-lg ${className}`}
+      style={style}
       onError={() => setError(true)}
     />
   );

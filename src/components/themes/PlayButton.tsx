@@ -7,19 +7,51 @@ import { Game } from '../../types/game';
 import { WasmPlayer } from '../WasmPlayer';
 import { DetailNavigationHook } from '../../hooks/useDetailNavigation';
 
-interface PlayButtonProps {
-  game: Game;
-  nav?: DetailNavigationHook;
+export interface PlayLaunchTarget {
+  label?: string;
+  relativePath: string;
+  source: 'extras' | 'roms';
 }
 
-export function PlayButton({ game, nav }: PlayButtonProps) {
-  const { settings } = useSettings();
+interface PlayButtonProps {
+  game: Game;
+  launchTarget?: PlayLaunchTarget | null;
+  nav?: DetailNavigationHook;
+  compact?: boolean;
+}
+
+function RocketGlyph({ className = 'h-5 w-5' }: { className?: string }) {
+  return (
+    <svg aria-hidden="true" viewBox="0 0 24 24" className={className} fill="none">
+      <path d="M14.6 4.8c2.9.3 4.6 2 4.9 4.9l-3.7 3.7-4.9-4.9 3.7-3.7Z" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" strokeLinejoin="round" />
+      <path d="M9.3 9.7 5.4 13.6c-.7.7-1.2 1.6-1.4 2.5l-.5 2.4 2.4-.5c.9-.2 1.8-.7 2.5-1.4l3.9-3.9" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" strokeLinejoin="round" />
+      <path d="m8.1 15.9-2 2" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" strokeLinejoin="round" />
+      <path d="M13.1 6.9 17 10.8" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" strokeLinejoin="round" />
+      <circle cx="15.6" cy="8.4" r="1.2" fill="currentColor" />
+    </svg>
+  );
+}
+
+function EmbeddedGlyph({ className = 'h-5 w-5' }: { className?: string }) {
+  return (
+    <svg aria-hidden="true" viewBox="0 0 24 24" className={className} fill="none">
+      <rect x="4.2" y="6.2" width="15.6" height="10.8" rx="2.1" stroke="currentColor" strokeWidth="1.7" />
+      <path d="M10 19.1h4" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" />
+      <path d="M12 17v2.1" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" />
+      <path d="m10.2 9.4 4.4 2.2-4.4 2.2V9.4Z" fill="currentColor" />
+    </svg>
+  );
+}
+
+export function PlayButton({ game, launchTarget, nav, compact = false }: PlayButtonProps) {
+  const { markAsPlayed, settings } = useSettings();
   const [status, setStatus] = useState<'idle' | 'launching' | 'success' | 'error'>('idle');
   const [message, setMessage] = useState('');
   const [showWasm, setShowWasm] = useState(false);
 
-  const romRelativePath = game.filename || game.gameFilename || '';
-  const romPath = [settings.romsPath, romRelativePath]
+  const romRelativePath = launchTarget?.relativePath || game.filename || game.gameFilename || '';
+  const basePath = launchTarget?.source === 'extras' ? settings.extrasPath : settings.romsPath;
+  const romPath = [basePath, romRelativePath]
     .map((segment) => segment.replace(/\\/g, '/').replace(/^\/+|\/+$/g, ''))
     .filter(Boolean)
     .join('/');
@@ -63,6 +95,7 @@ export function PlayButton({ game, nav }: PlayButtonProps) {
       if (result.success) {
         setStatus('success');
         setMessage(result.message);
+        markAsPlayed(game.id.toString());
       } else {
         setStatus('error');
         setMessage(result.message);
@@ -74,11 +107,18 @@ export function PlayButton({ game, nav }: PlayButtonProps) {
     setTimeout(() => setStatus('idle'), 4000);
   };
 
-  const buttonStyles: Record<typeof status, string> = {
-    idle:      'bg-[linear-gradient(180deg,#2dd4bf,#0f766e)] hover:from-teal-300 hover:to-teal-600 text-white shadow-lg shadow-teal-950/40 border border-teal-300/40',
-    launching: 'bg-gray-700 text-gray-400 cursor-not-allowed border border-gray-600/50',
-    success:   'bg-green-800 text-green-200 border border-green-700/50',
-    error:     'bg-red-900 text-red-200 border border-red-800/50',
+  const nativeButtonStyles: Record<typeof status, string> = {
+    idle:      'border-cyan-300/80 bg-slate-700/85 text-cyan-50 shadow-[0_0_0_1px_rgba(103,232,249,0.18)_inset] hover:border-cyan-200 hover:bg-slate-600/90',
+    launching: 'border-slate-500/35 bg-slate-700/70 text-slate-300 cursor-not-allowed',
+    success:   'border-emerald-300/60 bg-emerald-950/45 text-emerald-100',
+    error:     'border-rose-400/55 bg-rose-950/45 text-rose-100',
+  };
+
+  const nativeIconStyles: Record<typeof status, string> = {
+    idle: 'text-cyan-100',
+    launching: 'text-slate-300',
+    success: 'text-emerald-100',
+    error: 'text-rose-100',
   };
 
   const buttonLabel: Record<typeof status, string> = {
@@ -95,8 +135,24 @@ export function PlayButton({ game, nav }: PlayButtonProps) {
       setTimeout(() => setStatus('idle'), 4000);
       return;
     }
+    markAsPlayed(game.id.toString());
     setShowWasm(true);
   };
+
+  const buttonMinHeight = compact ? '56px' : '66px';
+  const iconWrapClass = compact ? 'h-8 w-8' : 'h-9 w-9';
+  const iconGlyphClass = compact ? 'h-[18px] w-[18px]' : 'h-5 w-5';
+  const buttonPaddingClass = compact ? 'px-4 py-2.5' : 'px-5 py-3';
+  const buttonGridClass = compact ? 'grid-cols-[32px_minmax(0,1fr)_auto]' : 'grid-cols-[36px_minmax(0,1fr)_auto]';
+  const labelClass = compact
+    ? 'text-[12px] uppercase tracking-[0.16em] leading-none'
+    : 'text-[14px] uppercase tracking-[0.16em] leading-none';
+  const sideLabelClass = compact
+    ? 'shrink-0 text-right text-[9px] uppercase tracking-[0.18em] text-white/75'
+    : 'shrink-0 text-right text-[10px] uppercase tracking-[0.18em] text-white/75';
+  const webButtonClass = 'border-white/22 bg-slate-700/78 text-slate-50 shadow-[0_0_0_1px_rgba(255,255,255,0.06)_inset] hover:border-slate-200/40 hover:bg-slate-600/85';
+  const webIconClass = 'text-slate-100';
+  const nativeProviderLabel = settings.preferredEmulator === 'retroarch' ? 'RetroArch' : 'VICE';
 
   return (
     <>
@@ -110,17 +166,15 @@ export function PlayButton({ game, nav }: PlayButtonProps) {
               id="play-game-btn"
               onClick={handlePlayNative}
               disabled={status === 'launching'}
-              className={`grid min-h-[104px] w-full grid-cols-[52px_minmax(0,1fr)_auto] items-center gap-4 rounded-2xl px-5 py-4 text-left font-bold transition-all ${buttonStyles[status]}`}
+              className={`grid w-full ${buttonGridClass} items-center gap-3 rounded-[14px] border text-left font-black transition-all ${buttonPaddingClass} ${nativeButtonStyles[status]}`}
+              style={{ minHeight: buttonMinHeight }}
             >
-              <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full bg-black/20 text-xl">▶</span>
-              <span className="flex min-w-0 flex-col">
-                <span className="text-[12px] uppercase tracking-[0.14em] leading-tight sm:whitespace-nowrap">{buttonLabel[status]}</span>
-                  <span className="text-[11px] font-medium normal-case tracking-normal text-white/80">
-                    Native desktop emulator
-                  </span>
+              <span className={`flex shrink-0 items-center justify-center rounded-[10px] bg-black/18 ${iconWrapClass} ${nativeIconStyles[status]}`}>
+                <RocketGlyph className={iconGlyphClass} />
               </span>
-              <span className="shrink-0 text-right text-[10px] uppercase tracking-[0.16em] text-white/70 xl:text-xs">
-                {settings.preferredEmulator === 'retroarch' ? 'RetroArch' : 'VICE'}
+              <span className={`min-w-0 truncate ${labelClass}`}>{buttonLabel[status]}</span>
+              <span className={sideLabelClass}>
+                {nativeProviderLabel}
               </span>
             </button>
           </div>
@@ -131,16 +185,14 @@ export function PlayButton({ game, nav }: PlayButtonProps) {
             <button
               id="play-browser-btn"
               onClick={handlePlayWeb}
-              className="grid min-h-[104px] w-full grid-cols-[52px_minmax(0,1fr)_auto] items-center gap-4 rounded-2xl border border-sky-400/30 bg-sky-500/15 px-5 py-4 text-left font-bold text-sky-100 transition-all hover:bg-sky-500/25"
+              className={`grid w-full ${buttonGridClass} items-center gap-3 rounded-[14px] border text-left font-black transition-all ${buttonPaddingClass} ${webButtonClass}`}
+              style={{ minHeight: buttonMinHeight }}
             >
-              <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full bg-black/20 text-xl">▸</span>
-              <span className="flex min-w-0 flex-col">
-                <span className="text-[12px] uppercase tracking-[0.14em] leading-tight sm:whitespace-nowrap">Play Embedded</span>
-                  <span className="text-[11px] font-medium normal-case tracking-normal text-sky-100/80">
-                    In-app emulator
-                  </span>
+              <span className={`flex shrink-0 items-center justify-center rounded-[10px] bg-black/18 ${iconWrapClass} ${webIconClass}`}>
+                <EmbeddedGlyph className={iconGlyphClass} />
               </span>
-              <span className="shrink-0 text-right text-[10px] uppercase tracking-[0.16em] text-sky-100/70 xl:text-xs">Instant</span>
+              <span className={`min-w-0 truncate ${labelClass}`}>Play Embedded</span>
+              <span className={sideLabelClass}>Instant</span>
             </button>
           </div>
         </div>

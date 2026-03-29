@@ -1,9 +1,12 @@
 "use client";
 
+import type { CSSProperties } from 'react';
+
 interface DetailGameTitleProps {
   className?: string;
   isClassic?: boolean;
   outlined?: boolean;
+  style?: CSSProperties;
   title: string;
 }
 
@@ -23,10 +26,11 @@ export function DetailGameTitle({
   className = '',
   isClassic = false,
   outlined = false,
+  style,
   title,
 }: DetailGameTitleProps) {
   return (
-    <h1 className={className} style={outlined ? OUTLINED_TITLE_STYLE : undefined}>
+    <h1 className={className} style={outlined ? { ...OUTLINED_TITLE_STYLE, ...style } : style}>
       {isClassic ? (
         <span aria-hidden="true" className="shrink-0">
           🏆

@@ -2,6 +2,7 @@
 
 import { BIGBOX_LETTERS } from '../../hooks/useBigBoxLibraryData';
 import { GameFilters } from '../../lib/tauri-bridge';
+import { FullscreenLayoutMetrics } from '../../hooks/useFullscreenLayoutMetrics';
 
 interface BigBoxHeaderProps {
   activeHeaderItemIndex: number;
@@ -10,6 +11,7 @@ interface BigBoxHeaderProps {
   filters: GameFilters;
   genres: string[];
   hasOverflowSubGenres: boolean;
+  layout: FullscreenLayoutMetrics;
   onExit: () => void;
   onFiltersChange: (filters: GameFilters) => void;
   onOpenSubGenrePicker: () => void;
@@ -29,6 +31,7 @@ export function BigBoxHeader({
   filters,
   genres,
   hasOverflowSubGenres,
+  layout,
   onExit,
   onFiltersChange,
   onOpenSubGenrePicker,
@@ -43,34 +46,70 @@ export function BigBoxHeader({
   const hasSubGenres = Boolean(filters.genre && (visibleSubGenres.length > 0 || hasOverflowSubGenres));
   const subGenreRowIndex = 2;
   const jumpRowIndex = hasSubGenres ? 3 : 2;
+  const shellStyle = {
+    margin: '0 auto',
+    maxWidth: `${layout.shellWidth}px`,
+    paddingLeft: `${layout.headerPaddingX}px`,
+    paddingRight: `${layout.headerPaddingX}px`,
+  };
+  const chipStyle = {
+    fontSize: `${layout.chipFontSize}px`,
+    padding: `${layout.chipPaddingY}px ${layout.chipPaddingX}px`,
+  };
+  const jumpButtonStyle = {
+    height: `${layout.jumpButtonSize}px`,
+    width: `${layout.jumpButtonSize}px`,
+    fontSize: `${Math.max(layout.chipFontSize - 0.5, 10)}px`,
+  };
+  const headerPillBaseClass =
+    'border bg-white/[0.03] text-white/45 hover:border-white/18 hover:bg-white/[0.05] hover:text-white/85';
+  const headerPillFocusClass =
+    'border-cyan-300 bg-cyan-400/16 text-cyan-100 scale-105 shadow-[0_0_0_1px_rgba(34,211,238,0.18)_inset,0_0_18px_rgba(34,211,238,0.16)] z-10';
+  const headerPillSelectedClass =
+    'border-cyan-500/45 bg-cyan-500/10 text-cyan-200 shadow-[0_0_0_1px_rgba(34,211,238,0.12)_inset]';
+  const searchFocused = activeRailIndex === -1 && activeHeaderRow === 0 && activeHeaderItemIndex === 0;
 
   return (
     <header className="sticky top-0 z-50 border-b border-white/5 bg-[linear-gradient(180deg,rgba(7,11,18,0.96),rgba(10,10,15,0.82))] backdrop-blur-3xl flex flex-col shadow-[0_20px_60px_rgba(2,6,23,0.45)]">
-      <div className="px-12 py-6 flex items-center justify-between">
-        <div className="flex items-center gap-6">
-          <div className="flex flex-col">
-            <h1 className="text-4xl font-black italic tracking-tighter text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-indigo-600 leading-none">
+      <div className="w-full" style={{ paddingTop: `${layout.headerPaddingY}px` }}>
+        <div className="flex flex-wrap items-center justify-between gap-5" style={shellStyle}>
+        <div className="flex min-w-0 flex-wrap items-center gap-5">
+          <div className="flex min-w-0 flex-col">
+            <h1
+              className="font-black italic tracking-tighter text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-indigo-600 leading-none"
+              style={{ fontSize: `${layout.headerTitleSize}px` }}
+            >
               64Box
             </h1>
-            <div className="text-[10px] font-bold tracking-[0.3em] uppercase text-white/40 ml-1">GB64 Frontend</div>
+            <div
+              className="ml-1 font-bold tracking-[0.3em] uppercase text-white/40"
+              style={{ fontSize: `${layout.headerEyebrowSize}px` }}
+            >
+              GB64 Frontend
+            </div>
           </div>
 
-          <div className="h-8 w-px bg-white/10 mx-4"></div>
+          <div className="mx-1 h-8 w-px bg-white/10"></div>
 
-          <div className={`relative group transition-all duration-300 ${activeRailIndex === -1 && activeHeaderRow === 0 && activeHeaderItemIndex === 0 ? 'scale-110 z-10' : ''}`}>
+          <div className={`relative group max-w-full transition-all duration-300 ${searchFocused ? 'scale-105 z-10' : ''}`}>
             <input
               type="text"
               placeholder="QUICK SEARCH"
               value={searchInput}
               onChange={(event) => onSearchChange(event.target.value)}
               onFocus={onSearchFocus}
-              className={`bg-white/5 border text-xl font-bold rounded-full px-8 py-3 outline-none transition-all w-[350px] placeholder:text-white/20 ${
-                activeRailIndex === -1 && activeHeaderRow === 0 && activeHeaderItemIndex === 0
-                  ? 'border-blue-500 shadow-[0_0_20px_rgba(59,130,246,0.3)] bg-white/10'
-                  : 'border-white/10 hover:border-white/20'
+              className={`max-w-full rounded-full border font-black uppercase tracking-[0.14em] text-white outline-none transition-all placeholder:font-black placeholder:uppercase placeholder:tracking-[0.14em] placeholder:text-white/20 ${
+                searchFocused
+                  ? headerPillFocusClass
+                  : headerPillBaseClass
               }`}
+              style={{
+                fontSize: `${Math.max(layout.headerTitleSize * 0.48, 16)}px`,
+                padding: `${Math.max(layout.headerPaddingY * 0.55, 10)}px ${Math.max(layout.headerPaddingX, 16)}px`,
+                width: `${layout.searchWidth}px`,
+              }}
             />
-            <div className="absolute right-4 top-1/2 -translate-y-1/2 opacity-20 group-hover:opacity-40 transition-opacity">🔍</div>
+            <div className={`absolute right-4 top-1/2 -translate-y-1/2 transition-opacity ${searchFocused ? 'opacity-70' : 'opacity-20 group-hover:opacity-40'}`}>🔍</div>
           </div>
         </div>
 
@@ -78,40 +117,54 @@ export function BigBoxHeader({
           <button
             onClick={onShowSettings}
             onMouseEnter={() => onSetHeaderFocus(0, 1)}
-            className={`w-11 h-11 flex items-center justify-center transition-all group rounded-full border ${
+            className={`flex items-center justify-center transition-all group rounded-full border ${
               activeRailIndex === -1 && activeHeaderRow === 0 && activeHeaderItemIndex === 1
-                ? 'bg-blue-600 border-blue-400 text-white scale-110 shadow-[0_0_20px_rgba(59,130,246,0.5)]'
+                ? 'bg-blue-600 border-blue-400 text-white scale-105 shadow-[0_0_20px_rgba(59,130,246,0.5)]'
                 : 'bg-white/5 border-white/10 text-white/60 hover:text-white hover:bg-white/10'
             }`}
+            style={{ height: `${layout.headerControlSize}px`, width: `${layout.headerControlSize}px` }}
             title="Settings"
           >
-            <span className={`text-xl transition-transform duration-500 ${activeRailIndex === -1 && activeHeaderRow === 0 && activeHeaderItemIndex === 1 ? 'rotate-45' : 'group-hover:rotate-45'}`}>⚙️</span>
+            <span
+              className={`transition-transform duration-500 ${activeRailIndex === -1 && activeHeaderRow === 0 && activeHeaderItemIndex === 1 ? 'rotate-45' : 'group-hover:rotate-45'}`}
+              style={{ fontSize: `${Math.max(layout.headerControlSize * 0.5, 18)}px` }}
+            >
+              ⚙️
+            </span>
           </button>
 
           <button
             onClick={onExit}
             onMouseEnter={() => onSetHeaderFocus(0, 2)}
-            className={`w-11 h-11 flex items-center justify-center transition-all group rounded-full border ${
+            className={`flex items-center justify-center transition-all group rounded-full border ${
               activeRailIndex === -1 && activeHeaderRow === 0 && activeHeaderItemIndex === 2
-                ? 'bg-red-600 border-red-400 text-white scale-110 shadow-[0_0_20px_rgba(220,38,38,0.5)]'
+                ? 'bg-red-600 border-red-400 text-white scale-105 shadow-[0_0_20px_rgba(220,38,38,0.5)]'
                 : 'bg-red-600/20 border-red-500/30 text-red-500 hover:bg-red-600 hover:text-white hover:border-red-400'
             }`}
+            style={{ height: `${layout.headerControlSize}px`, width: `${layout.headerControlSize}px` }}
             title="Exit Application"
           >
-            <span className={`text-xl transition-transform ${activeRailIndex === -1 && activeHeaderRow === 0 && activeHeaderItemIndex === 2 ? 'scale-110' : 'group-hover:scale-110'}`}>⏻</span>
+            <span
+              className={`transition-transform ${activeRailIndex === -1 && activeHeaderRow === 0 && activeHeaderItemIndex === 2 ? 'scale-110' : 'group-hover:scale-110'}`}
+              style={{ fontSize: `${Math.max(layout.headerControlSize * 0.5, 18)}px` }}
+            >
+              ⏻
+            </span>
           </button>
 
           <div className="flex flex-col items-end opacity-60">
-            <div className="text-xl font-black text-white tabular-nums">
+            <div className="font-black text-white tabular-nums" style={{ fontSize: `${layout.clockSize}px` }}>
               {new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
             </div>
           </div>
         </div>
       </div>
+      </div>
 
-      <div className="px-12 pb-4 flex items-center gap-2 overflow-x-hidden justify-center max-w-full">
-        <div className="text-[10px] font-black text-white/20 uppercase tracking-[0.2em] mr-4 shrink-0">Genre</div>
-        <div className="flex items-center gap-1 overflow-x-auto no-scrollbar scroll-smooth flex-1 justify-center">
+      <div className="w-full" style={{ paddingTop: `${Math.max(layout.headerPaddingY - 8, 8)}px` }}>
+        <div className="flex items-center gap-2 overflow-hidden max-w-full" style={{ ...shellStyle, paddingBottom: '12px' }}>
+        <div className="shrink-0 font-black text-white/20 uppercase tracking-[0.2em]" style={{ fontSize: `${layout.headerEyebrowSize}px` }}>Genre</div>
+        <div className="min-w-0 flex items-center gap-1 overflow-x-auto no-scrollbar scroll-smooth flex-1 justify-start">
           {genres.map((genre, index) => {
             const isSelected = filters.genre === genre;
             const isFocused = activeRailIndex === -1 && activeHeaderRow === 1 && activeHeaderItemIndex === index;
@@ -126,13 +179,14 @@ export function BigBoxHeader({
                   })
                 }
                 onMouseEnter={() => onSetHeaderFocus(1, index)}
-                className={`px-4 py-1.5 rounded-md text-xs font-bold whitespace-nowrap transition-all border ${
+                className={`rounded-full font-black whitespace-nowrap transition-all ${
                   isFocused
-                    ? 'bg-blue-600 border-blue-400 text-white scale-105 shadow-lg z-10'
+                    ? headerPillFocusClass
                     : isSelected
-                      ? 'bg-blue-900/40 border-blue-500/50 text-blue-400'
-                      : 'bg-white/5 border-white/5 text-white/40 hover:text-white hover:bg-white/10'
+                      ? headerPillSelectedClass
+                      : headerPillBaseClass
                 }`}
+                style={chipStyle}
               >
                 {genre}
               </button>
@@ -140,11 +194,13 @@ export function BigBoxHeader({
           })}
         </div>
       </div>
+      </div>
 
       {hasSubGenres ? (
-        <div className="px-12 pb-4 flex items-center gap-2 overflow-x-hidden border-t border-white/5 pt-4 justify-center max-w-full">
-        <div className="text-[10px] font-black text-white/20 uppercase tracking-[0.2em] mr-4 shrink-0">Sub-Genre</div>
-        <div className="flex items-center gap-1 overflow-x-auto no-scrollbar scroll-smooth flex-1 justify-center">
+        <div className="w-full border-t border-white/5" style={{ paddingTop: `${Math.max(layout.headerPaddingY - 6, 10)}px` }}>
+        <div className="flex items-center gap-2 overflow-hidden max-w-full" style={{ ...shellStyle, paddingBottom: '12px' }}>
+        <div className="shrink-0 font-black text-white/20 uppercase tracking-[0.2em]" style={{ fontSize: `${layout.headerEyebrowSize}px` }}>Sub-Genre</div>
+        <div className="min-w-0 flex items-center gap-1 overflow-x-auto no-scrollbar scroll-smooth flex-1 justify-start">
             {visibleSubGenres.map((subGenre, index) => {
               const isSelected = filters.subGenre === subGenre;
               const isFocused =
@@ -159,13 +215,14 @@ export function BigBoxHeader({
                     })
                   }
                   onMouseEnter={() => onSetHeaderFocus(subGenreRowIndex, index)}
-                  className={`px-4 py-1.5 rounded-md text-xs font-bold whitespace-nowrap transition-all border ${
+                  className={`rounded-full font-black whitespace-nowrap transition-all ${
                     isFocused
-                      ? 'bg-cyan-600 border-cyan-400 text-white scale-105 shadow-lg z-10'
+                      ? headerPillFocusClass
                       : isSelected
-                        ? 'bg-cyan-900/40 border-cyan-500/50 text-cyan-300'
-                        : 'bg-white/5 border-white/5 text-white/40 hover:text-white hover:bg-white/10'
+                        ? headerPillSelectedClass
+                        : headerPillBaseClass
                   }`}
+                  style={chipStyle}
                 >
                   {subGenre}
                 </button>
@@ -176,24 +233,27 @@ export function BigBoxHeader({
                 type="button"
                 onClick={onOpenSubGenrePicker}
                 onMouseEnter={() => onSetHeaderFocus(subGenreRowIndex, visibleSubGenres.length)}
-                className={`px-4 py-1.5 rounded-md text-xs font-bold whitespace-nowrap transition-all border ${
+                className={`rounded-full font-black whitespace-nowrap transition-all ${
                   activeRailIndex === -1 &&
                   activeHeaderRow === subGenreRowIndex &&
                   activeHeaderItemIndex === visibleSubGenres.length
-                    ? 'bg-cyan-600 border-cyan-400 text-white scale-105 shadow-lg z-10'
-                    : 'bg-cyan-500/10 border-cyan-500/30 text-cyan-200 hover:bg-cyan-500/16'
+                    ? headerPillFocusClass
+                    : 'border border-cyan-500/25 bg-cyan-500/8 text-cyan-200 hover:border-cyan-400/35 hover:bg-cyan-500/12'
                 }`}
+                style={chipStyle}
               >
                 More...
               </button>
             ) : null}
           </div>
         </div>
+        </div>
       ) : null}
 
-      <div className="px-12 pb-6 flex items-center gap-2 overflow-x-hidden border-t border-white/5 pt-4 justify-center max-w-full">
-        <div className="text-[10px] font-black text-white/20 uppercase tracking-[0.2em] mr-4 shrink-0">Jump To</div>
-        <div className="flex items-center gap-0.5 overflow-x-auto no-scrollbar scroll-smooth flex-1 justify-center">
+      <div className="w-full border-t border-white/5" style={{ paddingTop: `${Math.max(layout.headerPaddingY - 6, 10)}px`, paddingBottom: `${layout.headerPaddingY}px` }}>
+        <div className="flex items-center gap-2 overflow-hidden max-w-full" style={shellStyle}>
+        <div className="shrink-0 font-black text-white/20 uppercase tracking-[0.2em]" style={{ fontSize: `${layout.headerEyebrowSize}px` }}>Jump To</div>
+        <div className="min-w-0 flex items-center gap-1 overflow-x-auto no-scrollbar scroll-smooth flex-1 justify-start">
           {BIGBOX_LETTERS.map((letter, index) => {
             const isFocused = activeRailIndex === -1 && activeHeaderRow === jumpRowIndex && activeHeaderItemIndex === index;
             return (
@@ -201,17 +261,19 @@ export function BigBoxHeader({
                 key={letter}
                 onClick={() => onJumpToRail(`alpha-${letter}`)}
                 onMouseEnter={() => onSetHeaderFocus(jumpRowIndex, index)}
-                className={`w-8 h-8 flex items-center justify-center rounded text-[11px] font-black transition-all border ${
+                className={`flex items-center justify-center rounded-full font-black transition-all ${
                   isFocused
-                    ? 'bg-white text-[#0a0a0f] border-white scale-125 z-10 shadow-xl'
-                    : 'bg-white/5 border-transparent text-white/30 hover:text-white hover:bg-white/10'
+                    ? headerPillFocusClass
+                    : headerPillBaseClass
                 }`}
+                style={jumpButtonStyle}
               >
                 {letter}
               </button>
             );
           })}
         </div>
+      </div>
       </div>
     </header>
   );

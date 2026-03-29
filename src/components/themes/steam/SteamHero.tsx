@@ -1,6 +1,7 @@
 "use client";
 
 import { DetailNavigationHook } from '../../../hooks/useDetailNavigation';
+import { FullscreenLayoutMetrics } from '../../../hooks/useFullscreenLayoutMetrics';
 import { Game } from '../../../types/game';
 import { DetailGameTitle } from '../../detail/DetailGameTitle';
 import { DetailTitleBanner } from '../../detail/DetailTitleBanner';
@@ -8,6 +9,7 @@ import { DetailTitleBanner } from '../../detail/DetailTitleBanner';
 interface SteamHeroProps {
   game: Game;
   isFavorite: boolean;
+  layout?: FullscreenLayoutMetrics;
   nav: DetailNavigationHook;
   onToggleFavorite: () => void;
   backgroundArtUrl: string;
@@ -17,18 +19,24 @@ interface SteamHeroProps {
 export function SteamHero({
   game,
   isFavorite,
+  layout,
   nav,
   onToggleFavorite,
   backgroundArtUrl,
   studios,
 }: SteamHeroProps) {
+  const compact = layout?.densityMode === 'compact';
+
   return (
     <DetailTitleBanner
       artUrl={backgroundArtUrl}
       className="shrink-0 border-b border-[#2a475e] bg-[#0f1922]"
-      contentClassName="px-8 py-6 xl:px-10 xl:py-7 transition-all"
+      contentClassName="transition-all"
     >
-      <div className="flex items-start gap-4 xl:gap-5">
+      <div
+        className="flex items-start gap-4 xl:gap-5"
+        style={layout ? { padding: `${layout.detailHeroPaddingY}px ${layout.detailHeroPaddingX}px` } : undefined}
+      >
         <button
           onClick={onToggleFavorite}
           onMouseEnter={() => nav.hoverZone('favorite')}
@@ -43,14 +51,18 @@ export function SteamHero({
         </button>
         <div className="min-w-0 flex-1">
           <DetailGameTitle
-            className="mb-2 flex flex-wrap items-center gap-3 text-2xl font-light tracking-tight text-white xl:text-3xl 2xl:text-4xl"
+            className="mb-2 flex flex-wrap items-center gap-3 font-light tracking-tight text-white"
+            style={compact ? { fontSize: `${Math.max((layout?.detailTitleSize ?? 42) * 0.72, 28)}px`, lineHeight: 1.02 } : undefined}
             isClassic={game.isClassic}
             outlined
             title={game.name}
           />
           <div
             className="flex flex-wrap items-center gap-y-2 text-xs xl:text-sm font-semibold uppercase tracking-wider text-[#66c0f4]"
-            style={backgroundArtUrl ? { textShadow: '0 2px 10px rgba(0, 0, 0, 0.9)' } : undefined}
+            style={{
+              ...(compact ? { fontSize: `${Math.max((layout?.detailMetaSize ?? 14) - 1, 12)}px` } : {}),
+              ...(backgroundArtUrl ? { textShadow: '0 2px 10px rgba(0, 0, 0, 0.9)' } : {}),
+            }}
           >
             {[game.year, ...studios].filter(Boolean).map((value, index, values) => (
               <span key={`${value}-${index}`}>

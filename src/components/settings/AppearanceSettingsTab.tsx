@@ -14,31 +14,11 @@ export function AppearanceSettingsTab({
 }: AppearanceSettingsTabProps) {
   return (
     <>
-      <div>
-        <label className="mb-2 block text-[10px] font-bold uppercase tracking-widest text-gray-400">
-          Detail View Theme
-        </label>
-        <div className="grid grid-cols-3 gap-2">
-          {([
-            { value: 'cia', label: 'CIA-6526', desc: 'Structured tabs' },
-            { value: 'vic', label: 'VIC-II', desc: 'Console hero' },
-            { value: 'sx64', label: 'SX-64', desc: 'Power-user' },
-          ] as const).map((opt, idx) => (
-            <button
-              key={opt.value}
-              onClick={() => setField('detailViewTheme', opt.value)}
-              onMouseEnter={() => isMouseMode && onMouseFocus(idx)}
-              className={`focus-idx-${idx} flex flex-col items-center gap-1 rounded-lg border p-3 text-center transition ${
-                (draft.detailViewTheme === opt.value && ![0, 1, 2].some(isFocused)) || isFocused(idx)
-                  ? 'border-blue-500 bg-blue-900/40 text-white shadow-lg shadow-blue-900/20'
-                  : 'border-gray-700 bg-gray-900/50 text-gray-400 hover:bg-gray-800 hover:text-gray-200'
-              }`}
-            >
-              <span className="text-sm font-bold">{opt.label}</span>
-              <span className="text-[10px] text-gray-500">{opt.desc}</span>
-            </button>
-          ))}
-        </div>
+      <div className="rounded-xl border border-cyan-900/40 bg-cyan-950/15 p-5">
+        <div className="text-xs font-bold uppercase tracking-[0.22em] text-cyan-200">Detail View</div>
+        <p className="mt-2 max-w-3xl text-sm leading-6 text-cyan-50/75">
+          Single-game detail pages now use the responsive 64Box detail layout by default. The structure is modular so future visual styles can be added without bringing back separate theme-specific layouts.
+        </p>
       </div>
 
       <div className="mt-8 space-y-6">
@@ -56,9 +36,9 @@ export function AppearanceSettingsTab({
             </div>
             <button
               onClick={() => setField('imageCycling', !draft.imageCycling)}
-              onMouseEnter={() => isMouseMode && onMouseFocus(3)}
-              className={`focus-idx-3 relative ml-6 h-6 w-12 shrink-0 rounded-full transition-colors ${
-                (draft.imageCycling && !isFocused(3)) || isFocused(3) ? 'bg-blue-600 ring-2 ring-blue-400' : 'bg-gray-600'
+              onMouseEnter={() => isMouseMode && onMouseFocus(0)}
+              className={`focus-idx-0 relative ml-6 h-6 w-12 shrink-0 rounded-full transition-colors ${
+                (draft.imageCycling && !isFocused(0)) || isFocused(0) ? 'bg-blue-600 ring-2 ring-blue-400' : 'bg-gray-600'
               }`}
             >
               <span
@@ -78,9 +58,9 @@ export function AppearanceSettingsTab({
                 <button
                   key={anim}
                   onClick={() => setField('imageAnimation', anim)}
-                  onMouseEnter={() => isMouseMode && onMouseFocus(idx + 4)}
-                  className={`focus-idx-${idx + 4} rounded-md px-6 py-1.5 text-[10px] font-black uppercase tracking-widest transition-all ${
-                    (draft.imageAnimation === anim && ![4, 5].some(isFocused)) || isFocused(idx + 4)
+                  onMouseEnter={() => isMouseMode && onMouseFocus(idx + 1)}
+                  className={`focus-idx-${idx + 1} rounded-md px-6 py-1.5 text-[10px] font-black uppercase tracking-widest transition-all ${
+                    (draft.imageAnimation === anim && ![1, 2].some(isFocused)) || isFocused(idx + 1)
                       ? 'bg-blue-600 text-white shadow-lg'
                       : 'text-gray-500 hover:text-gray-300'
                   }`}
@@ -105,9 +85,9 @@ export function AppearanceSettingsTab({
             </div>
             <button
               onClick={() => setField('isFullscreen', !draft.isFullscreen)}
-              onMouseEnter={() => isMouseMode && onMouseFocus(6)}
-              className={`focus-idx-6 relative ml-6 h-6 w-12 shrink-0 rounded-full transition-colors ${
-                (draft.isFullscreen && !isFocused(6)) || isFocused(6) ? 'bg-blue-600 ring-2 ring-blue-400' : 'bg-gray-600'
+              onMouseEnter={() => isMouseMode && onMouseFocus(3)}
+              className={`focus-idx-3 relative ml-6 h-6 w-12 shrink-0 rounded-full transition-colors ${
+                (draft.isFullscreen && !isFocused(3)) || isFocused(3) ? 'bg-blue-600 ring-2 ring-blue-400' : 'bg-gray-600'
               }`}
             >
               <span
@@ -133,9 +113,9 @@ export function AppearanceSettingsTab({
                 <button
                   key={resolution.value}
                   onClick={() => setField('displayResolution', resolution.value)}
-                  onMouseEnter={() => isMouseMode && onMouseFocus(idx + 7)}
-                  className={`focus-idx-${idx + 7} rounded-md px-4 py-1.5 text-[10px] font-black uppercase tracking-widest transition-all ${
-                    (draft.displayResolution === resolution.value && ![7, 8, 9, 10, 11].some(isFocused)) || isFocused(idx + 7)
+                  onMouseEnter={() => isMouseMode && onMouseFocus(idx + 4)}
+                  className={`focus-idx-${idx + 4} rounded-md px-4 py-1.5 text-[10px] font-black uppercase tracking-widest transition-all ${
+                    (draft.displayResolution === resolution.value && ![4, 5, 6, 7, 8].some(isFocused)) || isFocused(idx + 4)
                       ? 'bg-blue-600 text-white shadow-lg'
                       : 'text-gray-500 hover:text-gray-300'
                   }`}
@@ -148,6 +128,36 @@ export function AppearanceSettingsTab({
               Note: These only apply in windowed mode. Fullscreen uses your primary monitor resolution.
             </p>
           </div>
+
+          <div>
+            <label className="mb-3 block text-[10px] font-bold uppercase tracking-widest text-gray-400">
+              Fullscreen Density
+            </label>
+            <div className="flex flex-wrap gap-1 rounded-lg border border-gray-700 bg-gray-950 p-1">
+              {([
+                { value: 'auto', label: 'Auto' },
+                { value: 'compact', label: 'Compact' },
+                { value: 'standard', label: 'Standard' },
+                { value: 'comfortable', label: 'Comfortable' },
+              ] as const).map((density, idx) => (
+                <button
+                  key={density.value}
+                  onClick={() => setField('fullscreenDensity', density.value)}
+                  onMouseEnter={() => isMouseMode && onMouseFocus(idx + 9)}
+                  className={`focus-idx-${idx + 9} rounded-md px-4 py-1.5 text-[10px] font-black uppercase tracking-widest transition-all ${
+                    (draft.fullscreenDensity === density.value && ![9, 10, 11, 12].some(isFocused)) || isFocused(idx + 9)
+                      ? 'bg-blue-600 text-white shadow-lg'
+                      : 'text-gray-500 hover:text-gray-300'
+                  }`}
+                >
+                  {density.label}
+                </button>
+              ))}
+            </div>
+            <p className="mt-2 text-[9px] italic text-gray-500">
+              Auto keeps fullscreen layouts tighter on high-DPI and 4K displays. Compact shows more content; Comfortable keeps larger artwork and spacing.
+            </p>
+          </div>
         </div>
       </div>
 
@@ -157,20 +167,26 @@ export function AppearanceSettingsTab({
           {[
             {
               key: 'mouseHoverSelection' as const,
-              index: 12,
+              index: 13,
               title: '🖱️ Mouse Hover Selection',
               description:
                 'Automatically focus items when the mouse pointer moves over them. Turn off if your mouse is too sensitive.',
             },
             {
               key: 'scrollNavigation' as const,
-              index: 13,
+              index: 14,
               title: '💎 Scroll Wheel Navigation',
               description: 'Use the mouse scroll button (wheel) to move up and down through menu items.',
             },
             {
+              key: 'menuSoundEffects' as const,
+              index: 15,
+              title: '🔊 Menu Sound Effects',
+              description: 'Play UI and menu navigation sounds while moving around the frontend.',
+            },
+            {
               key: 'bigBoxAnimateVertical' as const,
-              index: 14,
+              index: 16,
               title: '↕️ BigBox Vertical Animation',
               description: 'Enable smooth sliding animations when swapping between game rails in BigBox mode.',
               withBorder: true,

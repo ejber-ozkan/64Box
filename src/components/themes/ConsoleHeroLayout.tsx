@@ -17,11 +17,13 @@ import { DetailGameTitle } from '../detail/DetailGameTitle';
 import { DetailTitleBanner } from '../detail/DetailTitleBanner';
 import { useResolvedBoxArtUrl } from '../../hooks/useResolvedBoxArtUrl';
 
-export function ConsoleHeroLayout({ game, onBack, nav, onFullscreen }: DetailLayoutProps) {
+export function ConsoleHeroLayout({ game, fullscreenLayout, onBack, nav, onFullscreen }: DetailLayoutProps) {
   const { resolveMediaPath } = useSettings();
   const [activeMedia, setActiveMedia] = useState<'gameplay' | 'titlescreen' | 'boxfront' | 'extras'>('gameplay');
   const [extras, setExtras] = useState<Extra[]>([]);
   const headerArtworkUrl = useResolvedBoxArtUrl(game);
+  const layout = fullscreenLayout;
+  const useCompactControls = layout?.densityMode === 'compact';
 
   useEffect(() => {
     getGameExtras(game.id).then(setExtras);
@@ -92,7 +94,10 @@ export function ConsoleHeroLayout({ game, onBack, nav, onFullscreen }: DetailLay
       <div className="absolute inset-0 bg-gradient-to-t from-gray-950 via-gray-950/80 to-transparent" />
 
       {/* Top Nav + Debug Header */}
-      <div className="relative p-6 z-20 flex justify-between items-center bg-black/20 backdrop-blur-sm border-b border-white/5">
+      <div
+        className="relative z-20 flex justify-between items-center bg-black/20 backdrop-blur-sm border-b border-white/5"
+        style={layout ? { padding: `${layout.detailTopBarPaddingY + 4}px ${layout.detailTopBarPaddingX}px` } : undefined}
+      >
         <button
           onClick={onBack}
           className="px-5 py-2.5 bg-white/10 hover:bg-white/20 backdrop-blur-md border border-white/10 rounded-full text-white font-semibold transition-all shadow-lg flex items-center gap-2"
@@ -112,14 +117,22 @@ export function ConsoleHeroLayout({ game, onBack, nav, onFullscreen }: DetailLay
         </div>
       </div>
 
-      <div className="relative z-10 flex flex-1 overflow-hidden px-12 xl:px-16 2xl:px-24 pb-12 gap-12 xl:gap-16 max-w-[2000px] mx-auto w-full transition-all">
+      <div
+        className="relative z-10 flex flex-1 overflow-hidden mx-auto w-full min-w-0 transition-all"
+        style={layout ? {
+          maxWidth: `${layout.detailShellWidth}px`,
+          gap: `${layout.detailSectionGap + 4}px`,
+          padding: `0 ${layout.contentPaddingX}px ${layout.detailPanelPadding + 10}px`,
+        } : undefined}
+      >
         {/* Left Side: Massive Gameplay/Video Stage */}
-        <div className="flex-1 flex flex-col justify-end">
+        <div className="min-w-0 flex-1 flex flex-col justify-end">
            {/* Primary Video / Image */}
            <div 
              onClick={() => onFullscreen(game.screenshotFilename)}
              onMouseEnter={() => nav.hoverZone('media-gameplay')}
-             className={`aspect-[4/3] w-full max-w-[1200px] mx-auto max-h-[65vh] rounded-3xl overflow-hidden shadow-[0_35px_60px_-15px_rgba(0,0,0,0.8)] border border-white/10 mb-10 bg-black transition-all cursor-pointer group/media ${nav.focusCls('media-gameplay')}`}
+             className={`aspect-[4/3] w-full mx-auto max-h-[65vh] rounded-3xl overflow-hidden shadow-[0_35px_60px_-15px_rgba(0,0,0,0.8)] border border-white/10 mb-10 bg-black transition-all cursor-pointer group/media ${nav.focusCls('media-gameplay')}`}
+             style={layout ? { maxWidth: `${layout.detailStageMaxWidth}px` } : undefined}
            >
               {game.videoSnapFilename ? (
                 <video 
@@ -137,9 +150,9 @@ export function ConsoleHeroLayout({ game, onBack, nav, onFullscreen }: DetailLay
               )}
            </div>
 
-           <div className="mx-auto mb-8 w-full max-w-[1200px] flex flex-col gap-4 lg:flex-row lg:items-start">
+           <div className="mx-auto mb-8 w-full flex flex-col gap-4 lg:flex-row lg:items-start" style={layout ? { maxWidth: `${layout.detailStageMaxWidth}px` } : undefined}>
              <div className="w-full max-w-[360px]">
-               <PlayButton game={game} nav={nav} />
+               <PlayButton compact={useCompactControls} game={game} nav={nav} />
              </div>
              <div className="w-full max-w-[220px]">
                <ScrapeButton game={game} />
@@ -180,7 +193,10 @@ export function ConsoleHeroLayout({ game, onBack, nav, onFullscreen }: DetailLay
         </div>
 
         {/* Right Side: Frosted Glass Metadata Panel */}
-        <div className="w-[400px] xl:w-[480px] 2xl:w-[560px] flex flex-col shrink-0 gap-8 transition-all">
+        <div
+          className="flex flex-col shrink-0 gap-8 transition-all min-w-0"
+          style={layout ? { width: `${layout.detailSidebarWidth}px`, maxWidth: `${layout.detailSidebarWidth}px` } : undefined}
+        >
            {activeMedia === 'extras' ? (
              <div className="bg-white/5 backdrop-blur-xl border border-white/10 rounded-3xl p-6 shadow-2xl flex-1 flex flex-col overflow-y-auto custom-scrollbar">
                 <h2 className="text-2xl font-black text-white mb-6 uppercase tracking-tight flex items-center gap-3">
@@ -199,17 +215,21 @@ export function ConsoleHeroLayout({ game, onBack, nav, onFullscreen }: DetailLay
               <DetailTitleBanner
                 artUrl={headerArtworkUrl}
                 className="border-b border-white/10 bg-black/20"
-                contentClassName="px-10 py-8 2xl:px-12 2xl:py-10"
+                contentClassName={useCompactControls ? 'px-7 py-6' : 'px-10 py-8 2xl:px-12 2xl:py-10'}
               >
                 <DetailGameTitle
                   className="mb-3 flex flex-wrap items-center gap-4 text-5xl font-black leading-none tracking-tighter text-white xl:text-6xl 2xl:text-7xl"
+                  style={useCompactControls && layout ? { fontSize: `${Math.max(layout.detailTitleSize + 6, 46)}px`, lineHeight: 0.94 } : undefined}
                   isClassic={game.isClassic}
                   outlined
                   title={game.name}
                 />
                 <div
                   className="text-blue-400 font-semibold text-lg uppercase tracking-widest opacity-90 xl:text-xl"
-                  style={headerArtworkUrl ? { textShadow: '0 2px 10px rgba(0, 0, 0, 0.9)' } : undefined}
+                  style={{
+                    ...(useCompactControls && layout ? { fontSize: `${Math.max(layout.detailMetaSize, 14)}px` } : {}),
+                    ...(headerArtworkUrl ? { textShadow: '0 2px 10px rgba(0, 0, 0, 0.9)' } : {}),
+                  }}
                 >
                   {[
                     game.year,
@@ -219,7 +239,10 @@ export function ConsoleHeroLayout({ game, onBack, nav, onFullscreen }: DetailLay
                 </div>
               </DetailTitleBanner>
 
-              <div className="flex flex-1 flex-col p-10 2xl:p-12">
+              <div
+                className={`flex flex-1 flex-col ${useCompactControls ? '' : 'p-10 2xl:p-12'}`}
+                style={useCompactControls && layout ? { padding: `${layout.detailPanelPadding + 4}px` } : undefined}
+              >
                 <div className="space-y-4 mb-8">
                 <div className="flex justify-between items-center border-b border-white/10 pb-5 text-sm xl:text-base">
                   <span className="text-gray-400">Genre</span>

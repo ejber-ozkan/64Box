@@ -11,7 +11,6 @@ export interface Settings {
   emulatorPath: string;
   emuMoviesUsername: string;
   emuMoviesPassword: string;
-  detailViewTheme: 'cia' | 'vic' | 'sx64';
   scrapedMediaPath: string;
   extrasPath: string;
   activeScraper: 'emumovies' | 'screenscraper' | 'thegamesdb';
@@ -31,11 +30,13 @@ export interface Settings {
   lastFocusedIndex: number;
   lastViewMode: 'grid' | 'list';
   isFullscreen: boolean;
+  fullscreenDensity: 'auto' | 'compact' | 'standard' | 'comfortable';
   displayResolution: string; // presets like "720p", "1080p", "default"
   windowWidth: number;
   windowHeight: number;
   mouseHoverSelection: boolean;
   scrollNavigation: boolean;
+  menuSoundEffects: boolean;
   bigBoxAnimateVertical: boolean;
   confirmFullscreenExit: boolean;
   lastBigBoxRailId: string | null;
@@ -58,7 +59,6 @@ const defaultSettings: Settings = {
   emulatorPath: '',
   emuMoviesUsername: '',
   emuMoviesPassword: '',
-  detailViewTheme: 'cia',
   scrapedMediaPath: '/media/scraped',
   extrasPath: '/media/extras',
   activeScraper: 'emumovies',
@@ -78,11 +78,13 @@ const defaultSettings: Settings = {
   lastFocusedIndex: 0,
   lastViewMode: 'grid',
   isFullscreen: false,
+  fullscreenDensity: 'auto',
   displayResolution: 'default',
   windowWidth: 1200,
   windowHeight: 800,
   mouseHoverSelection: true,
   scrollNavigation: true,
+  menuSoundEffects: true,
   bigBoxAnimateVertical: true,
   confirmFullscreenExit: true,
   lastBigBoxRailId: null,

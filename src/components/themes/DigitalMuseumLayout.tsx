@@ -24,11 +24,24 @@ const MEDIA_TO_ZONE = {
   extras: 'media-extras',
 } as const;
 
-export function DigitalMuseumLayout({ game, onBack, nav, onFullscreen }: DetailLayoutProps) {
+export function DigitalMuseumLayout({ game, fullscreenLayout, onBack, nav, onFullscreen }: DetailLayoutProps) {
   const { resolveMediaPath } = useSettings();
   const [activeMedia, setActiveMedia] = useState<'gameplay' | 'titlescreen' | 'videosna' | 'boxfront' | 'extras'>('gameplay');
   const [extras, setExtras] = useState<Extra[]>([]);
   const headerArtworkUrl = useResolvedBoxArtUrl(game);
+  const layout = fullscreenLayout;
+  const useCompactControls = layout?.densityMode === 'compact';
+  const leftSidebarWidth = layout
+    ? layout.densityMode === 'compact'
+      ? 248
+      : layout.densityMode === 'standard'
+        ? 264
+        : 288
+    : undefined;
+  const rightSidebarWidth = layout ? Math.max(layout.detailSidebarWidth + 32, 360) : undefined;
+  const shellWidth = layout && leftSidebarWidth && rightSidebarWidth
+    ? leftSidebarWidth + rightSidebarWidth + layout.detailStageMaxWidth + layout.detailSectionGap * 2
+    : undefined;
 
   useEffect(() => {
     getGameExtras(game.id).then(setExtras);
@@ -107,7 +120,10 @@ export function DigitalMuseumLayout({ game, onBack, nav, onFullscreen }: DetailL
   return (
     <div className="flex flex-col h-full bg-gray-950 text-gray-100 font-sans selection:bg-yellow-500/30">
       {/* Top Header / Mode Bar */}
-      <div className="bg-gray-900 px-6 py-3 border-b border-gray-800 flex justify-between items-center z-30 shadow-xl">
+      <div
+        className="bg-gray-900 border-b border-gray-800 flex justify-between items-center z-30 shadow-xl"
+        style={layout ? { padding: `${layout.detailTopBarPaddingY + 4}px ${layout.detailTopBarPaddingX}px` } : undefined}
+      >
         <button
           onClick={onBack}
           className="px-4 py-2 bg-gray-800 hover:bg-gray-700 hover:text-white rounded text-gray-300 font-medium transition-colors text-sm uppercase tracking-wider"
@@ -130,11 +146,17 @@ export function DigitalMuseumLayout({ game, onBack, nav, onFullscreen }: DetailL
 
 
 
-      <main className="flex-1 flex overflow-hidden">
+      <main
+        className="flex-1 flex overflow-hidden mx-auto w-full"
+        style={shellWidth ? { maxWidth: `${shellWidth}px` } : undefined}
+      >
         {/* Left Sidebar: Media Selector */}
-        <div className="w-64 xl:w-72 2xl:w-80 bg-gray-900/50 border-r border-gray-800 flex flex-col p-6 gap-5 overflow-y-auto custom-scrollbar transition-all">
+        <div
+          className={`bg-gray-900/50 border-r border-gray-800 flex flex-col p-6 gap-5 custom-scrollbar transition-all ${layout ? 'overflow-hidden' : 'overflow-y-auto'}`}
+          style={leftSidebarWidth ? { width: `${leftSidebarWidth}px` } : undefined}
+        >
           <div className="space-y-3">
-            <PlayButton game={game} nav={nav} />
+            <PlayButton compact={useCompactControls} game={game} nav={nav} />
             <ScrapeButton game={game} />
           </div>
 
@@ -160,13 +182,17 @@ export function DigitalMuseumLayout({ game, onBack, nav, onFullscreen }: DetailL
         </div>
 
         {/* Center: Main Stage */}
-        <div className="flex-1 flex flex-col p-8 xl:p-12 2xl:p-16 gap-10 overflow-y-auto custom-scrollbar bg-[radial-gradient(circle_at_50%_0%,rgba(250,204,21,0.05),transparent_70%)]">
+        <div
+          className={`min-w-0 flex-1 flex flex-col gap-10 custom-scrollbar bg-[radial-gradient(circle_at_50%_0%,rgba(250,204,21,0.05),transparent_70%)] ${layout ? 'overflow-hidden' : 'overflow-y-auto'}`}
+          style={layout ? { padding: `${layout.detailPanelPadding + 10}px ${layout.contentPaddingX}px` } : undefined}
+        >
           
           {activeMedia !== 'extras' && (
             <div 
               onClick={() => onFullscreen(activeMedia === 'videosna' ? game.screenshotFilename : (activeMedia === 'gameplay' ? game.screenshotFilename : activeMedia === 'titlescreen' ? game.titlescreenFilename : game.boxFrontFilename))}
               onMouseEnter={() => nav.hoverZone('screenshot')}
-              className={`relative mx-auto w-full max-w-[1400px] aspect-[4/3] max-h-[70vh] bg-black rounded-3xl overflow-hidden shadow-2xl border border-gray-800 group/stage transition-all cursor-pointer ${nav.focusCls('screenshot')}`}
+              className={`relative mx-auto w-full aspect-[4/3] max-h-[70vh] bg-black rounded-3xl overflow-hidden shadow-2xl border border-gray-800 group/stage transition-all cursor-pointer ${nav.focusCls('screenshot')}`}
+              style={layout ? { maxWidth: `${layout.detailStageMaxWidth}px`, maxHeight: `${layout.detailStageMaxHeight}px` } : undefined}
             >
             {activeMedia === 'videosna' && game.videoSnapFilename ? (
               <video 
@@ -200,21 +226,25 @@ export function DigitalMuseumLayout({ game, onBack, nav, onFullscreen }: DetailL
             <ExtrasDetail game={game} extras={extras} enableBigscreenGalleryUX />
           )}
 
-          <div className="flex justify-between items-start gap-8">
+          <div className={`flex min-w-0 items-start gap-8 ${useCompactControls ? 'flex-col' : 'justify-between'}`}>
             <DetailTitleBanner
               artUrl={headerArtworkUrl}
               className="flex-1 rounded-[28px] border border-gray-800 bg-gray-950/70 shadow-2xl"
-              contentClassName="px-8 py-7 xl:px-10 xl:py-8"
+              contentClassName={useCompactControls ? 'px-6 py-5' : 'px-8 py-7 xl:px-10 xl:py-8'}
             >
               <DetailGameTitle
                 className="mb-4 flex flex-wrap items-center gap-4 text-6xl font-black tracking-tighter leading-none text-white xl:text-7xl 2xl:text-8xl"
+                style={useCompactControls && layout ? { fontSize: `${Math.max(layout.detailTitleSize + 14, 54)}px`, lineHeight: 0.92 } : undefined}
                 isClassic={game.isClassic}
                 outlined
                 title={game.name}
               />
               <div
                 className="flex flex-wrap items-center gap-x-6 gap-y-3 text-sm font-medium text-yellow-500/80 xl:text-base 2xl:text-lg"
-                style={headerArtworkUrl ? { textShadow: '0 2px 10px rgba(0, 0, 0, 0.9)' } : undefined}
+                style={{
+                  ...(useCompactControls && layout ? { fontSize: `${Math.max(layout.detailMetaSize, 14)}px` } : {}),
+                  ...(headerArtworkUrl ? { textShadow: '0 2px 10px rgba(0, 0, 0, 0.9)' } : {}),
+                }}
               >
                 <div className="flex items-center gap-2">
                   <span className="text-yellow-500">{game.year || '----'}</span>
@@ -251,7 +281,10 @@ export function DigitalMuseumLayout({ game, onBack, nav, onFullscreen }: DetailL
             </DetailTitleBanner>
 
             {game.musician && (
-              <div className="flex items-center gap-4 bg-gray-900/80 p-4 rounded-2xl border border-gray-800 shadow-xl min-w-[300px]">
+              <div
+                className="flex items-center gap-4 bg-gray-900/80 p-4 rounded-2xl border border-gray-800 shadow-xl"
+                style={layout ? { minWidth: '240px', maxWidth: '300px' } : undefined}
+              >
                 <MusicianPhoto 
                   photoFilename={game.musician.photoPath} 
                   musicianName={game.musician.name} 
@@ -280,7 +313,10 @@ export function DigitalMuseumLayout({ game, onBack, nav, onFullscreen }: DetailL
         </div>
 
         {/* Right Sidebar: Quick Actions & Metadata */}
-        <div className="w-80 xl:w-96 2xl:w-[450px] bg-gray-900/50 border-l border-gray-800 p-8 2xl:p-10 flex flex-col gap-10 overflow-y-auto custom-scrollbar transition-all">
+        <div
+          className={`bg-gray-900/50 border-l border-gray-800 flex flex-col gap-10 custom-scrollbar transition-all ${layout ? 'overflow-hidden' : 'overflow-y-auto'}`}
+          style={rightSidebarWidth ? { width: `${rightSidebarWidth}px`, padding: `${layout?.detailPanelPadding ?? 32}px` } : undefined}
+        >
           
           <div
             onMouseEnter={() => nav.hoverZone('sid')}

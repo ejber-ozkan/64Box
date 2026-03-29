@@ -43,7 +43,7 @@ export function useSteamDetailViewModel({
   nav,
   onFullscreen,
 }: UseSteamDetailViewModelProps) {
-  const { settings, resolveMediaPath } = useSettings();
+  const { markAsPlayed, settings, resolveMediaPath } = useSettings();
   const [activeTab, setActiveTab] = useState<SteamTab>('gallery');
   const [extras, setExtras] = useState<Extra[]>([]);
   const [boxArtUrl, setBoxArtUrl] = useState('');
@@ -325,6 +325,7 @@ export function useSteamDetailViewModel({
         return;
       }
 
+      markAsPlayed(game.id.toString());
       setStatusMessage(null);
     } catch (error) {
       showStatus(`Launch failed: ${String(error)}`);
@@ -338,6 +339,7 @@ export function useSteamDetailViewModel({
     settings.preferredEmulator,
     settings.retroarchCorePath,
     settings.retroarchPath,
+    markAsPlayed,
     showStatus,
   ]);
 

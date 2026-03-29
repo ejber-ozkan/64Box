@@ -18,6 +18,7 @@ import { ControllerSearchKeyboard } from './ControllerSearchKeyboard';
 import { SubGenrePickerModal } from './SubGenrePickerModal';
 import { playRotatingUiSoundEffect, playUiSoundEffect, playUiSoundEffectAndWait } from '../lib/ui-sound-effects';
 import { getVisibleSubGenres } from '../lib/subgenre-display';
+import { useFullscreenLayoutMetrics } from '../hooks/useFullscreenLayoutMetrics';
 
 interface BigBoxViewProps {
   settings: Settings;
@@ -64,6 +65,7 @@ export function BigBoxView({
   const [isSubGenrePickerOpen, setIsSubGenrePickerOpen] = useState(false);
   const [hasRestoredPosition, setHasRestoredPosition] = useState(Boolean(sessionState));
   const classicTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const layout = useFullscreenLayoutMetrics();
 
   const { genres, loading, rails, subGenres, totalGameCount } = useBigBoxLibraryData({
     activeRailIndex,
@@ -79,8 +81,8 @@ export function BigBoxView({
   const isInteractionOverlayOpen = isControllerKeyboardOpen || isExitPromptOpen || isSubGenrePickerOpen;
   const isShowingFilteredCount = Boolean(searchInput.trim() || filters.genre || filters.subGenre);
   const { hasOverflow, visibleSubGenres } = useMemo(
-    () => getVisibleSubGenres(subGenres, filters.subGenre, 10),
-    [filters.subGenre, subGenres],
+    () => getVisibleSubGenres(subGenres, filters.subGenre, layout.maxVisibleSubGenres),
+    [filters.subGenre, layout.maxVisibleSubGenres, subGenres],
   );
 
   useEffect(() => {
@@ -288,6 +290,7 @@ export function BigBoxView({
     genres,
     hasOverflowSubGenres: hasOverflow,
     isControllerKeyboardOpen: isInteractionOverlayOpen,
+    gridColumns: layout.gridColumns,
     onBack: openExitPrompt,
     onFiltersChange: handleFiltersChange,
     onFocusSearchInput: () => {
@@ -352,6 +355,7 @@ export function BigBoxView({
           filters={filters}
           genres={genres}
           hasOverflowSubGenres={hasOverflow}
+          layout={layout}
           onExit={openExitPrompt}
           onFiltersChange={handleFiltersChange}
           onOpenSubGenrePicker={() => setIsSubGenrePickerOpen(true)}
@@ -439,6 +443,7 @@ export function BigBoxView({
                     isActive={isActive}
                     isFavorite={isFavorite}
                     isMouseMode={isMouseMode}
+                    layout={layout}
                     onFocus={(gameIndex) => focusRailItem(idx, rail.id, gameIndex)}
                     onSelectGame={(gameId) => {
                       const game = rail.games.find((candidate) => candidate.id === gameId);
@@ -462,6 +467,7 @@ export function BigBoxView({
                     isMouseFocusEnabled={isMouseMode}
                     onFocusChange={(fIdx) => focusRailItem(idx, rail.id, fIdx)}
                     isFavorite={isFavorite}
+                    layout={layout}
                     tileScale={rail.scale}
                     loop={rail.games.length > 6}
                   />

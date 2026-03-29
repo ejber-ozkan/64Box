@@ -23,6 +23,7 @@ pub fn run() {
             commands::files::find_all_media_variants,
             commands::system::open_directory_dialog,
             commands::system::open_file_dialog,
+            commands::system::open_path_with_system_default,
             commands::system::exit_app,
             commands::system::set_window_mode,
             commands::system::get_window_size,

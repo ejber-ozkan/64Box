@@ -5,7 +5,30 @@ A cross-platform (Windows, Mac, Linux) modern frontend for the **GameBase64** Co
 > This project is a frontend for the GB64 Collection, the long-running Commodore 64 database project maintained by the GB64 Team. To learn more about the original project, visit [gb64.com](https://gb64.com/).  
 > `gb64.com ©1997-2022 The GB64 Team`
 
-Download the latest build from the [GitHub Releases page](https://github.com/ejber-ozkan/64Box/releases/latest).
+Download the latest build from the platform links below, or browse the full [GitHub Releases page](https://github.com/ejber-ozkan/64Box/releases/latest).
+
+<table>
+  <tr>
+    <td align="center">
+      <a href="https://github.com/ejber-ozkan/64Box/releases/latest/download/64Box-Windows-x64-Setup.exe">
+        <img src="docs/images/platform-windows.svg" alt="Windows" width="88" height="88"><br>
+        Windows
+      </a>
+    </td>
+    <td align="center">
+      <a href="https://github.com/ejber-ozkan/64Box/releases/latest/download/64Box-Linux.AppImage">
+        <img src="docs/images/platform-linux.svg" alt="Linux" width="88" height="88"><br>
+        Linux
+      </a>
+    </td>
+    <td align="center">
+      <a href="https://github.com/ejber-ozkan/64Box/releases/latest/download/64Box-macOS.dmg">
+        <img src="docs/images/platform-macos.svg" alt="macOS" width="88" height="88"><br>
+        macOS
+      </a>
+    </td>
+  </tr>
+</table>
 
 ## Features
 - **Modern Frontend**: Window or Big Screen/FullScreen mode, Fluid, gallery-style layouts mimicking modern gaming libraries. Fully responsive and supports Gamepad/Keyboard navigation.
@@ -13,7 +36,7 @@ Download the latest build from the [GitHub Releases page](https://github.com/ejb
 - **WASM Emulation**: Play games directly inside the app using an offline-bundled EmulatorJS core without any external configuration.
 - **Native Emulator Bridge**: Connect to an external `x64sc` (VICE) or **RetroArch** installation for high-accuracy native desktop emulation.
 - **Smart Multi-Disk Handling**: Automatically unzips games on-the-fly and generates `.vfl` (VICE) or `.m3u` (RetroArch) playlists for multi-disk games to ensure seamless booting.
-- **Categorized Extras Gallery**: Integrated support for the **GameBase64 Extras** collection. Automatically groups Adverts, Books, Maps, and Manuals into a premium gallery view, while allowing alternate game versions (Disks/Tapes) to be launched directly.
+- **Categorized Extras Gallery**: Integrated support for the **GameBase64 Extras** collection. Automatically groups Adverts, Books, Maps, and Manuals into a premium gallery view, while allowing alternate game versions (Disks/Tapes/Carts) to be launched directly.
 - **SID Support**: Native `.sid` chiptune playback directly within the game galleries.
 - **Initial Import wizard**: To help import the GambeBase Database for use.
 
@@ -31,11 +54,14 @@ Download the latest build from the [GitHub Releases page](https://github.com/ejb
 ### Detail View: Gallery
 ![Detail view gallery tab](docs/images/detail-gallery.png)
 
-### Detail View: Extras
-![Detail view extras tab](docs/images/detail-extras.png)
-
 ### Detail View: Extras Gallery
 ![Detail view extras gallery tab](docs/images/detail-extras-gallery.png)
+
+### Window Mode: Grid View
+![Window mode grid view](docs/images/window-mode-gridview.png)
+
+### Window Mode: List View
+![Window mode list view](docs/images/window-mode-listview.png)
 
 ## Controls and Shortcuts
 

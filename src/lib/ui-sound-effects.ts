@@ -1,5 +1,24 @@
 const UI_SFX_BASE_PATH = '/sfx';
 const ROTATION_KEY_PREFIX = 'gb64_ui_sfx_rotation_';
+const SETTINGS_STORAGE_KEY = 'gb64_settings';
+
+function areMenuSoundEffectsEnabled() {
+  if (typeof window === 'undefined') {
+    return true;
+  }
+
+  try {
+    const raw = window.localStorage.getItem(SETTINGS_STORAGE_KEY);
+    if (!raw) {
+      return true;
+    }
+
+    const parsed = JSON.parse(raw) as { menuSoundEffects?: boolean };
+    return parsed.menuSoundEffects ?? true;
+  } catch {
+    return true;
+  }
+}
 
 export function getUiSoundEffectUrl(filename: string) {
   if (!filename) {
@@ -36,7 +55,7 @@ function getAudioElement(filename: string) {
 }
 
 export async function playUiSoundEffect(filename: string, volume = 0.7) {
-  if (!canPlayUiSoundEffects()) {
+  if (!areMenuSoundEffectsEnabled() || !canPlayUiSoundEffects()) {
     return false;
   }
 
@@ -54,7 +73,7 @@ export async function playUiSoundEffect(filename: string, volume = 0.7) {
 }
 
 export async function playUiSoundEffectAndWait(filename: string, volume = 0.7) {
-  if (!canPlayUiSoundEffects()) {
+  if (!areMenuSoundEffectsEnabled() || !canPlayUiSoundEffects()) {
     return false;
   }
 

@@ -28,7 +28,7 @@ export function ListView({ games, onSelectGame, onSort, focusedIndex = -1, onFoc
           <tr>
             <th className="px-4 py-2 cursor-pointer hover:text-white" onClick={() => onSort('name')}>Title</th>
             <th className="px-4 py-2 cursor-pointer hover:text-white" onClick={() => onSort('year')}>Year</th>
-            <th className="px-4 py-2 cursor-pointer hover:text-white" onClick={() => onSort('developer')}>Developer</th>
+            <th className="px-4 py-2 cursor-pointer hover:text-white" onClick={() => onSort('publisher')}>Publisher</th>
             <th className="px-4 py-2 cursor-pointer hover:text-white" onClick={() => onSort('parentGenre')}>Genre</th>
           </tr>
         </thead>
@@ -52,7 +52,7 @@ export function ListView({ games, onSelectGame, onSort, focusedIndex = -1, onFoc
                 </div>
               </td>
               <td className="px-4 py-2">{game.year || '-'}</td>
-              <td className="px-4 py-2">{game.developer?.name || '-'}</td>
+              <td className="px-4 py-2">{game.publisher?.name || '-'}</td>
               <td className="px-4 py-2">{game.parentGenre}</td>
             </tr>
             );

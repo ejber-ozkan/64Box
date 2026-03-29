@@ -1,23 +1,34 @@
 "use client";
 
-import { useState, useRef, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import { useSettings } from '../contexts/SettingsContext';
 import { downloadMediaAsset, resolveMediaPath, getMediaUrl } from '../lib/tauri-bridge';
 
+interface SidPlayerRuntime {
+  loadstart: (url: string, subtune: number) => void;
+  setvolume: (volume: number) => void;
+  pause: () => void;
+}
+
+interface SidRuntimeConstructor {
+  new (bufferSize: number, backgroundNoise: number): SidPlayerRuntime;
+}
+
 declare global {
   interface Window {
-    jsSID: any;
-    SIDplayer: any;
-    jsSID_aCtx: any;
+    jsSID?: SidRuntimeConstructor;
+    SIDplayer?: SidPlayerRuntime;
+    jsSID_aCtx?: AudioContext;
   }
 }
 
 interface SidPlayerProps {
   filename: string | null;
   audioUrl?: string;
+  compact?: boolean;
 }
 
-export function SidPlayer({ filename, audioUrl }: SidPlayerProps) {
+export function SidPlayer({ filename, audioUrl, compact = false }: SidPlayerProps) {
   const { settings } = useSettings();
   const [isPlaying, setIsPlaying] = useState(false);
   const [volume, setVolume] = useState(0.5);
@@ -120,21 +131,21 @@ export function SidPlayer({ filename, audioUrl }: SidPlayerProps) {
   };
 
   if (!filename) {
-    return <div className="text-gray-500 text-sm">No SID track available</div>;
+    return <div className={`text-gray-500 ${compact ? 'text-xs' : 'text-sm'}`}>No SID track available</div>;
   }
 
   return (
-    <div className="bg-gray-800 border border-gray-700 p-4 rounded-lg flex flex-col gap-3 w-full">
-      <div className="flex items-center justify-between font-mono text-sm max-w-full">
+    <div className={`w-full rounded-lg border border-gray-700 bg-gray-800 flex flex-col ${compact ? 'gap-2 p-3' : 'gap-3 p-4'}`}>
+      <div className={`flex max-w-full items-center justify-between font-mono ${compact ? 'text-xs' : 'text-sm'}`}>
          <span className="truncate text-emerald-400 mr-2" title={filename}>🎵 {filename.split(/[\\/]/).pop()}</span>
          <span className="text-[10px] text-gray-500 shrink-0">{isPlaying ? 'PLAYING' : 'STOPPED'}</span>
       </div>
       
-      <div className="flex items-center gap-4">
+      <div className={`flex items-center ${compact ? 'gap-3' : 'gap-4'}`}>
         {localUrl ? (
           <button
             id="sid-play-btn"
-            className={`flex shrink-0 items-center justify-center w-10 h-10 rounded-full transition-colors ${isPlaying ? 'bg-emerald-600 hover:bg-emerald-500 text-white' : 'bg-gray-700 hover:bg-gray-600 text-gray-200'}`}
+            className={`flex shrink-0 items-center justify-center rounded-full transition-colors ${compact ? 'h-8 w-8 text-sm' : 'h-10 w-10'} ${isPlaying ? 'bg-emerald-600 hover:bg-emerald-500 text-white' : 'bg-gray-700 hover:bg-gray-600 text-gray-200'}`}
             onClick={() => {
               if (!isPlaying) {
                 if (typeof window !== 'undefined') {
@@ -161,7 +172,7 @@ export function SidPlayer({ filename, audioUrl }: SidPlayerProps) {
         ) : (
           <button
             id="sid-play-btn"
-            className="flex shrink-0 items-center justify-center h-10 px-3 py-1 rounded-lg transition-colors bg-blue-600 hover:bg-blue-500 text-white text-xs font-bold uppercase tracking-wider disabled:bg-gray-700 disabled:text-gray-400 disabled:cursor-not-allowed"
+            className={`flex shrink-0 items-center justify-center rounded-lg transition-colors bg-blue-600 hover:bg-blue-500 text-white font-bold uppercase tracking-wider disabled:bg-gray-700 disabled:text-gray-400 disabled:cursor-not-allowed ${compact ? 'h-8 px-2.5 py-1 text-[10px]' : 'h-10 px-3 py-1 text-xs'}`}
             onClick={handleScrape}
             disabled={isDownloading}
             title="Download from the High Voltage SID Collection"
@@ -173,7 +184,7 @@ export function SidPlayer({ filename, audioUrl }: SidPlayerProps) {
 
         {localUrl && (
           <div className="flex items-center gap-2 flex-1">
-            <span className="text-xs text-gray-500">🔈</span>
+            <span className={`${compact ? 'text-[10px]' : 'text-xs'} text-gray-500`}>🔈</span>
             <input
               type="range"
               min="0"
@@ -189,7 +200,7 @@ export function SidPlayer({ filename, audioUrl }: SidPlayerProps) {
       </div>
 
       {downloadError && (
-        <div className="text-[10px] text-red-400 leading-tight">
+        <div className={`${compact ? 'text-[9px]' : 'text-[10px]'} leading-tight text-red-400`}>
           ⚠ {downloadError}
         </div>
       )}

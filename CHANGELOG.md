@@ -2,6 +2,35 @@
 
 All notable changes to this project will be documented in this file.
 
+## [0.6] - 2026-03-29
+
+### Added
+- Added a root `VERSION` file to act as the central release-version source for future packaging and release work.
+- Added DPI-aware fullscreen detail diagnostics showing native resolution, viewport, layout tier, and resolved design surface.
+- Added inline extras-video support in the big-screen extras browser, including fullscreen playback and thumbnail badges for video items.
+- Added direct native path opening for local media files so windowed-mode video extras can launch in the OS default player.
+- Added platform download badges for Windows, Linux, and macOS to the README release section.
+
+### Changed
+- Rebuilt the fullscreen 64Box detail view around deterministic 16:9 layout tiers from `1280x720` through `3840x2160`, replacing heuristic transform-fit behavior.
+- Unified single-game detail pages onto the responsive 64Box theme and removed the older alternate detail themes from active use.
+- Reworked detail-page panel composition so metadata moves into the hero area, `Credits` uses a compact list layout, and the right sidebar prioritizes alternatives, soundtrack, version details, and credits.
+- Refined alternative-version selection with icon-first navigation, per-game persistence, and launch behavior that respects the selected version.
+- Updated BigBox header controls so search, genre chips, sub-genre chips, and `#-Z` jump buttons share a consistent pill-style focus treatment.
+- Restyled detail-view launch buttons with tighter 64Box-themed controls and scalable iconography.
+- Updated README screenshots/documentation for the current windowed and fullscreen browsing experience.
+- Bumped surfaced app versioning to `0.6.0`.
+
+### Fixed
+- Fixed `Recent Games` so only actually launched titles are recorded instead of games merely opened in detail view.
+- Fixed fullscreen/detail navigation so controller and keyboard traversal now reaches play buttons, screenshots, box art, alternative versions, soundtrack, and extras more logically.
+- Fixed 4K/TV fullscreen detail behavior under Windows display scaling by separating native resolution, CSS viewport size, and layout design tiers.
+- Fixed repeated fullscreen clipping/overlap issues across screenshots, box art, lower panels, right sidebar panels, and extras gallery layouts.
+- Fixed extras-gallery focus styling so the main extras panel no longer overhangs the right sidebar while focused.
+- Fixed box-art fullscreen opening so the box-art panel enlarges the actual artwork instead of the screenshot.
+- Fixed unstable detail `useEffect` dependency handling that was triggering the “final argument passed to useEffect changed size” runtime error.
+- Fixed windowed-mode media opening for local extras files by routing them through the system default application instead of URL-scoped shell validation.
+
 ## [0.5] - 2026-03-21
 
 ### Added

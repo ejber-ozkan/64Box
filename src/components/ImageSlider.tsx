@@ -8,14 +8,26 @@ interface ImageSliderProps {
   type: 'screenshot' | 'sound' | 'musician';
   alt: string;
   className?: string;
+  containerClassName?: string;
+  imageClassName?: string;
   fallbackText?: string;
 }
 
-export function ImageSlider({ filename, type, alt, className = '', fallbackText = 'No Image' }: ImageSliderProps) {
+export function ImageSlider({
+  filename,
+  type,
+  alt,
+  className = '',
+  containerClassName,
+  imageClassName,
+  fallbackText = 'No Image',
+}: ImageSliderProps) {
   const { settings, findAllVariants } = useSettings();
   const [images, setImages] = useState<string[]>([]);
   const [currentIndex, setCurrentIndex] = useState(0);
   const [hasError, setHasError] = useState(false);
+  const resolvedContainerClassName = containerClassName ?? className;
+  const resolvedImageClassName = imageClassName ?? className;
 
   useEffect(() => {
     async function loadVariants() {
@@ -47,7 +59,7 @@ export function ImageSlider({ filename, type, alt, className = '', fallbackText 
   if (!filename || images.length === 0 || hasError) {
     return (
       <div 
-        className={`flex items-center justify-center bg-gray-800 text-gray-500 rounded border border-gray-700 ${className}`}
+        className={`flex items-center justify-center bg-gray-800 text-gray-500 rounded border border-gray-700 ${resolvedContainerClassName}`}
         data-testid="image-fallback"
       >
         <span className="text-xs">{fallbackText}</span>
@@ -58,7 +70,7 @@ export function ImageSlider({ filename, type, alt, className = '', fallbackText 
   const isSlide = settings.imageAnimation === 'slide';
 
   return (
-    <div className={`relative overflow-hidden ${className}`}>
+    <div className={`relative overflow-hidden ${resolvedContainerClassName}`}>
         <div 
             className={`flex w-full h-full transition-all duration-700 ease-in-out ${settings.bigBoxAnimateVertical ? 'flex-col' : ''} ${!isSlide ? 'transition-none' : ''}`}
             style={{ 
@@ -72,7 +84,7 @@ export function ImageSlider({ filename, type, alt, className = '', fallbackText 
                     <img
                         src={src}
                         alt={`${alt} ${idx + 1}`}
-                        className={`w-full h-full ${className} ${!isSlide && currentIndex !== idx ? 'hidden' : ''} ${!isSlide ? 'animate-in fade-in duration-500' : ''}`}
+                        className={`w-full h-full ${resolvedImageClassName} ${!isSlide && currentIndex !== idx ? 'hidden' : ''} ${!isSlide ? 'animate-in fade-in duration-500' : ''}`}
                         onError={() => {
                             if (images.length === 1) {
                                 setHasError(true);

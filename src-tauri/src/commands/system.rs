@@ -1,5 +1,6 @@
 use tauri::Manager;
 use tauri_plugin_dialog::DialogExt;
+use std::process::Command;
 
 #[tauri::command]
 pub async fn open_directory_dialog(app: tauri::AppHandle) -> Option<String> {
@@ -74,4 +75,34 @@ pub async fn get_window_size(app: tauri::AppHandle) -> Result<WindowSize, String
         width: logical.width,
         height: logical.height,
     })
+}
+
+#[tauri::command]
+pub async fn open_path_with_system_default(path: String) -> Result<(), String> {
+    #[cfg(target_os = "windows")]
+    {
+        Command::new("cmd")
+            .args(["/C", "start", "", &path])
+            .spawn()
+            .map_err(|e| e.to_string())?;
+        return Ok(());
+    }
+
+    #[cfg(target_os = "macos")]
+    {
+        Command::new("open")
+            .arg(&path)
+            .spawn()
+            .map_err(|e| e.to_string())?;
+        return Ok(());
+    }
+
+    #[cfg(all(unix, not(target_os = "macos")))]
+    {
+        Command::new("xdg-open")
+            .arg(&path)
+            .spawn()
+            .map_err(|e| e.to_string())?;
+        return Ok(());
+    }
 }

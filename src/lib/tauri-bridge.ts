@@ -329,8 +329,7 @@ export async function openFile(path: string): Promise<void> {
     window.open(path, '_blank');
     return;
   }
-  const { open } = await import('@tauri-apps/plugin-shell');
-  return open(path);
+  return invoke<void>('open_path_with_system_default', { path });
 }
 
 export interface GameFilters {

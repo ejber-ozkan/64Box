@@ -23,7 +23,7 @@ export const SETTINGS_TABS: SettingsTabOption[] = [
 ];
 
 export const SETTINGS_ITEM_COUNTS: Record<SettingsTabId, number> = {
-  appearance: 15,
+  appearance: 17,
   content: 1,
   paths: 20,
   scrapers: 10,
@@ -40,7 +40,6 @@ export type EditableSettings = Pick<
   | 'emulatorPath'
   | 'emuMoviesUsername'
   | 'emuMoviesPassword'
-  | 'detailViewTheme'
   | 'scrapedMediaPath'
   | 'extrasPath'
   | 'hideAdultContent'
@@ -56,9 +55,11 @@ export type EditableSettings = Pick<
   | 'imageAnimation'
   | 'imageCycling'
   | 'isFullscreen'
+  | 'fullscreenDensity'
   | 'displayResolution'
   | 'mouseHoverSelection'
   | 'scrollNavigation'
+  | 'menuSoundEffects'
   | 'bigBoxAnimateVertical'
 >;
 
@@ -71,7 +72,6 @@ export function getEditableSettings(settings: Settings): EditableSettings {
     emulatorPath: settings.emulatorPath,
     emuMoviesUsername: settings.emuMoviesUsername,
     emuMoviesPassword: settings.emuMoviesPassword,
-    detailViewTheme: settings.detailViewTheme,
     scrapedMediaPath: settings.scrapedMediaPath,
     extrasPath: settings.extrasPath,
     hideAdultContent: settings.hideAdultContent,
@@ -87,9 +87,11 @@ export function getEditableSettings(settings: Settings): EditableSettings {
     imageAnimation: settings.imageAnimation,
     imageCycling: settings.imageCycling,
     isFullscreen: settings.isFullscreen,
+    fullscreenDensity: settings.fullscreenDensity,
     displayResolution: settings.displayResolution,
     mouseHoverSelection: settings.mouseHoverSelection,
     scrollNavigation: settings.scrollNavigation,
+    menuSoundEffects: settings.menuSoundEffects,
     bigBoxAnimateVertical: settings.bigBoxAnimateVertical,
   };
 }

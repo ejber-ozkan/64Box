@@ -4,9 +4,11 @@ import { SidPlayer } from '../../SidPlayer';
 import { StatusRow } from '../../StatusRow';
 import { Game } from '../../../types/game';
 import { DetailNavigationHook } from '../../../hooks/useDetailNavigation';
+import { FullscreenLayoutMetrics } from '../../../hooks/useFullscreenLayoutMetrics';
 
 interface SteamSidebarProps {
   game: Game;
+  layout?: FullscreenLayoutMetrics;
   nav: DetailNavigationHook;
 }
 
@@ -20,16 +22,19 @@ function renderRating(reviewRating: string | null) {
   return '★'.repeat(stars) + '☆'.repeat(5 - stars);
 }
 
-export function SteamSidebar({ game, nav }: SteamSidebarProps) {
+export function SteamSidebar({ game, layout, nav }: SteamSidebarProps) {
   return (
-    <div className="min-w-[320px] flex-1 flex flex-col gap-6">
+    <div
+      className="min-w-0 flex flex-col gap-6"
+      style={layout ? { width: layout.detailUseStackedColumns ? '100%' : `${layout.detailSidebarWidth}px`, maxWidth: '100%' } : undefined}
+    >
       <div className="bg-[#0f1922]/80 border border-[#2a475e] rounded p-4 text-sm flex flex-col gap-3">
         <h3 className="uppercase text-[#66c0f4] border-b border-[#2a475e] pb-1 font-semibold">Game Info</h3>
-        <div className="grid grid-cols-[100px_1fr] gap-x-1 gap-y-2">
-          <span className="text-gray-500 text-xs">Genre:</span> <span className="text-white text-xs">{game.parentGenre}</span>
-          <span className="text-gray-500 text-xs">Sub-genre:</span> <span className="text-white text-xs">{game.subGenre}</span>
+        <div className="grid min-w-0 grid-cols-[92px_minmax(0,1fr)] gap-x-1 gap-y-2">
+          <span className="text-gray-500 text-xs">Genre:</span> <span className="text-white text-xs min-w-0 break-words">{game.parentGenre}</span>
+          <span className="text-gray-500 text-xs">Sub-genre:</span> <span className="text-white text-xs min-w-0 break-words">{game.subGenre}</span>
           <span className="text-gray-500 text-xs">System:</span> <span className="text-white text-xs">{game.isPal && 'PAL'} {game.isNtsc && 'NTSC'}</span>
-          <span className="text-gray-500 text-xs">Control:</span> <span className="text-white text-xs">{game.control || 'Joystick'}</span>
+          <span className="text-gray-500 text-xs">Control:</span> <span className="text-white text-xs min-w-0 break-words">{game.control || 'Joystick'}</span>
           <span className="text-gray-500 text-xs">Players:</span> <span className="text-white text-xs">{game.playersFrom === game.playersTo ? game.playersFrom : `${game.playersFrom}-${game.playersTo}`}</span>
           <span className="text-gray-500 text-xs">Rating:</span> <span className="text-yellow-500 text-xs">{renderRating(game.reviewRating)}</span>
         </div>
@@ -37,29 +42,29 @@ export function SteamSidebar({ game, nav }: SteamSidebarProps) {
 
       <div className="bg-[#0f1922]/80 border border-[#2a475e] rounded p-4 text-sm flex flex-col gap-3">
         <h3 className="uppercase text-[#66c0f4] border-b border-[#2a475e] pb-1 font-semibold">Credits</h3>
-        <div className="grid grid-cols-[80px_1fr] gap-x-2 gap-y-1 text-xs">
+        <div className="grid min-w-0 grid-cols-[80px_minmax(0,1fr)] gap-x-2 gap-y-1 text-xs">
           {game.coderName && game.coderName !== '(Unknown)' && (
             <>
               <span className="text-gray-500">Coding:</span>
-              <span className="text-blue-300 truncate">{game.coderName}</span>
+              <span className="text-blue-300 min-w-0 break-words">{game.coderName}</span>
             </>
           )}
           {game.graphicsName && game.graphicsName !== '(Unknown)' && (
             <>
               <span className="text-gray-500">Graphics:</span>
-              <span className="text-green-300 truncate">{game.graphicsName}</span>
+              <span className="text-green-300 min-w-0 break-words">{game.graphicsName}</span>
             </>
           )}
           {game.musician && (
             <>
               <span className="text-gray-500">Music:</span>
-              <span className="text-white truncate">{game.musician.name}</span>
+              <span className="text-white min-w-0 break-words">{game.musician.name}</span>
             </>
           )}
           {game.versionBy && game.versionBy !== '(None)' && (
             <>
               <span className="text-gray-500">Version By:</span>
-              <span className="text-yellow-500/80 truncate">{game.versionBy}</span>
+              <span className="text-yellow-500/80 min-w-0 break-words">{game.versionBy}</span>
             </>
           )}
         </div>

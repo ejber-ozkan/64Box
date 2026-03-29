@@ -16,6 +16,7 @@ interface UseBigBoxNavigationProps {
   activeRailIndex: number;
   filters: GameFilters;
   genres: string[];
+  gridColumns: number;
   hasOverflowSubGenres: boolean;
   isControllerKeyboardOpen: boolean;
   onBack?: () => void;
@@ -45,6 +46,7 @@ export function useBigBoxNavigation({
   activeRailIndex,
   filters,
   genres,
+  gridColumns,
   hasOverflowSubGenres,
   isControllerKeyboardOpen,
   onBack,
@@ -73,15 +75,6 @@ export function useBigBoxNavigation({
   const currentFocusedIndex = currentRail ? (railFocusIndices[currentRail.id] ?? 0) : 0;
   const currentRailId = currentRail?.id ?? null;
   const currentRailType = currentRail?.type ?? null;
-
-  const getGridColumns = useCallback(() => {
-    if (typeof window === 'undefined') return 6;
-    if (window.innerWidth >= 1536) return 6;
-    if (window.innerWidth >= 1280) return 5;
-    if (window.innerWidth >= 1024) return 4;
-    if (window.innerWidth >= 640) return 2;
-    return 1;
-  }, []);
 
   const focusHeader = useCallback((row: number, index: number) => {
     setSectionJumpDirection(null);
@@ -180,7 +173,7 @@ export function useBigBoxNavigation({
     const rail = rails[activeRailIndex];
     const focusedIndex = rail ? (railFocusIndices[rail.id] ?? 0) : 0;
     const isGrid = rail?.type === 'alphabet';
-    const columns = getGridColumns();
+    const columns = gridColumns;
 
     if (!isHeaderActive && !rail) {
       setSectionJumpDirection(null);
@@ -414,7 +407,7 @@ export function useBigBoxNavigation({
     focusTopMenu,
     genres,
     getHeaderRowType,
-    getGridColumns,
+    gridColumns,
     hasSubGenres,
     hasOverflowSubGenres,
     jumpRowIndex,

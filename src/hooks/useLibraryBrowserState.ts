@@ -10,7 +10,7 @@ import { sortGames } from '../utils/sorting';
 export type LibraryViewMode = 'grid' | 'list' | 'settings';
 
 export function useLibraryBrowserState() {
-  const { settings, markAsPlayed, updateSettings } = useSettings();
+  const { settings, updateSettings } = useSettings();
   const { toggleFavorite } = useFavorites();
   const [viewMode, setViewMode] = useState<LibraryViewMode>(settings.lastViewMode || 'grid');
   const [selectedGame, setSelectedGame] = useState<Game | null>(null);
@@ -118,8 +118,7 @@ export function useLibraryBrowserState() {
       setFocusedIndex(selectedIndex);
     }
     setSelectedGame(game);
-    markAsPlayed(game.id.toString());
-  }, [games, markAsPlayed]);
+  }, [games]);
 
   const getFocusedLibraryGame = useCallback((): Game | null => {
     const recentCount = settings.recentlyPlayedIds.length;

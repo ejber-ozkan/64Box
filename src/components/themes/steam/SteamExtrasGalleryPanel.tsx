@@ -2,6 +2,7 @@
 
 import { MutableRefObject, RefObject, useEffect, useState } from 'react';
 import { DetailNavigationHook } from '../../../hooks/useDetailNavigation';
+import { FullscreenLayoutMetrics } from '../../../hooks/useFullscreenLayoutMetrics';
 import { SteamGalleryCard } from './SteamGalleryCard';
 import { Extra } from '../../../types/game';
 
@@ -12,6 +13,7 @@ interface SteamExtrasGalleryPanelProps {
   galleryExtras: Extra[];
   gallerySectionRef: RefObject<HTMLDivElement | null>;
   gallerySelectionIndex: number;
+  layout?: FullscreenLayoutMetrics;
   nav: DetailNavigationHook;
   onHoverCard: (index: number) => void;
   onOpenCard: (extra: Extra, index: number) => void;
@@ -25,6 +27,7 @@ export function SteamExtrasGalleryPanel({
   galleryExtras,
   gallerySectionRef,
   gallerySelectionIndex,
+  layout,
   nav,
   onHoverCard,
   onOpenCard,
@@ -98,7 +101,7 @@ export function SteamExtrasGalleryPanel({
           className="overflow-y-auto pr-2 no-scrollbar"
           style={viewportHeight ? { height: `${viewportHeight}px` } : undefined}
         >
-          <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-3">
+          <div className={`grid gap-4 sm:grid-cols-2 ${layout?.densityMode === 'compact' ? 'xl:grid-cols-2' : 'xl:grid-cols-3'}`}>
           {galleryExtras.map((extra, index) => (
             <SteamGalleryCard
               key={extra.id}

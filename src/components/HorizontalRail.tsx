@@ -4,6 +4,7 @@ import React, { useRef, useEffect } from 'react';
 import { Game } from '../types/game';
 import { BigBoxTileMedia } from './BigBoxTileMedia';
 import { getPrimaryStudioLabel } from '../lib/game-display';
+import { FullscreenLayoutMetrics } from '../hooks/useFullscreenLayoutMetrics';
 
 interface HorizontalRailProps {
   title: string;
@@ -16,6 +17,31 @@ interface HorizontalRailProps {
   loop?: boolean;
   isMouseFocusEnabled?: boolean;
   isFavorite?: (gameId: string) => boolean;
+  layout?: FullscreenLayoutMetrics;
+}
+
+function getTargetVisibleCards(layout: FullscreenLayoutMetrics, isLarge: boolean) {
+  const viewportWidth = layout.viewportWidth;
+
+  let visibleCards = isLarge ? 2 : 3;
+
+  if (viewportWidth >= 3300) {
+    visibleCards = isLarge ? 7 : 10;
+  } else if (viewportWidth >= 2900) {
+    visibleCards = isLarge ? 6 : 8;
+  } else if (viewportWidth >= 1900) {
+    visibleCards = isLarge ? 5 : 7;
+  } else if (viewportWidth >= 1500) {
+    visibleCards = isLarge ? 4 : 6;
+  } else if (viewportWidth >= 1100) {
+    visibleCards = isLarge ? 3 : 5;
+  }
+
+  if (layout.densityMode === 'compact' && viewportWidth >= 1800) {
+    visibleCards += 1;
+  }
+
+  return Math.min(visibleCards, isLarge ? 7 : 10);
 }
 
 export function HorizontalRail({ 
@@ -28,7 +54,8 @@ export function HorizontalRail({
   tileScale = 'normal',
   loop = true,
   isMouseFocusEnabled = true,
-  isFavorite
+  isFavorite,
+  layout,
 }: HorizontalRailProps) {
   const scrollRef = useRef<HTMLDivElement>(null);
   const hasInitializedLoopPositionRef = useRef(false);
@@ -106,11 +133,41 @@ export function HorizontalRail({
   if (games.length === 0) return null;
 
   const isLarge = tileScale === 'large';
+  const railPaddingX = layout?.horizontalRailPaddingX ?? 64;
+  const railGap = layout?.horizontalRailGap ?? 32;
+  const availableRailWidth = layout
+    ? Math.max(layout.viewportWidth - railPaddingX * 2, 480)
+    : null;
+  const targetVisibleCards = layout
+    ? getTargetVisibleCards(layout, isLarge)
+    : null;
+  const computedTileWidth = availableRailWidth && targetVisibleCards
+    ? Math.floor((availableRailWidth - railGap * Math.max(targetVisibleCards - 1, 0)) / targetVisibleCards)
+    : null;
+  const tileWidth = computedTileWidth
+    ? Math.max(computedTileWidth, isLarge ? 280 : 210)
+    : isLarge
+      ? (layout?.horizontalLargeTileWidth ?? 560)
+      : (layout?.horizontalTileWidth ?? 380);
+  const focusScale = layout?.tileFocusScale ?? 1.18;
+  const railTitleSize = layout?.railTitleSize ?? 32;
+  const cardRadius = layout?.tileBorderRadius ?? 26;
+  const metaPadding = layout?.tileMetaPadding ?? 24;
 
   return (
-    <div className={`flex flex-col gap-4 py-8 transition-opacity duration-500 ${isActive ? 'opacity-100' : 'opacity-45'}`}>
-      <div data-rail-anchor className="flex items-center gap-4 px-12">
-        <h2 className={`text-3xl font-black uppercase tracking-tighter ${isActive ? 'text-blue-300' : 'text-gray-500'}`}>
+    <div
+      className={`flex flex-col gap-4 transition-opacity duration-500 ${isActive ? 'opacity-100' : 'opacity-45'}`}
+      style={{
+        gap: `${Math.max((layout?.railSectionGap ?? 18) - 4, 8)}px`,
+        paddingTop: `${Math.max((layout?.railSectionGap ?? 18) - 6, 6)}px`,
+        paddingBottom: `${Math.max((layout?.railSectionGap ?? 18) - 4, 8)}px`,
+      }}
+    >
+      <div data-rail-anchor className="flex items-center gap-4" style={{ paddingLeft: `${railPaddingX}px`, paddingRight: `${railPaddingX}px` }}>
+        <h2
+          className={`font-black uppercase tracking-tighter ${isActive ? 'text-blue-300' : 'text-gray-500'}`}
+          style={{ fontSize: `${railTitleSize}px` }}
+        >
           {title}
         </h2>
         <div className={`h-px flex-1 bg-gradient-to-r ${isActive ? 'from-sky-400/70 via-cyan-300/40 to-transparent' : 'from-gray-800 to-transparent'}`}></div>
@@ -118,8 +175,16 @@ export function HorizontalRail({
 
       <div 
         ref={scrollRef}
-        className="no-scrollbar flex gap-8 overflow-x-auto overflow-y-hidden px-[8%] py-10 scroll-smooth"
-        style={{ msOverflowStyle: 'none', scrollbarWidth: 'none' }}
+        className="no-scrollbar flex overflow-x-auto overflow-y-hidden scroll-smooth"
+        style={{
+          gap: `${railGap}px`,
+          paddingLeft: `${railPaddingX}px`,
+          paddingRight: `${railPaddingX}px`,
+          paddingTop: `${Math.max((layout?.railSectionGap ?? 18) - 6, 6)}px`,
+          paddingBottom: `${Math.max((layout?.railSectionGap ?? 18) - 2, 8)}px`,
+          msOverflowStyle: 'none',
+          scrollbarWidth: 'none',
+        }}
       >
         {displayGames.map((game, idx) => {
           const isFocused = isActive && (loop ? idx % originalCount === focusedIndex : idx === focusedIndex);
@@ -140,13 +205,17 @@ export function HorizontalRail({
                   }
                 }
               }}
-              className={`group relative shrink-0 cursor-pointer overflow-hidden rounded-[26px] border border-white/10 bg-[#09111b] shadow-[0_18px_60px_rgba(2,6,23,0.45)] transition-all duration-500 ${
-                isLarge ? 'w-[560px] aspect-[1.9]' : 'w-[380px] aspect-[1.78]'
-              } ${
+              className={`group relative shrink-0 cursor-pointer overflow-hidden border border-white/10 bg-[#09111b] shadow-[0_18px_60px_rgba(2,6,23,0.45)] transition-all duration-500 ${
                 isFocused 
-                  ? `${hasArtwork ? 'scale-[1.3]' : 'scale-110'} z-10 border-cyan-300/80 shadow-[0_28px_80px_rgba(56,189,248,0.35)]`
+                  ? `z-10 border-cyan-300/80 shadow-[0_28px_80px_rgba(56,189,248,0.35)]`
                   : 'hover:-translate-y-1 hover:border-white/20'
               }`}
+              style={{
+                aspectRatio: isLarge ? '1.9' : '1.78',
+                borderRadius: `${cardRadius}px`,
+                transform: isFocused ? `scale(${hasArtwork ? focusScale : 1.08})` : undefined,
+                width: `${tileWidth}px`,
+              }}
             >
               <BigBoxTileMedia game={game} className="absolute inset-0" />
 
@@ -156,14 +225,20 @@ export function HorizontalRail({
                 </div>
               )}
               
-              <div className="absolute inset-x-0 bottom-0 flex flex-col gap-1 border-t border-white/10 bg-[linear-gradient(180deg,rgba(2,6,23,0.08),rgba(2,6,23,0.92))] p-6">
-                <div className="text-[11px] font-black uppercase tracking-[0.24em] text-cyan-200/80">
+              <div
+                className="absolute inset-x-0 bottom-0 flex flex-col gap-1 border-t border-white/10 bg-[linear-gradient(180deg,rgba(2,6,23,0.08),rgba(2,6,23,0.92))]"
+                style={{ padding: `${metaPadding}px` }}
+              >
+                <div className="font-black uppercase tracking-[0.24em] text-cyan-200/80" style={{ fontSize: `${Math.max((layout?.chipFontSize ?? 11) - 0.5, 10)}px` }}>
                   {game.year || 'Classic'} {game.parentGenre ? `• ${game.parentGenre}` : ''}
                 </div>
-                <div className={`${isLarge ? 'text-3xl' : 'text-xl'} font-black leading-tight text-white`}>
+                <div
+                  className="font-black leading-tight text-white line-clamp-2"
+                  style={{ fontSize: `${isLarge ? tileWidth / 17.5 : tileWidth / 18.2}px` }}
+                >
                   {game.name}
                 </div>
-                <div className="text-xs text-white/60 font-medium mt-1 truncate">
+                <div className="mt-1 text-white/60 font-medium truncate" style={{ fontSize: `${Math.max((layout?.chipFontSize ?? 11) - 0.5, 10)}px` }}>
                   {getPrimaryStudioLabel(game)}
                 </div>
               </div>

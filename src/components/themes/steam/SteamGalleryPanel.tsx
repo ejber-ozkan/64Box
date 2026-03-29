@@ -5,6 +5,7 @@ import { ImageSlider } from '../../ImageSlider';
 import { ImageWithFallback } from '../../ImageWithFallback';
 import { Game } from '../../../types/game';
 import { DetailNavigationHook } from '../../../hooks/useDetailNavigation';
+import { FullscreenLayoutMetrics } from '../../../hooks/useFullscreenLayoutMetrics';
 
 interface SteamGalleryPanelProps {
   boxArtUrl: string;
@@ -14,6 +15,7 @@ interface SteamGalleryPanelProps {
   hasGameplayMedia: boolean;
   hasGalleryExtras: boolean;
   hasTitleMedia: boolean;
+  layout?: FullscreenLayoutMetrics;
   nav: DetailNavigationHook;
   onFullscreen: (filename: string | null) => void;
   resolveScreenshotPath: (filename: string | null) => string;
@@ -28,6 +30,7 @@ export function SteamGalleryPanel({
   hasGameplayMedia,
   hasGalleryExtras,
   hasTitleMedia,
+  layout,
   nav,
   onFullscreen,
   resolveScreenshotPath,
@@ -44,13 +47,26 @@ export function SteamGalleryPanel({
   return (
     <div className="space-y-6">
       {(hasGameplayMedia || hasTitleMedia || hasBoxArt) && (
-        <div className={`grid gap-5 ${hasGameplayMedia && (hasTitleMedia || hasBoxArt) ? 'xl:grid-cols-[minmax(0,1.9fr)_minmax(320px,0.95fr)]' : 'grid-cols-1'}`}>
+        <div
+          className={`grid ${
+            hasGameplayMedia && (hasTitleMedia || hasBoxArt)
+              ? layout?.detailUseStackedColumns
+                ? 'grid-cols-1'
+                : 'xl:grid-cols-[minmax(0,1.45fr)_minmax(240px,0.82fr)]'
+              : 'grid-cols-1'
+          }`}
+          style={{ gap: `${Math.max((layout?.detailSectionGap ?? 20) - 2, 16)}px` }}
+        >
           {hasGameplayMedia && (
             <div
               ref={gameplaySectionRef}
               onClick={() => onFullscreen(game.screenshotFilename)}
               onMouseEnter={() => nav.hoverZone('media-gameplay')}
               className={`aspect-[16/9] min-h-[340px] xl:min-h-[460px] 2xl:min-h-[540px] bg-[#0f1922] rounded shadow-md border border-[#2a475e] flex items-center justify-center p-3 transition cursor-pointer relative group overflow-hidden ${nav.focusCls('media-gameplay')}`}
+              style={layout ? {
+                minHeight: `${layout.detailStageMinHeight}px`,
+                maxHeight: `${layout.detailStageMaxHeight}px`,
+              } : undefined}
             >
               {game.videoSnapFilename ? (
                 <video src={resolveScreenshotPath(game.videoSnapFilename)} autoPlay loop muted className="w-full h-full object-contain pointer-events-none" />
@@ -76,7 +92,10 @@ export function SteamGalleryPanel({
               )}
 
               {hasBoxArt && (
-                <div className="aspect-[4/5] max-h-[420px] bg-[#0f1922] rounded shadow-md border border-[#2a475e] flex items-center justify-center p-4 relative overflow-hidden">
+                <div
+                  className="aspect-[4/5] bg-[#0f1922] rounded shadow-md border border-[#2a475e] flex items-center justify-center p-4 relative overflow-hidden"
+                  style={layout ? { maxHeight: `${Math.max(layout.detailStageMaxHeight - 100, 280)}px` } : undefined}
+                >
                   <ImageWithFallback src={boxArtUrl} alt="Box Art" fit="contain" className="w-full h-full pointer-events-none" fallbackText="Box Front" />
                   <div className="absolute top-3 left-3 bg-black/80 px-2 rounded text-[10px] text-white uppercase tracking-widest">Box Art</div>
                 </div>
