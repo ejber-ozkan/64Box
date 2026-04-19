@@ -1,67 +1,52 @@
-name: wasm-c64-bridge description: Use this skill when implementing the Phase 4 WebAssembly (WASM) C64 emulator for iOS and Web platforms. It defines strict rules for passing ROM data to WASM and handling touch inputs.
+---
+name: wasm-c64-bridge
+description: Use this skill when implementing the WebAssembly C64 emulator bridge for web and iOS, including ROM loading, touch controls, and mobile-safe initialization.
+version: 1.0.0
+author: 64Box
+tags: [wasm, c64, emulator, ios, touch]
+---
 
-WebAssembly (WASM) C64 Emulator Integration
+# WebAssembly C64 Emulator Integration
 
-When to Use This Skill
+## When to Use This Skill
 
-When building the React component that wraps the <canvas> element for the emulator.
+- When building the React component that hosts the emulator canvas.
+- When writing the TypeScript bridge that passes `.d64`, `.t64`, or `.tap` files into the WASM module.
+- When implementing touch controls or virtual gamepads for mobile and iOS.
 
-When writing the JavaScript/TypeScript bridge to pass .d64, .t64, or .tap files into the WASM module.
+## 1. Passing ROM Data To WASM
 
-When implementing on-screen virtual gamepads or touch controls for mobile/iOS.
+Use the Emscripten virtual file system rather than trying to pass raw arrays directly into C functions.
 
-1. Passing ROM Data to WASM (The Emscripten Bridge)
+### Strict Protocol
 
-AI models often hallucinate direct array-passing methods that crash WASM. You must use the Emscripten Virtual File System (VFS) to pass ROM data safely.
+1. Read or fetch the ROM as an `ArrayBuffer`.
+2. Convert it to `Uint8Array`.
+3. Ensure the target VFS directory exists.
+4. Write the ROM into the WASM VFS.
+5. Trigger emulator startup using the mounted virtual path.
 
-Strict Protocol for Loading ROMs:
-
-Fetch/Read as ArrayBuffer: The React frontend must read the local file or fetch the remote ROM as an ArrayBuffer.
-
-Convert to Uint8Array: Convert the ArrayBuffer into a typed Uint8Array.
-
-Write to WASM VFS: Do not attempt to pass the array directly to a C function. Instead, use the Emscripten FS object to write the file into the virtual file system.
-
-// Correct pattern for Emscripten-based emulators (like VICE WASM)
+```ts
 const romData = new Uint8Array(arrayBuffer);
-
-// Ensure the directory exists in the virtual file system
-window.Module.FS.mkdir('/roms'); 
-
-// Write the byte array to the VFS
+window.Module.FS.mkdir('/roms');
 window.Module.FS.writeFile('/roms/game.d64', romData);
+```
 
+## 2. iOS & Mobile Browser Constraints
 
-Trigger Execution: Once written to the VFS, call the emulator's specific command-line argument or C-function to mount and autostart /roms/game.d64.
+### Audio Context
 
-2. iOS & Mobile Browser Constraints
+iOS requires audio initialization to happen inside a direct user interaction such as a click or touchstart. Do not initialize audio automatically on mount.
 
-iOS Safari is heavily restricted. You must account for the following quirks when building the emulator component:
+### Canvas Touch Handling
 
-A. The Audio Context Trap
+- Set `touch-action: none` on the emulator interaction surface.
+- Use `touchstart`, `touchmove`, and `touchend` handlers.
+- Call `preventDefault()` to stop native Safari gestures.
 
-iOS absolutely forbids audio playback unless it is directly triggered by a user interaction (like a click or touchstart event).
+## 3. Virtual Joystick
 
-Rule: The WASM module and its corresponding AudioContext must be initialized inside the onClick handler of a "Play Game" button. Do not attempt to initialize the emulator automatically onMount or the game will have no sound.
-
-B. Canvas Touch Handling
-
-iOS Safari will attempt to scroll, pinch-zoom, or pull-to-refresh when the user touches the emulator canvas or virtual gamepad.
-
-Rule: The container holding the canvas and virtual controls must have the CSS property touch-action: none;.
-
-Rule: You must attach touchstart, touchmove, and touchend event listeners to the canvas/controls and explicitly call event.preventDefault() to stop Safari's native gesture handling.
-
-3. Implementing the Virtual Joystick (Touch Controls)
-
-Since iOS cannot use physical keyboards, you must implement a Virtual Gamepad overlay when the device is detected as touch-enabled.
-
-D-Pad Logic: Do not use individual 4-way buttons. Implement a single circular "Joypad" area.
-
-Math: On touchmove, calculate the angle and distance from the center of the joypad.
-
-Map angles to standard 8-way C64 joystick directions (Up, Up-Right, Right, etc.).
-
-WASM Key Mapping: Translate these directional zones into the corresponding keyboard events that the WASM emulator expects for Joystick Port 1 or 2 (often mapped to Numpad keys or Arrow keys in WASM ports).
-
-State Dispatch: Dispatch standard JS KeyboardEvent objects to the window or <canvas> depending on where the Emscripten module is listening.
+- Prefer a circular joypad area over four discrete buttons.
+- Compute angle and distance from the center on touchmove.
+- Map that to 8-way joystick directions.
+- Dispatch the keyboard or input events expected by the WASM emulator.

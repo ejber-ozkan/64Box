@@ -245,7 +245,7 @@ export function SettingsProvider({ children }: { children: ReactNode }) {
   
   const markAsPlayed = useCallback((gameId: string) => {
     setSettings(prev => {
-      const newList = [gameId, ...prev.recentlyPlayedIds.filter(id => id !== gameId)].slice(0, 12);
+      const newList = [gameId, ...prev.recentlyPlayedIds.filter(id => id !== gameId)].slice(0, 10);
       // Only update if the list actually changed (different head or different content)
       if (prev.recentlyPlayedIds[0] === gameId && prev.recentlyPlayedIds.length === newList.length) {
          return prev;

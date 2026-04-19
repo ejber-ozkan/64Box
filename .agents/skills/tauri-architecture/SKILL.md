@@ -1,42 +1,38 @@
+---
 name: tauri-architecture
-description: Use this skill when implementing the desktop wrapper for 64Box using Tauri and Rust. It enforces secure IPC communication, local file system scanning, and external process execution.
+description: Use this skill when implementing the 64Box desktop wrapper with Tauri and Rust, including secure IPC, local scanning, and external emulator launch flows.
+version: 1.0.0
+author: 64Box
+tags: [tauri, rust, ipc, desktop, emulator]
+---
 
-Tauri & Rust Architecture for 64Box
+# Tauri & Rust Architecture For 64Box
 
-When to Use This Skill
+## When to Use This Skill
 
-When setting up the Tauri backend (Phase 3).
+- When setting up the Tauri backend.
+- When writing Rust commands to scan local disks for `.d64`, `.t64`, or `.tap` files.
+- When implementing external emulator launch flows such as VICE or `x64sc.exe`.
 
-When writing Rust commands to scan the user's local disk for .d64, .t64, or .tap files.
+## Instructions & Strict Rules
 
-When writing the logic to launch external emulators (like VICE/x64sc.exe).
+### 1. No Node.js / Electron Fallbacks
 
-Instructions & Strict Rules
+You are building a Tauri app. Do not use Node.js modules such as `fs` or `child_process` in the React frontend. All system-level operations must live in Rust and be exposed through Tauri commands.
 
-1. No Node.js / Electron Fallbacks
+### 2. ROM Scanning & Hashing
 
-You are building a Tauri app. Do not attempt to use Node.js modules like fs or child_process in the React frontend. All system-level operations must be written in Rust inside src-tauri/src/main.rs (or modularized Rust files) and exposed to the frontend via Tauri Commands (#[tauri::command]).
+- Do not load entire ROM files into memory.
+- Use efficient streaming and chunking in Rust to calculate CRC32 hashes.
+- Return structured payloads asynchronously to the frontend.
 
-2. ROM Scanning & Hashing
+### 3. Executing External Emulators
 
-When implementing the auto-scanner:
+- Use `std::process::Command` in Rust.
+- Pass only validated flags based on trusted metadata.
+- Do not allow arbitrary frontend strings to flow directly into shell execution.
+- Validate all emulator paths and launch flags before spawning.
 
-Do not load entire ROM files into memory to hash them.
+### 4. Database Access
 
-Use efficient streaming/chunking in Rust to calculate CRC32 hashes of local .d64/.t64 files to match against the Gamebase64 database.
-
-Return structured JSON payloads to the frontend asynchronously.
-
-3. Executing External Emulators
-
-To launch VICE (x64sc.exe or macOS equivalent):
-
-Use std::process::Command in Rust.
-
-Ensure you pass the correct command-line arguments based on the GB64 metadata passed from the frontend (e.g., passing -true-drive-emulation if the game requires it).
-
-Security: Do not allow the frontend to pass arbitrary strings directly to the shell execution. Validate all paths and emulator flags in the Rust backend before spawning the process.
-
-4. Database Access
-
-For desktop, the SQLite Gamebase64 database should be queried directly using a Rust SQLite crate (like rusqlite or sqlx) rather than handling massive JSON blobs in the React frontend.
+For desktop builds, query the SQLite GameBase64 database directly from Rust with a crate such as `rusqlite` rather than pushing massive JSON blobs into React.

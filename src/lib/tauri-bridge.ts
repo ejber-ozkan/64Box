@@ -111,8 +111,7 @@ interface RawGameRow {
   publisherName?: string | null;
 }
 
-interface RawGameDetailRow {
-  game: RawGameRow;
+type RawGameDetailRow = RawGameRow & {
   musicianName?: string | null;
   musicianPhoto?: string | null;
   musicianNick?: string | null;
@@ -135,7 +134,9 @@ interface RawGameDetailRow {
   vTrueDriveEmu?: boolean | null;
   vPalNtsc?: string | null;
   memo?: string | null;
-}
+} & {
+  game?: RawGameRow | null;
+};
 
 // ---------------------------------------------------------------------------
 // Command wrappers
@@ -540,6 +541,7 @@ export async function getDbGameDetail(gameId: string): Promise<import('../types/
   try {
     const raw = await invoke<RawGameDetailRow | null>('get_game_detail', { gameId });
     if (!raw) return null;
+    const rawGame = raw.game ?? raw;
 
     const controlMap: Record<string, string> = {
       '0': 'Joystick Port 2',
@@ -555,26 +557,26 @@ export async function getDbGameDetail(gameId: string): Promise<import('../types/
     };
 
     return {
-      id: parseInt(raw.game.id, 10),
-      name: raw.game.name,
-      filename: raw.game.filename,
-      gameFilename: raw.game.gameFilename ?? null,
-      screenshotFilename: raw.game.screenshotFilename ?? null,
-      boxFrontFilename: raw.game.boxFrontFilename ?? null,
-      coverPath: raw.game.coverPath ?? null,
-      titlescreenFilename: raw.game.titlescreenFilename ?? null,
-      videoSnapFilename: raw.game.videoSnapFilename ?? null,
-      sidFilename: raw.game.sidFilename ?? null,
-      crc: raw.game.crc ?? '',
-      year: raw.game.year ? parseInt(raw.game.year, 10) : null,
-      isPal: raw.game.isPal,
-      isNtsc: raw.game.isNtsc,
-      trueDriveEmu: raw.game.trueDriveEmu,
-      isClassic: raw.game.isClassic,
-      parentGenre: raw.game.parentGenre,
-      subGenre: raw.game.subGenre,
-      developer: raw.game.developerName ? { id: -1, name: raw.game.developerName } : null,
-      publisher: raw.game.publisherName ? { id: -1, name: raw.game.publisherName } : null,
+      id: parseInt(rawGame.id, 10),
+      name: rawGame.name,
+      filename: rawGame.filename,
+      gameFilename: rawGame.gameFilename ?? null,
+      screenshotFilename: rawGame.screenshotFilename ?? null,
+      boxFrontFilename: rawGame.boxFrontFilename ?? null,
+      coverPath: rawGame.coverPath ?? null,
+      titlescreenFilename: rawGame.titlescreenFilename ?? null,
+      videoSnapFilename: rawGame.videoSnapFilename ?? null,
+      sidFilename: rawGame.sidFilename ?? null,
+      crc: rawGame.crc ?? '',
+      year: rawGame.year ? parseInt(rawGame.year, 10) : null,
+      isPal: rawGame.isPal,
+      isNtsc: rawGame.isNtsc,
+      trueDriveEmu: rawGame.trueDriveEmu,
+      isClassic: rawGame.isClassic,
+      parentGenre: rawGame.parentGenre,
+      subGenre: rawGame.subGenre,
+      developer: rawGame.developerName ? { id: -1, name: rawGame.developerName } : null,
+      publisher: rawGame.publisherName ? { id: -1, name: rawGame.publisherName } : null,
       musician: raw.musicianName ? { 
         id: -1, 
         name: raw.musicianName, 

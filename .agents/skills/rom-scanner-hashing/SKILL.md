@@ -1,24 +1,27 @@
-name: rom-scanner-hashing description: Use this skill when implementing the ROM scanning and CRC hashing logic. It defines strict memory-safe rules for matching local files to the Gamebase64 database.
+---
+name: rom-scanner-hashing
+description: Use this skill when implementing ROM scanning and CRC hashing logic for matching local files against the GameBase64 database.
+version: 1.0.0
+author: 64Box
+tags: [rom-scanner, crc32, rust, tauri, zip]
+---
 
-ROM Scanner & CRC Hashing (Tauri / Rust)
+# ROM Scanner & CRC Hashing
 
-When to Use This Skill
+## When to Use This Skill
 
-When writing the Tauri Rust backend commands to scan a user's local directory for games.
+- When writing Rust backend commands to scan a user's local directories for games.
+- When implementing CRC32 hashing to match local files against the `Games` database.
+- When linking discovered `.zip`, `.d64`, `.t64`, `.tap`, or `.crt` files to metadata.
 
-When implementing CRC32 hashing to match local files against the CRC column in the Games database.
+## 1. Memory Management & Streaming
 
-When linking discovered .zip, .d64, .t64, .tap, or .crt files to their metadata.
+Never load entire files or large file sets into RAM at once.
 
-1. Memory Management & Streaming (Strict Rule)
+- Do not use `std::fs::read(path)` or `std::fs::read_to_string(path)` for scanner hashing.
+- Use `std::fs::File`, `std::io::BufReader`, and `crc32fast` to hash uncompressed files in chunks.
 
-You must never load entire files or massive sets of files into RAM simultaneously.
-
-Do NOT use: std::fs::read(path) or std::fs::read_to_string(path).
-
-Use Streaming: For uncompressed files, read the file in chunks using std::fs::File, std::io::BufReader, and a highly optimized hashing crate like crc32fast.
-
-// Correct Pattern for Uncompressed Files
+```rust
 use crc32fast::Hasher;
 use std::fs::File;
 use std::io::{BufRead, BufReader};
@@ -26,41 +29,38 @@ use std::io::{BufRead, BufReader};
 let file = File::open(path)?;
 let mut reader = BufReader::new(file);
 let mut hasher = Hasher::new();
-let mut buffer = [0; 8192]; // 8KB chunks
+let mut buffer = [0; 8192];
 
 while let Ok(count) = reader.read(&mut buffer) {
     if count == 0 { break; }
     hasher.update(&buffer[..count]);
 }
 let crc = hasher.finalize();
+```
 
+## 2. Zip File Optimization
 
-2. The Zip File Optimization (Crucial)
+Most official GameBase64 collection files are zipped.
 
-The official Gamebase64 collection stores games almost exclusively as .zip files.
+- Do not extract and hash the archive contents just to find CRC.
+- Read CRC32 directly from the zip central directory with a crate such as `zip` or `async_zip`.
 
-Rule: Do not extract or manually hash the contents of a .zip file to find its CRC.
+## 3. Database Matching & Formatting
 
-Optimization: The CRC32 of the compressed file is already calculated and stored inside the Zip file's Central Directory Header. Use a crate like zip or async_zip to simply read the header of the archive in O(1) time. This reduces a 10-minute scan of 30,000 zipped games to mere seconds.
+- Format CRC output as a padded 8-character hexadecimal string.
+- Match with case-insensitive queries such as:
 
-3. Database Matching & Formatting
+```sql
+SELECT GA_Id, Name FROM Games WHERE CRC = ? COLLATE NOCASE
+```
 
-When a CRC is extracted (either via streaming or Zip header), it must be correctly formatted to match the Gamebase64 database.
+## 4. UI Non-Blocking & IPC Progress
 
-The CRC column in Games.csv stores hashes as hexadecimal strings (e.g., A1B2C3D4 or a1b2c3d4).
+- Run scanning work asynchronously with `tokio::task::spawn_blocking` or `tauri::async_runtime`.
+- Emit progress events over Tauri IPC so the frontend can keep the UI responsive.
 
-Ensure your Rust hash output is formatted as a padded, 8-character hex string before querying the SQLite database.
+Example event payload:
 
-Example matching query: SELECT GA_Id, Name FROM Games WHERE CRC = ? COLLATE NOCASE
-
-4. UI Non-Blocking & IPC Progress
-
-Scanning a large directory will take time. The Rust backend must not block the main application thread, and the React frontend must not appear frozen.
-
-Rule: Execute the scanning loop asynchronously (e.g., using tokio::task::spawn_blocking or tauri::async_runtime).
-
-Rule: Emit continuous progress events over Tauri's IPC bridge to the frontend.
-
-Example Event: tauri::Window::emit("scan-progress", { "scanned": 1500, "total": 30000, "current_file": "Commando.zip" })
-
-The React frontend must listen for this event and update a visual progress bar.
+```rust
+tauri::Window::emit("scan-progress", { "scanned": 1500, "total": 30000, "current_file": "Commando.zip" })
+```

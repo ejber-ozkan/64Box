@@ -111,7 +111,8 @@ Ensure you have the Microsoft Access Database Engine / Access ODBC components in
 
 Microsoft notes on that page that support ended on **October 14, 2025**, but it remains the official download source for the MDB export tooling used here.
 ```bash
-# This uses the Windows ODBC driver to export the MDB to CSV, then to SQLite
+# This prompts before proceeding, exports the MDB to CSV, rebuilds SQLite,
+# reruns ANALYZE / PRAGMA optimize, and audits the expected support indexes.
 .\scripts\import_gb64.bat
 ```
 
@@ -123,18 +124,21 @@ You also need to install the required Node.js dependencies for the conversion sc
 npm install csv-parse better-sqlite3
 ```
 
-Then run the following commands to export and convert the database:
+Then run the audited wrapper:
 ```bash
-# Export MDB to CSV
-./scripts/mdb-export-all.sh ./GBC_v19.mdb
-
-# Convert CSV to SQLite
-node ./scripts/convert_csv_to_sqlite.js
+./scripts/import_gb64.sh
 ```
 
 This will produce `gb64.sqlite` in the project root.
 
-The conversion step also creates the SQLite performance indexes, the persisted `GameCoverIndex` lookup table, and the `GameSearchIndex` FTS5 full-text search table used by the app for faster browsing and metadata search. If you open an older database with a newer build of the app, the Tauri backend will create any missing support objects automatically on startup.
+If you want the old manual flow, these still work:
+```bash
+./scripts/mdb-export-all.sh ./GBC_v19.mdb
+node ./scripts/convert_csv_to_sqlite.js
+node ./scripts/check_sqlite_support.js
+```
+
+The conversion step creates the SQLite performance indexes, the persisted `GameCoverIndex` lookup table, and the `GameSearchIndex` FTS5 full-text search table used by the app for faster browsing and metadata search. It now also runs `ANALYZE` and `PRAGMA optimize`, then audits the expected post-review indexes and support objects so missing items fail fast. If you open an older database with a newer build of the app, the Tauri backend will still create any missing support objects automatically on startup.
 
 ## 4. Running the Application in Development
 

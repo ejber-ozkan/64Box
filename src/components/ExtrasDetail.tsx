@@ -1,14 +1,11 @@
 "use client";
 
-import React, { useRef, useState, useEffect, useCallback } from 'react';
+import React, { useRef, useState, useEffect } from 'react';
 import { Game, Extra } from '../types/game';
 import { groupExtras, ExtraGroup, buildExtraAssetPath } from '../lib/extras';
 import { useSettings } from '../contexts/SettingsContext';
-import { getAssetUrl, openFile, launchEmulator } from '../lib/tauri-bridge';
+import { openFile, launchEmulator } from '../lib/tauri-bridge';
 import type { DetailLayoutSpec } from '../lib/detail-layout';
-import { ImageWithFallback } from './ImageWithFallback';
-import { useGamepad } from '../hooks/useGamepad';
-import { usePopupOpenSound } from '../hooks/usePopupOpenSound';
 import { VisualExtraCard } from './extras/VisualExtraCard';
 import { VisualExtrasBrowser } from './extras/VisualExtrasBrowser';
 import { isVideoExtra, isAudioExtra } from './extras/ResolvedExtraMedia';

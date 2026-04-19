@@ -12,7 +12,23 @@ const eslintConfig = defineConfig([
     "out/**",
     "build/**",
     "next-env.d.ts",
+    "coverage/**",
+    "public/emulator/**",
+    "public/jsSID.js",
+    "src-tauri/target/**",
   ]),
+  {
+    files: [
+      "scripts/**/*.js",
+      "*.js",
+    ],
+    languageOptions: {
+      sourceType: "commonjs",
+    },
+    rules: {
+      "@typescript-eslint/no-require-imports": "off",
+    },
+  },
 ]);
 
 export default eslintConfig;

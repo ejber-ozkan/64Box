@@ -23,6 +23,18 @@ fn resolve_media_child_path(base_dir: &Path, relative_path: &str) -> Option<Path
     sanitize_relative_media_path(relative_path).map(|sanitized| base_dir.join(sanitized))
 }
 
+fn split_variant_stem(stem: &str) -> (&str, Option<&str>) {
+    if let Some((base, suffix)) = stem.rsplit_once('_') {
+        let is_numeric_variant = !suffix.is_empty() && suffix.chars().all(|character| character.is_ascii_digit());
+        let is_alpha_variant = suffix.len() == 1 && suffix.chars().all(|character| character.is_ascii_lowercase());
+        if is_numeric_variant || is_alpha_variant {
+            return (base, Some(suffix));
+        }
+    }
+
+    (stem, None)
+}
+
 #[tauri::command]
 pub async fn scan_rom_directory(directory: String) -> Result<Vec<ScannedRom>, String> {
     use crc32fast::Hasher;
@@ -184,27 +196,45 @@ pub async fn find_all_media_variants(base_dir: String, filename: String) -> Vec<
         (path.file_stem(), path.extension(), path.parent())
     {
         let stem_str = stem.to_string_lossy();
+        let (variant_base, detected_suffix) = split_variant_stem(&stem_str);
         let ext_str = ext.to_string_lossy();
+        let variants_dir = PathBuf::from(&base_dir).join(parent);
+
+        let mut numbered_results = Vec::new();
+        let mut numbered_gap_seen = false;
         for i in 1..=9 {
-            let mut found_any = false;
-
-            let variant_name = format!("{}_{}.{}", stem_str, i, ext_str);
-            let variant_full = PathBuf::from(&base_dir).join(parent).join(&variant_name);
+            let variant_name = format!("{}_{}.{}", variant_base, i, ext_str);
+            let variant_full = variants_dir.join(&variant_name);
             if variant_full.exists() {
-                results.push(variant_full.to_string_lossy().to_string());
-                found_any = true;
+                numbered_results.push(variant_full.to_string_lossy().to_string());
+            } else if detected_suffix.is_none() || !numbered_results.is_empty() {
+                numbered_gap_seen = true;
             }
 
-            let alpha_char = (97 + i - 1) as u8 as char;
-            let variant_alpha = format!("{}_{}.{}", stem_str, alpha_char, ext_str);
-            let variant_full_alpha = PathBuf::from(&base_dir).join(parent).join(&variant_alpha);
-            if variant_full_alpha.exists() {
-                results.push(variant_full_alpha.to_string_lossy().to_string());
-                found_any = true;
-            }
-
-            if !found_any {
+            if numbered_gap_seen && !numbered_results.is_empty() {
                 break;
+            }
+        }
+
+        let mut alpha_results = Vec::new();
+        let mut alpha_gap_seen = false;
+        for alpha_char in 'a'..='i' {
+            let variant_name = format!("{}_{}.{}", variant_base, alpha_char, ext_str);
+            let variant_full_alpha = variants_dir.join(&variant_name);
+            if variant_full_alpha.exists() {
+                alpha_results.push(variant_full_alpha.to_string_lossy().to_string());
+            } else if detected_suffix.is_none() || !alpha_results.is_empty() {
+                alpha_gap_seen = true;
+            }
+
+            if alpha_gap_seen && !alpha_results.is_empty() {
+                break;
+            }
+        }
+
+        for variant in numbered_results.into_iter().chain(alpha_results) {
+            if !results.iter().any(|existing| existing == &variant) {
+                results.push(variant);
             }
         }
     }
@@ -249,6 +279,23 @@ mod tests {
         assert!(variants.iter().any(|v| v.contains("game.png")));
         assert!(variants.iter().any(|v| v.contains("game_1.png")));
         assert!(variants.iter().any(|v| v.contains("game_a.png")));
+    }
+
+    #[tokio::test]
+    async fn test_find_all_media_variants_from_already_suffixed_filename() {
+        let dir = tempdir().unwrap();
+        let base = dir.path().to_string_lossy().to_string();
+
+        File::create(dir.path().join("barbarian2_1.png")).unwrap();
+        File::create(dir.path().join("barbarian2_2.png")).unwrap();
+        File::create(dir.path().join("barbarian2_3.png")).unwrap();
+
+        let variants = find_all_media_variants(base, "barbarian2_1.png".to_string()).await;
+
+        assert_eq!(variants.len(), 3);
+        assert!(variants.iter().any(|v| v.contains("barbarian2_1.png")));
+        assert!(variants.iter().any(|v| v.contains("barbarian2_2.png")));
+        assert!(variants.iter().any(|v| v.contains("barbarian2_3.png")));
     }
 
     #[tokio::test]

@@ -1,4 +1,4 @@
-import { expect, test, describe, vi } from 'vitest';
+import { expect, test, describe } from 'vitest';
 import { render, screen, fireEvent } from '@testing-library/react';
 import { ImageWithFallback } from './ImageWithFallback';
 

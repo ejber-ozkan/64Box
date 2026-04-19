@@ -59,12 +59,15 @@ export function MusicianPhoto({ photoFilename, musicianName, className = "", sty
   }
 
   return (
-    <img
-      src={photoUrl}
-      alt={musicianName}
-      className={`object-cover rounded-full border-2 border-blue-500/50 shadow-lg ${className}`}
-      style={style}
-      onError={() => setError(true)}
-    />
+    <>
+      {/* eslint-disable-next-line @next/next/no-img-element -- musician photos can come from local runtime-resolved asset URLs */}
+      <img
+        src={photoUrl}
+        alt={musicianName}
+        className={`object-cover rounded-full border-2 border-blue-500/50 shadow-lg ${className}`}
+        style={style}
+        onError={() => setError(true)}
+      />
+    </>
   );
 }

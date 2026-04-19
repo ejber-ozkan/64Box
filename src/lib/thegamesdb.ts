@@ -19,13 +19,30 @@ export interface TheGamesDBResult {
   game_title: string;
   release_date: string;
   developer: string;
-  images?: any[];
+  images?: TheGamesDBImage[];
+  base_url?: string;
+}
+
+interface TheGamesDBGameLookupResponse {
+  code?: number;
+  data?: {
+    games?: TheGamesDBResult[];
+  };
+}
+
+interface TheGamesDBImageLookupResponse {
+  data?: {
+    base_url?: {
+      original?: string;
+    };
+    images?: Record<string, TheGamesDBImage[]>;
+  };
 }
 
 export async function searchTheGamesDB(
   apiKey: string,
   gameName: string
-): Promise<any | null> {
+): Promise<TheGamesDBResult | null> {
   if (!apiKey) return null;
 
   try {
@@ -38,7 +55,7 @@ export async function searchTheGamesDB(
     const response = await fetch(`${BASE_URL}Games/ByGameName?${params}`);
     if (!response.ok) return null;
 
-    const data = await response.json();
+    const data = await response.json() as TheGamesDBGameLookupResponse;
     if (data.code !== 200 || !data.data?.games?.length) return null;
 
     const game = data.data.games[0];
@@ -51,7 +68,7 @@ export async function searchTheGamesDB(
     
     const imgResponse = await fetch(`${BASE_URL}Games/Images?${imgParams}`);
     if (imgResponse.ok) {
-       const imgData = await imgResponse.json();
+       const imgData = await imgResponse.json() as TheGamesDBImageLookupResponse;
        game.images = imgData.data?.images?.[game.id] || [];
        game.base_url = imgData.data?.base_url?.original || '';
     }

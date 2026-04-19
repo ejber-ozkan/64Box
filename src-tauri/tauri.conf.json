@@ -2,7 +2,7 @@
   "$schema": "../node_modules/@tauri-apps/cli/config.schema.json",
   "productName": "64Box",
   "version": "0.6.0",
-  "identifier": "com.vic40gamebox.app",
+  "identifier": "com.vic40gamebox",
   "build": {
     "frontendDist": "../out",
     "devUrl": "http://localhost:3000",

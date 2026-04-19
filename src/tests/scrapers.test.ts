@@ -2,6 +2,8 @@ import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { searchScreenScraper } from '../lib/screenscraper';
 import { searchTheGamesDB } from '../lib/thegamesdb';
 
+type MockFetch = ReturnType<typeof vi.fn>;
+
 describe('Scraper Libraries', () => {
   beforeEach(() => {
     vi.stubGlobal('fetch', vi.fn());
@@ -21,7 +23,7 @@ describe('Scraper Libraries', () => {
         }
       };
 
-      (fetch as any).mockResolvedValue({
+      (fetch as MockFetch).mockResolvedValue({
         ok: true,
         json: async () => mockResponse,
       });
@@ -33,9 +35,10 @@ describe('Scraper Libraries', () => {
     });
 
     it('returns null on API error', async () => {
-      (fetch as any).mockResolvedValue({
+      (fetch as MockFetch).mockResolvedValue({
         ok: false,
         statusText: 'Not Found',
+        text: async () => 'Not Found',
       });
 
       const result = await searchScreenScraper('user', 'pass', 'badgame');
@@ -61,7 +64,7 @@ describe('Scraper Libraries', () => {
         }
       };
 
-      (fetch as any)
+      (fetch as MockFetch)
         .mockResolvedValueOnce({
           ok: true,
           json: async () => mockGameResponse,

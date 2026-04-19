@@ -3,6 +3,8 @@ pub mod database;
 pub mod models;
 pub mod security;
 
+use tauri::Manager;
+
 // ---------------------------------------------------------------------------
 // Application entry point
 // ---------------------------------------------------------------------------
@@ -42,6 +44,11 @@ pub fn run() {
         .setup(|app| {
             let _ = database::configure_runtime_db_path(app.handle());
             let _ = database::init_database();
+            if let Some(window) = app.get_webview_window("main") {
+                if let Some(icon) = app.default_window_icon().cloned() {
+                    let _ = window.set_icon(icon);
+                }
+            }
             Ok(())
         })
         .run(tauri::generate_context!())

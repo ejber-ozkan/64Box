@@ -1,22 +1,29 @@
 "use client";
 
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 
 const FAV_KEY = 'gb64_favorites';
 
-export function useFavorites() {
-  const [favorites, setFavorites] = useState<string[]>([]);
+function loadFavorites(): string[] {
+  if (typeof window === 'undefined') {
+    return [];
+  }
 
-  useEffect(() => {
-    if (typeof window !== 'undefined') {
-      try {
-        const saved = localStorage.getItem(FAV_KEY);
-        if (saved) setFavorites(JSON.parse(saved));
-      } catch {
-        setFavorites([]);
-      }
+  try {
+    const saved = localStorage.getItem(FAV_KEY);
+    if (!saved) {
+      return [];
     }
-  }, []);
+
+    const parsed = JSON.parse(saved);
+    return Array.isArray(parsed) ? parsed.filter((value): value is string => typeof value === 'string') : [];
+  } catch {
+    return [];
+  }
+}
+
+export function useFavorites() {
+  const [favorites, setFavorites] = useState<string[]>(loadFavorites);
 
   const toggleFavorite = (gameId: string) => {
     setFavorites(prev => {

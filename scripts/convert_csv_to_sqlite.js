@@ -1,215 +1,246 @@
-const fs = require('fs');
-const path = require('path');
-const { parse } = require('csv-parse/sync');
-const Database = require('better-sqlite3');
+const fs = require("fs");
+const path = require("path");
+const { parse } = require("csv-parse/sync");
+const Database = require("better-sqlite3");
 
-const outputDir = path.join(__dirname, '../gb64_export');
-const dbPath = path.join(__dirname, '../gb64.sqlite');
+const { performanceIndexes, supportObjects } = require("./sqlite_support_config");
 
-// [MODIFIED] Do NOT delete the database file to preserve settings/other tables
-// if (fs.existsSync(dbPath)) {
-//     fs.unlinkSync(dbPath);
-// }
+function getArgValue(flag) {
+  const index = process.argv.indexOf(flag);
+  if (index === -1 || index === process.argv.length - 1) {
+    return undefined;
+  }
 
+  return process.argv[index + 1];
+}
+
+function resolvePath(flag, envVar, fallbackPath) {
+  const explicitPath = getArgValue(flag) || process.env[envVar];
+  return path.resolve(explicitPath || fallbackPath);
+}
+
+const outputDir = resolvePath("--input-dir", "GB64_EXPORT_DIR", path.join(__dirname, "../gb64_export"));
+const dbPath = resolvePath("--db", "GB64_SQLITE_PATH", path.join(__dirname, "../gb64.sqlite"));
+
+console.log(`Importing CSV files from ${outputDir}`);
 console.log(`Connecting to database at ${dbPath}...`);
 const db = new Database(dbPath);
 
-const performanceIndexes = [
-    ['Games', 'CREATE INDEX IF NOT EXISTS idx_games_ga_id ON Games(GA_Id)'],
-    ['Games', 'CREATE INDEX IF NOT EXISTS idx_games_name_nocase ON Games(Name COLLATE NOCASE)'],
-    ['Games', 'CREATE INDEX IF NOT EXISTS idx_games_ye_id ON Games(YE_Id)'],
-    ['Games', 'CREATE INDEX IF NOT EXISTS idx_games_ge_id ON Games(GE_Id)'],
-    ['Games', 'CREATE INDEX IF NOT EXISTS idx_games_de_id ON Games(DE_Id)'],
-    ['Games', 'CREATE INDEX IF NOT EXISTS idx_games_pu_id ON Games(PU_Id)'],
-    ['Games', 'CREATE INDEX IF NOT EXISTS idx_games_mu_id ON Games(MU_Id)'],
-    ['Games', 'CREATE INDEX IF NOT EXISTS idx_games_la_id ON Games(LA_Id)'],
-    ['Games', 'CREATE INDEX IF NOT EXISTS idx_games_pr_id ON Games(PR_Id)'],
-    ['Games', 'CREATE INDEX IF NOT EXISTS idx_games_ar_id ON Games(AR_Id)'],
-    ['Games', 'CREATE INDEX IF NOT EXISTS idx_games_classic ON Games(Classic)'],
-    ['Games', 'CREATE INDEX IF NOT EXISTS idx_games_adult ON Games(Adult)'],
-    ['Years', 'CREATE INDEX IF NOT EXISTS idx_years_ye_id ON Years(YE_Id)'],
-    ['Genres', 'CREATE INDEX IF NOT EXISTS idx_genres_ge_id ON Genres(GE_Id)'],
-    ['Genres', 'CREATE INDEX IF NOT EXISTS idx_genres_pg_id ON Genres(PG_Id)'],
-    ['PGenres', 'CREATE INDEX IF NOT EXISTS idx_pgenres_pg_id ON PGenres(PG_Id)'],
-    ['Developers', 'CREATE INDEX IF NOT EXISTS idx_developers_de_id ON Developers(DE_Id)'],
-    ['Publishers', 'CREATE INDEX IF NOT EXISTS idx_publishers_pu_id ON Publishers(PU_Id)'],
-    ['Musicians', 'CREATE INDEX IF NOT EXISTS idx_musicians_mu_id ON Musicians(MU_Id)'],
-    ['Languages', 'CREATE INDEX IF NOT EXISTS idx_languages_la_id ON Languages(LA_Id)'],
-    ['Programmers', 'CREATE INDEX IF NOT EXISTS idx_programmers_pr_id ON Programmers(PR_Id)'],
-    ['Artists', 'CREATE INDEX IF NOT EXISTS idx_artists_ar_id ON Artists(AR_Id)'],
-    ['Extras', 'CREATE INDEX IF NOT EXISTS idx_extras_ga_id ON Extras(GA_Id)'],
-    ['Extras', 'CREATE INDEX IF NOT EXISTS idx_extras_ga_id_display_order ON Extras(GA_Id, DisplayOrder)'],
-];
-
 function tableExists(tableName) {
-    return Boolean(
-        db.prepare(
-            "SELECT 1 FROM sqlite_master WHERE type = 'table' AND name = ? LIMIT 1"
-        ).get(tableName)
-    );
+  return Boolean(
+    db.prepare(
+      "SELECT 1 FROM sqlite_master WHERE type = 'table' AND name = ? LIMIT 1"
+    ).get(tableName)
+  );
+}
+
+function sqliteObjectExists(name, type) {
+  return Boolean(
+    db.prepare(
+      "SELECT 1 FROM sqlite_master WHERE type = ? AND name = ? LIMIT 1"
+    ).get(type, name)
+  );
 }
 
 function createPerformanceIndexes() {
-    console.log('Creating performance indexes...');
-    for (const [tableName, sql] of performanceIndexes) {
-        if (tableExists(tableName)) {
-            db.exec(sql);
-        }
+  console.log("Creating performance indexes...");
+  for (const [tableName, , sql] of performanceIndexes) {
+    if (tableExists(tableName)) {
+      db.exec(sql);
     }
+  }
 }
 
 function rebuildCoverIndex() {
-    console.log('Creating cover lookup table...');
-    db.exec('DROP TABLE IF EXISTS GameCoverIndex');
-    db.exec(`
-        CREATE TABLE GameCoverIndex AS
-        SELECT
-            GA_Id,
-            MIN(Path) as cover_path
-        FROM Extras
-        WHERE LOWER(REPLACE(Path, '\\\\', '/')) LIKE 'cover/%'
-          AND (
-              LOWER(Path) LIKE '%.jpg'
-              OR LOWER(Path) LIKE '%.jpeg'
-              OR LOWER(Path) LIKE '%.png'
-              OR LOWER(Path) LIKE '%.webp'
-              OR LOWER(Path) LIKE '%.gif'
-              OR LOWER(Path) LIKE '%.bmp'
-          )
-        GROUP BY GA_Id
-    `);
-    db.exec(
-        'CREATE UNIQUE INDEX IF NOT EXISTS idx_game_cover_index_ga_id ON GameCoverIndex(GA_Id)'
-    );
+  console.log("Creating cover lookup table...");
+  db.exec("DROP TABLE IF EXISTS GameCoverIndex");
+  db.exec(`
+    CREATE TABLE GameCoverIndex AS
+    SELECT
+      GA_Id,
+      MIN(Path) as cover_path
+    FROM Extras
+    WHERE LOWER(REPLACE(Path, '\\\\', '/')) LIKE 'cover/%'
+      AND (
+        LOWER(Path) LIKE '%.jpg'
+        OR LOWER(Path) LIKE '%.jpeg'
+        OR LOWER(Path) LIKE '%.png'
+        OR LOWER(Path) LIKE '%.webp'
+        OR LOWER(Path) LIKE '%.gif'
+        OR LOWER(Path) LIKE '%.bmp'
+      )
+    GROUP BY GA_Id
+  `);
+  db.exec(
+    "CREATE UNIQUE INDEX IF NOT EXISTS idx_game_cover_index_ga_id ON GameCoverIndex(GA_Id)"
+  );
 }
 
 function rebuildSearchIndex() {
-    console.log('Creating full-text search index...');
-    db.exec('DROP TABLE IF EXISTS GameSearchIndex');
-    db.exec(`
-        CREATE VIRTUAL TABLE GameSearchIndex USING fts5(
-            id UNINDEXED,
-            name,
-            developer_name,
-            publisher_name,
-            musician_name,
-            coder_name,
-            graphics_name,
-            tokenize='porter unicode61 remove_diacritics 2',
-            prefix='2,3'
-        )
-    `);
-    db.exec(`
-        INSERT INTO GameSearchIndex (
-            id,
-            name,
-            developer_name,
-            publisher_name,
-            musician_name,
-            coder_name,
-            graphics_name
-        )
-        SELECT
-            gv.id,
-            gv.name,
-            ifnull(gv.developer_name, ''),
-            ifnull(gv.publisher_name, ''),
-            ifnull(gv.musician_name, ''),
-            ifnull(pr.Programmer, ''),
-            ifnull(ar.Artist, '')
-        FROM GameView gv
-        JOIN Games g ON gv.id = g.GA_Id
-        LEFT JOIN Programmers pr ON g.PR_Id = pr.PR_Id
-        LEFT JOIN Artists ar ON g.AR_Id = ar.AR_Id
-    `);
-    db.exec(`INSERT INTO GameSearchIndex(GameSearchIndex) VALUES('optimize')`);
+  console.log("Creating full-text search index...");
+  db.exec("DROP TABLE IF EXISTS GameSearchIndex");
+  db.exec(`
+    CREATE VIRTUAL TABLE GameSearchIndex USING fts5(
+      id UNINDEXED,
+      name,
+      developer_name,
+      publisher_name,
+      musician_name,
+      coder_name,
+      graphics_name,
+      tokenize='porter unicode61 remove_diacritics 2',
+      prefix='2,3'
+    )
+  `);
+  db.exec(`
+    INSERT INTO GameSearchIndex (
+      id,
+      name,
+      developer_name,
+      publisher_name,
+      musician_name,
+      coder_name,
+      graphics_name
+    )
+    SELECT
+      gv.id,
+      gv.name,
+      ifnull(gv.developer_name, ''),
+      ifnull(gv.publisher_name, ''),
+      ifnull(gv.musician_name, ''),
+      ifnull(pr.Programmer, ''),
+      ifnull(ar.Artist, '')
+    FROM GameView gv
+    JOIN Games g ON gv.id = g.GA_Id
+    LEFT JOIN Programmers pr ON g.PR_Id = pr.PR_Id
+    LEFT JOIN Artists ar ON g.AR_Id = ar.AR_Id
+  `);
+  db.exec("INSERT INTO GameSearchIndex(GameSearchIndex) VALUES('optimize')");
 }
 
-// Enable WAL mode for performance
-db.pragma('journal_mode = WAL');
+function optimizeDatabase() {
+  console.log("Running ANALYZE and PRAGMA optimize...");
+  db.exec("ANALYZE");
+  db.pragma("optimize");
+}
 
-// [MODIFIED] Dynamically get all CSV files from the export directory
-const csvFiles = fs.readdirSync(outputDir).filter(f => f.endsWith('.csv'));
+function verifySupportObjects() {
+  const missingIndexes = [];
+  for (const [tableName, indexName] of performanceIndexes) {
+    if (!tableExists(tableName)) {
+      continue;
+    }
+
+    if (!sqliteObjectExists(indexName, "index")) {
+      missingIndexes.push(indexName);
+    }
+  }
+
+  const missingSupportObjects = supportObjects
+    .filter(({ name, type }) => !sqliteObjectExists(name, type))
+    .map(({ name, type }) => `${name} (${type})`);
+
+  if (missingIndexes.length > 0 || missingSupportObjects.length > 0) {
+    const messages = [];
+    if (missingIndexes.length > 0) {
+      messages.push(`Missing indexes: ${missingIndexes.join(", ")}`);
+    }
+    if (missingSupportObjects.length > 0) {
+      messages.push(`Missing support objects: ${missingSupportObjects.join(", ")}`);
+    }
+    throw new Error(messages.join("\n"));
+  }
+}
+
+db.pragma("journal_mode = WAL");
+
+if (!fs.existsSync(outputDir)) {
+  throw new Error(`CSV export directory was not found: ${outputDir}`);
+}
+
+const csvFiles = fs
+  .readdirSync(outputDir)
+  .filter((fileName) => fileName.endsWith(".csv"))
+  .sort();
+
 console.log(`Found ${csvFiles.length} CSV files to import.`);
 
 for (const file of csvFiles) {
-    const tableName = path.basename(file, '.csv');
-    const csvFile = path.join(outputDir, file);
-    
-    console.log(`Importing ${tableName}...`);
-    
-    const fileContent = fs.readFileSync(csvFile, 'utf8');
-    const records = parse(fileContent, {
-        columns: true,
-        skip_empty_lines: true,
-        bom: true
-    });
+  const tableName = path.basename(file, ".csv");
+  const csvFile = path.join(outputDir, file);
 
-    if (records.length === 0) {
-        console.warn(`Skipping ${tableName}, no records found.`);
-        continue;
+  console.log(`Importing ${tableName}...`);
+
+  const fileContent = fs.readFileSync(csvFile, "utf8");
+  const records = parse(fileContent, {
+    columns: true,
+    skip_empty_lines: true,
+    bom: true,
+  });
+
+  if (records.length === 0) {
+    console.warn(`Skipping ${tableName}, no records found.`);
+    continue;
+  }
+
+  db.exec(`DROP TABLE IF EXISTS "${tableName}"`);
+
+  const columns = Object.keys(records[0]);
+  const colsDef = columns.map((columnName) => `"${columnName}" TEXT`).join(", ");
+
+  db.exec(`CREATE TABLE "${tableName}" (${colsDef})`);
+
+  const insertSql = `INSERT INTO "${tableName}" (${columns
+    .map((columnName) => `"${columnName}"`)
+    .join(", ")}) VALUES (${columns.map(() => "?").join(", ")})`;
+  const stmt = db.prepare(insertSql);
+
+  const insertMany = db.transaction((rows) => {
+    for (const row of rows) {
+      stmt.run(columns.map((columnName) => row[columnName] || ""));
     }
+  });
 
-    // [MODIFIED] Drop existing table before recreating it
-    db.exec(`DROP TABLE IF EXISTS "${tableName}"`);
-
-    // Create table using the columns from the first record
-    const columns = Object.keys(records[0]);
-    // Map columns to TEXT for simplicity as per original design
-    const colsDef = columns.map(c => `"${c}" TEXT`).join(', ');
-    
-    db.exec(`CREATE TABLE "${tableName}" (${colsDef})`);
-
-    const insertSql = `INSERT INTO "${tableName}" (${columns.map(c => `"${c}"`).join(', ')}) VALUES (${columns.map(() => '?').join(', ')})`;
-    const stmt = db.prepare(insertSql);
-
-    const insertMany = db.transaction((rows) => {
-        for (const row of rows) {
-            stmt.run(columns.map(c => row[c] || ''));
-        }
-    });
-
-    try {
-        insertMany(records);
-        console.log(`Successfully imported ${records.length} records into ${tableName}.`);
-    } catch (err) {
-        console.error(`Error importing ${tableName}:`, err.message);
-    }
+  try {
+    insertMany(records);
+    console.log(`Successfully imported ${records.length} records into ${tableName}.`);
+  } catch (error) {
+    console.error(`Error importing ${tableName}:`, error.message);
+    throw error;
+  }
 }
 
-// Create views and indexes for the frontend
-console.log('Creating optimized views...');
-
+console.log("Creating optimized views...");
 createPerformanceIndexes();
-if (tableExists('Extras')) {
-    rebuildCoverIndex();
+if (tableExists("Extras")) {
+  rebuildCoverIndex();
 }
 
-db.exec(`DROP VIEW IF EXISTS GameView`);
+db.exec("DROP VIEW IF EXISTS GameView");
 db.exec(`
 CREATE VIEW GameView AS
-SELECT 
-    g.GA_Id as id,
-    g.Name as name,
-    g.Filename as filename,
-    CASE WHEN ifnull(g.FileToRun, '') != '' THEN g.FileToRun ELSE g.Filename END as gameFilename,
-    g.ScrnshotFilename as screenshotFilename,
-    NULL as boxFrontFilename,
-    NULL as titlescreenFilename,
-    NULL as videoSnapFilename,
-    g.SidFilename as sidFilename,
-    g.CRC as crc,
-    y.Year as year,
-    CASE WHEN g.V_PalNTSC = 'P' OR g.V_PalNTSC = 'B' THEN 1 ELSE 0 END as isPal,
-    CASE WHEN g.V_PalNTSC = 'N' OR g.V_PalNTSC = 'B' THEN 1 ELSE 0 END as isNtsc,
-    CASE WHEN g.V_TrueDriveEmu = '1' THEN 1 ELSE 0 END as trueDriveEmu,
-    CASE WHEN g.Classic = 'True' THEN 1 ELSE 0 END as isClassic,
-    ifnull(pg.ParentGenre, 'Unknown') as parentGenre,
-    ifnull(ge.Genre, 'Unknown') as subGenre,
-    de.Developer as developer_name,
-    pu.Publisher as publisher_name,
-    mu.Musician as musician_name,
-    la.Language as languages
+SELECT
+  g.GA_Id as id,
+  g.Name as name,
+  g.Filename as filename,
+  CASE WHEN ifnull(g.FileToRun, '') != '' THEN g.FileToRun ELSE g.Filename END as gameFilename,
+  g.ScrnshotFilename as screenshotFilename,
+  NULL as boxFrontFilename,
+  NULL as titlescreenFilename,
+  NULL as videoSnapFilename,
+  g.SidFilename as sidFilename,
+  g.CRC as crc,
+  y.Year as year,
+  CASE WHEN g.V_PalNTSC = 'P' OR g.V_PalNTSC = 'B' THEN 1 ELSE 0 END as isPal,
+  CASE WHEN g.V_PalNTSC = 'N' OR g.V_PalNTSC = 'B' THEN 1 ELSE 0 END as isNtsc,
+  CASE WHEN g.V_TrueDriveEmu = '1' THEN 1 ELSE 0 END as trueDriveEmu,
+  CASE WHEN g.Classic = 'True' THEN 1 ELSE 0 END as isClassic,
+  ifnull(pg.ParentGenre, 'Unknown') as parentGenre,
+  ifnull(ge.Genre, 'Unknown') as subGenre,
+  de.Developer as developer_name,
+  pu.Publisher as publisher_name,
+  mu.Musician as musician_name,
+  la.Language as languages
 FROM Games g
 LEFT JOIN Years y ON g.YE_Id = y.YE_Id
 LEFT JOIN Genres ge ON g.GE_Id = ge.GE_Id
@@ -221,7 +252,8 @@ LEFT JOIN Languages la ON g.LA_Id = la.LA_Id;
 `);
 
 rebuildSearchIndex();
+optimizeDatabase();
+verifySupportObjects();
 
 db.close();
 console.log(`Success! Database updated at ${dbPath}`);
-

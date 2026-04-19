@@ -1,7 +1,5 @@
 "use client";
 
-import { useEffect, useState } from 'react';
-
 interface AlphabetJumpBarProps {
   onLetterSelect: (letter: string) => void;
   activeLetter?: string;

@@ -68,6 +68,7 @@ export function ImageSlider({
   }
 
   const isSlide = settings.imageAnimation === 'slide';
+  const activeImage = images[currentIndex] ?? null;
 
   return (
     <div className={`relative overflow-hidden ${resolvedContainerClassName}`}>
@@ -79,12 +80,14 @@ export function ImageSlider({
                   : 'none' 
             }}
         >
-            {images.map((src, idx) => (
+            {isSlide ? (
+              images.map((src, idx) => (
                 <div key={`${src}-${idx}`} className="w-full h-full shrink-0">
+                    {/* eslint-disable-next-line @next/next/no-img-element -- local asset and Tauri media URLs are resolved dynamically at runtime */}
                     <img
                         src={src}
                         alt={`${alt} ${idx + 1}`}
-                        className={`w-full h-full ${resolvedImageClassName} ${!isSlide && currentIndex !== idx ? 'hidden' : ''} ${!isSlide ? 'animate-in fade-in duration-500' : ''}`}
+                        className={`w-full h-full ${resolvedImageClassName}`}
                         onError={() => {
                             if (images.length === 1) {
                                 setHasError(true);
@@ -93,10 +96,29 @@ export function ImageSlider({
                                 setCurrentIndex(prev => prev % (images.length - 1 || 1));
                             }
                         }}
-                        loading="lazy"
+                        loading="eager"
                     />
                 </div>
-            ))}
+              ))
+            ) : activeImage ? (
+              <div key={activeImage} className="w-full h-full shrink-0">
+                  {/* eslint-disable-next-line @next/next/no-img-element -- local asset and Tauri media URLs are resolved dynamically at runtime */}
+                  <img
+                      src={activeImage}
+                      alt={`${alt} ${currentIndex + 1}`}
+                      className={`w-full h-full ${resolvedImageClassName} animate-in fade-in duration-500`}
+                      onError={() => {
+                          if (images.length === 1) {
+                              setHasError(true);
+                          } else {
+                              setImages(prev => prev.filter((_, i) => i !== currentIndex));
+                              setCurrentIndex(prev => prev % (images.length - 1 || 1));
+                          }
+                      }}
+                      loading="eager"
+                  />
+              </div>
+            ) : null}
         </div>
     </div>
   );

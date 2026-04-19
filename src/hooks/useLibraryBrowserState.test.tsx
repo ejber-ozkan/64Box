@@ -135,6 +135,8 @@ describe('useLibraryBrowserState', () => {
       await vi.advanceTimersByTimeAsync(400);
     });
 
+    vi.useRealTimers();
+
     expect(result.current.filters.searchQuery).toBe('Commando');
     expect(result.current.filters.letter).toBeUndefined();
     expect(result.current.filters.genre).toBeUndefined();

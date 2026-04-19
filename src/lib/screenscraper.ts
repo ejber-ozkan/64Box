@@ -24,6 +24,37 @@ export interface ScreenScraperResult {
   media: ScreenScraperMedia[];
 }
 
+interface ScreenScraperLocalizedName {
+  langue?: string;
+  nom?: string;
+}
+
+interface ScreenScraperSynopsis {
+  langue?: string;
+  synopsis?: string;
+}
+
+interface ScreenScraperMediaResponse {
+  type?: string;
+  url?: string;
+  format?: string;
+}
+
+interface ScreenScraperGameResponse {
+  id?: string;
+  nom?: string;
+  noms?: ScreenScraperLocalizedName[];
+  synopsis?: ScreenScraperSynopsis[];
+  medias?: ScreenScraperMediaResponse[];
+}
+
+interface ScreenScraperApiResponse {
+  response?: {
+    error?: string;
+  };
+  jeu?: ScreenScraperGameResponse;
+}
+
 export async function searchScreenScraper(
   user: string,
   pass: string,
@@ -66,7 +97,7 @@ export async function searchScreenScraper(
       return null;
     }
 
-    const data = await response.json();
+    const data = await response.json() as ScreenScraperApiResponse;
     if (data.response?.error) {
        console.error('ScreenScraper API Error:', data.response.error);
        return null;
@@ -76,17 +107,17 @@ export async function searchScreenScraper(
     if (!jeu) return null;
 
     // Map media
-    const media: ScreenScraperMedia[] = (jeu.medias || []).map((m: any) => ({
-      type: m.type,
-      url: m.url,
-      format: m.format
+    const media: ScreenScraperMedia[] = (jeu.medias || []).map((m) => ({
+      type: m.type ?? '',
+      url: m.url ?? '',
+      format: m.format ?? '',
     }));
 
     return {
-      id: jeu.id,
-      name: jeu.noms?.find((n: any) => n.langue === 'en')?.nom || jeu.nom || 'Unknown',
-      description: jeu.synopsis?.find((s: any) => s.langue === 'en')?.synopsis || '',
-      media
+      id: jeu.id ?? '',
+      name: jeu.noms?.find((n) => n.langue === 'en')?.nom || jeu.nom || 'Unknown',
+      description: jeu.synopsis?.find((s) => s.langue === 'en')?.synopsis || '',
+      media,
     };
   } catch (err) {
     console.error('ScreenScraper fetch error:', err);

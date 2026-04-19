@@ -180,9 +180,6 @@ export function useBigBoxNavigation({
     const isHeaderActive = activeRailIndex === -1;
     const rail = rails[activeRailIndex];
     const focusedIndex = rail ? (railFocusIndices[rail.id] ?? 0) : 0;
-    const isGrid = rail?.type === 'alphabet';
-    const columns = gridColumns;
-
     if (!isHeaderActive && !rail) {
       setSectionJumpDirection(null);
       setActiveRailIndex(-1);
@@ -375,6 +372,7 @@ export function useBigBoxNavigation({
     setActiveHeaderRow,
     setActiveRailIndex,
     setRailFocusIndices,
+    sectionJumpDirection,
     toggleFavorite,
     visibleSubGenres,
     onOpenSubGenrePicker,

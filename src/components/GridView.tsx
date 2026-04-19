@@ -1,5 +1,4 @@
 import { Game } from '../types/game';
-import { useSettings } from '../contexts/SettingsContext';
 import { ImageSlider } from './ImageSlider';
 import { useFavorites } from '../hooks/useFavorites';
 import { useEffect, useRef } from 'react';
@@ -12,7 +11,6 @@ interface GridViewProps {
 }
 
 export function GridView({ games, onSelectGame, focusedIndex = -1, onFocusChange }: GridViewProps) {
-  const { resolveMediaPath } = useSettings();
   const { isFavorite, toggleFavorite } = useFavorites();
   
   const containerRef = useRef<HTMLDivElement>(null);

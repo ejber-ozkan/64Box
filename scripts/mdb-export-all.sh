@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Usage: ./scripts/mdb-export-all.sh [full-path-to-db]
+# Usage: ./scripts/mdb-export-all.sh [full-path-to-db] [output-dir]
 
 command -v mdb-tables >/dev/null 2>&1 || {
     echo >&2 "I require mdb-tables but it's not installed. Aborting.";
@@ -19,8 +19,8 @@ if [ ! -f "$fullfilename" ]; then
     exit 1
 fi
 
-# Export to gb64_export directory in root
-export_dir="./gb64_export"
+# Export to gb64_export directory in root unless an explicit dir is passed
+export_dir=${2:-"./gb64_export"}
 mkdir -p "$export_dir"
 
 echo "Exporting $fullfilename to $export_dir..."
