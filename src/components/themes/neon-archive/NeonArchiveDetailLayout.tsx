@@ -6,7 +6,7 @@ import { useSettings } from '../../../contexts/SettingsContext';
 import { cleanMetadataValue, getGameStudios } from '../../../lib/game-display';
 import type { Extra, Game } from '../../../types/game';
 import { groupExtras } from '../../../lib/extras';
-import { isLaunchableExtra } from '../../../lib/steam-extras';
+import { isLaunchableExtra } from '../../../lib/extras';
 import { ImageSlider } from '../../ImageSlider';
 import { ExtrasDetail, type ExtrasBigscreenNavigation } from '../../ExtrasDetail';
 import { MusicianPhoto } from '../../MusicianPhoto';

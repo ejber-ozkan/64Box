@@ -28,10 +28,19 @@ describe('ui sound effects helpers', () => {
   });
 
   test('rotates through sequence filenames using localStorage state', () => {
-    window.localStorage.clear();
+    // happy-dom does not expose window.localStorage in this test worker;
+    // stub it with a minimal in-memory Map so the rotation logic is exerciseable.
+    const store = new Map<string, string>();
+    const localStorageStub = {
+      getItem: (key: string) => store.get(key) ?? null,
+      setItem: (key: string, value: string) => { store.set(key, value); },
+    };
+    vi.stubGlobal('localStorage', localStorageStub);
 
     expect(getNextRotatingUiSoundEffect('launch', ['a.mp3', 'b.mp3'])).toBe('a.mp3');
     expect(getNextRotatingUiSoundEffect('launch', ['a.mp3', 'b.mp3'])).toBe('b.mp3');
     expect(getNextRotatingUiSoundEffect('launch', ['a.mp3', 'b.mp3'])).toBe('a.mp3');
+
+    vi.unstubAllGlobals();
   });
 });

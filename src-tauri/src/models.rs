@@ -71,6 +71,13 @@ pub struct GameRow {
     pub sub_genre: String,
     pub developer_name: Option<String>,
     pub publisher_name: Option<String>,
+}
+
+#[derive(Debug, Serialize, Deserialize, Clone)]
+#[serde(rename_all = "camelCase")]
+pub struct GameDetailRow {
+    #[serde(flatten)]
+    pub game: GameRow,
     pub musician_name: Option<String>,
     pub musician_photo: Option<String>,
     pub musician_nick: Option<String>,

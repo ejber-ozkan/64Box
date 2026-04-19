@@ -62,3 +62,43 @@ export function groupExtras(extras: Extra[]): ExtraGroup[] {
 
   return result;
 }
+
+/**
+ * Safely joins the base extras directory path with the specific extra's relative path,
+ * normalizing slashes and avoiding double-slashes.
+ */
+export function buildExtraAssetPath(extrasPath: string | null | undefined, extraPath: string): string {
+  const cleanExtrasPath = (extrasPath || '').replace(/\\/g, '/').replace(/\/+$/, '');
+  const cleanExtraPath = extraPath.replace(/\\/g, '/').replace(/^\/+/, '');
+  return [cleanExtrasPath, cleanExtraPath].filter(Boolean).join('/');
+}
+
+export function getExtraExtension(extra: Extra) {
+  return extra.path.split('.').pop()?.toLowerCase() || '';
+}
+
+export function isImageExtra(extra: Extra) {
+  return IMG_EXT.includes(getExtraExtension(extra));
+}
+
+export function isVideoExtra(extra: Extra) {
+  return MEDIA_EXT.includes(getExtraExtension(extra));
+}
+
+export function getExtraSourceLabel(extra: Extra) {
+  return extra.path.split(/[\\/]/)[0] || 'Extras';
+}
+
+export function getExtraLaunchLabel(extra: Extra) {
+  const root = getExtraSourceLabel(extra).toLowerCase();
+  if (root.includes('tape')) return 'Launch Tape';
+  if (root.includes('disk')) return 'Launch Disk';
+  if (root.includes('cart')) return 'Launch Cart';
+  return 'Launch Variant';
+}
+
+export function isLaunchableExtra(extra: Extra) {
+  const root = getExtraSourceLabel(extra).toLowerCase();
+  return GAME_FOLDERS.some((candidate) => root.includes(candidate.toLowerCase()));
+}
+

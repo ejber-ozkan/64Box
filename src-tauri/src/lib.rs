@@ -28,6 +28,7 @@ pub fn run() {
             commands::system::set_window_mode,
             commands::system::get_window_size,
             commands::db::get_db_games,
+            commands::db::get_game_detail,
             commands::db::get_db_game_count,
             commands::db::get_genres,
             commands::db::get_sub_genres,

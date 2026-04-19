@@ -119,7 +119,27 @@ export const mockGames: Game[] = [
     vIncludedDocs: false,
     vTrueDriveEmu: false,
     vPalNtsc: '3',
-    memo: null
+    memo: null,
+    extras: [
+      {
+        id: 'commando-poster',
+        name: 'Archive Poster',
+        path: 'Cover/commando-poster.png',
+        type: 'image',
+      },
+      {
+        id: 'commando-manual',
+        name: 'Mission Manual',
+        path: 'Docs/commando-manual.pdf',
+        type: 'doc',
+      },
+      {
+        id: 'commando-theme',
+        name: 'SID Soundtrack',
+        path: 'mp3s/commando-theme.mp3',
+        type: 'audio',
+      },
+    ],
   },
   {
     id: 4,

@@ -383,17 +383,15 @@ fn ensure_cover_index(conn: &Connection) -> Result<(), String> {
     )
     .map_err(|e| e.to_string())?;
 
+    conn.execute("DELETE FROM GameCoverIndex", [])
+        .map_err(|e| e.to_string())?;
+
     if !table_exists(conn, "Extras")? {
         return Ok(());
     }
 
-    let cover_rows: i64 = conn
-        .query_row("SELECT COUNT(*) FROM GameCoverIndex", [], |row| row.get(0))
+    conn.execute(COVER_INDEX_POPULATE_SQL, [])
         .map_err(|e| e.to_string())?;
-    if cover_rows == 0 {
-        conn.execute(COVER_INDEX_POPULATE_SQL, [])
-            .map_err(|e| e.to_string())?;
-    }
 
     Ok(())
 }
@@ -441,20 +439,15 @@ fn ensure_search_index(conn: &Connection) -> Result<(), String> {
     )
     .map_err(|e| e.to_string())?;
 
-    let search_rows: i64 = conn
-        .query_row("SELECT COUNT(*) FROM GameSearchIndex", [], |row| row.get(0))
+    conn.execute("DELETE FROM GameSearchIndex", [])
         .map_err(|e| e.to_string())?;
-    if search_rows == 0 {
-        conn.execute("DELETE FROM GameSearchIndex", [])
-            .map_err(|e| e.to_string())?;
-        conn.execute(FTS_INDEX_POPULATE_SQL, [])
-            .map_err(|e| e.to_string())?;
-        conn.execute(
-            "INSERT INTO GameSearchIndex(GameSearchIndex) VALUES('optimize')",
-            [],
-        )
+    conn.execute(FTS_INDEX_POPULATE_SQL, [])
         .map_err(|e| e.to_string())?;
-    }
+    conn.execute(
+        "INSERT INTO GameSearchIndex(GameSearchIndex) VALUES('optimize')",
+        [],
+    )
+    .map_err(|e| e.to_string())?;
 
     Ok(())
 }
@@ -536,14 +529,9 @@ fn import_single_csv_table(
     let quoted_table_name = quote_identifier(table_name)?;
     let file = fs::File::open(csv_path).map_err(|error| format!("{}: {error}", csv_path.display()))?;
     let mut reader = BufReader::new(file);
-    let mut header_line = String::new();
-    let bytes_read = reader
-        .read_line(&mut header_line)
-        .map_err(|error| format!("{}: {error}", csv_path.display()))?;
-
-    if bytes_read == 0 {
+    let Some(header_line) = read_csv_record(&mut reader, csv_path)? else {
         return Ok(false);
-    }
+    };
 
     let header_values = parse_csv_line(&header_line)
         .into_iter()
@@ -589,17 +577,12 @@ fn import_single_csv_table(
         .map_err(|error| error.to_string())?;
     let mut imported_any_rows = false;
 
-    let mut line = String::new();
     loop {
-        line.clear();
-        let bytes_read = reader
-            .read_line(&mut line)
-            .map_err(|error| format!("{}: {error}", csv_path.display()))?;
-        if bytes_read == 0 {
+        let Some(record) = read_csv_record(&mut reader, csv_path)? else {
             break;
-        }
+        };
 
-        let values = normalize_record_values(parse_csv_line(&line), header_values.len());
+        let values = normalize_record_values(parse_csv_line(&record), header_values.len());
         statement
             .execute(params_from_iter(values.iter()))
             .map_err(|error| error.to_string())?;
@@ -615,6 +598,51 @@ fn normalize_record_values(record: Vec<String>, width: usize) -> Vec<String> {
     (0..width)
         .map(|index| record.get(index).cloned().unwrap_or_default())
         .collect()
+}
+
+fn read_csv_record<R: BufRead>(reader: &mut R, source_path: &Path) -> Result<Option<String>, String> {
+    let mut record = String::new();
+
+    loop {
+        let mut line = String::new();
+        let bytes_read = reader
+            .read_line(&mut line)
+            .map_err(|error| format!("{}: {error}", source_path.display()))?;
+
+        if bytes_read == 0 {
+            if record.is_empty() {
+                return Ok(None);
+            }
+
+            return Ok(Some(record));
+        }
+
+        record.push_str(&line);
+
+        if !csv_record_has_unclosed_quotes(&record) {
+            return Ok(Some(record));
+        }
+    }
+}
+
+fn csv_record_has_unclosed_quotes(record: &str) -> bool {
+    let mut in_quotes = false;
+    let characters: Vec<char> = record.chars().collect();
+    let mut index = 0usize;
+
+    while index < characters.len() {
+        if characters[index] == '"' {
+            if characters.get(index + 1) == Some(&'"') {
+                index += 1;
+            } else {
+                in_quotes = !in_quotes;
+            }
+        }
+
+        index += 1;
+    }
+
+    in_quotes
 }
 
 fn parse_csv_line(line: &str) -> Vec<String> {
@@ -725,29 +753,103 @@ fn export_mdb_to_csv(mdb_path: &Path, export_dir: &Path) -> Result<usize, String
     list_csv_files(export_dir).map(|files| files.len())
 }
 
-fn import_csv_directory_to_sqlite(export_dir: &Path) -> Result<usize, String> {
-    let db_path = get_db_path();
-    let mut conn = Connection::open(&db_path).map_err(|error| error.to_string())?;
-    conn.execute_batch("PRAGMA journal_mode = WAL;")
-        .map_err(|error| error.to_string())?;
+fn sqlite_sidecar_paths(path: &Path) -> Vec<PathBuf> {
+    let base = path.to_string_lossy();
+    vec![
+        PathBuf::from(base.as_ref()),
+        PathBuf::from(format!("{base}-wal")),
+        PathBuf::from(format!("{base}-shm")),
+    ]
+}
 
-    let csv_files = list_csv_files(export_dir)?;
-    if csv_files.is_empty() {
-        return Err("No CSV files were exported from the MDB.".to_string());
-    }
-
-    let mut imported_tables = 0usize;
-    for csv_file in csv_files {
-        if import_single_csv_table(&mut conn, &csv_file)? {
-            imported_tables += 1;
+fn remove_sqlite_artifacts(path: &Path) -> Result<(), String> {
+    for artifact in sqlite_sidecar_paths(path) {
+        if artifact.exists() {
+            fs::remove_file(&artifact).map_err(|error| error.to_string())?;
         }
     }
 
-    recreate_game_view(&conn)?;
-    ensure_query_indexes(&conn)?;
-    rebuild_cover_index(&conn)?;
-    rebuild_search_index(&conn)?;
-    ensure_secure_table_on_connection(&conn)?;
+    Ok(())
+}
+
+fn create_import_temp_db_path(db_path: &Path) -> Result<PathBuf, String> {
+    let timestamp = SystemTime::now()
+        .duration_since(UNIX_EPOCH)
+        .map_err(|error| error.to_string())?
+        .as_millis();
+    let file_name = db_path
+        .file_name()
+        .and_then(|value| value.to_str())
+        .unwrap_or("gb64.sqlite");
+    Ok(db_path.with_file_name(format!("{file_name}.importing.{timestamp}")))
+}
+
+fn replace_database_atomically(temp_db_path: &Path, live_db_path: &Path) -> Result<(), String> {
+    let backup_db_path = live_db_path.with_extension("sqlite.backup");
+
+    remove_sqlite_artifacts(&backup_db_path)?;
+
+    let live_exists = live_db_path.exists();
+    if live_exists {
+        fs::rename(live_db_path, &backup_db_path).map_err(|error| error.to_string())?;
+    }
+
+    if let Err(error) = fs::rename(temp_db_path, live_db_path) {
+        if live_exists && backup_db_path.exists() {
+            let _ = fs::rename(&backup_db_path, live_db_path);
+        }
+        let _ = remove_sqlite_artifacts(temp_db_path);
+        return Err(error.to_string());
+    }
+
+    if live_exists {
+        remove_sqlite_artifacts(&backup_db_path)?;
+    }
+
+    Ok(())
+}
+
+fn import_csv_directory_to_sqlite(export_dir: &Path) -> Result<usize, String> {
+    let live_db_path = PathBuf::from(get_db_path());
+    let temp_db_path = create_import_temp_db_path(&live_db_path)?;
+    remove_sqlite_artifacts(&temp_db_path)?;
+
+    let mut conn = Connection::open(&temp_db_path).map_err(|error| error.to_string())?;
+    conn.execute_batch("PRAGMA journal_mode = WAL;")
+        .map_err(|error| error.to_string())?;
+
+    let import_result = (|| -> Result<usize, String> {
+        let csv_files = list_csv_files(export_dir)?;
+        if csv_files.is_empty() {
+            return Err("No CSV files were exported from the MDB.".to_string());
+        }
+
+        let mut imported_tables = 0usize;
+        for csv_file in csv_files {
+            if import_single_csv_table(&mut conn, &csv_file)? {
+                imported_tables += 1;
+            }
+        }
+
+        recreate_game_view(&conn)?;
+        ensure_query_indexes(&conn)?;
+        rebuild_cover_index(&conn)?;
+        rebuild_search_index(&conn)?;
+        ensure_secure_table_on_connection(&conn)?;
+
+        Ok(imported_tables)
+    })();
+
+    drop(conn);
+    let imported_tables = match import_result {
+        Ok(imported_tables) => imported_tables,
+        Err(error) => {
+            let _ = remove_sqlite_artifacts(&temp_db_path);
+            return Err(error);
+        }
+    };
+
+    replace_database_atomically(&temp_db_path, &live_db_path)?;
 
     Ok(imported_tables)
 }
@@ -923,6 +1025,113 @@ mod tests {
     }
 
     #[test]
+    fn test_init_database_refreshes_stale_support_indexes() {
+        let temp_db = NamedTempFile::new().unwrap();
+        let db_path = temp_db.path().to_string_lossy().to_string();
+        std::env::set_var("VIC40_DB_PATH", &db_path);
+
+        let conn = Connection::open(&db_path).unwrap();
+        conn.execute("CREATE TABLE Games (GA_Id TEXT, Name TEXT, GE_Id TEXT, PR_Id TEXT, AR_Id TEXT, MU_Id TEXT, DE_Id TEXT, PU_Id TEXT, LA_Id TEXT, YE_Id TEXT, Classic TEXT, Adult TEXT)", []).unwrap();
+        conn.execute(
+            "CREATE TABLE GameView (id TEXT, name TEXT, developer_name TEXT, publisher_name TEXT, musician_name TEXT)",
+            [],
+        )
+        .unwrap();
+        conn.execute("CREATE TABLE Programmers (PR_Id TEXT, Programmer TEXT)", [])
+            .unwrap();
+        conn.execute("CREATE TABLE Artists (AR_Id TEXT, Artist TEXT)", [])
+            .unwrap();
+        conn.execute(
+            "CREATE TABLE Extras (GA_Id TEXT, Path TEXT, DisplayOrder TEXT)",
+            [],
+        )
+        .unwrap();
+        conn.execute(
+            "INSERT INTO Extras (GA_Id, Path, DisplayOrder) VALUES (?1, ?2, ?3)",
+            ["1", "Cover/Fresh Cover.png", "1"],
+        )
+        .unwrap();
+        conn.execute(
+            "INSERT INTO Programmers (PR_Id, Programmer) VALUES (?1, ?2)",
+            ["pr1", "Chris Yates"],
+        )
+        .unwrap();
+        conn.execute(
+            "INSERT INTO Artists (AR_Id, Artist) VALUES (?1, ?2)",
+            ["ar1", "Ejber Ozkan"],
+        )
+        .unwrap();
+        conn.execute(
+            "INSERT INTO Games (GA_Id, Name, PR_Id, AR_Id) VALUES (?1, ?2, ?3, ?4)",
+            ["1", "Tiger Heli", "pr1", "ar1"],
+        )
+        .unwrap();
+        conn.execute(
+            "INSERT INTO GameView (id, name, developer_name, publisher_name, musician_name) VALUES (?1, ?2, ?3, ?4, ?5)",
+            ["1", "Tiger Heli", "SEUCK", "", ""],
+        )
+        .unwrap();
+
+        conn.execute(
+            "CREATE TABLE GameCoverIndex (GA_Id TEXT PRIMARY KEY, cover_path TEXT NOT NULL)",
+            [],
+        )
+        .unwrap();
+        conn.execute(
+            "INSERT INTO GameCoverIndex (GA_Id, cover_path) VALUES (?1, ?2)",
+            ["1", "Cover/Stale Cover.png"],
+        )
+        .unwrap();
+
+        conn.execute_batch(
+            "
+            CREATE VIRTUAL TABLE GameSearchIndex USING fts5(
+                id UNINDEXED,
+                name,
+                developer_name,
+                publisher_name,
+                musician_name,
+                coder_name,
+                graphics_name,
+                tokenize='porter unicode61 remove_diacritics 2',
+                prefix='2,3'
+            );
+            ",
+        )
+        .unwrap();
+        conn.execute(
+            "INSERT INTO GameSearchIndex (id, name, developer_name, publisher_name, musician_name, coder_name, graphics_name)
+             VALUES (?1, ?2, ?3, ?4, ?5, ?6, ?7)",
+            rusqlite::params!["1", "Tiger Heli", "SEUCK", "", "", "", ""],
+        )
+        .unwrap();
+        drop(conn);
+
+        init_database().expect("init_database should refresh stale support objects");
+
+        let conn = Connection::open(&db_path).unwrap();
+        let cover: String = conn
+            .query_row(
+                "SELECT cover_path FROM GameCoverIndex WHERE GA_Id = ?1",
+                ["1"],
+                |row| row.get(0),
+            )
+            .unwrap();
+        assert_eq!(cover, "Cover/Fresh Cover.png");
+
+        let search_hit: String = conn
+            .query_row(
+                "SELECT id FROM GameSearchIndex WHERE GameSearchIndex MATCH ?1 LIMIT 1",
+                ["ejber*"],
+                |row| row.get(0),
+            )
+            .unwrap();
+        assert_eq!(search_hit, "1");
+
+        std::env::remove_var("VIC40_DB_PATH");
+    }
+
+    #[test]
     fn test_is_database_ready_returns_false_without_base_tables() {
         let temp_db = NamedTempFile::new().unwrap();
         let db_path = temp_db.path().to_string_lossy().to_string();
@@ -986,5 +1195,89 @@ mod tests {
                 "Ejber \"Ozkan\"".to_string(),
             ]
         );
+    }
+
+    #[test]
+    fn test_import_single_csv_table_preserves_multiline_quoted_fields() {
+        let temp_db = NamedTempFile::new().unwrap();
+        let mut conn = Connection::open(temp_db.path()).unwrap();
+        let export_dir = tempdir().unwrap();
+        let csv_path = export_dir.path().join("Notes.csv");
+
+        fs::write(
+            &csv_path,
+            concat!(
+                "GA_Id,Name,Comment\n",
+                "1,\"Tiger Heli\",\"Line one\n",
+                "Line two\"\n",
+            ),
+        )
+        .unwrap();
+
+        let imported = import_single_csv_table(&mut conn, &csv_path).unwrap();
+        assert!(imported);
+
+        let row_count: i64 = conn
+            .query_row("SELECT COUNT(*) FROM \"Notes\"", [], |row| row.get(0))
+            .unwrap();
+        assert_eq!(row_count, 1);
+
+        let (id, name, comment): (String, String, String) = conn
+            .query_row(
+                "SELECT \"GA_Id\", \"Name\", \"Comment\" FROM \"Notes\"",
+                [],
+                |row| Ok((row.get(0)?, row.get(1)?, row.get(2)?)),
+            )
+            .unwrap();
+        assert_eq!(id, "1");
+        assert_eq!(name, "Tiger Heli");
+        assert_eq!(comment, "Line one\nLine two");
+    }
+
+    #[test]
+    fn test_import_csv_directory_to_sqlite_is_atomic_on_failure() {
+        let temp_db = NamedTempFile::new().unwrap();
+        let db_path = temp_db.path().to_string_lossy().to_string();
+        std::env::set_var("VIC40_DB_PATH", &db_path);
+
+        {
+            let conn = Connection::open(&db_path).unwrap();
+            conn.execute("CREATE TABLE Marker (value TEXT)", []).unwrap();
+            conn.execute("INSERT INTO Marker (value) VALUES (?1)", ["before"])
+                .unwrap();
+        }
+
+        let export_dir = tempdir().unwrap();
+        fs::write(
+            export_dir.path().join("Alpha.csv"),
+            "Name\nTiger Heli\n",
+        )
+        .unwrap();
+        fs::write(
+            export_dir.path().join("Broken.csv"),
+            "bad-header\nvalue\n",
+        )
+        .unwrap();
+
+        let error = import_csv_directory_to_sqlite(export_dir.path())
+            .expect_err("import should fail when a CSV header contains an unsupported identifier");
+        assert!(error.contains("Unsupported identifier"));
+
+        let conn = Connection::open(&db_path).unwrap();
+        let marker: String = conn
+            .query_row("SELECT value FROM Marker", [], |row| row.get(0))
+            .unwrap();
+        assert_eq!(marker, "before");
+
+        let alpha_exists: bool = conn
+            .query_row(
+                "SELECT EXISTS(SELECT 1 FROM sqlite_master WHERE type = 'table' AND name = 'Alpha')",
+                [],
+                |row| row.get(0),
+            )
+            .unwrap();
+        assert!(!alpha_exists);
+
+        std::env::remove_var("VIC40_DB_PATH");
     }
 }

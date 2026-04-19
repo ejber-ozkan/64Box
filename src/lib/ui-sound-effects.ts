@@ -168,3 +168,18 @@ export function clearUiSoundEffectCache() {
   });
   audioCache.clear();
 }
+
+/**
+ * Test helper — resets the rotation counter stored in localStorage for a
+ * given sequence key so tests can start from a known clean state.
+ * Not intended for production use.
+ */
+export function resetRotationState(sequenceKey: string) {
+  if (typeof window === 'undefined') return;
+  const storageKey = `${ROTATION_KEY_PREFIX}${sequenceKey}`;
+  try {
+    window.localStorage.setItem(storageKey, '0');
+  } catch {
+    // localStorage unavailable in this environment — silently skip
+  }
+}

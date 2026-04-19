@@ -61,6 +61,10 @@ gb64.sqlite.bk
 /.agent
 /.agents
 /skills-lock.json
+/plans/
+/.claude/
+/.codex
+handover-*.md
 
 # One-off scripts and test logs
 /check_*.py

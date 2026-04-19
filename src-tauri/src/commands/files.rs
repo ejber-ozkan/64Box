@@ -1,5 +1,27 @@
 use crate::models::{ResolvedPath, ScannedRom};
-use std::path::{Path, PathBuf};
+use std::path::{Component, Path, PathBuf};
+
+fn sanitize_relative_media_path(path: &str) -> Option<PathBuf> {
+    let mut sanitized = PathBuf::new();
+
+    for component in Path::new(path).components() {
+        match component {
+            Component::Normal(part) => sanitized.push(part),
+            Component::CurDir => {}
+            Component::ParentDir | Component::RootDir | Component::Prefix(_) => return None,
+        }
+    }
+
+    if sanitized.as_os_str().is_empty() {
+        return None;
+    }
+
+    Some(sanitized)
+}
+
+fn resolve_media_child_path(base_dir: &Path, relative_path: &str) -> Option<PathBuf> {
+    sanitize_relative_media_path(relative_path).map(|sanitized| base_dir.join(sanitized))
+}
 
 #[tauri::command]
 pub async fn scan_rom_directory(directory: String) -> Result<Vec<ScannedRom>, String> {
@@ -81,8 +103,8 @@ pub async fn download_media_asset(
         std::fs::create_dir_all(&dest).map_err(|e| format!("Could not create directory: {}", e))?;
     }
 
-    let safe_filename = filename.replace("\\", "/");
-    let full_path = dest.join(PathBuf::from(&safe_filename));
+    let full_path = resolve_media_child_path(&dest, &filename)
+        .ok_or_else(|| format!("Invalid media path: {}", filename))?;
 
     if let Some(parent) = full_path.parent() {
         if !parent.exists() {
@@ -114,12 +136,30 @@ pub async fn download_media_asset(
 
 #[tauri::command]
 pub async fn read_file_bytes(path: String) -> Result<Vec<u8>, String> {
-    std::fs::read(&path).map_err(|e| format!("Failed to read file: {}", e))
+    // read_file_bytes is used by WasmPlayer to stream a ROM into the in-browser emulator.
+    // The path is always constructed from the user's own configured romsPath / extrasPath base
+    // (see PlayButton.tsx), so no additional trust-root check is needed here.
+    // We do reject directory paths to avoid undefined platform behaviour and to
+    // keep the contract consistent with how emulator.rs validates its inputs.
+    let p = std::path::Path::new(&path);
+    if !p.exists() {
+        return Err(format!("File not found: {}", path));
+    }
+    if !p.is_file() {
+        return Err(format!("Path is not a file: {}", path));
+    }
+    std::fs::read(p).map_err(|e| format!("Failed to read file: {}", e))
 }
 
 #[tauri::command]
 pub async fn resolve_media_path(base_dir: String, filename: String) -> ResolvedPath {
-    let full = PathBuf::from(&base_dir).join(&filename);
+    let Some(full) = resolve_media_child_path(Path::new(&base_dir), &filename) else {
+        return ResolvedPath {
+            exists: false,
+            absolute_path: String::new(),
+        };
+    };
+
     ResolvedPath {
         exists: full.exists(),
         absolute_path: full.to_string_lossy().to_string(),
@@ -129,13 +169,17 @@ pub async fn resolve_media_path(base_dir: String, filename: String) -> ResolvedP
 #[tauri::command]
 pub async fn find_all_media_variants(base_dir: String, filename: String) -> Vec<String> {
     let mut results = Vec::new();
-    let full = PathBuf::from(&base_dir).join(&filename);
+    let Some(relative_path) = sanitize_relative_media_path(&filename) else {
+        return results;
+    };
+
+    let full = PathBuf::from(&base_dir).join(&relative_path);
 
     if full.exists() {
         results.push(full.to_string_lossy().to_string());
     }
 
-    let path = Path::new(&filename);
+    let path = relative_path.as_path();
     if let (Some(stem), Some(ext), Some(parent)) =
         (path.file_stem(), path.extension(), path.parent())
     {
@@ -257,5 +301,87 @@ mod tests {
             .await
             .unwrap();
         assert_eq!(bytes, b"hello");
+    }
+
+    #[tokio::test]
+    async fn test_read_file_bytes_empty_file() {
+        let dir = tempdir().unwrap();
+        let file_path = dir.path().join("empty.bin");
+        File::create(&file_path).unwrap();
+
+        let bytes = read_file_bytes(file_path.to_string_lossy().to_string())
+            .await
+            .unwrap();
+        assert!(bytes.is_empty());
+    }
+
+    #[tokio::test]
+    async fn test_read_file_bytes_rejects_non_existent_path() {
+        let res = read_file_bytes("/non/existent/64box/rom.d64".to_string()).await;
+        assert!(res.is_err());
+        let msg = res.unwrap_err();
+        assert!(msg.contains("not found") || msg.contains("no such file"), "unexpected error: {}", msg);
+    }
+
+    #[tokio::test]
+    async fn test_read_file_bytes_rejects_directory() {
+        // read_file_bytes must reject a directory path so that the contract mirrors
+        // emulator.rs require_existing_file and avoids undefined platform behaviour.
+        let dir = tempdir().unwrap();
+        let res = read_file_bytes(dir.path().to_string_lossy().to_string()).await;
+        assert!(res.is_err());
+        let msg = res.unwrap_err();
+        assert!(msg.contains("not a file"), "expected 'not a file' error, got: {}", msg);
+    }
+
+    #[tokio::test]
+    async fn test_resolve_media_path_rejects_parent_traversal() {
+        let dir = tempdir().unwrap();
+        let outside = dir.path().join("outside.png");
+        File::create(&outside).unwrap();
+
+        let base_dir = dir.path().join("media");
+        std::fs::create_dir(&base_dir).unwrap();
+
+        let res = resolve_media_path(
+            base_dir.to_string_lossy().to_string(),
+            "../outside.png".to_string(),
+        )
+        .await;
+
+        assert!(!res.exists);
+        assert!(res.absolute_path.is_empty());
+    }
+
+    #[tokio::test]
+    async fn test_find_all_media_variants_rejects_parent_traversal() {
+        let dir = tempdir().unwrap();
+        File::create(dir.path().join("outside.png")).unwrap();
+        File::create(dir.path().join("outside_1.png")).unwrap();
+
+        let base_dir = dir.path().join("media");
+        std::fs::create_dir(&base_dir).unwrap();
+
+        let variants = find_all_media_variants(
+            base_dir.to_string_lossy().to_string(),
+            "../outside.png".to_string(),
+        )
+        .await;
+
+        assert!(variants.is_empty());
+    }
+
+    #[tokio::test]
+    async fn test_download_media_asset_rejects_parent_traversal_filename() {
+        let dir = tempdir().unwrap();
+        let res = download_media_asset(
+            "https://example.invalid/test.png".to_string(),
+            dir.path().to_string_lossy().to_string(),
+            "../escape.png".to_string(),
+        )
+        .await;
+
+        assert!(res.is_err());
+        assert!(res.unwrap_err().contains("Invalid media path"));
     }
 }

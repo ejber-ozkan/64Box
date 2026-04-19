@@ -6,6 +6,14 @@ import { useGamepad } from './useGamepad';
 import type { Game } from '../types/game';
 import type { BigBoxRailCategory } from './useBigBoxLibraryData';
 import { BIGBOX_LETTERS } from './useBigBoxLibraryData';
+import {
+  calculateDownNavigation,
+  calculateLeftNavigation,
+  calculateRightNavigation,
+  calculateUpNavigation,
+  NavigationParams,
+  NavigationState,
+} from './navigation-math';
 
 type KeyEventLike = Pick<KeyboardEvent, 'key'>;
 type SectionJumpDirection = 'up' | 'down' | null;
@@ -189,118 +197,59 @@ export function useBigBoxNavigation({
       return;
     }
 
-    if (event.key === 'ArrowDown') {
-      if (isHeaderActive) {
-        if (activeHeaderRow < jumpRowIndex) {
-          onNavigationMove?.();
-          setActiveHeaderRow((previous) => previous + 1);
-          setActiveHeaderItemIndex(0);
-        } else {
-          onNavigationMove?.();
-          setSectionJumpDirection(null);
-          setActiveRailIndex(0);
-        }
-        return;
-      }
+    const navigationState: NavigationState = {
+      activeHeaderItemIndex,
+      activeHeaderRow,
+      activeRailIndex,
+      railFocusIndices,
+      sectionJumpDirection,
+    };
 
-      if (isGrid) {
-        const nextIndex = focusedIndex + columns;
-        if (nextIndex < rail.games.length) {
-          onNavigationMove?.();
-          setRailFocusIndices((previous) => ({ ...previous, [rail.id]: nextIndex }));
-          return;
-        }
-      }
+    const navigationParams: NavigationParams = {
+      rowCounts,
+      rails: rails.map((r) => ({ id: r.id, length: r.games.length, isGrid: r.type === 'alphabet' })),
+      gridColumns,
+      jumpRowIndex,
+    };
 
-      const nextRailIndex = activeRailIndex + 1;
-      if (nextRailIndex < rails.length) {
-        const nextRail = rails[nextRailIndex];
+    const applyNavigationResult = (result: { state: NavigationState; moved: boolean }) => {
+      if (result.moved) {
         onNavigationMove?.();
-        setSectionJumpDirection('down');
-        setRailFocusIndices((previous) => ({
-          ...previous,
-          [nextRail.id]: previous[nextRail.id] ?? 0,
-        }));
-        setActiveRailIndex(nextRailIndex);
+        setActiveHeaderItemIndex(result.state.activeHeaderItemIndex);
+        setActiveHeaderRow(result.state.activeHeaderRow);
+        setActiveRailIndex(result.state.activeRailIndex);
+        setRailFocusIndices(result.state.railFocusIndices);
+        setSectionJumpDirection(result.state.sectionJumpDirection);
       }
+    };
+
+    if (event.key === 'ArrowDown') {
+      applyNavigationResult(calculateDownNavigation(navigationState, navigationParams));
       return;
     }
 
     if (event.key === 'ArrowUp') {
-      if (isHeaderActive) {
-        if (activeHeaderRow > 0) {
-          onNavigationMove?.();
-          setActiveHeaderRow((previous) => previous - 1);
-          setActiveHeaderItemIndex(0);
-        }
-        return;
+      if (isHeaderActive && activeHeaderRow === 0) {
+        return; // Already at the top
       }
-
-      if (isGrid) {
-        const nextIndex = focusedIndex - columns;
-        if (nextIndex >= 0) {
-          onNavigationMove?.();
-          setRailFocusIndices((previous) => ({ ...previous, [rail.id]: nextIndex }));
-          return;
-        }
-      }
-
-      const previousRailIndex = activeRailIndex - 1;
-      if (previousRailIndex >= 0) {
-        const previousRail = rails[previousRailIndex];
-        onNavigationMove?.();
-        setSectionJumpDirection('up');
-        setRailFocusIndices((previous) => ({
-          ...previous,
-          [previousRail.id]:
-            previous[previousRail.id] ?? Math.max(previousRail.games.length - 1, 0),
-        }));
-        setActiveRailIndex(previousRailIndex);
-      } else {
+      const result = calculateUpNavigation(navigationState, navigationParams);
+      if (result.moved && result.state.activeRailIndex === -1 && activeRailIndex !== -1) {
+        // We moved UP from rail 0 into the header. The header needs focus cleanup.
         onNavigationMove?.();
         focusHeader(jumpRowIndex, 0);
+      } else {
+        applyNavigationResult(result);
       }
       return;
     }
 
     if (event.key === 'ArrowRight') {
-      if (isHeaderActive) {
-        onNavigationMove?.();
-        setActiveHeaderItemIndex((previous) => (previous + 1) % (rowCounts[activeHeaderRow] ?? 1));
-      } else if (isGrid) {
-        if (focusedIndex < rail.games.length - 1) {
-          onNavigationMove?.();
-          setRailFocusIndices((previous) => ({ ...previous, [rail.id]: focusedIndex + 1 }));
-        }
-      } else if (rail.games.length > 0) {
-        onNavigationMove?.();
-        setRailFocusIndices((previous) => ({
-          ...previous,
-          [rail.id]: (focusedIndex + 1) % rail.games.length,
-        }));
-      }
+      applyNavigationResult(calculateRightNavigation(navigationState, navigationParams));
       return;
     }
 
     if (event.key === 'ArrowLeft') {
-      if (isHeaderActive) {
-        onNavigationMove?.();
-        setActiveHeaderItemIndex(
-          (previous) =>
-            (previous - 1 + (rowCounts[activeHeaderRow] ?? 1)) % (rowCounts[activeHeaderRow] ?? 1),
-        );
-      } else if (isGrid) {
-        if (focusedIndex > 0) {
-          onNavigationMove?.();
-          setRailFocusIndices((previous) => ({ ...previous, [rail.id]: focusedIndex - 1 }));
-        }
-      } else if (rail.games.length > 0) {
-        onNavigationMove?.();
-        setRailFocusIndices((previous) => ({
-          ...previous,
-          [rail.id]: (focusedIndex - 1 + rail.games.length) % rail.games.length,
-        }));
-      }
+      applyNavigationResult(calculateLeftNavigation(navigationState, navigationParams));
       return;
     }
 

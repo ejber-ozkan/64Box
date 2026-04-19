@@ -2,12 +2,12 @@ import React from 'react';
 
 interface Props {
   label: string;
-  value: boolean | null;
+  value: boolean | null | undefined;
   className?: string;
 }
 
 export function StatusRow({ label, value, className = "" }: Props) {
-  if (value === null) return null;
+  if (value === null || value === undefined) return null;
   
   return (
     <div className={`flex justify-between items-center text-xs ${className}`}>

@@ -2,9 +2,24 @@
 
 All notable changes to this project will be documented in this file.
 
-## [0.6] - 2026-03-29
+## [0.7.0] - 2026-04-19
 
 ### Added
+- Created comprehensive architecture documentation (`docs/architecture-review.md`) outlining the Summary vs Detail payload paradigm, mathematical coordinate-based navigation, and the isolated SQLite query-builder architecture.
+- Added comprehensive E2E validation gating built on Playwright to ensure seamless testing across BigBox, searching, and detail overlays.
+
+### Changed
+- Dramatically reduced high-volume Tauri-Javascript payload overhead by restructuring the database pipeline. The `Game` interface now lazily omits exhaustive properties (like musician mapping, control flags) during list hydration and eagerly fetches them through the new `getDbGameDetail` invocation only upon user selection.
+- Refactored `useBigBoxNavigation` by extracting massive switch/case blocks into pure, mathematically deterministic focal calculations (`navigation-math.ts`).
+- Decoupled `ExtrasDetail.tsx` into concise semantic components (`ResolvedExtraMedia.tsx`, `VisualExtrasBrowser.tsx`) terminating deeply nested component leaks in canvas generation.
+- Hardened Rust database interactions by replacing monolithic global states with localized SQLite parameter-bind utilities within `src-tauri/src/commands/db/querying.rs`, explicitly thwarting SQL injection avenues without compromising query composability.
+- Consolidated disparate Extras mapping algorithms within the React application, purging `steam-extras.ts` in favor of a universal `extras.ts` abstraction.
+
+### Fixed
+- Fixed sequential table locks during automated backend testing by properly structuring `cargo test` boundaries against local SQLite instances.
+- Fixed React hydration mismatches on initialization by carefully guarding `localStorage` lookups behind environment checks and safely deferring application UI overlay rendering.
+
+## [0.6] - 2026-03-29
 - Added a root `VERSION` file to act as the central release-version source for future packaging and release work.
 - Added DPI-aware fullscreen detail diagnostics showing native resolution, viewport, layout tier, and resolved design surface.
 - Added inline extras-video support in the big-screen extras browser, including fullscreen playback and thumbnail badges for video items.

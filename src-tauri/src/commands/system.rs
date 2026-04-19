@@ -77,8 +77,51 @@ pub async fn get_window_size(app: tauri::AppHandle) -> Result<WindowSize, String
     })
 }
 
+/// Validate that a path is safe to hand to the OS "open" helper.
+///
+/// Rejects:
+///   - URL schemes (http, https, ftp, javascript, data, …) — would silently
+///     open a browser or execute script when passed to xdg-open / cmd start
+///   - Paths that do not exist on the local filesystem (catches bare executable
+///     names, typos, and anything else that isn't a real local file or folder)
+///
+/// The existence check also acts as a catch-all for anything that slips past
+/// the scheme list.
+fn validate_open_path(path: &str) -> Result<(), String> {
+    let lower = path.to_lowercase();
+    for scheme in &[
+        "http://",
+        "https://",
+        "ftp://",
+        "ftps://",
+        "javascript:",
+        "data:",
+    ] {
+        if lower.starts_with(scheme) {
+            return Err(format!(
+                "Refusing to open a URL via the system handler: {}",
+                path
+            ));
+        }
+    }
+
+    let p = std::path::Path::new(path);
+    if !p.exists() {
+        return Err(format!("Path does not exist: {}", path));
+    }
+
+    Ok(())
+}
+
 #[tauri::command]
 pub async fn open_path_with_system_default(path: String) -> Result<(), String> {
+    // open_path_with_system_default is used by ExtrasDetail and useSteamDetailViewModel
+    // to open a local extras file (PDF, image, video, audio) with the OS default app.
+    // The path is always constructed from settings.extrasPath + extra.path from the DB.
+    // We validate before spawning so that a crafted MDB import cannot inject a URL
+    // that xdg-open / cmd-start would silently hand to the browser.
+    validate_open_path(&path)?;
+
     #[cfg(target_os = "windows")]
     {
         Command::new("cmd")
@@ -104,5 +147,87 @@ pub async fn open_path_with_system_default(path: String) -> Result<(), String> {
             .spawn()
             .map_err(|e| e.to_string())?;
         return Ok(());
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    use std::fs::File;
+    use tempfile::tempdir;
+
+    // -------------------------------------------------------------------------
+    // validate_open_path — happy paths
+    // -------------------------------------------------------------------------
+
+    #[test]
+    fn test_validate_open_path_accepts_existing_file() {
+        let dir = tempdir().unwrap();
+        let file_path = dir.path().join("manual.pdf");
+        File::create(&file_path).unwrap();
+        assert!(validate_open_path(&file_path.to_string_lossy()).is_ok());
+    }
+
+    #[test]
+    fn test_validate_open_path_accepts_existing_directory() {
+        // Directories are valid "open" targets (e.g., open a folder in the file manager)
+        let dir = tempdir().unwrap();
+        assert!(validate_open_path(&dir.path().to_string_lossy()).is_ok());
+    }
+
+    // -------------------------------------------------------------------------
+    // validate_open_path — rejections
+    // -------------------------------------------------------------------------
+
+    #[test]
+    fn test_validate_open_path_rejects_nonexistent_path() {
+        let res = validate_open_path("/non/existent/64box/extras/manual.pdf");
+        assert!(res.is_err());
+        let msg = res.unwrap_err();
+        assert!(msg.contains("does not exist"), "unexpected message: {}", msg);
+    }
+
+    #[test]
+    fn test_validate_open_path_rejects_http_url() {
+        let res = validate_open_path("http://example.com/evil");
+        assert!(res.is_err());
+        assert!(res.unwrap_err().contains("Refusing to open a URL"));
+    }
+
+    #[test]
+    fn test_validate_open_path_rejects_https_url() {
+        let res = validate_open_path("https://evil.example.com");
+        assert!(res.is_err());
+        assert!(res.unwrap_err().contains("Refusing to open a URL"));
+    }
+
+    #[test]
+    fn test_validate_open_path_rejects_ftp_url() {
+        let res = validate_open_path("ftp://files.example.com/rom.d64");
+        assert!(res.is_err());
+        assert!(res.unwrap_err().contains("Refusing to open a URL"));
+    }
+
+    #[test]
+    fn test_validate_open_path_rejects_javascript_url() {
+        let res = validate_open_path("javascript:alert(1)");
+        assert!(res.is_err());
+        assert!(res.unwrap_err().contains("Refusing to open a URL"));
+    }
+
+    #[test]
+    fn test_validate_open_path_rejects_data_url() {
+        let res = validate_open_path("data:text/html,<script>alert(1)</script>");
+        assert!(res.is_err());
+        assert!(res.unwrap_err().contains("Refusing to open a URL"));
+    }
+
+    #[test]
+    fn test_validate_open_path_scheme_check_is_case_insensitive() {
+        let res_upper = validate_open_path("HTTP://example.com");
+        assert!(res_upper.is_err(), "uppercase HTTP:// must be rejected");
+
+        let res_mixed = validate_open_path("Https://example.com");
+        assert!(res_mixed.is_err(), "mixed-case Https:// must be rejected");
     }
 }

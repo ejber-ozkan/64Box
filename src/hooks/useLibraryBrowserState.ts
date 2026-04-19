@@ -63,13 +63,17 @@ export function useLibraryBrowserState() {
           setFocusedIndex(settings.lastFocusedIndex);
         }
         setIsRestored(true);
-      } else if (!selectedGame) {
-        setFocusedIndex(-1);
+      } else if (!selectedGame && focusedIndex >= 0) {
+        if (dbGames.length === 0) {
+          setFocusedIndex(-1);
+        } else if (focusedIndex >= dbGames.length) {
+          setFocusedIndex(dbGames.length - 1);
+        }
       }
     }
 
     void fetchGames();
-  }, [effectiveFilters, isRestored, selectedGame, settings.lastFocusedIndex, settings.lastSelectedGameId]);
+  }, [effectiveFilters, focusedIndex, isRestored, selectedGame, settings.lastFocusedIndex, settings.lastSelectedGameId]);
 
   useEffect(() => {
     if (isRestored) {

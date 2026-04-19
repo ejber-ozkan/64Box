@@ -2,16 +2,56 @@ use crate::models::{LaunchRequest, LaunchResult};
 use std::io::Write;
 use std::path::{Path, PathBuf};
 use std::process::Command;
+use std::time::{SystemTime, UNIX_EPOCH};
+
+fn create_launch_temp_dir() -> Result<PathBuf, String> {
+    let base_dir = std::env::temp_dir();
+    let process_id = std::process::id();
+
+    for attempt in 0..10 {
+        let timestamp = SystemTime::now()
+            .duration_since(UNIX_EPOCH)
+            .map_err(|e| e.to_string())?
+            .as_nanos();
+        let candidate = base_dir.join(format!("64BoxTemp-{}-{}-{}", process_id, timestamp, attempt));
+
+        match std::fs::create_dir(&candidate) {
+            Ok(()) => return Ok(candidate),
+            Err(err) if err.kind() == std::io::ErrorKind::AlreadyExists => continue,
+            Err(err) => return Err(err.to_string()),
+        }
+    }
+
+    Err("Failed to create a unique temporary launch directory".to_string())
+}
+
+fn require_existing_file(path: &Path, not_found_message: impl FnOnce() -> String, not_file_message: impl FnOnce() -> String) -> Result<(), String> {
+    if !path.exists() {
+        return Err(not_found_message());
+    }
+
+    if !path.is_file() {
+        return Err(not_file_message());
+    }
+
+    Ok(())
+}
 
 #[tauri::command]
 pub async fn launch_emulator(request: LaunchRequest) -> Result<LaunchResult, String> {
     let mut emulator = PathBuf::from(&request.emulator_path);
-    if !emulator.exists() {
-        return Err(format!(
-            "Emulator path not found: {}",
-            request.emulator_path
-        ));
-    }
+    require_existing_file(
+        &emulator,
+        || format!("Emulator path not found: {}", request.emulator_path),
+        || format!("Emulator path is not a file: {}", request.emulator_path),
+    )
+    .or_else(|err| {
+        if emulator.is_dir() {
+            Ok(())
+        } else {
+            Err(err)
+        }
+    })?;
 
     if emulator.is_dir() {
         let possible_exes = [
@@ -43,9 +83,11 @@ pub async fn launch_emulator(request: LaunchRequest) -> Result<LaunchResult, Str
     }
 
     let rom = PathBuf::from(&request.rom_path);
-    if !rom.exists() {
-        return Err(format!("ROM file not found: {}", request.rom_path));
-    }
+    require_existing_file(
+        &rom,
+        || format!("ROM file not found: {}", request.rom_path),
+        || format!("ROM path is not a file: {}", request.rom_path),
+    )?;
 
     let exe_name = emulator
         .file_name()
@@ -56,8 +98,12 @@ pub async fn launch_emulator(request: LaunchRequest) -> Result<LaunchResult, Str
 
     if is_retroarch {
         if let Some(cp) = &request.core_path {
-            if !cp.is_empty() && !Path::new(cp).exists() {
-                return Err(format!("RetroArch Core file not found: {}", cp));
+            if !cp.is_empty() {
+                require_existing_file(
+                    Path::new(cp),
+                    || format!("RetroArch Core file not found: {}", cp),
+                    || format!("RetroArch Core path is not a file: {}", cp),
+                )?;
             }
         }
     }
@@ -93,9 +139,7 @@ pub async fn launch_emulator(request: LaunchRequest) -> Result<LaunchResult, Str
         == "zip";
 
     if is_zip {
-        let temp_dir = std::env::temp_dir().join("64BoxTemp");
-        let _ = std::fs::remove_dir_all(&temp_dir);
-        std::fs::create_dir_all(&temp_dir).map_err(|e| e.to_string())?;
+        let temp_dir = create_launch_temp_dir()?;
 
         let file = std::fs::File::open(&rom).map_err(|e| e.to_string())?;
         let mut archive = zip::ZipArchive::new(file).map_err(|e| e.to_string())?;
@@ -373,6 +417,34 @@ mod tests {
     }
 
     #[tokio::test]
+    async fn test_launch_emulator_retroarch_core_directory_rejected() {
+        let dir = tempdir().unwrap();
+        let emulator_path = dir.path().join(if cfg!(windows) {
+            "retroarch.exe"
+        } else {
+            "retroarch"
+        });
+        copy_test_emulator(&emulator_path);
+
+        let rom_path = dir.path().join("game.d64");
+        std::fs::write(&rom_path, b"dummy rom").unwrap();
+
+        let core_dir = dir.path().join("cores");
+        std::fs::create_dir(&core_dir).unwrap();
+
+        let request = LaunchRequest {
+            emulator_path: emulator_path.to_string_lossy().to_string(),
+            rom_path: rom_path.to_string_lossy().to_string(),
+            core_path: Some(core_dir.to_string_lossy().to_string()),
+            ..Default::default()
+        };
+
+        let result = launch_emulator(request).await;
+        assert!(result.is_err());
+        assert!(result.unwrap_err().contains("RetroArch Core path is not a file"));
+    }
+
+    #[tokio::test]
     async fn test_launch_emulator_zip_prefers_file_to_run() {
         let dir = tempdir().unwrap();
         let emulator_path = dir
@@ -408,6 +480,28 @@ mod tests {
     }
 
     #[tokio::test]
+    async fn test_launch_emulator_rom_directory_rejected() {
+        let dir = tempdir().unwrap();
+        let emulator_path = dir
+            .path()
+            .join(if cfg!(windows) { "x64sc.exe" } else { "x64sc" });
+        copy_test_emulator(&emulator_path);
+
+        let rom_dir = dir.path().join("roms");
+        std::fs::create_dir(&rom_dir).unwrap();
+
+        let request = LaunchRequest {
+            emulator_path: emulator_path.to_string_lossy().to_string(),
+            rom_path: rom_dir.to_string_lossy().to_string(),
+            ..Default::default()
+        };
+
+        let result = launch_emulator(request).await;
+        assert!(result.is_err());
+        assert!(result.unwrap_err().contains("ROM path is not a file"));
+    }
+
+    #[tokio::test]
     async fn test_launch_emulator_retroarch_zip_success() {
         let dir = tempdir().unwrap();
         let emulator_path = dir.path().join(if cfg!(windows) {
@@ -436,5 +530,35 @@ mod tests {
         let result = launch_emulator(request).await.unwrap();
         assert!(result.success);
         assert!(result.message.to_lowercase().contains("retroarch"));
+    }
+
+    #[tokio::test]
+    async fn test_launch_emulator_zip_does_not_delete_shared_temp_directory() {
+        let shared_temp_dir = std::env::temp_dir().join("64BoxTemp");
+        let _ = std::fs::remove_dir_all(&shared_temp_dir);
+        std::fs::create_dir_all(&shared_temp_dir).unwrap();
+        let sentinel = shared_temp_dir.join("keep.txt");
+        std::fs::write(&sentinel, b"keep").unwrap();
+
+        let dir = tempdir().unwrap();
+        let emulator_path = dir
+            .path()
+            .join(if cfg!(windows) { "x64sc.exe" } else { "x64sc" });
+        copy_test_emulator(&emulator_path);
+
+        let zip_path = dir.path().join("collection.zip");
+        write_zip(&zip_path, &[("disk1.d64", b"disk1"), ("disk2.d64", b"disk2")]);
+
+        let request = LaunchRequest {
+            emulator_path: emulator_path.to_string_lossy().to_string(),
+            rom_path: zip_path.to_string_lossy().to_string(),
+            ..Default::default()
+        };
+
+        let result = launch_emulator(request).await.unwrap();
+        assert!(result.success);
+        assert!(sentinel.exists());
+
+        let _ = std::fs::remove_dir_all(&shared_temp_dir);
     }
 }

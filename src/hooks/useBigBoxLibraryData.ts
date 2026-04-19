@@ -28,7 +28,8 @@ const LETTER_RAIL_LOAD_DELAY_MS = 450;
 const LETTER_RAIL_PAGE_SIZE = 1000;
 const LETTER_RAIL_CACHE = new Map<string, Game[]>();
 
-function getAlphabetRailCacheKey(letter: string, filters: GameFilters, searchInput: string) {
+/** @internal Exported for unit testing */
+export function getAlphabetRailCacheKey(letter: string, filters: GameFilters, searchInput: string) {
   return JSON.stringify({
     genre: filters.genre ?? null,
     subGenre: filters.subGenre ?? null,
@@ -36,6 +37,17 @@ function getAlphabetRailCacheKey(letter: string, filters: GameFilters, searchInp
     letter,
     searchInput: searchInput || null,
   });
+}
+
+/**
+ * Sort a flat list of games returned by the DB into the order specified by
+ * `recentlyPlayedIds`, dropping any games whose id is not in the list.
+ * @internal Exported for unit testing
+ */
+export function sortRecentGames(games: Game[], recentlyPlayedIds: readonly string[]): Game[] {
+  return recentlyPlayedIds
+    .map((id) => games.find((game) => game.id.toString() === id))
+    .filter((game): game is Game => Boolean(game));
 }
 
 export function useBigBoxLibraryData({
@@ -86,13 +98,11 @@ export function useBigBoxLibraryData({
 
         if (recentlyPlayedIds.length > 0) {
           const recent = await getDbGames(100, 0, { ...libraryFilters, favoriteIds: recentlyPlayedIds });
-          const sortedRecent = recentlyPlayedIds
-            .map((id) => recent.find((game) => game.id.toString() === id))
-            .filter((game): game is Game => Boolean(game));
-          setRecentGames(sortedRecent);
+          setRecentGames(sortRecentGames(recent, recentlyPlayedIds));
         } else {
           setRecentGames([]);
         }
+
 
         if (favorites.length > 0) {
           const favoriteResults = await getDbGames(100, 0, { ...libraryFilters, favoriteIds: favorites });

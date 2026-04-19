@@ -109,10 +109,17 @@ interface RawGameRow {
   subGenre: string;
   developerName?: string | null;
   publisherName?: string | null;
+}
+
+interface RawGameDetailRow {
+  game: RawGameRow;
   musicianName?: string | null;
   musicianPhoto?: string | null;
-  musicianGroup?: string | null;
   musicianNick?: string | null;
+  musicianGroup?: string | null;
+  coderName?: string | null;
+  graphicsName?: string | null;
+  versionBy?: string | null;
   control?: string | null;
   playersFrom?: string | null;
   playersTo?: string | null;
@@ -120,9 +127,6 @@ interface RawGameRow {
   comment?: string | null;
   reviewRating?: string | null;
   languages?: string | null;
-  coderName?: string | null;
-  graphicsName?: string | null;
-  versionBy?: string | null;
   vTrainers?: string | null;
   vLength?: string | null;
   vLoadingScreen?: boolean | null;
@@ -395,7 +399,8 @@ export async function getDbGameCount(filters?: GameFilters): Promise<number> {
  */
 export async function getGameExtras(gameId: number): Promise<import('../types/game').Extra[]> {
   if (!isTauri()) {
-    return [];
+    const { mockGames } = await import('../data/mockGames');
+    return (mockGames as unknown as import('../types/game').GameDetail[]).find((game) => game.id === gameId)?.extras ?? [];
   }
   try {
     const rawExtras = await invoke<RawExtraRow[]>('get_game_extras', { gameId: gameId.toString() });
@@ -419,26 +424,84 @@ export async function getDbGames(limit: number = 50, offset: number = 0, filters
   if (!isTauri()) {
     console.warn('[tauri-bridge] getDbGames: not in Tauri, falling back to mockData');
     const { mockGames } = await import('../data/mockGames');
-    return mockGames.slice(offset, offset + limit);
+    const results = mockGames as unknown as import('../types/game').GameDetail[];
+    const searchQuery = filters?.searchQuery?.trim().toLowerCase();
+    const favoriteIds = filters?.favoriteIds ?? null;
+    const filteredGames = results.filter((game) => {
+      if (favoriteIds && favoriteIds.length > 0 && !favoriteIds.includes(game.id.toString())) {
+        return false;
+      }
+
+      if (filters?.favoriteIds && filters.favoriteIds.length === 0) {
+        return false;
+      }
+
+      if (filters?.isClassic !== undefined && game.isClassic !== filters.isClassic) {
+        return false;
+      }
+
+      if (filters?.genre && game.parentGenre !== filters.genre) {
+        return false;
+      }
+
+      if (filters?.subGenre && game.subGenre !== filters.subGenre) {
+        return false;
+      }
+
+      if (filters?.letter) {
+        const firstCharacter = game.name.charAt(0);
+        if (filters.letter === '#') {
+          if (/^[A-Za-z]/.test(firstCharacter)) {
+            return false;
+          }
+        } else if (!game.name.toLowerCase().startsWith(filters.letter.toLowerCase())) {
+          return false;
+        }
+      }
+
+      if (searchQuery) {
+        const searchableFields = [
+          game.name,
+          game.developer?.name ?? '',
+          game.publisher?.name ?? '',
+          game.musician?.name ?? '',
+          game.coderName ?? '',
+          game.graphicsName ?? '',
+        ];
+        if (!searchableFields.some((value) => value.toLowerCase().includes(searchQuery))) {
+          return false;
+        }
+      }
+
+      return true;
+    });
+
+    return filteredGames.slice(offset, offset + limit).map((g) => ({
+      id: g.id,
+      name: g.name,
+      filename: g.filename,
+      gameFilename: g.gameFilename ?? null,
+      screenshotFilename: g.screenshotFilename ?? null,
+      boxFrontFilename: g.boxFrontFilename ?? null,
+      coverPath: g.coverPath ?? null,
+      titlescreenFilename: g.titlescreenFilename ?? null,
+      videoSnapFilename: g.videoSnapFilename ?? null,
+      sidFilename: g.sidFilename ?? null,
+      crc: g.crc ?? '',
+      year: g.year ?? null,
+      isPal: g.isPal,
+      isNtsc: g.isNtsc,
+      trueDriveEmu: g.trueDriveEmu,
+      isClassic: g.isClassic,
+      parentGenre: g.parentGenre,
+      subGenre: g.subGenre,
+      developer: g.developer ?? null,
+      publisher: g.publisher ?? null,
+    }));
   }
-  
   try {
     const rawGames = await invoke<RawGameRow[]>('get_db_games', { limit, offset, filters });
     
-    // Map the raw GameRow objects back into our nested Game interface
-    const controlMap: Record<string, string> = {
-      '0': 'Joystick Port 2',
-      '1': 'Joystick Port 1',
-      '2': 'Keyboard',
-      '3': 'Paddles Port 2',
-      '4': 'Paddles Port 1',
-      '5': 'Lightpen',
-      '6': 'Mouse Port 1',
-      '7': 'Mouse Port 2',
-      '8': 'Koala Pad',
-      '9': 'Lightgun',
-    };
-
     return rawGames.map((row) => ({
       id: parseInt(row.id, 10),
       name: row.name,
@@ -460,32 +523,84 @@ export async function getDbGames(limit: number = 50, offset: number = 0, filters
       subGenre: row.subGenre,
       developer: row.developerName ? { id: -1, name: row.developerName } : null,
       publisher: row.publisherName ? { id: -1, name: row.publisherName } : null,
-      musician: row.musicianName ? { 
+    }));
+  } catch (err) {
+    console.error('Failed to get games from database:', err);
+    return [];
+  }
+}
+
+export async function getDbGameDetail(gameId: string): Promise<import('../types/game').GameDetail | null> {
+  if (!isTauri()) {
+    const { mockGames } = await import('../data/mockGames');
+    const game = mockGames.find((g) => g.id.toString() === gameId);
+    return (game as unknown as import('../types/game').GameDetail) || null;
+  }
+
+  try {
+    const raw = await invoke<RawGameDetailRow | null>('get_game_detail', { gameId });
+    if (!raw) return null;
+
+    const controlMap: Record<string, string> = {
+      '0': 'Joystick Port 2',
+      '1': 'Joystick Port 1',
+      '2': 'Keyboard',
+      '3': 'Paddles Port 2',
+      '4': 'Paddles Port 1',
+      '5': 'Lightpen',
+      '6': 'Mouse Port 1',
+      '7': 'Mouse Port 2',
+      '8': 'Koala Pad',
+      '9': 'Lightgun',
+    };
+
+    return {
+      id: parseInt(raw.game.id, 10),
+      name: raw.game.name,
+      filename: raw.game.filename,
+      gameFilename: raw.game.gameFilename ?? null,
+      screenshotFilename: raw.game.screenshotFilename ?? null,
+      boxFrontFilename: raw.game.boxFrontFilename ?? null,
+      coverPath: raw.game.coverPath ?? null,
+      titlescreenFilename: raw.game.titlescreenFilename ?? null,
+      videoSnapFilename: raw.game.videoSnapFilename ?? null,
+      sidFilename: raw.game.sidFilename ?? null,
+      crc: raw.game.crc ?? '',
+      year: raw.game.year ? parseInt(raw.game.year, 10) : null,
+      isPal: raw.game.isPal,
+      isNtsc: raw.game.isNtsc,
+      trueDriveEmu: raw.game.trueDriveEmu,
+      isClassic: raw.game.isClassic,
+      parentGenre: raw.game.parentGenre,
+      subGenre: raw.game.subGenre,
+      developer: raw.game.developerName ? { id: -1, name: raw.game.developerName } : null,
+      publisher: raw.game.publisherName ? { id: -1, name: raw.game.publisherName } : null,
+      musician: raw.musicianName ? { 
         id: -1, 
-        name: row.musicianName, 
-        photoPath: row.musicianPhoto ?? null,
-        group: row.musicianGroup ?? null,
-        nick: row.musicianNick ?? null
+        name: raw.musicianName, 
+        photoPath: raw.musicianPhoto ?? null,
+        group: raw.musicianGroup ?? null,
+        nick: raw.musicianNick ?? null
       } : null,
-      control: row.control ? (controlMap[row.control] || row.control) : 'Joystick',
-      playersFrom: row.playersFrom ?? null,
-      playersTo: row.playersTo ?? null,
-      playersSim: row.playersSim ?? null,
-      comment: row.comment ?? null,
-      reviewRating: row.reviewRating ?? null,
-      languages: row.languages ? [row.languages] : [],
-      coderName: row.coderName ?? null,
-      graphicsName: row.graphicsName ?? null,
-      versionBy: row.versionBy ?? null,
-      vTrainers: row.vTrainers ?? null,
-      vLength: row.vLength ?? null,
-      vLoadingScreen: row.vLoadingScreen ?? null,
-      vHighScoreSaver: row.vHighScoreSaver ?? null,
-      vIncludedDocs: row.vIncludedDocs ?? null,
-      vTrueDriveEmu: row.vTrueDriveEmu ?? null,
+      control: raw.control ? (controlMap[raw.control] || raw.control) : 'Joystick',
+      playersFrom: raw.playersFrom ?? null,
+      playersTo: raw.playersTo ?? null,
+      playersSim: raw.playersSim ?? null,
+      comment: raw.comment ?? null,
+      reviewRating: raw.reviewRating ?? null,
+      languages: raw.languages ? [raw.languages] : [],
+      coderName: raw.coderName ?? null,
+      graphicsName: raw.graphicsName ?? null,
+      versionBy: raw.versionBy ?? null,
+      vTrainers: raw.vTrainers ?? null,
+      vLength: raw.vLength ?? null,
+      vLoadingScreen: raw.vLoadingScreen ?? null,
+      vHighScoreSaver: raw.vHighScoreSaver ?? null,
+      vIncludedDocs: raw.vIncludedDocs ?? null,
+      vTrueDriveEmu: raw.vTrueDriveEmu ?? null,
       vPalNtsc: (() => {
-        if (!row.vPalNtsc) return null;
-        const val = row.vPalNtsc.toString().trim();
+        if (!raw.vPalNtsc) return null;
+        const val = raw.vPalNtsc.toString().trim();
         const map: Record<string, string> = {
           '1': 'PAL',
           '2': 'NTSC',
@@ -497,11 +612,11 @@ export async function getDbGames(limit: number = 50, offset: number = 0, filters
         };
         return map[val] || val;
       })(),
-      memo: row.memo ?? null,
-    }));
+      memo: raw.memo ?? null,
+    };
   } catch (err) {
-    console.error('Failed to get games from database:', err);
-    return [];
+    console.error('Failed to get game detail from database:', err);
+    return null;
   }
 }
 
@@ -525,4 +640,3 @@ export async function getSecureSetting(key: string): Promise<string | null> {
   }
   return invoke<string | null>('get_secure_setting', { key });
 }
-

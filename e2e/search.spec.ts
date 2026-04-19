@@ -1,25 +1,27 @@
 import { test, expect } from '@playwright/test';
+import { waitForAppReady } from './test-helpers';
 
 test.describe('Search Functionality', () => {
   test.beforeEach(async ({ page }) => {
     await page.goto('/');
+    await waitForAppReady(page);
   });
 
-  test('filters game list based on search query', async ({ page }) => {
-    const searchInput = page.getByPlaceholder(/search games/i);
-    await searchInput.fill('Commando');
-    
-    // Wait for debounce and search results
-    await expect(page.getByText('Commando')).toBeVisible();
-    await expect(page.getByText('Archon')).not.toBeVisible();
-  });
+  test('search clears an active genre filter and shows matching results', async ({ page }) => {
+    await page.getByRole('button', { name: 'Strategy' }).click();
 
-  test('clearing search restores the list', async ({ page }) => {
-    const searchInput = page.getByPlaceholder(/search games/i);
+    await expect(page.getByTitle('Archon: The Light and the Dark')).toBeVisible();
+    await expect(page.getByTitle('Commando')).not.toBeVisible();
+
+    const searchInput = page.getByPlaceholder('QUICK SEARCH');
     await searchInput.fill('Commando');
-    await expect(page.getByText('Archon')).not.toBeVisible();
-    
+
+    await expect(page.getByTitle('Commando')).toBeVisible();
+    await expect(page.getByTitle('Archon: The Light and the Dark')).not.toBeVisible();
+
     await searchInput.fill('');
-    await expect(page.getByText('Archon')).toBeVisible();
+
+    await expect(page.getByTitle('Archon: The Light and the Dark')).toBeVisible();
+    await expect(page.getByTitle('Commando')).toBeVisible();
   });
 });

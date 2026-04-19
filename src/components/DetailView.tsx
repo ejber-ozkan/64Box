@@ -1,7 +1,8 @@
 "use client";
 
 import { useEffect, useState } from 'react';
-import { Game } from '../types/game';
+import { Game, GameDetail } from '../types/game';
+import { getDbGameDetail } from '../lib/tauri-bridge';
 import { NeonArchiveDetailLayout } from './themes/neon-archive/NeonArchiveDetailLayout';
 import { ImageSlider } from './ImageSlider';
 import { ImageWithFallback } from './ImageWithFallback';
@@ -50,6 +51,7 @@ const DETAIL_CONFIG: NavigationConfig = {
 export function DetailView({ game, onBack }: DetailViewProps) {
   const { isFavorite, toggleFavorite } = useFavorites();
   const [fullscreenMedia, setFullscreenMedia] = useState<DetailFullscreenMedia | null>(null);
+  const [detailedGame, setDetailedGame] = useState<GameDetail | null>(null);
   const { showMouse } = useInputMode();
   const favorited = isFavorite(game.id.toString());
   usePopupOpenSound(Boolean(fullscreenMedia), 'detail-fullscreen-image');
@@ -71,6 +73,14 @@ export function DetailView({ game, onBack }: DetailViewProps) {
 
     setFullscreenMedia(media);
   };
+
+  useEffect(() => {
+    let cancelled = false;
+    getDbGameDetail(game.id.toString()).then(detail => {
+      if (!cancelled && detail) setDetailedGame(detail);
+    });
+    return () => { cancelled = true; };
+  }, [game.id]);
 
   useGamepad({
     onButtonDown: (button) => {
@@ -123,10 +133,11 @@ export function DetailView({ game, onBack }: DetailViewProps) {
   }, [fullscreenMedia, game.id, toggleFavorite]);
 
   const renderTheme = () => {
+    const mergedGame = detailedGame ? { ...game, ...detailedGame } : game;
     return (
       <NeonArchiveDetailLayout
         key={game.id}
-        game={game}
+        game={mergedGame}
         onBack={onBack}
         nav={nav}
         onFullscreen={handleFullscreen}
