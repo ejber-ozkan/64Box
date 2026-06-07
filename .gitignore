@@ -79,3 +79,12 @@ handover-*.md
 !/scripts/mdb-export-all.sh
 !/scripts/sqlite_support_config.js
 /src-tauri/test_output*.txt
+
+# Beads / Dolt files (added by bd init)
+.dolt/
+*.db
+.beads-credential-key
+
+# Graphify
+graphify-out/
+
