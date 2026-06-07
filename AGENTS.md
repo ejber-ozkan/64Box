@@ -12,6 +12,24 @@ bd close <id>         # Complete work
 bd dolt push          # Push beads data to remote
 ```
 
+## Codebase Navigation with Graphify
+
+This project maintains a codebase knowledge graph in `graphify-out/` to optimize context retrieval and save tokens.
+
+- **Check Graph First**: Before performing grep searches or reading entire files for codebase architecture questions, query the graph via:
+  ```bash
+  graphify query "<question>"
+  ```
+- **Find Relationships**: To trace dependency paths between two modules, run:
+  ```bash
+  graphify path "<Source>" "<Target>"
+  ```
+- **Explain Concepts**: To get a plain-language summary of a concept or file, run:
+  ```bash
+  graphify explain "<concept>"
+  ```
+- **Keep Graph Updated**: After making code changes, run `graphify update .` to update the AST structure in the graph.
+
 ## Non-Interactive Shell Commands
 
 **ALWAYS use non-interactive flags** with file operations to avoid hanging on confirmation prompts.
