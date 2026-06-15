@@ -4,12 +4,15 @@ node_modules/
 .pnp.*
 .yarn/
 
-# Build and cache directories
+# Build, cache, and generated directories
 .next/
 out/
 build/
 src-tauri/target/
 dist/
+.uv-cache/
+tmp/
+temp/
 *.tsbuildinfo
 next-env.d.ts
 
@@ -37,11 +40,18 @@ e2e/
 **/*.test.tsx
 src/tests/
 
-# Localization files
-**/localization/*.json
+# Third-party bundled emulator runtime and generated/static payloads
+public/emulator/data/
+public/sfx/
+public/launch/
+public/test.html
+public/jsSID.js
+public/*.svg
+public/*.ico
 
-# Generated schemas
+# Tauri generated assets and schemas
 src-tauri/gen/
+src-tauri/icons/
 
 # Media assets (images, audio, video)
 *.png
@@ -55,6 +65,9 @@ src-tauri/gen/
 *.ogg
 *.mp4
 *.webm
+*.wasm
+*.data
+*.icns
 
 # External vendor/minified libraries
 public/emulator/data/compression/libunrar.js
@@ -82,4 +95,13 @@ LICENSE
 CHANGELOG.md
 VERSION
 package-lock.json
+Cargo.lock
 *.bat
+
+# Scratch diagnostics and one-off repair scripts
+check_*.js
+check_*.py
+fix_view.js
+
+# Large design/export artifacts outside the live app
+src/new-detail-page-design.html
