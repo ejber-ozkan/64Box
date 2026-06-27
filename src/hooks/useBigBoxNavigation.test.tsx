@@ -176,6 +176,25 @@ describe('useBigBoxNavigation', () => {
     expect(props.onShowSettings).toHaveBeenCalledOnce();
   });
 
+  it('cycles platform when Enter is pressed on the BigBox platform slot', () => {
+    const onPlatformCycle = vi.fn();
+    const props = createProps({
+      activeHeaderItemIndex: 1,
+      activeHeaderRow: 0,
+      platformSwitcherEnabled: true,
+      onPlatformCycle,
+    });
+
+    renderHook(() => useBigBoxNavigation(props));
+
+    act(() => {
+      window.dispatchEvent(new KeyboardEvent('keydown', { key: 'Enter' }));
+    });
+
+    expect(onPlatformCycle).toHaveBeenCalledOnce();
+    expect(props.onShowSettings).not.toHaveBeenCalled();
+  });
+
   it('calls back behavior when gamepad B is pressed and an input is not focused', () => {
     const props = createProps();
 

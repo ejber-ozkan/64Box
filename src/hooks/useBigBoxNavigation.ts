@@ -36,8 +36,10 @@ interface UseBigBoxNavigationProps {
   onNavigationMove?: () => void;
   onOpenControllerKeyboard: () => void;
   onOpenSubGenrePicker: () => void;
+  onPlatformCycle?: () => void;
   onSelectGame: (game: Game) => void;
   onShowSettings: () => void;
+  platformSwitcherEnabled?: boolean;
   railFocusIndices: Record<string, number>;
   rails: BigBoxRailCategory[];
   setActiveHeaderItemIndex: Dispatch<SetStateAction<number>>;
@@ -66,8 +68,10 @@ export function useBigBoxNavigation({
   onNavigationMove,
   onOpenControllerKeyboard,
   onOpenSubGenrePicker,
+  onPlatformCycle,
   onSelectGame,
   onShowSettings,
+  platformSwitcherEnabled = false,
   railFocusIndices,
   rails,
   setActiveHeaderItemIndex,
@@ -159,10 +163,20 @@ export function useBigBoxNavigation({
       return;
     }
 
-    const isInputFocused = document.activeElement?.tagName === 'INPUT';
+    const activeElementTag = document.activeElement?.tagName;
+    const isInputFocused = activeElementTag === 'INPUT';
+    const isSelectFocused = activeElementTag === 'SELECT';
+    const topRowCount = platformSwitcherEnabled ? 4 : 3;
     const rowCounts = hasSubGenres
-      ? [3, genres.length, visibleSubGenres.length + (hasOverflowSubGenres ? 1 : 0), BIGBOX_LETTERS.length]
-      : [3, genres.length, BIGBOX_LETTERS.length];
+      ? [topRowCount, genres.length, visibleSubGenres.length + (hasOverflowSubGenres ? 1 : 0), BIGBOX_LETTERS.length]
+      : [topRowCount, genres.length, BIGBOX_LETTERS.length];
+
+    if (isSelectFocused) {
+      if (event.key === 'Escape') {
+        (document.activeElement as HTMLElement).blur();
+      }
+      return;
+    }
 
     if (isInputFocused) {
       if (event.key === 'Escape') {
@@ -293,9 +307,11 @@ export function useBigBoxNavigation({
         if (rowType === 'top') {
           if (activeHeaderItemIndex === 0) {
             onFocusSearchInput();
-          } else if (activeHeaderItemIndex === 1) {
+          } else if (platformSwitcherEnabled && activeHeaderItemIndex === 1) {
+            onPlatformCycle?.();
+          } else if (activeHeaderItemIndex === (platformSwitcherEnabled ? 2 : 1)) {
             onShowSettings();
-          } else if (activeHeaderItemIndex === 2) {
+          } else if (activeHeaderItemIndex === (platformSwitcherEnabled ? 3 : 2)) {
             exitApp();
           }
         } else if (rowType === 'genre') {
@@ -376,6 +392,8 @@ export function useBigBoxNavigation({
     toggleFavorite,
     visibleSubGenres,
     onOpenSubGenrePicker,
+    onPlatformCycle,
+    platformSwitcherEnabled,
   ]);
 
   useEffect(() => {

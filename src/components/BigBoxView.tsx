@@ -19,6 +19,8 @@ import { SubGenrePickerModal } from './SubGenrePickerModal';
 import { playRotatingUiSoundEffect, playUiSoundEffect, playUiSoundEffectAndWait } from '../lib/ui-sound-effects';
 import { getVisibleSubGenres } from '../lib/subgenre-display';
 import { useFullscreenLayoutMetrics } from '../hooks/useFullscreenLayoutMetrics';
+import { SUPPORTED_PLATFORMS } from '../lib/platform-capabilities';
+import type { PlatformId } from '../types/platform';
 
 interface BigBoxViewProps {
   settings: Settings;
@@ -29,6 +31,7 @@ interface BigBoxViewProps {
   searchInput: string;
   onSearchChange: (val: string) => void;
   onShowSettings: () => void;
+  onPlatformSelect: (platformId: PlatformId) => void;
   filters: GameFilters;
   onFiltersChange: (f: GameFilters) => void;
 }
@@ -51,6 +54,7 @@ export function BigBoxView({
   searchInput,
   onSearchChange,
   onShowSettings,
+  onPlatformSelect,
   filters,
   onFiltersChange,
 }: BigBoxViewProps) {
@@ -84,6 +88,14 @@ export function BigBoxView({
     () => getVisibleSubGenres(subGenres, filters.subGenre, layout.maxVisibleSubGenres),
     [filters.subGenre, layout.maxVisibleSubGenres, subGenres],
   );
+  const showPlatformSwitcher = SUPPORTED_PLATFORMS.length > 1;
+  const cyclePlatform = useCallback(() => {
+    const currentIndex = SUPPORTED_PLATFORMS.findIndex((platform) => platform.id === settings.activePlatformId);
+    const nextPlatform = SUPPORTED_PLATFORMS[(currentIndex + 1) % SUPPORTED_PLATFORMS.length];
+    if (nextPlatform) {
+      onPlatformSelect(nextPlatform.id);
+    }
+  }, [onPlatformSelect, settings.activePlatformId]);
 
   useEffect(() => {
     onSessionChange({
@@ -313,8 +325,10 @@ export function BigBoxView({
       setIsControllerKeyboardOpen(true);
     },
     onOpenSubGenrePicker: () => setIsSubGenrePickerOpen(true),
+    onPlatformCycle: cyclePlatform,
     onSelectGame: handleSelectGame,
     onShowSettings,
+    platformSwitcherEnabled: showPlatformSwitcher,
     railFocusIndices,
     rails,
     setActiveHeaderItemIndex,
@@ -352,6 +366,7 @@ export function BigBoxView({
           activeHeaderItemIndex={activeHeaderItemIndex}
           activeHeaderRow={activeHeaderRow}
           activeRailIndex={activeRailIndex}
+          activePlatformId={settings.activePlatformId}
           filters={filters}
           genres={genres}
           hasOverflowSubGenres={hasOverflow}
@@ -359,6 +374,7 @@ export function BigBoxView({
           onExit={openExitPrompt}
           onFiltersChange={handleFiltersChange}
           onOpenSubGenrePicker={() => setIsSubGenrePickerOpen(true)}
+          onPlatformSelect={onPlatformSelect}
           onJumpToRail={(railId) => {
             void playUiSoundEffect('search-filter', 0.42);
             jumpToRail(railId);

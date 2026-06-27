@@ -3,11 +3,14 @@
 import { BIGBOX_LETTERS } from '../../hooks/useBigBoxLibraryData';
 import { GameFilters } from '../../lib/tauri-bridge';
 import { FullscreenLayoutMetrics } from '../../hooks/useFullscreenLayoutMetrics';
+import { SUPPORTED_PLATFORMS } from '../../lib/platform-capabilities';
+import type { PlatformId } from '../../types/platform';
 
 interface BigBoxHeaderProps {
   activeHeaderItemIndex: number;
   activeHeaderRow: number;
   activeRailIndex: number;
+  activePlatformId: PlatformId;
   filters: GameFilters;
   genres: string[];
   hasOverflowSubGenres: boolean;
@@ -15,6 +18,7 @@ interface BigBoxHeaderProps {
   onExit: () => void;
   onFiltersChange: (filters: GameFilters) => void;
   onOpenSubGenrePicker: () => void;
+  onPlatformSelect: (platformId: PlatformId) => void;
   onJumpToRail: (railId: string) => void;
   onSearchChange: (value: string) => void;
   onSearchFocus: () => void;
@@ -28,6 +32,7 @@ export function BigBoxHeader({
   activeHeaderItemIndex,
   activeHeaderRow,
   activeRailIndex,
+  activePlatformId,
   filters,
   genres,
   hasOverflowSubGenres,
@@ -35,6 +40,7 @@ export function BigBoxHeader({
   onExit,
   onFiltersChange,
   onOpenSubGenrePicker,
+  onPlatformSelect,
   onJumpToRail,
   onSearchChange,
   onSearchFocus,
@@ -44,6 +50,7 @@ export function BigBoxHeader({
   visibleSubGenres,
 }: BigBoxHeaderProps) {
   const hasSubGenres = Boolean(filters.genre && (visibleSubGenres.length > 0 || hasOverflowSubGenres));
+  const showPlatformSwitcher = SUPPORTED_PLATFORMS.length > 1;
   const subGenreRowIndex = 2;
   const jumpRowIndex = hasSubGenres ? 3 : 2;
   const shellStyle = {
@@ -68,6 +75,9 @@ export function BigBoxHeader({
   const headerPillSelectedClass =
     'border-cyan-500/45 bg-cyan-500/10 text-cyan-200 shadow-[0_0_0_1px_rgba(34,211,238,0.12)_inset]';
   const searchFocused = activeRailIndex === -1 && activeHeaderRow === 0 && activeHeaderItemIndex === 0;
+  const platformFocused = showPlatformSwitcher && activeRailIndex === -1 && activeHeaderRow === 0 && activeHeaderItemIndex === 1;
+  const settingsIndex = showPlatformSwitcher ? 2 : 1;
+  const exitIndex = showPlatformSwitcher ? 3 : 2;
 
   return (
     <header className="sticky top-0 z-50 border-b border-white/5 bg-[linear-gradient(180deg,rgba(7,11,18,0.96),rgba(10,10,15,0.82))] backdrop-blur-3xl flex flex-col shadow-[0_20px_60px_rgba(2,6,23,0.45)]">
@@ -90,6 +100,32 @@ export function BigBoxHeader({
           </div>
 
           <div className="mx-1 h-8 w-px bg-white/10"></div>
+
+          {showPlatformSwitcher ? (
+            <label
+              className={`flex items-center gap-3 rounded-xl border px-4 py-2.5 text-xs font-black uppercase tracking-[0.16em] transition-all ${
+                platformFocused
+                  ? headerPillFocusClass
+                  : 'border-cyan-300/25 bg-cyan-400/10 text-cyan-100 shadow-[0_0_24px_rgba(34,211,238,0.08)]'
+              }`}
+              onMouseEnter={() => onSetHeaderFocus(0, 1)}
+            >
+              <span className="text-cyan-200/65">Platform</span>
+              <select
+                aria-label="Active platform"
+                className="min-w-36 cursor-pointer rounded-md border border-white/10 bg-slate-950/80 px-2 py-1 text-sm font-black normal-case tracking-normal text-white outline-none transition-colors hover:border-cyan-300/40 focus:border-cyan-300/60"
+                value={activePlatformId}
+                onChange={(event) => onPlatformSelect(event.target.value as PlatformId)}
+                onFocus={() => onSetHeaderFocus(0, 1)}
+              >
+                {SUPPORTED_PLATFORMS.map((platform) => (
+                  <option key={platform.id} value={platform.id} className="bg-slate-950 text-white">
+                    {platform.displayName}
+                  </option>
+                ))}
+              </select>
+            </label>
+          ) : null}
 
           <div className={`relative group max-w-full transition-all duration-300 ${searchFocused ? 'scale-105 z-10' : ''}`}>
             <input
@@ -116,9 +152,9 @@ export function BigBoxHeader({
         <div className="flex items-center gap-4">
           <button
             onClick={onShowSettings}
-            onMouseEnter={() => onSetHeaderFocus(0, 1)}
+            onMouseEnter={() => onSetHeaderFocus(0, settingsIndex)}
             className={`flex items-center justify-center transition-all group rounded-full border ${
-              activeRailIndex === -1 && activeHeaderRow === 0 && activeHeaderItemIndex === 1
+              activeRailIndex === -1 && activeHeaderRow === 0 && activeHeaderItemIndex === settingsIndex
                 ? 'bg-blue-600 border-blue-400 text-white scale-105 shadow-[0_0_20px_rgba(59,130,246,0.5)]'
                 : 'bg-white/5 border-white/10 text-white/60 hover:text-white hover:bg-white/10'
             }`}
@@ -126,7 +162,7 @@ export function BigBoxHeader({
             title="Settings"
           >
             <span
-              className={`transition-transform duration-500 ${activeRailIndex === -1 && activeHeaderRow === 0 && activeHeaderItemIndex === 1 ? 'rotate-45' : 'group-hover:rotate-45'}`}
+              className={`transition-transform duration-500 ${activeRailIndex === -1 && activeHeaderRow === 0 && activeHeaderItemIndex === settingsIndex ? 'rotate-45' : 'group-hover:rotate-45'}`}
               style={{ fontSize: `${Math.max(layout.headerControlSize * 0.5, 18)}px` }}
             >
               ⚙️
@@ -135,9 +171,9 @@ export function BigBoxHeader({
 
           <button
             onClick={onExit}
-            onMouseEnter={() => onSetHeaderFocus(0, 2)}
+            onMouseEnter={() => onSetHeaderFocus(0, exitIndex)}
             className={`flex items-center justify-center transition-all group rounded-full border ${
-              activeRailIndex === -1 && activeHeaderRow === 0 && activeHeaderItemIndex === 2
+              activeRailIndex === -1 && activeHeaderRow === 0 && activeHeaderItemIndex === exitIndex
                 ? 'bg-red-600 border-red-400 text-white scale-105 shadow-[0_0_20px_rgba(220,38,38,0.5)]'
                 : 'bg-red-600/20 border-red-500/30 text-red-500 hover:bg-red-600 hover:text-white hover:border-red-400'
             }`}
@@ -145,7 +181,7 @@ export function BigBoxHeader({
             title="Exit Application"
           >
             <span
-              className={`transition-transform ${activeRailIndex === -1 && activeHeaderRow === 0 && activeHeaderItemIndex === 2 ? 'scale-110' : 'group-hover:scale-110'}`}
+              className={`transition-transform ${activeRailIndex === -1 && activeHeaderRow === 0 && activeHeaderItemIndex === exitIndex ? 'scale-110' : 'group-hover:scale-110'}`}
               style={{ fontSize: `${Math.max(layout.headerControlSize * 0.5, 18)}px` }}
             >
               ⏻

@@ -63,6 +63,8 @@ function LibraryApp() {
   const [subGenres, setSubGenres] = useState<string[]>([]);
   const [showLaunchSplash, setShowLaunchSplash] = useState(true);
   const [bigBoxSession, setBigBoxSession] = useState<BigBoxSessionState | null>(null);
+  const [platformSetupError, setPlatformSetupError] = useState<string | null>(null);
+  const [platformSetupResult, setPlatformSetupResult] = useState<string | null>(null);
   const previousFullscreenRef = useRef(settings.isFullscreen);
   const { classicGames, favoriteGames, recentGames } = useWindowLibraryShelves({
     favoriteIds: favorites,
@@ -133,19 +135,54 @@ function LibraryApp() {
     viewMode,
   });
 
+  const handleBrowsePlatformMdb = useCallback(async () => {
+    const selected = await openMdbFileDialog();
+    if (!selected) {
+      return;
+    }
+
+    setPlatformSetupError(null);
+    setPlatformSetupResult(`Selected MDB for ${activePlatform.displayName}.`);
+    updateSettings({
+      platformSettings: {
+        ...settings.platformSettings,
+        [settings.activePlatformId]: {
+          ...activePlatformSettings,
+          library: {
+            ...activePlatformSettings.library,
+            sourceMdbPath: selected,
+          },
+        },
+      },
+    });
+  }, [
+    activePlatform.displayName,
+    activePlatformSettings,
+    settings.activePlatformId,
+    settings.platformSettings,
+    updateSettings,
+  ]);
+
+  const handlePlatformImport = useCallback(() => {
+    setPlatformSetupResult(null);
+    setPlatformSetupError(
+      `${activePlatform.displayName} MDB selection is ready. The next implementation slice adds platform-aware MDB export/import plus required Games, Music, Photos, and Screenshots folder fields.`,
+    );
+  }, [activePlatform.displayName]);
+
   if (activePlatformSettings.library.importStatus !== 'imported') {
     return (
       <>
         {showLaunchSplash ? <AppLaunchSplash /> : null}
         <DatabaseSetupView
           dbPath={activePlatformSettings.library.sqliteScope}
-          error={`${activePlatform.displayName} has not been imported yet.`}
-          importResult={null}
+          error={platformSetupError ?? `${activePlatform.displayName} has not been imported yet.`}
+          importResult={platformSetupResult}
           isImporting={false}
           mdbPath={activePlatformSettings.library.sourceMdbPath ?? ''}
           platformName={activePlatform.displayName}
-          onBrowse={() => {}}
-          onImport={() => {}}
+          onBrowse={handleBrowsePlatformMdb}
+          onImport={handlePlatformImport}
         />
       </>
     );
@@ -215,6 +252,7 @@ function LibraryApp() {
           searchInput={searchInput}
           onSearchChange={setSearchInput}
           onShowSettings={() => setViewMode('settings')}
+          onPlatformSelect={setActivePlatform}
           filters={filters}
           onFiltersChange={setFilters}
         />
