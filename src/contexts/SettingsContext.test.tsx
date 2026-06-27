@@ -1,17 +1,21 @@
 import { expect, test, describe, beforeEach } from 'vitest';
-import { render, screen, fireEvent } from '@testing-library/react';
+import { render, screen, fireEvent, waitFor } from '@testing-library/react';
 import { SettingsProvider, useSettings } from './SettingsContext';
 import React from 'react';
 
 // Wrapper component to consume and test the Context hooks natively
 function SettingsTestComponent() {
-  const { settings, updateSettings, resolveMediaPath, markAsPlayed } = useSettings();
+  const { settings, updateSettings, setActivePlatform, resolveMediaPath, markAsPlayed } = useSettings();
   
   return (
     <div>
       <div data-testid="screenshot-path">{resolveMediaPath('screenshot', 'commando_1.png')}</div>
       <div data-testid="sound-path">{resolveMediaPath('sound', 'commando.sid')}</div>
       <div data-testid="recently-played">{settings.recentlyPlayedIds.join(',')}</div>
+      <div data-testid="active-platform">{settings.activePlatformId}</div>
+      <div data-testid="c64-roms-path">{settings.platformSettings.c64.folders.gamesPath}</div>
+      <div data-testid="c64-selected-game">{settings.platformSettings.c64.navigation.lastSelectedGameId}</div>
+      <div data-testid="atari800-import-status">{settings.platformSettings.atari800.library.importStatus}</div>
       
       <button 
         data-testid="update-btn" 
@@ -28,6 +32,12 @@ function SettingsTestComponent() {
         }}
       >
         Mark Eleven
+      </button>
+      <button
+        data-testid="select-atari800-btn"
+        onClick={() => setActivePlatform('atari800')}
+      >
+        Select Atari 800
       </button>
     </div>
   );
@@ -79,5 +89,50 @@ describe('SettingsContext', () => {
     fireEvent.click(screen.getByTestId('mark-eleven-btn'));
 
     expect(screen.getByTestId('recently-played').textContent).toBe('11,10,9,8,7,6,5,4,3,2');
+  });
+
+  test('migrates flat C64 settings into platform-scoped settings', async () => {
+    window.localStorage.setItem('gb64_settings', JSON.stringify({
+      romsPath: 'D:/Games/C64',
+      soundsPath: 'D:/Games/C64/Music',
+      musicianPhotosPath: 'D:/Games/C64/Musicians',
+      screenshotsPath: 'D:/Games/C64/Screenshots',
+      extrasPath: 'D:/Games/C64/Extras',
+      emulatorPath: 'D:/Emulators/VICE/x64sc.exe',
+      retroarchPath: 'D:/RetroArch/retroarch.exe',
+      retroarchCorePath: 'D:/RetroArch/cores/vice_x64sc_libretro.dll',
+      preferredEmulator: 'retroarch',
+      lastSelectedGameId: '1234',
+      lastFocusedIndex: 42,
+      lastViewMode: 'list',
+      lastBigBoxRailId: 'favorites',
+      lastBigBoxGameId: '1234',
+    }));
+
+    render(
+      <SettingsProvider>
+        <SettingsTestComponent />
+      </SettingsProvider>
+    );
+
+    await waitFor(() => {
+      expect(screen.getByTestId('c64-roms-path').textContent).toBe('D:/Games/C64');
+    });
+    expect(screen.getByTestId('c64-selected-game').textContent).toBe('1234');
+    expect(screen.getByTestId('active-platform').textContent).toBe('c64');
+    expect(screen.getByTestId('atari800-import-status').textContent).toBe('notImported');
+  });
+
+  test('sets the active platform while preserving platform import state', () => {
+    render(
+      <SettingsProvider>
+        <SettingsTestComponent />
+      </SettingsProvider>
+    );
+
+    fireEvent.click(screen.getByTestId('select-atari800-btn'));
+
+    expect(screen.getByTestId('active-platform').textContent).toBe('atari800');
+    expect(screen.getByTestId('atari800-import-status').textContent).toBe('notImported');
   });
 });

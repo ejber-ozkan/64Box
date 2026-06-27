@@ -5,6 +5,8 @@ import { SubGenrePickerModal } from '../SubGenrePickerModal';
 import type { GameFilters } from '../../lib/tauri-bridge';
 import type { LibraryViewMode } from '../../hooks/useLibraryBrowserState';
 import { getVisibleSubGenres } from '../../lib/subgenre-display';
+import { PlatformSwitcher } from '../PlatformSwitcher';
+import type { PlatformId } from '../../types/platform';
 
 interface LibraryHeaderProps {
   filters: GameFilters;
@@ -13,9 +15,11 @@ interface LibraryHeaderProps {
   onExit: () => void;
   onFiltersChange: Dispatch<SetStateAction<GameFilters>>;
   onOpenSettings: () => void;
+  onPlatformSelect: (platformId: PlatformId) => void;
   onSearchChange: (value: string) => void;
   onViewModeChange: (viewMode: LibraryViewMode) => void;
   searchInput: string;
+  activePlatformId: PlatformId;
   viewMode: LibraryViewMode;
 }
 
@@ -26,9 +30,11 @@ export function LibraryHeader({
   onExit,
   onFiltersChange,
   onOpenSettings,
+  onPlatformSelect,
   onSearchChange,
   onViewModeChange,
   searchInput,
+  activePlatformId,
   viewMode,
 }: LibraryHeaderProps) {
   const [isSubGenrePickerOpen, setIsSubGenrePickerOpen] = useState(false);
@@ -54,6 +60,8 @@ export function LibraryHeader({
         </div>
 
         <div className="flex items-center gap-4">
+          <PlatformSwitcher activePlatformId={activePlatformId} onPlatformSelect={onPlatformSelect} />
+
           <div className="relative">
             <input
               type="text"

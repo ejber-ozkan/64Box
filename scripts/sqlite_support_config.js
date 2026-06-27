@@ -32,7 +32,53 @@ const supportObjects = [
   { name: "GameSearchIndex", type: "table" },
 ];
 
+const requiredPlatformColumns = ["platform_id", "source_game_id"];
+
+const platformImportConfigs = {
+  c64: {
+    platformId: "c64",
+    displayName: "Commodore 64",
+    status: "available",
+    defaultImported: true,
+    sourceMdbName: "GBC_v19.mdb",
+    requiredFolders: ["gamesPath", "musicPath", "photosPath", "screenshotsPath", "extrasPath"],
+    musicExtensions: [".sid"],
+    launchExtensions: [".d64", ".t64", ".tap", ".prg", ".crt", ".g64", ".zip", ".7z", ".m3u", ".vfl"],
+  },
+  atari800: {
+    platformId: "atari800",
+    displayName: "Atari 800",
+    status: "available",
+    defaultImported: false,
+    sourceMdbName: "Atari 800 v12.mdb",
+    referenceMdbPath: "E:\\Backups\\RETRO-BACKUPS\\Atari8bit\\Atari 800\\Atari 800 v12.mdb",
+    requiredFolders: ["gamesPath", "musicPath", "photosPath", "screenshotsPath"],
+    musicExtensions: [".sap"],
+    launchExtensions: [".atr", ".xfd", ".atx", ".cas", ".car", ".rom", ".bin", ".xex", ".com", ".m3u", ".zip", ".7z"],
+  },
+  atari2600: {
+    platformId: "atari2600",
+    displayName: "Atari 2600",
+    status: "planned",
+    defaultImported: false,
+    requiredFolders: ["gamesPath", "screenshotsPath"],
+    musicExtensions: [],
+    launchExtensions: [".a26", ".bin", ".rom", ".zip", ".7z"],
+  },
+};
+
+function getPlatformImportConfig(platformId = "c64") {
+  const config = platformImportConfigs[platformId];
+  if (!config) {
+    throw new Error(`Unsupported platform: ${platformId}`);
+  }
+  return config;
+}
+
 module.exports = {
   performanceIndexes,
   supportObjects,
+  requiredPlatformColumns,
+  platformImportConfigs,
+  getPlatformImportConfig,
 };

@@ -258,6 +258,23 @@ pub fn get_db_path() -> String {
     })
 }
 
+pub fn normalize_platform_id(platform_id: Option<&str>) -> Result<String, String> {
+    let platform_id = platform_id.unwrap_or("c64");
+    match platform_id {
+        "c64" | "atari800" | "atari2600" => Ok(platform_id.to_string()),
+        _ => Err(format!("Unsupported platform: {platform_id}")),
+    }
+}
+
+pub fn get_platform_db_scope(platform_id: Option<&str>) -> Result<String, String> {
+    normalize_platform_id(platform_id)
+}
+
+pub fn get_platform_db_path(platform_id: Option<&str>) -> Result<String, String> {
+    let _scope = normalize_platform_id(platform_id)?;
+    Ok(get_db_path())
+}
+
 fn create_runtime_db_path(app: &tauri::AppHandle) -> Result<PathBuf, String> {
     let app_data_dir = app
         .path()
@@ -920,6 +937,18 @@ mod tests {
     fn test_get_db_path_prefers_environment_variable() {
         std::env::set_var("VIC40_DB_PATH", "custom.sqlite");
         assert_eq!(get_db_path(), "custom.sqlite");
+        std::env::remove_var("VIC40_DB_PATH");
+    }
+
+    #[test]
+    fn test_platform_db_helpers_default_to_c64_and_validate_platforms() {
+        std::env::set_var("VIC40_DB_PATH", "custom.sqlite");
+
+        assert_eq!(get_platform_db_scope(None).unwrap(), "c64");
+        assert_eq!(get_platform_db_scope(Some("atari800")).unwrap(), "atari800");
+        assert_eq!(get_platform_db_path(Some("c64")).unwrap(), "custom.sqlite");
+        assert!(get_platform_db_scope(Some("amiga")).is_err());
+
         std::env::remove_var("VIC40_DB_PATH");
     }
 

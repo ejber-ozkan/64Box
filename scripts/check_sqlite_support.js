@@ -2,7 +2,11 @@ const fs = require("fs");
 const path = require("path");
 const Database = require("better-sqlite3");
 
-const { performanceIndexes, supportObjects } = require("./sqlite_support_config");
+const {
+  performanceIndexes,
+  requiredPlatformColumns,
+  supportObjects,
+} = require("./sqlite_support_config");
 
 function getArgValue(flag) {
   const index = process.argv.indexOf(flag);
@@ -61,6 +65,26 @@ function listFtsShadowTables(db) {
     .map((row) => row.name);
 }
 
+function tableColumns(db, tableName) {
+  if (!tableExists(db, tableName)) {
+    return [];
+  }
+
+  return db
+    .prepare(`PRAGMA table_info('${tableName.replace(/'/g, "''")}')`)
+    .all()
+    .map((row) => row.name);
+}
+
+function listMissingPlatformColumns(db) {
+  if (!tableExists(db, "Games")) {
+    return [];
+  }
+
+  const columns = tableColumns(db, "Games");
+  return requiredPlatformColumns.filter((column) => !columns.includes(column));
+}
+
 function main() {
   const dbPath = resolveDbPath();
   if (!fs.existsSync(dbPath)) {
@@ -73,18 +97,24 @@ function main() {
   try {
     const missingIndexes = listMissingIndexes(db);
     const missingSupportObjects = listMissingSupportObjects(db);
+    const missingPlatformColumns = listMissingPlatformColumns(db);
     const shadowTables = listFtsShadowTables(db);
 
     console.log(`Auditing SQLite support objects in ${dbPath}`);
     console.log(`Expected performance indexes: ${performanceIndexes.length}`);
     console.log(`Expected support objects: ${supportObjects.length}`);
+    console.log(`Expected platform identity columns: ${requiredPlatformColumns.join(", ")}`);
     console.log(`FTS shadow tables detected: ${shadowTables.length}`);
 
     if (shadowTables.length > 0) {
       console.log(`FTS shadow tables: ${shadowTables.join(", ")}`);
     }
 
-    if (missingIndexes.length === 0 && missingSupportObjects.length === 0) {
+    if (
+      missingIndexes.length === 0 &&
+      missingSupportObjects.length === 0 &&
+      missingPlatformColumns.length === 0
+    ) {
       console.log("[OK] All expected indexes and support objects are present.");
       return;
     }
@@ -96,6 +126,12 @@ function main() {
     if (missingSupportObjects.length > 0) {
       console.error(
         `[ERROR] Missing support objects: ${missingSupportObjects.join(", ")}`
+      );
+    }
+
+    if (missingPlatformColumns.length > 0) {
+      console.error(
+        `[ERROR] Missing platform identity columns on Games: ${missingPlatformColumns.join(", ")}`
       );
     }
 

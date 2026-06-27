@@ -127,3 +127,81 @@ pub struct DatabaseImportResult {
     pub exported_tables: usize,
     pub imported_tables: usize,
 }
+
+#[derive(Debug, Serialize, Deserialize, Clone, PartialEq, Eq)]
+#[serde(rename_all = "camelCase")]
+pub enum PlatformId {
+    C64,
+    Atari800,
+    Atari2600,
+}
+
+impl PlatformId {
+    pub fn as_str(&self) -> &'static str {
+        match self {
+            PlatformId::C64 => "c64",
+            PlatformId::Atari800 => "atari800",
+            PlatformId::Atari2600 => "atari2600",
+        }
+    }
+}
+
+#[derive(Debug, Serialize, Deserialize, Clone)]
+#[serde(rename_all = "camelCase")]
+pub struct PlatformCapabilities {
+    pub screenshots: bool,
+    pub photos: bool,
+    pub music: String,
+    pub extras: bool,
+    pub videos: bool,
+    pub in_app_emulation: bool,
+    pub launch_extensions: Vec<String>,
+}
+
+#[derive(Debug, Serialize, Deserialize, Clone)]
+#[serde(rename_all = "camelCase")]
+pub struct PlatformProfile {
+    pub id: String,
+    pub display_name: String,
+    pub status: String,
+    pub import_status: String,
+    pub default_emulator_profile_id: String,
+    pub supported_emulator_profile_ids: Vec<String>,
+    pub capabilities: PlatformCapabilities,
+    pub folder_types: Vec<String>,
+}
+
+#[derive(Debug, Serialize, Deserialize, Clone)]
+#[serde(rename_all = "camelCase")]
+pub struct ActivePlatformState {
+    pub active_platform_id: String,
+    pub last_used_platform_id: Option<String>,
+    pub platform_selection_required: bool,
+}
+
+#[derive(Debug, Serialize, Deserialize, Clone)]
+#[serde(rename_all = "camelCase")]
+pub struct SetActivePlatformResponse {
+    pub active_platform_id: String,
+    pub requires_import: bool,
+    pub message: String,
+}
+
+#[derive(Debug, Serialize, Deserialize, Clone, Default)]
+#[serde(rename_all = "camelCase")]
+pub struct PlatformFolderSettings {
+    pub games_path: String,
+    pub music_path: String,
+    pub photos_path: String,
+    pub screenshots_path: String,
+}
+
+#[derive(Debug, Serialize, Deserialize, Clone)]
+#[serde(rename_all = "camelCase")]
+pub struct PlatformImportStatus {
+    pub platform_id: String,
+    pub import_status: String,
+    pub source_mdb_path: Option<String>,
+    pub game_count: usize,
+    pub last_import_error: Option<String>,
+}

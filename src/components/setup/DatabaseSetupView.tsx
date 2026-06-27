@@ -6,6 +6,7 @@ interface DatabaseSetupViewProps {
   importResult: string | null;
   isImporting: boolean;
   mdbPath: string;
+  platformName?: string;
   onBrowse: () => void;
   onImport: () => void;
 }
@@ -16,6 +17,7 @@ export function DatabaseSetupView({
   importResult,
   isImporting,
   mdbPath,
+  platformName = 'GameBase64',
   onBrowse,
   onImport,
 }: DatabaseSetupViewProps) {
@@ -28,10 +30,10 @@ export function DatabaseSetupView({
               First Run Setup
             </div>
             <h1 className="text-4xl font-black tracking-tight text-white md:text-5xl">
-              Build Your GB64 Database
+              Build Your {platformName} Database
             </h1>
             <p className="mt-4 max-w-3xl text-base leading-8 text-white/68">
-              64Box needs the original <span className="font-bold text-white">GameBase64 v19</span>{' '}
+              64Box needs the original <span className="font-bold text-white">{platformName}</span>{' '}
               MDB file to build the local SQLite database for search, filters, favorites, and BigBox browsing.
             </p>
           </div>

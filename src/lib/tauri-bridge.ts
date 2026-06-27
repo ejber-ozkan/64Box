@@ -81,6 +81,37 @@ export interface DatabaseImportResult {
   importedTables: number;
 }
 
+export interface SupportedPlatformProfile {
+  id: string;
+  displayName: string;
+  status: string;
+  importStatus: string;
+  defaultEmulatorProfileId: string;
+  supportedEmulatorProfileIds: string[];
+  capabilities: {
+    screenshots: boolean;
+    photos: boolean;
+    music: string;
+    extras: boolean;
+    videos: boolean;
+    inAppEmulation: boolean;
+    launchExtensions: string[];
+  };
+  folderTypes: string[];
+}
+
+export interface ActivePlatformStateResponse {
+  activePlatformId: string;
+  lastUsedPlatformId: string | null;
+  platformSelectionRequired: boolean;
+}
+
+export interface SetActivePlatformResponse {
+  activePlatformId: string;
+  requiresImport: boolean;
+  message: string;
+}
+
 interface RawExtraRow {
   id: string;
   name: string;
@@ -293,6 +324,57 @@ export async function importDatabaseFromMdb(mdbPath: string): Promise<DatabaseIm
     throw new Error('Database import is only available in the desktop app');
   }
   return invoke<DatabaseImportResult>('import_database_from_mdb', { mdbPath });
+}
+
+export async function getSupportedPlatforms(): Promise<SupportedPlatformProfile[]> {
+  if (!isTauri()) {
+    const { SUPPORTED_PLATFORMS } = await import('./platform-capabilities');
+    return SUPPORTED_PLATFORMS.map((platform) => ({
+      id: platform.id,
+      displayName: platform.displayName,
+      status: platform.status,
+      importStatus: platform.importStatus,
+      defaultEmulatorProfileId: platform.defaultEmulatorProfileId,
+      supportedEmulatorProfileIds: platform.supportedEmulatorProfileIds,
+      capabilities: {
+        ...platform.mediaCapabilities,
+        inAppEmulation: platform.inAppEmulation,
+        launchExtensions: platform.launchExtensions,
+      },
+      folderTypes: platform.folderTypes,
+    }));
+  }
+  return invoke<SupportedPlatformProfile[]>('get_supported_platforms');
+}
+
+export async function getActivePlatform(): Promise<ActivePlatformStateResponse> {
+  if (!isTauri()) {
+    return {
+      activePlatformId: 'c64',
+      lastUsedPlatformId: 'c64',
+      platformSelectionRequired: false,
+    };
+  }
+  return invoke<ActivePlatformStateResponse>('get_active_platform');
+}
+
+export async function setActivePlatform(platformId: string): Promise<SetActivePlatformResponse> {
+  if (!isTauri()) {
+    const { PLATFORM_PROFILES } = await import('./platform-capabilities');
+    const platform = PLATFORM_PROFILES[platformId as keyof typeof PLATFORM_PROFILES];
+    if (!platform) {
+      throw new Error(`Unsupported platform: ${platformId}`);
+    }
+    const requiresImport = platform.importStatus !== 'imported';
+    return {
+      activePlatformId: platform.id,
+      requiresImport,
+      message: requiresImport
+        ? `${platform.displayName} needs to be imported before browsing.`
+        : `${platform.displayName} is ready.`,
+    };
+  }
+  return invoke<SetActivePlatformResponse>('set_active_platform', { platformId });
 }
 
 /**

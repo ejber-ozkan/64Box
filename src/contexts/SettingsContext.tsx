@@ -2,6 +2,11 @@
 
 import React, { createContext, useContext, useState, ReactNode, useEffect, useCallback } from 'react';
 import { getSecureSetting, saveSecureSetting } from '../lib/tauri-bridge';
+import {
+  createDefaultPlatformSettingsMap,
+  isPlatformId,
+} from '../lib/platform-capabilities';
+import type { PlatformId, PlatformSettings } from '../types/platform';
 
 export interface Settings {
   screenshotsPath: string;
@@ -41,11 +46,15 @@ export interface Settings {
   confirmFullscreenExit: boolean;
   lastBigBoxRailId: string | null;
   lastBigBoxGameId: string | null;
+  activePlatformId: PlatformId;
+  lastUsedPlatformId: PlatformId | null;
+  platformSettings: Record<PlatformId, PlatformSettings>;
 }
 
 interface SettingsContextType {
   settings: Settings;
   updateSettings: (newSettings: Partial<Settings>) => void;
+  setActivePlatform: (platformId: PlatformId) => void;
   resolveMediaPath: (type: 'screenshot' | 'sound' | 'musician' | 'extras', filename: string) => string;
   findAllVariants: (type: 'screenshot' | 'sound' | 'musician' | 'extras', filename: string) => Promise<string[]>;
   markAsPlayed: (gameId: string) => void;
@@ -89,11 +98,92 @@ const defaultSettings: Settings = {
   confirmFullscreenExit: true,
   lastBigBoxRailId: null,
   lastBigBoxGameId: null,
+  activePlatformId: 'c64',
+  lastUsedPlatformId: 'c64',
+  platformSettings: createDefaultPlatformSettingsMap(),
 };
 
 const SettingsContext = createContext<SettingsContextType | undefined>(undefined);
 
 const SECURE_FIELDS = ['emuMoviesPassword', 'screenScraperPassword', 'screenScraperDevPassword', 'theGamesDbApiKey'] as const;
+
+function migratePlatformSettings(values: Partial<Settings>): Record<PlatformId, PlatformSettings> {
+  const platformSettings = createDefaultPlatformSettingsMap();
+  const existing = values.platformSettings;
+
+  if (existing) {
+    (Object.keys(existing) as PlatformId[]).forEach((platformId) => {
+      if (!isPlatformId(platformId)) return;
+      platformSettings[platformId] = {
+        ...platformSettings[platformId],
+        ...existing[platformId],
+        library: {
+          ...platformSettings[platformId].library,
+          ...existing[platformId]?.library,
+        },
+        folders: {
+          ...platformSettings[platformId].folders,
+          ...existing[platformId]?.folders,
+        },
+        emulator: {
+          ...platformSettings[platformId].emulator,
+          ...existing[platformId]?.emulator,
+          executablePaths: {
+            ...platformSettings[platformId].emulator.executablePaths,
+            ...existing[platformId]?.emulator?.executablePaths,
+          },
+          corePaths: {
+            ...platformSettings[platformId].emulator.corePaths,
+            ...existing[platformId]?.emulator?.corePaths,
+          },
+        },
+        navigation: {
+          ...platformSettings[platformId].navigation,
+          ...existing[platformId]?.navigation,
+        },
+      };
+    });
+  }
+
+  const c64 = platformSettings.c64;
+  c64.library = {
+    ...c64.library,
+    importStatus: 'imported',
+    active: true,
+  };
+  c64.folders = {
+    ...c64.folders,
+    gamesPath: values.romsPath ?? c64.folders.gamesPath,
+    musicPath: values.soundsPath ?? c64.folders.musicPath,
+    photosPath: values.musicianPhotosPath ?? c64.folders.photosPath,
+    screenshotsPath: values.screenshotsPath ?? c64.folders.screenshotsPath,
+    extrasPath: values.extrasPath ?? c64.folders.extrasPath,
+  };
+  c64.emulator = {
+    ...c64.emulator,
+    preferredEmulatorProfileId: values.preferredEmulator === 'retroarch' ? 'retroarch-c64' : 'vice-c64',
+    executablePaths: {
+      ...c64.emulator.executablePaths,
+      'vice-c64': values.emulatorPath ?? c64.emulator.executablePaths['vice-c64'] ?? '',
+      'retroarch-c64': values.retroarchPath ?? c64.emulator.executablePaths['retroarch-c64'] ?? '',
+    },
+    corePaths: {
+      ...c64.emulator.corePaths,
+      'retroarch-c64': values.retroarchCorePath ?? c64.emulator.corePaths['retroarch-c64'] ?? '',
+    },
+  };
+  c64.navigation = {
+    ...c64.navigation,
+    recentlyPlayedIds: values.recentlyPlayedIds ?? c64.navigation.recentlyPlayedIds,
+    lastSelectedGameId: values.lastSelectedGameId ?? c64.navigation.lastSelectedGameId,
+    lastFocusedIndex: values.lastFocusedIndex ?? c64.navigation.lastFocusedIndex,
+    lastViewMode: values.lastViewMode ?? c64.navigation.lastViewMode,
+    lastBigBoxRailId: values.lastBigBoxRailId ?? c64.navigation.lastBigBoxRailId,
+    lastBigBoxGameId: values.lastBigBoxGameId ?? c64.navigation.lastBigBoxGameId,
+  };
+
+  return platformSettings;
+}
 
 export function SettingsProvider({ children }: { children: ReactNode }) {
   const [isLoaded, setIsLoaded] = useState(false);
@@ -144,11 +234,24 @@ export function SettingsProvider({ children }: { children: ReactNode }) {
         localStorage.setItem('gb64_settings', JSON.stringify(sanitizedLocal));
       }
 
-      // 5. Set final combined state
-      setSettings({
+      const combinedSettings = {
         ...defaultSettings,
         ...sanitizedLocal,
         ...secureValues
+      };
+      const activePlatformId = isPlatformId(combinedSettings.activePlatformId)
+        ? combinedSettings.activePlatformId
+        : 'c64';
+      const lastUsedPlatformId = combinedSettings.lastUsedPlatformId && isPlatformId(combinedSettings.lastUsedPlatformId)
+        ? combinedSettings.lastUsedPlatformId
+        : 'c64';
+
+      // 5. Set final combined state
+      setSettings({
+        ...combinedSettings,
+        activePlatformId,
+        lastUsedPlatformId,
+        platformSettings: migratePlatformSettings(combinedSettings),
       });
       setIsLoaded(true);
     }
@@ -209,6 +312,37 @@ export function SettingsProvider({ children }: { children: ReactNode }) {
     });
   }, []);
 
+  const setActivePlatform = useCallback((platformId: PlatformId) => {
+    updateSettings({
+      activePlatformId: platformId,
+      lastUsedPlatformId: platformId,
+      platformSettings: {
+        ...settings.platformSettings,
+        c64: {
+          ...settings.platformSettings.c64,
+          library: {
+            ...settings.platformSettings.c64.library,
+            active: platformId === 'c64',
+          },
+        },
+        atari800: {
+          ...settings.platformSettings.atari800,
+          library: {
+            ...settings.platformSettings.atari800.library,
+            active: platformId === 'atari800',
+          },
+        },
+        atari2600: {
+          ...settings.platformSettings.atari2600,
+          library: {
+            ...settings.platformSettings.atari2600.library,
+            active: platformId === 'atari2600',
+          },
+        },
+      },
+    });
+  }, [settings.platformSettings, updateSettings]);
+
 
   const resolveMediaPath = useCallback((type: 'screenshot' | 'sound' | 'musician' | 'extras', filename: string) => {
     switch (type) {
@@ -260,7 +394,7 @@ export function SettingsProvider({ children }: { children: ReactNode }) {
   }, []);
 
   return (
-    <SettingsContext.Provider value={{ settings, updateSettings, resolveMediaPath, findAllVariants, markAsPlayed }}>
+    <SettingsContext.Provider value={{ settings, updateSettings, setActivePlatform, resolveMediaPath, findAllVariants, markAsPlayed }}>
       {children}
     </SettingsContext.Provider>
   );

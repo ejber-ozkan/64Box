@@ -18,12 +18,12 @@
 
 **Purpose**: Prepare shared project files and fixtures for platform-aware implementation.
 
-- [ ] T001 Create Atari 800 fixture notes and expected sample paths in `specs/001-multi-platform-gamebases/quickstart.md`
-- [ ] T002 [P] Add platform domain type placeholders in `src/types/platform.ts`
-- [ ] T003 [P] Add platform fixture data placeholder in `src/lib/platform-capabilities.ts`
-- [ ] T004 [P] Add frontend platform test scaffold in `src/lib/platform-capabilities.test.ts`
-- [ ] T005 [P] Add backend platform test scaffold in `src-tauri/src/commands/platforms/tests.rs`
-- [ ] T006 [P] Add import script fixture scaffold in `scripts/platform_import_config.test.js`
+- [X] T001 Create Atari 800 fixture notes and expected sample paths in `specs/001-multi-platform-gamebases/quickstart.md`
+- [X] T002 [P] Add platform domain type placeholders in `src/types/platform.ts`
+- [X] T003 [P] Add platform fixture data placeholder in `src/lib/platform-capabilities.ts`
+- [X] T004 [P] Add frontend platform test scaffold in `src/lib/platform-capabilities.test.ts`
+- [X] T005 [P] Add backend platform test scaffold in `src-tauri/src/commands/platforms/tests.rs`
+- [X] T006 [P] Add import script fixture scaffold in `scripts/platform_import_config.test.js`
 
 ---
 
@@ -33,22 +33,22 @@
 
 **Critical**: No user story work should begin until this phase is complete.
 
-- [ ] T007 Define `PlatformId`, `PlatformProfile`, `PlatformLibraryStatus`, `PlatformFolderSettings`, `PlatformEmulatorProfile`, and `ActivePlatformState` in `src/types/platform.ts`
-- [ ] T008 Implement C64, Atari 800, and Atari 2600 platform profiles in `src/lib/platform-capabilities.ts`
-- [ ] T009 [P] Add frontend tests for platform registry defaults and Atari 800 capabilities in `src/lib/platform-capabilities.test.ts`
-- [ ] T010 Add platform-scoped settings shape and defaults to `src/contexts/SettingsContext.tsx`
-- [ ] T011 Add migration from flat C64 settings into platform-scoped settings in `src/contexts/SettingsContext.tsx`
-- [ ] T012 [P] Add settings migration tests in `src/contexts/SettingsContext.test.tsx`
-- [ ] T013 Add platform models for platform profiles, library status, folder settings, emulator profiles, and active state in `src-tauri/src/models.rs`
-- [ ] T014 Add backend platform command module registration in `src-tauri/src/commands/mod.rs`
-- [ ] T015 Create backend platform command module in `src-tauri/src/commands/platforms.rs`
-- [ ] T016 Add Tauri command wrappers for platform state and settings in `src/lib/tauri-bridge.ts`
-- [ ] T017 Add platform-aware database path and scope helpers in `src-tauri/src/database.rs`
-- [ ] T018 Add platform identity columns/tables and compatibility migration helpers in `scripts/sqlite_support_config.js`
-- [ ] T019 Add platform-aware audit checks for platform schema/index support in `scripts/check_sqlite_support.js`
-- [ ] T020 [P] Add backend tests for active platform state and platform settings validation in `src-tauri/src/commands/platforms/tests.rs`
-- [ ] T021 [P] Add script tests for platform import configuration and support objects in `scripts/platform_import_config.test.js`
-- [ ] T022 Update `src-tauri/src/lib.rs` invoke handler with platform commands from `src-tauri/src/commands/platforms.rs`
+- [X] T007 Define `PlatformId`, `PlatformProfile`, `PlatformLibraryStatus`, `PlatformFolderSettings`, `PlatformEmulatorProfile`, and `ActivePlatformState` in `src/types/platform.ts`
+- [X] T008 Implement C64, Atari 800, and Atari 2600 platform profiles in `src/lib/platform-capabilities.ts`
+- [X] T009 [P] Add frontend tests for platform registry defaults and Atari 800 capabilities in `src/lib/platform-capabilities.test.ts`
+- [X] T010 Add platform-scoped settings shape and defaults to `src/contexts/SettingsContext.tsx`
+- [X] T011 Add migration from flat C64 settings into platform-scoped settings in `src/contexts/SettingsContext.tsx`
+- [X] T012 [P] Add settings migration tests in `src/contexts/SettingsContext.test.tsx`
+- [X] T013 Add platform models for platform profiles, library status, folder settings, emulator profiles, and active state in `src-tauri/src/models.rs`
+- [X] T014 Add backend platform command module registration in `src-tauri/src/commands/mod.rs`
+- [X] T015 Create backend platform command module in `src-tauri/src/commands/platforms.rs`
+- [X] T016 Add Tauri command wrappers for platform state and settings in `src/lib/tauri-bridge.ts`
+- [X] T017 Add platform-aware database path and scope helpers in `src-tauri/src/database.rs`
+- [X] T018 Add platform identity columns/tables and compatibility migration helpers in `scripts/sqlite_support_config.js`
+- [X] T019 Add platform-aware audit checks for platform schema/index support in `scripts/check_sqlite_support.js`
+- [X] T020 [P] Add backend tests for active platform state and platform settings validation in `src-tauri/src/commands/platforms/tests.rs`
+- [X] T021 [P] Add script tests for platform import configuration and support objects in `scripts/platform_import_config.test.js`
+- [X] T022 Update `src-tauri/src/lib.rs` invoke handler with platform commands from `src-tauri/src/commands/platforms.rs`
 
 **Checkpoint**: Platform profiles, platform-scoped settings, IPC wrappers, and persistence helpers exist and are tested.
 
@@ -62,21 +62,21 @@
 
 ### Tests for User Story 1
 
-- [ ] T023 [P] [US1] Add unit tests for active platform reducer/state transitions in `src/contexts/SettingsContext.test.tsx`
-- [ ] T024 [P] [US1] Add Tauri IPC contract tests for `get_supported_platforms`, `get_active_platform`, and `set_active_platform` in `src-tauri/src/commands/platforms/tests.rs`
-- [ ] T025 [P] [US1] Add Playwright platform selection test in `e2e/platform-selection.spec.ts`
+- [X] T023 [P] [US1] Add unit tests for active platform reducer/state transitions in `src/contexts/SettingsContext.test.tsx`
+- [X] T024 [P] [US1] Add Tauri IPC contract tests for `get_supported_platforms`, `get_active_platform`, and `set_active_platform` in `src-tauri/src/commands/platforms/tests.rs`
+- [X] T025 [P] [US1] Add Playwright platform selection test in `e2e/platform-selection.spec.ts`
 
 ### Implementation for User Story 1
 
-- [ ] T026 [US1] Implement `get_supported_platforms`, `get_active_platform`, and `set_active_platform` in `src-tauri/src/commands/platforms.rs`
-- [ ] T027 [US1] Add frontend wrappers for active platform commands in `src/lib/tauri-bridge.ts`
-- [ ] T028 [US1] Add active platform state, last-used platform persistence, and selection helpers in `src/contexts/SettingsContext.tsx`
-- [ ] T029 [US1] Create platform switcher component in `src/components/PlatformSwitcher.tsx`
-- [ ] T030 [US1] Integrate platform switcher into the top menu/header in `src/components/library/LibraryHeader.tsx`
-- [ ] T031 [US1] Route unimported selected platforms to setup/import view in `src/app/page.tsx`
-- [ ] T032 [US1] Preserve active platform behavior in BigBox mode in `src/components/BigBoxView.tsx`
-- [ ] T033 [US1] Update browser-mode mock platform behavior in `src/lib/tauri-bridge.ts`
-- [ ] T034 [US1] Update platform selection copy and empty-state messaging in `src/components/setup/DatabaseSetupView.tsx`
+- [X] T026 [US1] Implement `get_supported_platforms`, `get_active_platform`, and `set_active_platform` in `src-tauri/src/commands/platforms.rs`
+- [X] T027 [US1] Add frontend wrappers for active platform commands in `src/lib/tauri-bridge.ts`
+- [X] T028 [US1] Add active platform state, last-used platform persistence, and selection helpers in `src/contexts/SettingsContext.tsx`
+- [X] T029 [US1] Create platform switcher component in `src/components/PlatformSwitcher.tsx`
+- [X] T030 [US1] Integrate platform switcher into the top menu/header in `src/components/library/LibraryHeader.tsx`
+- [X] T031 [US1] Route unimported selected platforms to setup/import view in `src/app/page.tsx`
+- [X] T032 [US1] Preserve active platform behavior in BigBox mode in `src/components/BigBoxView.tsx`
+- [X] T033 [US1] Update browser-mode mock platform behavior in `src/lib/tauri-bridge.ts`
+- [X] T034 [US1] Update platform selection copy and empty-state messaging in `src/components/setup/DatabaseSetupView.tsx`
 
 **Checkpoint**: User can choose and switch platform context independently of import and launch details.
 

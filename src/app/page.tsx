@@ -28,6 +28,7 @@ import { WindowGameListSection } from '@/components/library/WindowGameListSectio
 import { AppLaunchSplash } from '@/components/AppLaunchSplash';
 import { DatabaseSetupView } from '@/components/setup/DatabaseSetupView';
 import { useWindowLibraryShelves } from '@/hooks/useWindowLibraryShelves';
+import { PLATFORM_PROFILES } from '@/lib/platform-capabilities';
 import {
   playRotatingUiSoundEffectAndWait,
   playUiSoundEffect,
@@ -35,7 +36,7 @@ import {
 } from '@/lib/ui-sound-effects';
 
 function LibraryApp() {
-  const { settings, updateSettings } = useSettings();
+  const { settings, updateSettings, setActivePlatform } = useSettings();
   const { favorites, isFavorite } = useFavorites();
   const { isMouseMode, onGamepadInput, showMouse } = useInputMode();
   const {
@@ -69,6 +70,8 @@ function LibraryApp() {
     recentlyPlayedIds: settings.recentlyPlayedIds,
     searchInput,
   });
+  const activePlatform = PLATFORM_PROFILES[settings.activePlatformId];
+  const activePlatformSettings = settings.platformSettings[settings.activePlatformId];
 
   useEffect(() => {
     void getGenres().then(setGenres);
@@ -129,6 +132,24 @@ function LibraryApp() {
     updateSettings,
     viewMode,
   });
+
+  if (activePlatformSettings.library.importStatus !== 'imported') {
+    return (
+      <>
+        {showLaunchSplash ? <AppLaunchSplash /> : null}
+        <DatabaseSetupView
+          dbPath={activePlatformSettings.library.sqliteScope}
+          error={`${activePlatform.displayName} has not been imported yet.`}
+          importResult={null}
+          isImporting={false}
+          mdbPath={activePlatformSettings.library.sourceMdbPath ?? ''}
+          platformName={activePlatform.displayName}
+          onBrowse={() => {}}
+          onImport={() => {}}
+        />
+      </>
+    );
+  }
 
   const handleBackFromSettings = async () => {
     await playUiSoundEffectAndWait('close-detail-1', 0.52);
@@ -213,10 +234,12 @@ function LibraryApp() {
           onExit={exitApp}
           onFiltersChange={setFilters}
           onOpenSettings={() => setViewMode('settings')}
+          onPlatformSelect={setActivePlatform}
           onSearchChange={setSearchInput}
           subGenres={subGenres}
           onViewModeChange={setViewMode}
           searchInput={searchInput}
+          activePlatformId={settings.activePlatformId}
           viewMode={viewMode}
         />
 

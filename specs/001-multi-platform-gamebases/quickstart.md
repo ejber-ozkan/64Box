@@ -12,6 +12,13 @@
 - RetroArch installed with the Atari800 core available.
 - Altirra available on a supported local system when validating Altirra behavior.
 
+## Fixture Notes
+
+- Atari 800 reference MDB: `E:\Backups\RETRO-BACKUPS\Atari8bit\Atari 800\Atari 800 v12.mdb`.
+- Atari 800 expected folder names: `Games`, `Music`, `Photos`, and `Screenshots`.
+- Atari 800 music fixture files may use `.sap`; they are recognized for future playback but do not enable SID UI.
+- Atari 800 launch fixture files should include at least one representative primary file such as `.atr` or `.xex`, and a multi-file `.m3u` case for RetroArch.
+
 ## Setup
 
 1. Start from a clean app state or a state with only C64 imported.
