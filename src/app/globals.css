@@ -1,4 +1,8 @@
 @import "tailwindcss";
+@source not "../../*.sqlite";
+@source not "../../*.sqlite-*";
+@source not "../../*.db";
+@source not "../../.beads/**";
 
 :root {
   --background: #ffffff;

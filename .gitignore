@@ -44,6 +44,9 @@ next-env.d.ts
 GBC_v19.mdb
 gb64.sqlite
 gb64.sqlite.bk
+*.sqlite-shm
+*.sqlite-wal
+*.sqlite-journal
 /gb64_export/
 /CSV_FILES_GBC_v19/
 /64BoxMedia/
@@ -90,5 +93,4 @@ graphify-out/cache/
 graphify-out/manifest.json
 graphify-out/.graphify_python
 graphify-out/.graphify_root
-
 
