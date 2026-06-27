@@ -74,19 +74,20 @@ A user browsing different platforms sees only the media and playback features th
 
 ---
 
-### User Story 5 - Keep Platform Data Separate (Priority: P2)
+### User Story 5 - Keep Platform Data Separate While Preserving App Workflows (Priority: P2)
 
-A user can import and browse multiple platforms without one platform's games, media paths, favorites, launch settings, or search results leaking into another. Each platform has its own library state while still feeling like one app.
+A user can import and browse multiple platforms without one platform's games, media paths, favorites, launch settings, or search results leaking into another. Each platform has its own library state while the rest of the app continues to work the same way: browsing, searching, scrolling, opening game details, selecting extras, choosing versions, and returning from detail views should feel consistent regardless of the active platform.
 
-**Why this priority**: Multi-platform collections can only scale if platform data is separated cleanly and users can trust that switching platforms changes the whole context.
+**Why this priority**: Multi-platform collections can only scale if platform data is separated cleanly and users can trust that switching platforms changes the library context without relearning the app.
 
-**Independent Test**: Can be tested by importing two platforms with overlapping game names, marking favorites and setting paths in each, then verifying each platform retains its own results and settings.
+**Independent Test**: Can be tested by importing two platforms with overlapping game names, marking favorites and setting paths in each, then verifying each platform retains its own results and settings while the same browse, search, scroll, detail, extras, and version-selection flows remain available.
 
 **Acceptance Scenarios**:
 
 1. **Given** two imported platforms contain games with the same title, **When** the user searches within one platform, **Then** results are limited to the active platform unless the user intentionally chooses a cross-platform view.
 2. **Given** the user changes launch settings for Atari 800, **When** they switch back to Commodore 64, **Then** Commodore 64 launch settings remain unchanged.
 3. **Given** the user marks a game as favorite on Atari 2600, **When** they switch to Atari 800, **Then** that favorite does not appear in the Atari 800 favorites list unless the same platform entry was favorited there.
+4. **Given** the user switches from Commodore 64 to another imported platform, **When** they browse, search, scroll, open details, view extras, or select versions, **Then** those workflows behave consistently with the existing app experience for the active platform's content.
 
 ### Edge Cases
 
@@ -114,14 +115,15 @@ A user can import and browse multiple platforms without one platform's games, me
 - **FR-008**: Imported catalog data, media paths, launch settings, favorites, and platform capabilities MUST be scoped by platform.
 - **FR-009**: Search, filtering, alphabet navigation, and game detail views MUST default to the active platform's library.
 - **FR-010**: The system MUST prevent platform-specific features from appearing as available when the active platform does not support them.
-- **FR-011**: RetroArch MUST be available as the default emulator option for every supported platform.
-- **FR-012**: The system MUST allow platform-specific external emulator options without assuming users have those emulators installed.
-- **FR-013**: The system MUST provide a way to test whether a configured emulator can launch games for the selected platform.
-- **FR-014**: Launch behavior MUST handle platform-specific file and playlist needs, including RetroArch-compatible multi-file playlists where applicable.
-- **FR-015**: Existing Commodore 64 launch behavior, including native emulator and in-app emulation capabilities, MUST remain available for imported C64 collections.
-- **FR-016**: Music and soundtrack features MUST be platform-capability driven, with SID playback limited to platforms and libraries that support SID content.
-- **FR-017**: The system MUST show clear, platform-specific error messages when import, media discovery, emulator testing, or launch fails.
-- **FR-018**: The system MUST support future GameBase platforms without requiring a separate copy of the whole browsing, search, import, or settings experience for each platform.
+- **FR-011**: Browsing, searching, scrolling, game detail viewing, extras selection, version selection, favorites, and return/navigation flows MUST remain functionally consistent regardless of the active platform.
+- **FR-012**: RetroArch MUST be available as the default emulator option for every supported platform.
+- **FR-013**: The system MUST allow platform-specific external emulator options without assuming users have those emulators installed.
+- **FR-014**: The system MUST provide a way to test whether a configured emulator can launch games for the selected platform.
+- **FR-015**: Launch behavior MUST handle platform-specific file and playlist needs, including RetroArch-compatible multi-file playlists where applicable.
+- **FR-016**: Existing Commodore 64 launch behavior, including native emulator and in-app emulation capabilities, MUST remain available for imported C64 collections.
+- **FR-017**: Music and soundtrack features MUST be platform-capability driven, with SID playback limited to platforms and libraries that support SID content.
+- **FR-018**: The system MUST show clear, platform-specific error messages when import, media discovery, emulator testing, or launch fails.
+- **FR-019**: The system MUST support future GameBase platforms without requiring a separate copy of the whole browsing, search, import, or settings experience for each platform.
 
 ### Key Entities *(include if feature involves data)*
 
@@ -143,6 +145,7 @@ A user can import and browse multiple platforms without one platform's games, me
 - **SC-005**: RetroArch launch configuration can be completed and tested for Commodore 64, Atari 800, and Atari 2600 during acceptance testing.
 - **SC-006**: Platform-specific unavailable features, such as SID playback on non-SID platforms, are hidden or clearly disabled in 100% of tested non-supporting platform views.
 - **SC-007**: Import failures, emulator test failures, and launch failures identify the affected platform and next user action in 100% of tested failure cases.
+- **SC-008**: Existing browse, search, scroll, detail, extras, version-selection, and back-navigation workflows pass acceptance testing for each initial supported platform.
 
 ## Assumptions
 
