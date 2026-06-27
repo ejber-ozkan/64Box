@@ -3,8 +3,8 @@
 ## Prerequisites
 
 - Existing C64 library still imports and browses.
-- Atari 800 GameBase MDB available as `Atari 800 v12.mdb` or equivalent.
-- Atari 800 folder roots available:
+- Atari 800 GameBase MDB available as `Atari 800 v12.mdb` or equivalent. The known local reference path is `E:\Backups\RETRO-BACKUPS\Atari8bit\Atari 800\Atari 800 v12.mdb` when available.
+- Atari 800 required folder roots available:
   - Games
   - Music
   - Photos
@@ -27,14 +27,14 @@ Expected result: If Atari 800 is not imported, the app routes to the Atari 800 i
 1. In the Atari 800 import flow, choose `Atari 800 v12.mdb` or equivalent.
 2. Set Atari 800 folders:
    - Games
-   - Music
-   - Photos
-   - Screenshots
+   - Music (`.sap` files are recognized for future Atari music playback support)
+   - Photos (Atari photo/media artwork, distinct from gameplay/title screenshots)
+   - Screenshots (gameplay/title screenshots)
 3. Start import.
 4. Wait for import completion.
 5. Enter the Atari 800 library.
 
-Expected result: Atari 800 appears as an imported platform, game count is non-zero for a valid import, and C64 remains available.
+Expected result: Atari 800 appears as an imported platform, game count is non-zero for a valid import, all four Atari 800 folder settings are recorded, and C64 remains available.
 
 ## Validate Platform Switching
 
@@ -82,10 +82,10 @@ Expected result: Test passes with valid paths, launch starts through RetroArch, 
 2. Select Altirra.
 3. Set Altirra executable path.
 4. Run emulator profile test.
-5. Launch or dry-run-test a representative Atari 800 game.
+5. Launch a representative primary Atari 800 game file.
 6. Switch to C64 settings.
 
-Expected result: Altirra appears for Atari 800, does not require a RetroArch core, and does not appear as a C64 emulator setting.
+Expected result: Altirra appears for Atari 800, does not require a RetroArch core, launches a representative primary Atari 800 game file, and does not appear as a C64 emulator setting.
 
 ## Validate Platform Isolation
 
@@ -96,6 +96,15 @@ Expected result: Altirra appears for Atari 800, does not require a RetroArch cor
 5. Switch back to Atari 800.
 
 Expected result: Favorites, search results, media paths, launch settings, and selected emulator remain scoped to each platform.
+
+## Validate C64 Settings Migration
+
+1. Start with existing Commodore 64 paths and emulator settings saved in the older flat settings shape.
+2. Open the app after platform-scoped settings are available.
+3. Select Commodore 64.
+4. Review paths, emulator choices, favorites, recently played, selected game, focused index, view mode, and BigBox focus state.
+
+Expected result: Existing C64 settings and navigation state are preserved under the C64 platform settings without data loss.
 
 ## Recommended Commands
 

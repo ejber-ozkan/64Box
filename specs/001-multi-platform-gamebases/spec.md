@@ -93,6 +93,9 @@ A user can import and browse multiple platforms without one platform's games, me
 
 - The last-used platform was removed, reset, or is no longer supported.
 - A supported platform is selected before its collection has been imported.
+- The user selects an invalid, missing, or wrong-platform MDB for Atari 800 import.
+- The user cancels Atari 800 import and later returns to complete it.
+- Atari 800 import fails and the user retries with corrected MDB and folder paths.
 - A platform import succeeds but optional media folders are missing.
 - Two platforms contain identical or near-identical game titles.
 - RetroArch is not installed or its configured executable is no longer valid.
@@ -124,6 +127,12 @@ A user can import and browse multiple platforms without one platform's games, me
 - **FR-017**: Music and soundtrack features MUST be platform-capability driven, with SID playback limited to platforms and libraries that support SID content.
 - **FR-018**: The system MUST show clear, platform-specific error messages when import, media discovery, emulator testing, or launch fails.
 - **FR-019**: The system MUST support future GameBase platforms without requiring a separate copy of the whole browsing, search, import, or settings experience for each platform.
+- **FR-020**: Atari 800 import MUST accept `Atari 800 v12.mdb` or an equivalent Atari 800 v12-compatible GameBase MDB, with the known local reference path `E:\Backups\RETRO-BACKUPS\Atari8bit\Atari 800\Atari 800 v12.mdb` available for validation when present.
+- **FR-021**: Atari 800 setup MUST require Games, Music, Photos, and Screenshots folder settings.
+- **FR-022**: Atari 800 music capability MUST recognize `.sap` as the platform music file type for future playback support.
+- **FR-023**: Atari 800 platform switcher, import, and settings interactions MUST follow the same keyboard/gamepad interaction conventions as the existing Commodore 64 settings flows.
+- **FR-024**: Existing flat Commodore 64 settings MUST migrate into C64 platform-scoped settings without losing user paths, emulator choices, or browsing state.
+- **FR-025**: Altirra support for Atari 800 MUST include executable validation and real primary game-file launching in the first implementation slice.
 
 ### Key Entities *(include if feature involves data)*
 
@@ -146,6 +155,8 @@ A user can import and browse multiple platforms without one platform's games, me
 - **SC-006**: Platform-specific unavailable features, such as SID playback on non-SID platforms, are hidden or clearly disabled in 100% of tested non-supporting platform views.
 - **SC-007**: Import failures, emulator test failures, and launch failures identify the affected platform and next user action in 100% of tested failure cases.
 - **SC-008**: Existing browse, search, scroll, detail, extras, version-selection, and back-navigation workflows pass acceptance testing for each initial supported platform.
+- **SC-009**: Atari 800 setup accepts the reference `Atari 800 v12.mdb` path when available and rejects missing or wrong-platform MDB inputs with a platform-specific correction message.
+- **SC-010**: Atari 800 setup records Games, Music, Photos, and Screenshots folder settings before the platform is considered import-ready.
 
 ## Assumptions
 
@@ -155,3 +166,5 @@ A user can import and browse multiple platforms without one platform's games, me
 - In-app JavaScript or WASM emulation is optional per platform and should only be shown where an actual supported emulator exists.
 - Cross-platform search is out of scope for the first version; the default browsing context is one active platform at a time.
 - The app may keep Commodore 64-specific compatibility behavior while new features introduce platform-neutral concepts around it.
+- The Atari 800 v12 reference MDB may exist locally at `E:\Backups\RETRO-BACKUPS\Atari8bit\Atari 800\Atari 800 v12.mdb`; the implementation must still allow the user to choose an equivalent Atari 800 v12-compatible MDB from another path.
+- Atari 800 Photos means platform photo/media artwork distinct from gameplay/title screenshots; Screenshots means gameplay/title screenshots.

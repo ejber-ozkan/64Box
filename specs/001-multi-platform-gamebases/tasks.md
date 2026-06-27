@@ -117,7 +117,7 @@
 
 **Goal**: Users can configure and test Atari 800 launch through RetroArch Atari800 core or Altirra, with C64 launch behavior preserved.
 
-**Independent Test**: Configure RetroArch plus Atari800 core and Altirra for Atari 800, test both profiles, and launch or dry-run-launch a representative Atari 800 game.
+**Independent Test**: Configure RetroArch plus Atari800 core and Altirra for Atari 800, test both profiles, and launch a representative Atari 800 primary game file.
 
 ### Tests for User Story 3
 

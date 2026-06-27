@@ -79,6 +79,10 @@ Imports a platform-specific MDB into the local platform-scoped library.
 - `photosPath`
 - `screenshotsPath`
 
+All four Atari 800 folder settings are required before the platform is import-ready.
+The `musicPath` may contain `.sap` files. The `photosPath` is for photo/media
+artwork distinct from screenshots.
+
 **Response**
 
 - `platformId`
@@ -120,6 +124,7 @@ Saves platform-scoped folder and emulator settings.
 - `platformId`
 - `folderSettings`
 - `emulatorSettings`
+- `navigationState` when persisting per-platform selected game, focus, view mode, and BigBox state
 
 ### `get_platform_settings`
 
@@ -134,6 +139,7 @@ Loads platform-scoped settings.
 - `folderSettings`
 - `emulatorSettings`
 - `mediaCapabilities`
+- `navigationState`
 
 ## Launch Commands
 
@@ -177,3 +183,4 @@ Launches a game using a platform-specific emulator profile.
 - Current C64 commands may remain as wrappers during migration.
 - New commands must return platform-specific errors.
 - Existing frontend workflows should not need to know platform-specific launch details beyond capabilities and selected platform.
+- Existing flat C64 settings and navigation state must be migratable into platform-scoped settings without data loss.

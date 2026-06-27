@@ -13,10 +13,13 @@ intact, but scopes data, settings, import state, emulator choices, and media
 capabilities by active platform.
 
 Atari 800 support will import `Atari 800 v12.mdb` or an equivalent Atari 800
-GameBase MDB, use the same broad GameBase folder conventions, add Atari folder
-settings for Games, Music, Photos, and Screenshots, support RetroArch with the
-Atari800 core as the default launch path, and add Altirra as a platform-specific
-external emulator option.
+v12-compatible GameBase MDB. A known local reference path is
+`E:\Backups\RETRO-BACKUPS\Atari8bit\Atari 800\Atari 800 v12.mdb` when available
+for validation. Atari 800 setup requires folder settings for Games, Music,
+Photos, and Screenshots, supports `.sap` as the Atari music file type for future
+playback, supports RetroArch with the Atari800 core as the default launch path,
+and adds Altirra as a required Atari 800 external emulator option for executable
+validation and primary game-file launching.
 
 ## Technical Context
 
@@ -34,9 +37,11 @@ external emulator option.
 
 **Performance Goals**: Platform switching completes in under 10 seconds; library search/favorites remain platform-scoped in all tested same-title cases; existing browse/search/scroll/detail/extras/version flows remain responsive for thousands of games.
 
-**Constraints**: Local-first operation; no cloud dependency; platform-specific features must not leak across platforms; C64 compatibility must remain intact; generated launch artifacts must be temporary and distinguishable from source library files.
+**Constraints**: Local-first operation; no cloud dependency; platform-specific features must not leak across platforms; C64 compatibility must remain intact; generated launch artifacts must be temporary and distinguishable from source library files; platform switcher/import/settings flows follow the existing Commodore 64 keyboard and gamepad conventions.
 
 **Scale/Scope**: First implementation slice supports Commodore 64 plus Atari 800 as imported platform libraries, with model and UI affordances prepared for Atari 2600 and later GameBase platforms.
+
+**Migration**: Existing flat Commodore 64 settings migrate into the C64 platform settings namespace on first run, preserving paths, emulator choices, favorites, recently played state, last selected game, focused index, view mode, and BigBox focus state.
 
 ## Constitution Check
 
@@ -117,8 +122,9 @@ See [research.md](./research.md). Key decisions:
 - Use a platform registry plus platform-scoped library state instead of cloning the app per platform.
 - Make Atari 800 the first non-C64 slice with RetroArch Atari800 core and Altirra.
 - Extend import tooling to accept a platform and MDB path, starting with `Atari 800 v12.mdb`.
-- Add platform-specific media folders for Atari 800: Games, Music, Photos, and Screenshots.
+- Add required platform-specific media folders for Atari 800: Games, Music, Photos, and Screenshots.
 - Add platform-aware launch artifacts and extension allowlists instead of C64-only ROM handling.
+- Preserve per-platform last selected game, focused index, scroll position, view mode, last BigBox rail, and last BigBox game.
 
 ## Phase 1: Design Summary
 

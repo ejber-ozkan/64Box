@@ -15,7 +15,7 @@
 
 **Decision**: Plan the first implementation slice around Atari 800, with Atari 2600 remaining represented in the platform model but not fully implemented by this slice.
 
-**Rationale**: The user provided concrete Atari 800 details: `Atari 800 v12.mdb` or equivalent, RetroArch Atari800 core, Altirra, and folder settings for Games, Music, Photos, and Screenshots. This gives enough specificity to prove the platform abstraction without boiling the ocean.
+**Rationale**: The user provided concrete Atari 800 details: `Atari 800 v12.mdb` or equivalent, a known local reference path at `E:\Backups\RETRO-BACKUPS\Atari8bit\Atari 800\Atari 800 v12.mdb`, RetroArch Atari800 core, Altirra, and required folder settings for Games, Music, Photos, and Screenshots. This gives enough specificity to prove the platform abstraction without boiling the ocean.
 
 **Alternatives considered**:
 
@@ -24,7 +24,7 @@
 
 ## Decision: RetroArch Default, Altirra Platform-Specific External Emulator
 
-**Decision**: Add RetroArch as the default Atari 800 emulator profile using the Atari800 core, and add Altirra as an Atari 800-specific external emulator profile with its own path setting and launch test.
+**Decision**: Add RetroArch as the default Atari 800 emulator profile using the Atari800 core, and add Altirra as an Atari 800-specific external emulator profile with its own path setting, executable validation, and primary game-file launch support in the first implementation slice.
 
 **Rationale**: RetroArch gives the app a consistent default emulator story across platforms. Altirra is a strong Atari 800-specific option but should not appear as a global emulator for other platforms.
 
@@ -35,7 +35,7 @@
 
 ## Decision: Platform-Scoped Settings Instead of More Flat Settings
 
-**Decision**: Introduce platform-scoped settings for media roots, emulator paths, core paths, preferred emulator, import status, and last selected game state. Atari 800 settings include Games, Music, Photos, Screenshots, RetroArch path/core, and Altirra path.
+**Decision**: Introduce platform-scoped settings for media roots, emulator paths, core paths, preferred emulator, import status, and per-platform navigation state. Atari 800 settings require Games, Music, Photos, Screenshots, RetroArch path/core, and Altirra path. Existing flat C64 settings migrate into the C64 platform namespace on first run.
 
 **Rationale**: Current settings are flat and C64-shaped (`screenshotsPath`, `soundsPath`, `musicianPhotosPath`, `romsPath`, `emulatorPath`, `retroarchCorePath`). Adding more flat fields would not scale to Atari 2600 or later platforms and would risk leaking settings between platforms.
 
@@ -46,7 +46,7 @@
 
 ## Decision: Platform-Aware Import Pipeline With One Active Library Database
 
-**Decision**: Extend the import pipeline to accept platform ID, MDB path, export directory, and target database/library identity. For the first slice, support importing Atari 800 from `Atari 800 v12.mdb` or an equivalent user-selected MDB into platform-scoped SQLite structures while preserving current C64 import compatibility.
+**Decision**: Extend the import pipeline to accept platform ID, MDB path, export directory, and target database/library identity. For the first slice, support importing Atari 800 from `Atari 800 v12.mdb`, the known local reference path when available, or an equivalent Atari 800 v12-compatible user-selected MDB into platform-scoped SQLite structures while preserving current C64 import compatibility.
 
 **Rationale**: GameBase MDB exports are expected to have broadly similar folder/table structures, but the app needs platform identity in imported rows, views, indexes, and import status. Import must be repeatable and auditable per platform.
 
@@ -68,7 +68,7 @@
 
 ## Decision: Capability-Driven Media and Music UI
 
-**Decision**: Make media and music controls driven by platform capabilities. C64 continues to expose SID where available. Atari 800 starts with Music, Photos, and Screenshots folder settings, but SID-specific UI is unavailable unless a future platform capability enables it.
+**Decision**: Make media and music controls driven by platform capabilities. C64 continues to expose SID where available. Atari 800 starts with required Music, Photos, and Screenshots folder settings, recognizes `.sap` as the Atari music file extension for future playback support, and does not expose SID-specific UI.
 
 **Rationale**: The user explicitly noted that other platforms may not have SID music and may have different media types. Hiding unsupported features is less confusing than showing disabled C64 controls everywhere.
 

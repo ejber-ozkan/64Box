@@ -12,7 +12,7 @@ Represents a supported game system or GameBase collection family.
 - `defaultEmulatorProfileId`: Default emulator profile for the platform.
 - `supportedEmulatorProfileIds`: Ordered list of emulator choices.
 - `folderTypes`: Supported media/library folder keys.
-- `musicCapability`: `sid`, `generic`, or `none`.
+- `musicCapability`: `sid`, `sap`, `generic`, or `none`.
 - `inAppEmulation`: Whether the platform has a supported bundled/in-app emulator.
 - `launchExtensions`: File extensions considered launchable for this platform.
 
@@ -30,7 +30,7 @@ Represents the user's imported local library for one platform.
 
 - `platformId`: References Platform.
 - `importStatus`: `notImported`, `importing`, `imported`, `failed`.
-- `sourceMdbPath`: Last selected MDB source path.
+- `sourceMdbPath`: Last selected MDB source path. Atari 800 may use the known local reference `E:\Backups\RETRO-BACKUPS\Atari8bit\Atari 800\Atari 800 v12.mdb` or another Atari 800 v12-compatible MDB selected by the user.
 - `sqliteScope`: Logical database/library scope for this platform.
 - `lastImportedAt`: Timestamp of successful import.
 - `lastImportError`: Last platform-scoped import failure message.
@@ -60,9 +60,9 @@ Stores local folder roots for one platform.
 
 - `platformId`: References Platform.
 - `gamesPath`: Folder containing game files. Required for Atari 800 launch.
-- `musicPath`: Folder containing music files. Optional for Atari 800.
-- `photosPath`: Folder containing photos or musician/author images. Optional for Atari 800.
-- `screenshotsPath`: Folder containing screenshots. Optional but recommended.
+- `musicPath`: Folder containing Atari 800 music files, including `.sap` files for future playback support.
+- `photosPath`: Folder containing Atari 800 photo/media artwork distinct from gameplay/title screenshots.
+- `screenshotsPath`: Folder containing Atari 800 gameplay/title screenshots.
 - `extrasPath`: Folder containing manuals, maps, docs, and other extras when applicable.
 - `boxArtPath`: Folder containing box art when applicable.
 - `videosPath`: Folder containing videos when applicable.
@@ -77,8 +77,9 @@ Stores local folder roots for one platform.
 **Validation Rules**
 
 - Required folder settings for a platform must be requested during import or setup.
-- Missing optional folders do not block import.
+- Missing Games, Music, Photos, or Screenshots settings blocks Atari 800 import readiness.
 - Folder settings are scoped by platform and must not overwrite C64 paths.
+- Atari 800 import may still complete when a required folder exists but contains no matching media; missing media is not the same as a missing configured folder.
 
 ## Emulator Profile
 
@@ -99,7 +100,7 @@ Represents an emulator option available to one or more platforms.
 **Atari 800 Profiles**
 
 - RetroArch Atari800 core: default Atari 800 profile.
-- Altirra: Atari 800-specific external emulator profile.
+- Altirra: Atari 800-specific external emulator profile required for executable validation and primary game-file launching in the first implementation slice.
 
 **Validation Rules**
 
@@ -141,13 +142,14 @@ Defines what media types and controls are available for a platform.
 - `platformId`: References Platform.
 - `screenshots`: Available/unavailable.
 - `photos`: Available/unavailable.
-- `music`: `sid`, `generic`, or `none`.
+- `music`: `sid`, `sap`, `generic`, or `none`.
 - `extras`: Available/unavailable.
 - `videos`: Available/unavailable.
 
 **Validation Rules**
 
 - SID controls render only when `music` is `sid`.
+- Atari 800 music uses `.sap` as the recognized platform music extension for future playback support.
 - Absence of music is not an error.
 - Existing extras and version-selection workflows remain available when data exists.
 
@@ -169,6 +171,8 @@ Represents a generated or selected launch input.
 
 - Generated artifacts must be temporary and distinguishable from source files.
 - RetroArch multi-file launches use playlist artifacts where applicable.
+- Atari 800 RetroArch multi-file launches use `.m3u` playlist artifacts where applicable.
+- Atari 800 Altirra launches the selected primary game file in the first implementation slice.
 - C64 VICE launch remains compatible with existing `.vfl` behavior.
 - Atari 800 Altirra launch behavior must be tested separately from RetroArch.
 
@@ -181,8 +185,14 @@ Tracks the user's selected platform.
 - `activePlatformId`: Current platform.
 - `lastUsedPlatformId`: Last successfully browsed platform.
 - `platformSelectionRequired`: Whether startup must prompt for a platform.
+- `lastSelectedGameIdByPlatform`: Last selected game per platform.
+- `lastFocusedIndexByPlatform`: Last focused index per platform.
+- `lastViewModeByPlatform`: Last grid/list mode per platform.
+- `lastBigBoxRailIdByPlatform`: Last BigBox rail per platform.
+- `lastBigBoxGameIdByPlatform`: Last BigBox game per platform.
 
 **Validation Rules**
 
 - If `lastUsedPlatformId` is unavailable or unimported, startup routes to platform selection/import.
 - Switching platform resets only platform-scoped library context, not global app preferences.
+- Existing flat C64 browsing state migrates into the C64 platform state on first run.

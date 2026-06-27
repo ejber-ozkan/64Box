@@ -17,6 +17,7 @@ Define the user-facing behavior required when multiple GameBase platforms are av
 - Imported platforms are selectable for browsing.
 - Unimported platforms are selectable but route to their import flow.
 - Switching platforms must not require an app restart.
+- The switcher follows the same keyboard and gamepad navigation conventions as existing Commodore 64 settings and menu controls.
 
 ## Workflow Parity
 
@@ -39,6 +40,8 @@ The following workflows must remain functionally consistent for every imported p
 - C64 SID controls appear only for C64 or other platforms that explicitly support SID.
 - Atari 800 must not show SID-specific controls by default.
 - Atari 800 settings expose Games, Music, Photos, and Screenshots folders.
+- Atari 800 recognizes `.sap` music files as the platform music type for future playback support.
+- Atari 800 Photos means photo/media artwork distinct from gameplay/title screenshots.
 - Atari 800 launch settings expose RetroArch Atari800 core and Altirra.
 - Unsupported features are hidden or clearly unavailable; absence of a music format is not an error.
 
