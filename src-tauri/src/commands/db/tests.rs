@@ -11,6 +11,7 @@ use super::{
     get_db_game_count, get_db_games, get_game_extras, get_genres, get_secure_setting,
     get_sub_genres, save_secure_setting,
 };
+use crate::database::init_database;
 
 fn sqlite_table_exists(conn: &Connection, table_name: &str) -> bool {
     conn.query_row(
@@ -556,6 +557,115 @@ async fn test_platform_scoped_queries_do_not_mix_duplicate_source_ids() {
         .expect("atari extras should load");
     assert_eq!(atari_extras.len(), 1);
     assert_eq!(atari_extras[0].name, "Atari Manual");
+
+    std::env::remove_var("VIC40_DB_PATH");
+}
+
+#[tokio::test]
+async fn test_init_database_repairs_stale_game_view_without_platform_id() {
+    let temp_db = NamedTempFile::new().unwrap();
+    let db_path = temp_db.path().to_string_lossy().to_string();
+    std::env::set_var("VIC40_DB_PATH", &db_path);
+
+    {
+        let conn = Connection::open(&db_path).unwrap();
+        conn.execute(
+            "CREATE TABLE Games (
+                platform_id TEXT,
+                source_game_id TEXT,
+                GA_Id TEXT,
+                Name TEXT,
+                Filename TEXT,
+                FileToRun TEXT,
+                ScrnshotFilename TEXT,
+                SidFilename TEXT,
+                CRC TEXT,
+                YE_Id TEXT,
+                GE_Id TEXT,
+                DE_Id TEXT,
+                PU_Id TEXT,
+                MU_Id TEXT,
+                LA_Id TEXT,
+                PR_Id TEXT,
+                AR_Id TEXT,
+                V_PalNTSC TEXT,
+                V_TrueDriveEmu TEXT,
+                Classic TEXT,
+                Adult TEXT,
+                Control TEXT,
+                PlayersFrom TEXT,
+                PlayersTo TEXT,
+                PlayersSim TEXT,
+                Comment TEXT,
+                ReviewRating TEXT,
+                V_Trainers TEXT,
+                V_Length TEXT,
+                V_LoadingScreen TEXT,
+                V_HighScoreSaver TEXT,
+                V_IncludedDocs TEXT
+            )",
+            [],
+        )
+        .unwrap();
+        conn.execute(
+            "CREATE VIEW GameView AS
+             SELECT
+               GA_Id as id,
+               Name as name,
+               Filename as filename,
+               Filename as gameFilename,
+               ScrnshotFilename as screenshotFilename,
+               NULL as boxFrontFilename,
+               NULL as titlescreenFilename,
+               NULL as videoSnapFilename,
+               SidFilename as sidFilename,
+               CRC as crc,
+               NULL as year,
+               1 as isPal,
+               0 as isNtsc,
+               0 as trueDriveEmu,
+               0 as isClassic,
+               'Action' as parentGenre,
+               'Arcade' as subGenre,
+               '' as developer_name,
+               '' as publisher_name,
+               '' as musician_name,
+               'EN' as languages
+             FROM Games",
+            [],
+        )
+        .unwrap();
+        conn.execute("CREATE TABLE Years (YE_Id TEXT, Year TEXT)", []).unwrap();
+        conn.execute("CREATE TABLE Genres (GE_Id TEXT, Genre TEXT, PG_Id TEXT)", []).unwrap();
+        conn.execute("CREATE TABLE PGenres (PG_Id TEXT, ParentGenre TEXT)", []).unwrap();
+        conn.execute("CREATE TABLE Developers (DE_Id TEXT, Developer TEXT)", []).unwrap();
+        conn.execute("CREATE TABLE Publishers (PU_Id TEXT, Publisher TEXT)", []).unwrap();
+        conn.execute("CREATE TABLE Musicians (MU_Id TEXT, Photo TEXT, Nick TEXT, Grp TEXT, Musician TEXT)", []).unwrap();
+        conn.execute("CREATE TABLE Languages (LA_Id TEXT, Language TEXT)", []).unwrap();
+        conn.execute("CREATE TABLE Programmers (PR_Id TEXT, Programmer TEXT)", []).unwrap();
+        conn.execute("CREATE TABLE Artists (AR_Id TEXT, Artist TEXT)", []).unwrap();
+        conn.execute("CREATE TABLE Extras (platform_id TEXT, GA_Id TEXT, EX_Id TEXT, Name TEXT, Path TEXT, Type TEXT, DisplayOrder INTEGER)", []).unwrap();
+
+        for (platform_id, game_name) in [
+            ("c64", "C64 Duplicate"),
+            ("atari800", "Atari Duplicate"),
+        ] {
+            conn.execute(
+                "INSERT INTO Games (platform_id, source_game_id, GA_Id, Name, Filename, Classic, Adult)
+                 VALUES (?, ?, ?, ?, ?, ?, ?)",
+                rusqlite::params![platform_id, "1", "1", game_name, "game.bin", "False", "False"],
+            )
+            .unwrap();
+        }
+    }
+
+    init_database().expect("database initialization should repair stale support objects");
+
+    let atari_games = get_db_games(Some(10), Some(0), None, Some("atari800".to_string()))
+        .await
+        .expect("atari games should load after repair");
+    assert_eq!(atari_games.len(), 1);
+    assert_eq!(atari_games[0].name, "Atari Duplicate");
 
     std::env::remove_var("VIC40_DB_PATH");
 }

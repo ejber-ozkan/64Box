@@ -131,11 +131,13 @@ const QUERY_SUPPORT_INDEXES: &[(&str, &[&str], &str)] = &[
 ];
 
 const COVER_INDEX_POPULATE_SQL: &str = "
-    INSERT OR REPLACE INTO GameCoverIndex (GA_Id, cover_path)
+    INSERT OR REPLACE INTO GameCoverIndex (GA_Id, platform_id, cover_path)
     SELECT
-        GA_Id,
-        MIN(Path) as cover_path
+        Extras.GA_Id,
+        COALESCE(Games.platform_id, 'c64') as platform_id,
+        MIN(Extras.Path) as cover_path
     FROM Extras
+    LEFT JOIN Games ON Extras.GA_Id = Games.GA_Id
     WHERE LOWER(REPLACE(Path, '\\', '/')) LIKE 'cover/%'
       AND (
           LOWER(Path) LIKE '%.jpg'
@@ -145,12 +147,14 @@ const COVER_INDEX_POPULATE_SQL: &str = "
           OR LOWER(Path) LIKE '%.gif'
           OR LOWER(Path) LIKE '%.bmp'
       )
-    GROUP BY GA_Id
+    GROUP BY Extras.GA_Id, COALESCE(Games.platform_id, 'c64')
 ";
 
 const FTS_INDEX_POPULATE_SQL: &str = "
     INSERT INTO GameSearchIndex (
         id,
+        platform_id,
+        source_game_id,
         name,
         developer_name,
         publisher_name,
@@ -160,6 +164,8 @@ const FTS_INDEX_POPULATE_SQL: &str = "
     )
     SELECT
         gv.id,
+        gv.platformId,
+        gv.sourceGameId,
         gv.name,
         COALESCE(gv.developer_name, ''),
         COALESCE(gv.publisher_name, ''),
@@ -167,7 +173,7 @@ const FTS_INDEX_POPULATE_SQL: &str = "
         COALESCE(pr.Programmer, ''),
         COALESCE(ar.Artist, '')
     FROM GameView gv
-    JOIN Games g ON gv.id = g.GA_Id
+    JOIN Games g ON gv.id = g.GA_Id AND gv.platformId = g.platform_id
     LEFT JOIN Programmers pr ON g.PR_Id = pr.PR_Id
     LEFT JOIN Artists ar ON g.AR_Id = ar.AR_Id
 ";
@@ -175,6 +181,8 @@ const FTS_INDEX_POPULATE_SQL: &str = "
 const GAME_VIEW_SQL: &str = "
 CREATE VIEW GameView AS
 SELECT 
+    g.platform_id as platformId,
+    g.source_game_id as sourceGameId,
     g.GA_Id as id,
     g.Name as name,
     g.Filename as filename,
@@ -342,17 +350,22 @@ fn table_has_columns(
     table_name: &str,
     required_columns: &[&str],
 ) -> Result<bool, String> {
-    let pragma = format!("PRAGMA table_info('{table_name}')");
-    let mut stmt = conn.prepare(&pragma).map_err(|e| e.to_string())?;
-    let columns: Vec<String> = stmt
-        .query_map([], |row| row.get::<_, String>(1))
-        .map_err(|e| e.to_string())?
-        .collect::<Result<Vec<_>, _>>()
-        .map_err(|e| e.to_string())?;
+    let columns = table_columns(conn, table_name)?;
 
     Ok(required_columns
         .iter()
         .all(|required| columns.iter().any(|column| column == required)))
+}
+
+fn table_columns(conn: &Connection, table_name: &str) -> Result<Vec<String>, String> {
+    let pragma = format!("PRAGMA table_info('{table_name}')");
+    let mut stmt = conn.prepare(&pragma).map_err(|e| e.to_string())?;
+    let columns = stmt
+        .query_map([], |row| row.get::<_, String>(1))
+        .map_err(|e| e.to_string())?
+        .collect::<Result<Vec<_>, _>>()
+        .map_err(|e| e.to_string())?;
+    Ok(columns)
 }
 
 fn ensure_secure_table_on_connection(conn: &Connection) -> Result<(), String> {
@@ -367,11 +380,94 @@ fn ensure_secure_table_on_connection(conn: &Connection) -> Result<(), String> {
     Ok(())
 }
 
+fn ensure_table_platform_columns(
+    conn: &Connection,
+    table_name: &str,
+    source_id_column: &str,
+) -> Result<(), String> {
+    if !table_exists(conn, table_name)? {
+        return Ok(());
+    }
+
+    if !table_has_columns(conn, table_name, &["platform_id"])? {
+        let sql = format!("ALTER TABLE {table_name} ADD COLUMN platform_id TEXT");
+        conn.execute(&sql, []).map_err(|e| e.to_string())?;
+    }
+    if !table_has_columns(conn, table_name, &["source_game_id"])? {
+        let sql = format!("ALTER TABLE {table_name} ADD COLUMN source_game_id TEXT");
+        conn.execute(&sql, []).map_err(|e| e.to_string())?;
+    }
+
+    let platform_sql =
+        format!("UPDATE {table_name} SET platform_id = 'c64' WHERE platform_id IS NULL OR platform_id = ''");
+    conn.execute(&platform_sql, []).map_err(|e| e.to_string())?;
+
+    if table_has_columns(conn, table_name, &[source_id_column])? {
+        let source_sql = format!(
+            "UPDATE {table_name} SET source_game_id = {source_id_column} WHERE source_game_id IS NULL OR source_game_id = ''"
+        );
+        conn.execute(&source_sql, []).map_err(|e| e.to_string())?;
+    }
+
+    Ok(())
+}
+
 fn recreate_game_view(conn: &Connection) -> Result<(), String> {
     conn.execute_batch("DROP VIEW IF EXISTS GameView")
         .map_err(|e| e.to_string())?;
     conn.execute_batch(GAME_VIEW_SQL).map_err(|e| e.to_string())?;
     Ok(())
+}
+
+fn ensure_game_view(conn: &Connection) -> Result<(), String> {
+    if sqlite_object_exists(conn, "GameView", &["table"])?
+        && !table_has_columns(conn, "GameView", &["platformId", "sourceGameId"])?
+    {
+        if !table_has_columns(conn, "GameView", &["platformId"])? {
+            conn.execute("ALTER TABLE GameView ADD COLUMN platformId TEXT DEFAULT 'c64'", [])
+                .map_err(|e| e.to_string())?;
+        }
+        if !table_has_columns(conn, "GameView", &["sourceGameId"])? {
+            conn.execute("ALTER TABLE GameView ADD COLUMN sourceGameId TEXT", [])
+                .map_err(|e| e.to_string())?;
+        }
+        if table_has_columns(conn, "GameView", &["id"])? {
+            conn.execute(
+                "UPDATE GameView SET sourceGameId = id WHERE sourceGameId IS NULL OR sourceGameId = ''",
+                [],
+            )
+            .map_err(|e| e.to_string())?;
+        }
+        return Ok(());
+    }
+
+    if !sqlite_object_exists(conn, "GameView", &["view"])? {
+        return Ok(());
+    }
+
+    if table_has_columns(conn, "GameView", &["platformId", "sourceGameId"])? {
+        return Ok(());
+    }
+
+    if !table_has_columns(
+        conn,
+        "Games",
+        &[
+            "platform_id",
+            "source_game_id",
+            "GA_Id",
+            "Name",
+            "Filename",
+            "FileToRun",
+            "ScrnshotFilename",
+            "SidFilename",
+            "CRC",
+        ],
+    )? {
+        return Ok(());
+    }
+
+    recreate_game_view(conn)
 }
 
 fn ensure_query_indexes(conn: &Connection) -> Result<(), String> {
@@ -386,16 +482,25 @@ fn ensure_query_indexes(conn: &Connection) -> Result<(), String> {
 }
 
 fn ensure_cover_index(conn: &Connection) -> Result<(), String> {
+    if table_exists(conn, "GameCoverIndex")?
+        && !table_has_columns(conn, "GameCoverIndex", &["platform_id"])?
+    {
+        conn.execute_batch("DROP TABLE IF EXISTS GameCoverIndex")
+            .map_err(|e| e.to_string())?;
+    }
+
     conn.execute(
         "CREATE TABLE IF NOT EXISTS GameCoverIndex (
-            GA_Id TEXT PRIMARY KEY,
-            cover_path TEXT NOT NULL
+            GA_Id TEXT NOT NULL,
+            platform_id TEXT NOT NULL DEFAULT 'c64',
+            cover_path TEXT NOT NULL,
+            PRIMARY KEY (platform_id, GA_Id)
         )",
         [],
     )
     .map_err(|e| e.to_string())?;
     conn.execute(
-        "CREATE INDEX IF NOT EXISTS idx_game_cover_index_ga_id ON GameCoverIndex(GA_Id)",
+        "CREATE INDEX IF NOT EXISTS idx_game_cover_index_platform_ga_id ON GameCoverIndex(platform_id, GA_Id)",
         [],
     )
     .map_err(|e| e.to_string())?;
@@ -425,6 +530,8 @@ fn ensure_search_index(conn: &Connection) -> Result<(), String> {
             conn,
             "GameView",
             &[
+                "platformId",
+                "sourceGameId",
                 "id",
                 "name",
                 "developer_name",
@@ -433,16 +540,25 @@ fn ensure_search_index(conn: &Connection) -> Result<(), String> {
             ],
         )?
         && table_exists(conn, "Games")?
-        && table_has_columns(conn, "Games", &["GA_Id"])?;
+        && table_has_columns(conn, "Games", &["platform_id", "GA_Id"])?;
 
     if !can_build_search_index {
         return Ok(());
+    }
+
+    if table_exists(conn, "GameSearchIndex")?
+        && !table_has_columns(conn, "GameSearchIndex", &["platform_id", "source_game_id"])?
+    {
+        conn.execute_batch("DROP TABLE IF EXISTS GameSearchIndex")
+            .map_err(|e| e.to_string())?;
     }
 
     conn.execute_batch(
         "
         CREATE VIRTUAL TABLE IF NOT EXISTS GameSearchIndex USING fts5(
             id UNINDEXED,
+            platform_id UNINDEXED,
+            source_game_id UNINDEXED,
             name,
             developer_name,
             publisher_name,
@@ -476,6 +592,9 @@ fn rebuild_search_index(conn: &Connection) -> Result<(), String> {
 }
 
 pub fn ensure_query_support_objects(conn: &Connection) -> Result<(), String> {
+    ensure_table_platform_columns(conn, "Games", "GA_Id")?;
+    ensure_table_platform_columns(conn, "Extras", "GA_Id")?;
+    ensure_game_view(conn)?;
     ensure_query_indexes(conn)?;
     ensure_cover_index(conn)?;
     ensure_search_index(conn)?;
@@ -848,6 +967,8 @@ fn import_csv_directory_to_sqlite(export_dir: &Path) -> Result<usize, String> {
             }
         }
 
+        ensure_table_platform_columns(&conn, "Games", "GA_Id")?;
+        ensure_table_platform_columns(&conn, "Extras", "GA_Id")?;
         recreate_game_view(&conn)?;
         ensure_query_indexes(&conn)?;
         rebuild_cover_index(&conn)?;
