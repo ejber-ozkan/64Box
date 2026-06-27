@@ -135,4 +135,29 @@ describe('SettingsContext', () => {
     expect(screen.getByTestId('active-platform').textContent).toBe('atari800');
     expect(screen.getByTestId('atari800-import-status').textContent).toBe('notImported');
   });
+
+  test('falls back to an imported platform on startup when the saved platform is unimported', async () => {
+    window.localStorage.setItem('gb64_settings', JSON.stringify({
+      activePlatformId: 'atari2600',
+      lastUsedPlatformId: 'atari2600',
+      platformSettings: {
+        atari2600: {
+          library: {
+            importStatus: 'notImported',
+            active: true,
+          },
+        },
+      },
+    }));
+
+    render(
+      <SettingsProvider>
+        <SettingsTestComponent />
+      </SettingsProvider>
+    );
+
+    await waitFor(() => {
+      expect(screen.getByTestId('active-platform').textContent).toBe('c64');
+    });
+  });
 });

@@ -3263,7 +3263,7 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "db_secure_settings",
-      "community": 15,
+      "community": 4,
       "norm_label": "secure_settings.rs"
     },
     {
@@ -3273,7 +3273,7 @@
       "source_location": "L7",
       "_origin": "ast",
       "id": "db_secure_settings_save_secure_setting",
-      "community": 15,
+      "community": 4,
       "norm_label": "save_secure_setting()"
     },
     {
@@ -3283,7 +3283,7 @@
       "source_location": "L7",
       "_origin": "ast",
       "id": "src_tauri_src_commands_db_secure_settings_rs_string",
-      "community": 15,
+      "community": 4,
       "norm_label": "string"
     },
     {
@@ -3293,7 +3293,7 @@
       "source_location": "L7",
       "_origin": "ast",
       "id": "src_tauri_src_commands_db_secure_settings_rs_result",
-      "community": 15,
+      "community": 4,
       "norm_label": "result"
     },
     {
@@ -3303,7 +3303,7 @@
       "source_location": "L19",
       "_origin": "ast",
       "id": "db_secure_settings_get_secure_setting",
-      "community": 15,
+      "community": 4,
       "norm_label": "get_secure_setting()"
     },
     {
@@ -3313,7 +3313,7 @@
       "source_location": "L19",
       "_origin": "ast",
       "id": "src_tauri_src_commands_db_secure_settings_rs_option",
-      "community": 15,
+      "community": 4,
       "norm_label": "option"
     },
     {
@@ -4390,7 +4390,7 @@
       "label": "import_database_from_mdb()",
       "file_type": "code",
       "source_file": "src-tauri/src/commands/setup.rs",
-      "source_location": "L38",
+      "source_location": "L40",
       "_origin": "ast",
       "id": "commands_setup_import_database_from_mdb",
       "community": 7,
@@ -4400,7 +4400,7 @@
       "label": "DatabaseImportResult",
       "file_type": "code",
       "source_file": "src-tauri/src/commands/setup.rs",
-      "source_location": "L38",
+      "source_location": "L40",
       "_origin": "ast",
       "id": "src_tauri_src_commands_setup_rs_databaseimportresult",
       "community": 7,
@@ -4410,7 +4410,7 @@
       "label": "get_platform_import_status()",
       "file_type": "code",
       "source_file": "src-tauri/src/commands/setup.rs",
-      "source_location": "L47",
+      "source_location": "L49",
       "_origin": "ast",
       "id": "commands_setup_get_platform_import_status",
       "community": 7,
@@ -4420,7 +4420,7 @@
       "label": "PlatformImportStatus",
       "file_type": "code",
       "source_file": "src-tauri/src/commands/setup.rs",
-      "source_location": "L47",
+      "source_location": "L49",
       "_origin": "ast",
       "id": "src_tauri_src_commands_setup_rs_platformimportstatus",
       "community": 7,
@@ -4430,7 +4430,7 @@
       "label": "import_platform_database_from_mdb()",
       "file_type": "code",
       "source_file": "src-tauri/src/commands/setup.rs",
-      "source_location": "L52",
+      "source_location": "L54",
       "_origin": "ast",
       "id": "commands_setup_import_platform_database_from_mdb",
       "community": 7,
@@ -4440,7 +4440,7 @@
       "label": "ImportPlatformDatabaseRequest",
       "file_type": "code",
       "source_file": "src-tauri/src/commands/setup.rs",
-      "source_location": "L52",
+      "source_location": "L54",
       "_origin": "ast",
       "id": "src_tauri_src_commands_setup_rs_importplatformdatabaserequest",
       "community": 7,
@@ -4450,7 +4450,7 @@
       "label": "PlatformDatabaseImportResult",
       "file_type": "code",
       "source_file": "src-tauri/src/commands/setup.rs",
-      "source_location": "L52",
+      "source_location": "L54",
       "_origin": "ast",
       "id": "platformdatabaseimportresult",
       "community": 7,
@@ -4460,7 +4460,7 @@
       "label": "validate_platform_import_request()",
       "file_type": "code",
       "source_file": "src-tauri/src/commands/setup.rs",
-      "source_location": "L69",
+      "source_location": "L71",
       "_origin": "ast",
       "id": "commands_setup_validate_platform_import_request",
       "community": 7,
@@ -4470,7 +4470,7 @@
       "label": "validate_existing_folder()",
       "file_type": "code",
       "source_file": "src-tauri/src/commands/setup.rs",
-      "source_location": "L102",
+      "source_location": "L104",
       "_origin": "ast",
       "id": "commands_setup_validate_existing_folder",
       "community": 7,
@@ -4480,7 +4480,7 @@
       "label": "reject_obvious_wrong_platform_mdb()",
       "file_type": "code",
       "source_file": "src-tauri/src/commands/setup.rs",
-      "source_location": "L115",
+      "source_location": "L117",
       "_origin": "ast",
       "id": "commands_setup_reject_obvious_wrong_platform_mdb",
       "community": 7,
@@ -4490,7 +4490,7 @@
       "label": "Path",
       "file_type": "code",
       "source_file": "src-tauri/src/commands/setup.rs",
-      "source_location": "L115",
+      "source_location": "L117",
       "_origin": "ast",
       "id": "src_tauri_src_commands_setup_rs_path",
       "community": 7,
@@ -4590,7 +4590,7 @@
       "label": "rejects_obvious_c64_mdb_for_atari800_import()",
       "file_type": "code",
       "source_file": "src-tauri/src/commands/setup/tests.rs",
-      "source_location": "L65",
+      "source_location": "L69",
       "_origin": "ast",
       "id": "setup_tests_rejects_obvious_c64_mdb_for_atari800_import",
       "community": 7,
@@ -6130,7 +6130,7 @@
       "label": "Home()",
       "file_type": "code",
       "source_file": "src/app/page.tsx",
-      "source_location": "L488",
+      "source_location": "L501",
       "_origin": "ast",
       "id": "app_page_home",
       "community": 9,
@@ -6263,7 +6263,7 @@
       "source_location": "L35",
       "_origin": "ast",
       "id": "components_bigboxtilemedia_getcoverurl",
-      "community": 109,
+      "community": 96,
       "norm_label": "getcoverurl()"
     },
     {
@@ -6293,7 +6293,7 @@
       "source_location": "L25",
       "_origin": "ast",
       "id": "components_bigboxview_bigboxviewprops",
-      "community": 27,
+      "community": 83,
       "norm_label": "bigboxviewprops"
     },
     {
@@ -6393,7 +6393,7 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "components_detailview",
-      "community": 5,
+      "community": 0,
       "norm_label": "detailview.tsx"
     },
     {
@@ -6413,7 +6413,7 @@
       "source_location": "L21",
       "_origin": "ast",
       "id": "components_detailview_detaillayoutprops",
-      "community": 5,
+      "community": 0,
       "norm_label": "detaillayoutprops"
     },
     {
@@ -6423,7 +6423,7 @@
       "source_location": "L31",
       "_origin": "ast",
       "id": "components_detailview_detailfullscreenmedia",
-      "community": 5,
+      "community": 0,
       "norm_label": "detailfullscreenmedia"
     },
     {
@@ -6443,7 +6443,7 @@
       "source_location": "L37",
       "_origin": "ast",
       "id": "components_detailview_detail_config",
-      "community": 5,
+      "community": 0,
       "norm_label": "detail_config"
     },
     {
@@ -6453,7 +6453,7 @@
       "source_location": "L51",
       "_origin": "ast",
       "id": "components_detailview_detailview",
-      "community": 5,
+      "community": 0,
       "norm_label": "detailview()"
     },
     {
@@ -6493,7 +6493,7 @@
       "source_location": "L28",
       "_origin": "ast",
       "id": "components_extrasdetail_extrasdetail",
-      "community": 17,
+      "community": 80,
       "norm_label": "extrasdetail()"
     },
     {
@@ -6543,7 +6543,7 @@
       "source_location": "L9",
       "_origin": "ast",
       "id": "components_horizontalrail_horizontalrailprops",
-      "community": 24,
+      "community": 109,
       "norm_label": "horizontalrailprops"
     },
     {
@@ -6573,7 +6573,7 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "components_imageslider",
-      "community": 17,
+      "community": 80,
       "norm_label": "imageslider.tsx"
     },
     {
@@ -6583,7 +6583,7 @@
       "source_location": "L6",
       "_origin": "ast",
       "id": "components_imageslider_imagesliderprops",
-      "community": 17,
+      "community": 80,
       "norm_label": "imagesliderprops"
     },
     {
@@ -6593,7 +6593,7 @@
       "source_location": "L16",
       "_origin": "ast",
       "id": "components_imageslider_imageslider",
-      "community": 17,
+      "community": 80,
       "norm_label": "imageslider()"
     },
     {
@@ -6663,7 +6663,7 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "components_musicianphoto",
-      "community": 17,
+      "community": 80,
       "norm_label": "musicianphoto.tsx"
     },
     {
@@ -6673,7 +6673,7 @@
       "source_location": "L8",
       "_origin": "ast",
       "id": "components_musicianphoto_musicianphotoprops",
-      "community": 17,
+      "community": 80,
       "norm_label": "musicianphotoprops"
     },
     {
@@ -6683,7 +6683,7 @@
       "source_location": "L15",
       "_origin": "ast",
       "id": "components_musicianphoto_musicianphoto",
-      "community": 17,
+      "community": 80,
       "norm_label": "musicianphoto()"
     },
     {
@@ -6693,7 +6693,7 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "components_platformswitcher",
-      "community": 27,
+      "community": 60,
       "norm_label": "platformswitcher.tsx"
     },
     {
@@ -6703,7 +6703,7 @@
       "source_location": "L6",
       "_origin": "ast",
       "id": "components_platformswitcher_platformswitcherprops",
-      "community": 27,
+      "community": 60,
       "norm_label": "platformswitcherprops"
     },
     {
@@ -6713,7 +6713,7 @@
       "source_location": "L11",
       "_origin": "ast",
       "id": "components_platformswitcher_platformswitcher",
-      "community": 27,
+      "community": 60,
       "norm_label": "platformswitcher()"
     },
     {
@@ -6803,7 +6803,7 @@
       "source_location": "L38",
       "_origin": "ast",
       "id": "components_settingsmodal_settingsview",
-      "community": 142,
+      "community": 9,
       "norm_label": "settingsview()"
     },
     {
@@ -6813,7 +6813,7 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "components_sidplayer",
-      "community": 35,
+      "community": 80,
       "norm_label": "sidplayer.tsx"
     },
     {
@@ -6823,7 +6823,7 @@
       "source_location": "L7",
       "_origin": "ast",
       "id": "components_sidplayer_sidplayerruntime",
-      "community": 35,
+      "community": 80,
       "norm_label": "sidplayerruntime"
     },
     {
@@ -6833,7 +6833,7 @@
       "source_location": "L13",
       "_origin": "ast",
       "id": "components_sidplayer_sidruntimeconstructor",
-      "community": 35,
+      "community": 80,
       "norm_label": "sidruntimeconstructor"
     },
     {
@@ -6843,7 +6843,7 @@
       "source_location": "L18",
       "_origin": "ast",
       "id": "components_sidplayer_window",
-      "community": 35,
+      "community": 80,
       "norm_label": "window"
     },
     {
@@ -6853,7 +6853,7 @@
       "source_location": "L25",
       "_origin": "ast",
       "id": "components_sidplayer_sidplayerprops",
-      "community": 35,
+      "community": 80,
       "norm_label": "sidplayerprops"
     },
     {
@@ -6863,7 +6863,7 @@
       "source_location": "L31",
       "_origin": "ast",
       "id": "components_sidplayer_sidplayer",
-      "community": 35,
+      "community": 80,
       "norm_label": "sidplayer()"
     },
     {
@@ -6873,7 +6873,7 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "components_statusrow",
-      "community": 23,
+      "community": 80,
       "norm_label": "statusrow.tsx"
     },
     {
@@ -6883,7 +6883,7 @@
       "source_location": "L3",
       "_origin": "ast",
       "id": "components_statusrow_props",
-      "community": 23,
+      "community": 80,
       "norm_label": "props"
     },
     {
@@ -6893,7 +6893,7 @@
       "source_location": "L9",
       "_origin": "ast",
       "id": "components_statusrow_statusrow",
-      "community": 23,
+      "community": 80,
       "norm_label": "statusrow()"
     },
     {
@@ -6963,7 +6963,7 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "components_wasmplayer",
-      "community": 60,
+      "community": 9,
       "norm_label": "wasmplayer.tsx"
     },
     {
@@ -6973,7 +6973,7 @@
       "source_location": "L8",
       "_origin": "ast",
       "id": "components_wasmplayer_wasmplayerprops",
-      "community": 60,
+      "community": 9,
       "norm_label": "wasmplayerprops"
     },
     {
@@ -6983,7 +6983,7 @@
       "source_location": "L14",
       "_origin": "ast",
       "id": "components_wasmplayer_wasmplayer",
-      "community": 60,
+      "community": 9,
       "norm_label": "wasmplayer()"
     },
     {
@@ -6993,7 +6993,7 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "bigbox_bigboxalphabetrail",
-      "community": 13,
+      "community": 109,
       "norm_label": "bigboxalphabetrail.tsx"
     },
     {
@@ -7003,7 +7003,7 @@
       "source_location": "L9",
       "_origin": "ast",
       "id": "bigbox_bigboxalphabetrail_bigboxalphabetrailprops",
-      "community": 13,
+      "community": 109,
       "norm_label": "bigboxalphabetrailprops"
     },
     {
@@ -7013,7 +7013,7 @@
       "source_location": "L20",
       "_origin": "ast",
       "id": "bigbox_bigboxalphabetrail_bigboxalphabetrail",
-      "community": 13,
+      "community": 109,
       "norm_label": "bigboxalphabetrail()"
     },
     {
@@ -7103,7 +7103,7 @@
       "source_location": "L9",
       "_origin": "ast",
       "id": "bigbox_bigboxheader_bigboxheaderprops",
-      "community": 24,
+      "community": 60,
       "norm_label": "bigboxheaderprops"
     },
     {
@@ -7123,7 +7123,7 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "detail_detailgametitle",
-      "community": 23,
+      "community": 80,
       "norm_label": "detailgametitle.tsx"
     },
     {
@@ -7133,7 +7133,7 @@
       "source_location": "L5",
       "_origin": "ast",
       "id": "detail_detailgametitle_detailgametitleprops",
-      "community": 23,
+      "community": 80,
       "norm_label": "detailgametitleprops"
     },
     {
@@ -7143,7 +7143,7 @@
       "source_location": "L13",
       "_origin": "ast",
       "id": "detail_detailgametitle_outlined_title_style",
-      "community": 23,
+      "community": 80,
       "norm_label": "outlined_title_style"
     },
     {
@@ -7153,7 +7153,7 @@
       "source_location": "L25",
       "_origin": "ast",
       "id": "detail_detailgametitle_detailgametitle",
-      "community": 23,
+      "community": 80,
       "norm_label": "detailgametitle()"
     },
     {
@@ -7163,7 +7163,7 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "detail_detailtitlebanner",
-      "community": 23,
+      "community": 80,
       "norm_label": "detailtitlebanner.tsx"
     },
     {
@@ -7173,7 +7173,7 @@
       "source_location": "L5",
       "_origin": "ast",
       "id": "detail_detailtitlebanner_detailtitlebannerprops",
-      "community": 23,
+      "community": 80,
       "norm_label": "detailtitlebannerprops"
     },
     {
@@ -7183,7 +7183,7 @@
       "source_location": "L12",
       "_origin": "ast",
       "id": "detail_detailtitlebanner_detailtitlebanner",
-      "community": 23,
+      "community": 80,
       "norm_label": "detailtitlebanner()"
     },
     {
@@ -7303,7 +7303,7 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "library_libraryheader",
-      "community": 27,
+      "community": 60,
       "norm_label": "libraryheader.tsx"
     },
     {
@@ -7313,7 +7313,7 @@
       "source_location": "L11",
       "_origin": "ast",
       "id": "library_libraryheader_libraryheaderprops",
-      "community": 27,
+      "community": 83,
       "norm_label": "libraryheaderprops"
     },
     {
@@ -7323,7 +7323,7 @@
       "source_location": "L26",
       "_origin": "ast",
       "id": "library_libraryheader_libraryheader",
-      "community": 27,
+      "community": 60,
       "norm_label": "libraryheader()"
     },
     {
@@ -7700,7 +7700,7 @@
       "label": "folderLabels",
       "file_type": "code",
       "source_file": "src/components/setup/DatabaseSetupView.tsx",
-      "source_location": "L32",
+      "source_location": "L39",
       "_origin": "ast",
       "id": "setup_databasesetupview_folderlabels",
       "community": 54,
@@ -7710,7 +7710,7 @@
       "label": "DatabaseSetupView()",
       "file_type": "code",
       "source_file": "src/components/setup/DatabaseSetupView.tsx",
-      "source_location": "L39",
+      "source_location": "L46",
       "_origin": "ast",
       "id": "setup_databasesetupview_databasesetupview",
       "community": 54,
@@ -7723,7 +7723,7 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "themes_playbutton",
-      "community": 150,
+      "community": 0,
       "norm_label": "playbutton.tsx"
     },
     {
@@ -7733,7 +7733,7 @@
       "source_location": "L10",
       "_origin": "ast",
       "id": "themes_playbutton_playlaunchtarget",
-      "community": 150,
+      "community": 0,
       "norm_label": "playlaunchtarget"
     },
     {
@@ -7743,7 +7743,7 @@
       "source_location": "L16",
       "_origin": "ast",
       "id": "themes_playbutton_playbuttonprops",
-      "community": 150,
+      "community": 0,
       "norm_label": "playbuttonprops"
     },
     {
@@ -7753,7 +7753,7 @@
       "source_location": "L23",
       "_origin": "ast",
       "id": "themes_playbutton_rocketglyph",
-      "community": 150,
+      "community": 0,
       "norm_label": "rocketglyph()"
     },
     {
@@ -7763,7 +7763,7 @@
       "source_location": "L35",
       "_origin": "ast",
       "id": "themes_playbutton_embeddedglyph",
-      "community": 150,
+      "community": 0,
       "norm_label": "embeddedglyph()"
     },
     {
@@ -7773,7 +7773,7 @@
       "source_location": "L46",
       "_origin": "ast",
       "id": "themes_playbutton_playbutton",
-      "community": 150,
+      "community": 0,
       "norm_label": "playbutton()"
     },
     {
@@ -8053,7 +8053,7 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "window_windoweddetaillayout",
-      "community": 23,
+      "community": 80,
       "norm_label": "windoweddetaillayout.tsx"
     },
     {
@@ -8063,7 +8063,7 @@
       "source_location": "L21",
       "_origin": "ast",
       "id": "window_windoweddetaillayout_windowedmediaid",
-      "community": 23,
+      "community": 80,
       "norm_label": "windowedmediaid"
     },
     {
@@ -8073,7 +8073,7 @@
       "source_location": "L22",
       "_origin": "ast",
       "id": "window_windoweddetaillayout_windoweddetailtab",
-      "community": 23,
+      "community": 80,
       "norm_label": "windoweddetailtab"
     },
     {
@@ -8083,7 +8083,7 @@
       "source_location": "L24",
       "_origin": "ast",
       "id": "window_windoweddetaillayout_windowedthemepalette",
-      "community": 23,
+      "community": 80,
       "norm_label": "windowedthemepalette"
     },
     {
@@ -8093,7 +8093,7 @@
       "source_location": "L32",
       "_origin": "ast",
       "id": "window_windoweddetaillayout_windoweddetaillayoutprops",
-      "community": 5,
+      "community": 80,
       "norm_label": "windoweddetaillayoutprops"
     },
     {
@@ -8103,7 +8103,7 @@
       "source_location": "L36",
       "_origin": "ast",
       "id": "window_windoweddetaillayout_zone_to_media",
-      "community": 23,
+      "community": 80,
       "norm_label": "zone_to_media"
     },
     {
@@ -8113,7 +8113,7 @@
       "source_location": "L43",
       "_origin": "ast",
       "id": "window_windoweddetaillayout_mediazonefor",
-      "community": 61,
+      "community": 80,
       "norm_label": "mediazonefor()"
     },
     {
@@ -8123,7 +8123,7 @@
       "source_location": "L56",
       "_origin": "ast",
       "id": "window_windoweddetaillayout_inforow",
-      "community": 23,
+      "community": 80,
       "norm_label": "inforow()"
     },
     {
@@ -8133,7 +8133,7 @@
       "source_location": "L65",
       "_origin": "ast",
       "id": "window_windoweddetaillayout_windoweddetaillayout",
-      "community": 61,
+      "community": 80,
       "norm_label": "windoweddetaillayout()"
     },
     {
@@ -8143,7 +8143,7 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "contexts_settingscontext",
-      "community": 17,
+      "community": 54,
       "norm_label": "settingscontext.tsx"
     },
     {
@@ -8153,7 +8153,7 @@
       "source_location": "L11",
       "_origin": "ast",
       "id": "contexts_settingscontext_settings",
-      "community": 27,
+      "community": 83,
       "norm_label": "settings"
     },
     {
@@ -8163,7 +8163,7 @@
       "source_location": "L54",
       "_origin": "ast",
       "id": "contexts_settingscontext_settingscontexttype",
-      "community": 27,
+      "community": 60,
       "norm_label": "settingscontexttype"
     },
     {
@@ -8173,7 +8173,7 @@
       "source_location": "L63",
       "_origin": "ast",
       "id": "contexts_settingscontext_defaultsettings",
-      "community": 17,
+      "community": 54,
       "norm_label": "defaultsettings"
     },
     {
@@ -8183,7 +8183,7 @@
       "source_location": "L106",
       "_origin": "ast",
       "id": "contexts_settingscontext_settingscontext",
-      "community": 17,
+      "community": 54,
       "norm_label": "settingscontext"
     },
     {
@@ -8193,7 +8193,7 @@
       "source_location": "L108",
       "_origin": "ast",
       "id": "contexts_settingscontext_secure_fields",
-      "community": 17,
+      "community": 54,
       "norm_label": "secure_fields"
     },
     {
@@ -8203,14 +8203,24 @@
       "source_location": "L110",
       "_origin": "ast",
       "id": "contexts_settingscontext_migrateplatformsettings",
-      "community": 17,
+      "community": 54,
       "norm_label": "migrateplatformsettings()"
+    },
+    {
+      "label": "resolveStartupPlatformId()",
+      "file_type": "code",
+      "source_file": "src/contexts/SettingsContext.tsx",
+      "source_location": "L188",
+      "_origin": "ast",
+      "id": "contexts_settingscontext_resolvestartupplatformid",
+      "community": 54,
+      "norm_label": "resolvestartupplatformid()"
     },
     {
       "label": "SettingsProvider()",
       "file_type": "code",
       "source_file": "src/contexts/SettingsContext.tsx",
-      "source_location": "L188",
+      "source_location": "L200",
       "_origin": "ast",
       "id": "contexts_settingscontext_settingsprovider",
       "community": 6,
@@ -8220,10 +8230,10 @@
       "label": "useSettings()",
       "file_type": "code",
       "source_file": "src/contexts/SettingsContext.tsx",
-      "source_location": "L403",
+      "source_location": "L425",
       "_origin": "ast",
       "id": "contexts_settingscontext_usesettings",
-      "community": 17,
+      "community": 80,
       "norm_label": "usesettings()"
     },
     {
@@ -8333,7 +8343,7 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "hooks_usebigboxlibrarydata",
-      "community": 25,
+      "community": 83,
       "norm_label": "usebigboxlibrarydata.ts"
     },
     {
@@ -8353,7 +8363,7 @@
       "source_location": "L10",
       "_origin": "ast",
       "id": "hooks_usebigboxlibrarydata_bigboxrailcategory",
-      "community": 13,
+      "community": 109,
       "norm_label": "bigboxrailcategory"
     },
     {
@@ -8363,7 +8373,7 @@
       "source_location": "L19",
       "_origin": "ast",
       "id": "hooks_usebigboxlibrarydata_usebigboxlibrarydataprops",
-      "community": 27,
+      "community": 83,
       "norm_label": "usebigboxlibrarydataprops"
     },
     {
@@ -8373,7 +8383,7 @@
       "source_location": "L29",
       "_origin": "ast",
       "id": "hooks_usebigboxlibrarydata_letter_rail_cache",
-      "community": 25,
+      "community": 83,
       "norm_label": "letter_rail_cache"
     },
     {
@@ -8383,7 +8393,7 @@
       "source_location": "L32",
       "_origin": "ast",
       "id": "hooks_usebigboxlibrarydata_getalphabetrailcachekey",
-      "community": 25,
+      "community": 83,
       "norm_label": "getalphabetrailcachekey()"
     },
     {
@@ -8393,7 +8403,7 @@
       "source_location": "L47",
       "_origin": "ast",
       "id": "hooks_usebigboxlibrarydata_sortrecentgames",
-      "community": 25,
+      "community": 83,
       "norm_label": "sortrecentgames()"
     },
     {
@@ -8443,7 +8453,7 @@
       "source_location": "L21",
       "_origin": "ast",
       "id": "hooks_usebigboxnavigation_usebigboxnavigationprops",
-      "community": 13,
+      "community": 109,
       "norm_label": "usebigboxnavigationprops"
     },
     {
@@ -8493,7 +8503,7 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "hooks_usedetailnavigation",
-      "community": 5,
+      "community": 6,
       "norm_label": "usedetailnavigation.ts"
     },
     {
@@ -8503,7 +8513,7 @@
       "source_location": "L9",
       "_origin": "ast",
       "id": "hooks_usedetailnavigation_detailzone",
-      "community": 5,
+      "community": 6,
       "norm_label": "detailzone"
     },
     {
@@ -8513,7 +8523,7 @@
       "source_location": "L22",
       "_origin": "ast",
       "id": "hooks_usedetailnavigation_direction",
-      "community": 5,
+      "community": 6,
       "norm_label": "direction"
     },
     {
@@ -8523,7 +8533,7 @@
       "source_location": "L24",
       "_origin": "ast",
       "id": "hooks_usedetailnavigation_navigationconfig",
-      "community": 5,
+      "community": 6,
       "norm_label": "navigationconfig"
     },
     {
@@ -8533,7 +8543,7 @@
       "source_location": "L26",
       "_origin": "ast",
       "id": "hooks_usedetailnavigation_detailnavigationhook",
-      "community": 5,
+      "community": 0,
       "norm_label": "detailnavigationhook"
     },
     {
@@ -8543,7 +8553,7 @@
       "source_location": "L39",
       "_origin": "ast",
       "id": "hooks_usedetailnavigation_detailnavprops",
-      "community": 5,
+      "community": 6,
       "norm_label": "detailnavprops"
     },
     {
@@ -8553,7 +8563,7 @@
       "source_location": "L46",
       "_origin": "ast",
       "id": "hooks_usedetailnavigation_usedetailnavigation",
-      "community": 5,
+      "community": 0,
       "norm_label": "usedetailnavigation()"
     },
     {
@@ -8593,7 +8603,7 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "hooks_usefullscreenlayoutmetrics",
-      "community": 24,
+      "community": 109,
       "norm_label": "usefullscreenlayoutmetrics.ts"
     },
     {
@@ -8603,7 +8613,7 @@
       "source_location": "L10",
       "_origin": "ast",
       "id": "hooks_usefullscreenlayoutmetrics_resolvedfullscreendensity",
-      "community": 24,
+      "community": 109,
       "norm_label": "resolvedfullscreendensity"
     },
     {
@@ -8613,7 +8623,7 @@
       "source_location": "L12",
       "_origin": "ast",
       "id": "hooks_usefullscreenlayoutmetrics_viewportsnapshot",
-      "community": 24,
+      "community": 109,
       "norm_label": "viewportsnapshot"
     },
     {
@@ -8623,7 +8633,7 @@
       "source_location": "L20",
       "_origin": "ast",
       "id": "hooks_usefullscreenlayoutmetrics_fullscreenlayoutmetrics",
-      "community": 24,
+      "community": 109,
       "norm_label": "fullscreenlayoutmetrics"
     },
     {
@@ -8633,7 +8643,7 @@
       "source_location": "L74",
       "_origin": "ast",
       "id": "hooks_usefullscreenlayoutmetrics_default_viewport",
-      "community": 24,
+      "community": 109,
       "norm_label": "default_viewport"
     },
     {
@@ -8643,7 +8653,7 @@
       "source_location": "L82",
       "_origin": "ast",
       "id": "hooks_usefullscreenlayoutmetrics_clamp",
-      "community": 24,
+      "community": 109,
       "norm_label": "clamp()"
     },
     {
@@ -8653,7 +8663,7 @@
       "source_location": "L86",
       "_origin": "ast",
       "id": "hooks_usefullscreenlayoutmetrics_round",
-      "community": 24,
+      "community": 109,
       "norm_label": "round()"
     },
     {
@@ -8663,7 +8673,7 @@
       "source_location": "L90",
       "_origin": "ast",
       "id": "hooks_usefullscreenlayoutmetrics_getviewportsnapshot",
-      "community": 24,
+      "community": 109,
       "norm_label": "getviewportsnapshot()"
     },
     {
@@ -8673,7 +8683,7 @@
       "source_location": "L104",
       "_origin": "ast",
       "id": "hooks_usefullscreenlayoutmetrics_resolvedensitymode",
-      "community": 24,
+      "community": 109,
       "norm_label": "resolvedensitymode()"
     },
     {
@@ -8683,7 +8693,7 @@
       "source_location": "L126",
       "_origin": "ast",
       "id": "hooks_usefullscreenlayoutmetrics_buildfullscreenlayoutmetrics",
-      "community": 24,
+      "community": 109,
       "norm_label": "buildfullscreenlayoutmetrics()"
     },
     {
@@ -8793,7 +8803,7 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "hooks_useinputmode",
-      "community": 60,
+      "community": 9,
       "norm_label": "useinputmode.ts"
     },
     {
@@ -8803,7 +8813,7 @@
       "source_location": "L9",
       "_origin": "ast",
       "id": "hooks_useinputmode_useinputmode",
-      "community": 60,
+      "community": 9,
       "norm_label": "useinputmode()"
     },
     {
@@ -8823,7 +8833,7 @@
       "source_location": "L10",
       "_origin": "ast",
       "id": "hooks_uselibrarybrowserstate_libraryviewmode",
-      "community": 27,
+      "community": 83,
       "norm_label": "libraryviewmode"
     },
     {
@@ -8863,7 +8873,7 @@
       "source_location": "L14",
       "_origin": "ast",
       "id": "hooks_uselibraryshellinput_uselibraryshellinputprops",
-      "community": 27,
+      "community": 83,
       "norm_label": "uselibraryshellinputprops"
     },
     {
@@ -8913,7 +8923,7 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "hooks_useresolvedboxarturl",
-      "community": 61,
+      "community": 96,
       "norm_label": "useresolvedboxarturl.ts"
     },
     {
@@ -8923,7 +8933,7 @@
       "source_location": "L8",
       "_origin": "ast",
       "id": "hooks_useresolvedboxarturl_cover_art_url_cache",
-      "community": 61,
+      "community": 96,
       "norm_label": "cover_art_url_cache"
     },
     {
@@ -8933,7 +8943,7 @@
       "source_location": "L10",
       "_origin": "ast",
       "id": "hooks_useresolvedboxarturl_normalizepath",
-      "community": 61,
+      "community": 96,
       "norm_label": "normalizepath()"
     },
     {
@@ -8943,7 +8953,7 @@
       "source_location": "L14",
       "_origin": "ast",
       "id": "hooks_useresolvedboxarturl_getresolvedcoverarturl",
-      "community": 61,
+      "community": 96,
       "norm_label": "getresolvedcoverarturl()"
     },
     {
@@ -8953,7 +8963,7 @@
       "source_location": "L34",
       "_origin": "ast",
       "id": "hooks_useresolvedboxarturl_resolvedboxartgame",
-      "community": 61,
+      "community": 96,
       "norm_label": "resolvedboxartgame"
     },
     {
@@ -8963,7 +8973,7 @@
       "source_location": "L36",
       "_origin": "ast",
       "id": "hooks_useresolvedboxarturl_useresolvedboxarturl",
-      "community": 61,
+      "community": 80,
       "norm_label": "useresolvedboxarturl()"
     },
     {
@@ -8973,7 +8983,7 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "hooks_usewindowlibraryshelves",
-      "community": 27,
+      "community": 83,
       "norm_label": "usewindowlibraryshelves.ts"
     },
     {
@@ -8983,7 +8993,7 @@
       "source_location": "L7",
       "_origin": "ast",
       "id": "hooks_usewindowlibraryshelves_usewindowlibraryshelvesprops",
-      "community": 27,
+      "community": 83,
       "norm_label": "usewindowlibraryshelvesprops"
     },
     {
@@ -9033,7 +9043,7 @@
       "source_location": "L17",
       "_origin": "ast",
       "id": "lib_detail_layout_detaillayoutspec",
-      "community": 24,
+      "community": 5,
       "norm_label": "detaillayoutspec"
     },
     {
@@ -9393,7 +9403,7 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "lib_game_display",
-      "community": 109,
+      "community": 80,
       "norm_label": "game-display.ts"
     },
     {
@@ -9403,7 +9413,7 @@
       "source_location": "L3",
       "_origin": "ast",
       "id": "lib_game_display_unknown_values",
-      "community": 109,
+      "community": 80,
       "norm_label": "unknown_values"
     },
     {
@@ -9423,7 +9433,7 @@
       "source_location": "L20",
       "_origin": "ast",
       "id": "lib_game_display_getgamestudios",
-      "community": 109,
+      "community": 80,
       "norm_label": "getgamestudios()"
     },
     {
@@ -9433,7 +9443,7 @@
       "source_location": "L27",
       "_origin": "ast",
       "id": "lib_game_display_getprimarystudiolabel",
-      "community": 109,
+      "community": 80,
       "norm_label": "getprimarystudiolabel()"
     },
     {
@@ -9593,7 +9603,7 @@
       "source_location": "L118",
       "_origin": "ast",
       "id": "lib_platform_capabilities_isplatformid",
-      "community": 17,
+      "community": 54,
       "norm_label": "isplatformid()"
     },
     {
@@ -9643,7 +9653,7 @@
       "source_location": "L175",
       "_origin": "ast",
       "id": "lib_platform_capabilities_createdefaultplatformsettingsmap",
-      "community": 17,
+      "community": 54,
       "norm_label": "createdefaultplatformsettingsmap()"
     },
     {
@@ -9743,7 +9753,7 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "lib_subgenre_display",
-      "community": 27,
+      "community": 60,
       "norm_label": "subgenre-display.ts"
     },
     {
@@ -9753,7 +9763,7 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "lib_subgenre_display_visiblesubgenresresult",
-      "community": 27,
+      "community": 60,
       "norm_label": "visiblesubgenresresult"
     },
     {
@@ -9763,7 +9773,7 @@
       "source_location": "L6",
       "_origin": "ast",
       "id": "lib_subgenre_display_getvisiblesubgenres",
-      "community": 27,
+      "community": 60,
       "norm_label": "getvisiblesubgenres()"
     },
     {
@@ -9993,7 +10003,7 @@
       "source_location": "L234",
       "_origin": "ast",
       "id": "lib_tauri_bridge_resolvemediapath",
-      "community": 61,
+      "community": 96,
       "norm_label": "resolvemediapath()"
     },
     {
@@ -10023,7 +10033,7 @@
       "source_location": "L272",
       "_origin": "ast",
       "id": "lib_tauri_bridge_getasseturl",
-      "community": 61,
+      "community": 96,
       "norm_label": "getasseturl()"
     },
     {
@@ -10033,7 +10043,7 @@
       "source_location": "L286",
       "_origin": "ast",
       "id": "lib_tauri_bridge_readfilebytes",
-      "community": 60,
+      "community": 96,
       "norm_label": "readfilebytes()"
     },
     {
@@ -10043,7 +10053,7 @@
       "source_location": "L302",
       "_origin": "ast",
       "id": "lib_tauri_bridge_getmediaurl",
-      "community": 109,
+      "community": 96,
       "norm_label": "getmediaurl()"
     },
     {
@@ -10193,7 +10203,7 @@
       "source_location": "L478",
       "_origin": "ast",
       "id": "lib_tauri_bridge_gamefilters",
-      "community": 27,
+      "community": 83,
       "norm_label": "gamefilters"
     },
     {
@@ -10203,7 +10213,7 @@
       "source_location": "L488",
       "_origin": "ast",
       "id": "lib_tauri_bridge_getgenres",
-      "community": 25,
+      "community": 83,
       "norm_label": "getgenres()"
     },
     {
@@ -10213,7 +10223,7 @@
       "source_location": "L498",
       "_origin": "ast",
       "id": "lib_tauri_bridge_getsubgenres",
-      "community": 25,
+      "community": 83,
       "norm_label": "getsubgenres()"
     },
     {
@@ -10223,7 +10233,7 @@
       "source_location": "L522",
       "_origin": "ast",
       "id": "lib_tauri_bridge_getdbgamecount",
-      "community": 25,
+      "community": 83,
       "norm_label": "getdbgamecount()"
     },
     {
@@ -10243,7 +10253,7 @@
       "source_location": "L562",
       "_origin": "ast",
       "id": "lib_tauri_bridge_getdbgames",
-      "community": 25,
+      "community": 83,
       "norm_label": "getdbgames()"
     },
     {
@@ -10553,7 +10563,7 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "types_platform_platformid",
-      "community": 27,
+      "community": 60,
       "norm_label": "platformid"
     },
     {
@@ -10703,7 +10713,7 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "utils_sorting",
-      "community": 0,
+      "community": 9,
       "norm_label": "sorting.ts"
     },
     {
@@ -10713,7 +10723,7 @@
       "source_location": "L3",
       "_origin": "ast",
       "id": "utils_sorting_sortdirection",
-      "community": 0,
+      "community": 9,
       "norm_label": "sortdirection"
     },
     {
@@ -10723,7 +10733,7 @@
       "source_location": "L5",
       "_origin": "ast",
       "id": "utils_sorting_sortgames",
-      "community": 0,
+      "community": 9,
       "norm_label": "sortgames()"
     },
     {
@@ -15479,9 +15489,9 @@
       "source_file": "scripts/convert_csv_to_sqlite.js",
       "source_location": "L331",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "scripts_convert_csv_to_sqlite",
-      "target": "scripts_convert_csv_to_sqlite_convertcsvtosqlite",
-      "confidence_score": 1.0
+      "target": "scripts_convert_csv_to_sqlite_convertcsvtosqlite"
     },
     {
       "relation": "contains",
@@ -15509,9 +15519,9 @@
       "source_file": "scripts/convert_csv_to_sqlite.js",
       "source_location": "L63",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "scripts_convert_csv_to_sqlite",
-      "target": "scripts_convert_csv_to_sqlite_ensuregamesplatformcolumns",
-      "confidence_score": 1.0
+      "target": "scripts_convert_csv_to_sqlite_ensuregamesplatformcolumns"
     },
     {
       "relation": "contains",
@@ -15539,9 +15549,9 @@
       "source_file": "scripts/convert_csv_to_sqlite.js",
       "source_location": "L6",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "scripts_convert_csv_to_sqlite",
-      "target": "scripts_convert_csv_to_sqlite_getplatformimportconfig_performanceindexes_requiredplatformcolumns_supportobjects",
-      "confidence_score": 1.0
+      "target": "scripts_convert_csv_to_sqlite_getplatformimportconfig_performanceindexes_requiredplatformcolumns_supportobjects"
     },
     {
       "relation": "contains",
@@ -15549,9 +15559,9 @@
       "source_file": "scripts/convert_csv_to_sqlite.js",
       "source_location": "L271",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "scripts_convert_csv_to_sqlite",
-      "target": "scripts_convert_csv_to_sqlite_importcsvfiles",
-      "confidence_score": 1.0
+      "target": "scripts_convert_csv_to_sqlite_importcsvfiles"
     },
     {
       "relation": "contains",
@@ -15559,9 +15569,9 @@
       "source_file": "scripts/convert_csv_to_sqlite.js",
       "source_location": "L364",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "scripts_convert_csv_to_sqlite",
-      "target": "scripts_convert_csv_to_sqlite_main",
-      "confidence_score": 1.0
+      "target": "scripts_convert_csv_to_sqlite_main"
     },
     {
       "relation": "contains",
@@ -15609,9 +15619,9 @@
       "source_file": "scripts/convert_csv_to_sqlite.js",
       "source_location": "L150",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "scripts_convert_csv_to_sqlite",
-      "target": "scripts_convert_csv_to_sqlite_rebuildgameview",
-      "confidence_score": 1.0
+      "target": "scripts_convert_csv_to_sqlite_rebuildgameview"
     },
     {
       "relation": "contains",
@@ -15619,9 +15629,9 @@
       "source_file": "scripts/convert_csv_to_sqlite.js",
       "source_location": "L79",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "scripts_convert_csv_to_sqlite",
-      "target": "scripts_convert_csv_to_sqlite_rebuildplatformlibraries",
-      "confidence_score": 1.0
+      "target": "scripts_convert_csv_to_sqlite_rebuildplatformlibraries"
     },
     {
       "relation": "contains",
@@ -15659,9 +15669,9 @@
       "source_file": "scripts/convert_csv_to_sqlite.js",
       "source_location": "L43",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "scripts_convert_csv_to_sqlite",
-      "target": "scripts_convert_csv_to_sqlite_tablecolumns",
-      "confidence_score": 1.0
+      "target": "scripts_convert_csv_to_sqlite_tablecolumns"
     },
     {
       "relation": "contains",
@@ -15701,9 +15711,9 @@
       "source_file": "scripts/convert_csv_to_sqlite.js",
       "source_location": "L6",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "scripts_convert_csv_to_sqlite",
-      "target": "scripts_sqlite_support_config_getplatformimportconfig",
-      "confidence_score": 1.0
+      "target": "scripts_sqlite_support_config_getplatformimportconfig"
     },
     {
       "relation": "imports",
@@ -15723,9 +15733,9 @@
       "source_file": "scripts/convert_csv_to_sqlite.js",
       "source_location": "L6",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "scripts_convert_csv_to_sqlite",
-      "target": "scripts_sqlite_support_config_requiredplatformcolumns",
-      "confidence_score": 1.0
+      "target": "scripts_sqlite_support_config_requiredplatformcolumns"
     },
     {
       "relation": "imports",
@@ -15745,9 +15755,9 @@
       "source_file": "scripts/convert_csv_to_sqlite.test.js",
       "source_location": "L7",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "scripts_convert_csv_to_sqlite_test",
-      "target": "scripts_convert_csv_to_sqlite",
-      "confidence_score": 1.0
+      "target": "scripts_convert_csv_to_sqlite"
     },
     {
       "relation": "calls",
@@ -15756,9 +15766,9 @@
       "source_file": "scripts/convert_csv_to_sqlite.js",
       "source_location": "L367",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "scripts_convert_csv_to_sqlite_main",
-      "target": "scripts_convert_csv_to_sqlite_getargvalue",
-      "confidence_score": 1.0
+      "target": "scripts_convert_csv_to_sqlite_getargvalue"
     },
     {
       "relation": "calls",
@@ -15778,9 +15788,9 @@
       "source_file": "scripts/convert_csv_to_sqlite.js",
       "source_location": "L365",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "scripts_convert_csv_to_sqlite_main",
-      "target": "scripts_convert_csv_to_sqlite_resolvepath",
-      "confidence_score": 1.0
+      "target": "scripts_convert_csv_to_sqlite_resolvepath"
     },
     {
       "relation": "calls",
@@ -15800,9 +15810,9 @@
       "source_file": "scripts/convert_csv_to_sqlite.js",
       "source_location": "L348",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "scripts_convert_csv_to_sqlite_convertcsvtosqlite",
-      "target": "scripts_convert_csv_to_sqlite_tableexists",
-      "confidence_score": 1.0
+      "target": "scripts_convert_csv_to_sqlite_tableexists"
     },
     {
       "relation": "calls",
@@ -15822,9 +15832,9 @@
       "source_file": "scripts/convert_csv_to_sqlite.js",
       "source_location": "L64",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "scripts_convert_csv_to_sqlite_ensuregamesplatformcolumns",
-      "target": "scripts_convert_csv_to_sqlite_tableexists",
-      "confidence_score": 1.0
+      "target": "scripts_convert_csv_to_sqlite_tableexists"
     },
     {
       "relation": "calls",
@@ -15833,9 +15843,9 @@
       "source_file": "scripts/convert_csv_to_sqlite.js",
       "source_location": "L93",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "scripts_convert_csv_to_sqlite_rebuildplatformlibraries",
-      "target": "scripts_convert_csv_to_sqlite_tableexists",
-      "confidence_score": 1.0
+      "target": "scripts_convert_csv_to_sqlite_tableexists"
     },
     {
       "relation": "calls",
@@ -15844,9 +15854,9 @@
       "source_file": "scripts/convert_csv_to_sqlite.js",
       "source_location": "L44",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "scripts_convert_csv_to_sqlite_tablecolumns",
-      "target": "scripts_convert_csv_to_sqlite_tableexists",
-      "confidence_score": 1.0
+      "target": "scripts_convert_csv_to_sqlite_tableexists"
     },
     {
       "relation": "calls",
@@ -15866,9 +15876,9 @@
       "source_file": "scripts/convert_csv_to_sqlite.js",
       "source_location": "L68",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "scripts_convert_csv_to_sqlite_ensuregamesplatformcolumns",
-      "target": "scripts_convert_csv_to_sqlite_tablecolumns",
-      "confidence_score": 1.0
+      "target": "scripts_convert_csv_to_sqlite_tablecolumns"
     },
     {
       "relation": "calls",
@@ -15877,9 +15887,9 @@
       "source_file": "scripts/convert_csv_to_sqlite.js",
       "source_location": "L346",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "scripts_convert_csv_to_sqlite_convertcsvtosqlite",
-      "target": "scripts_convert_csv_to_sqlite_createperformanceindexes",
-      "confidence_score": 1.0
+      "target": "scripts_convert_csv_to_sqlite_createperformanceindexes"
     },
     {
       "relation": "calls",
@@ -15888,9 +15898,9 @@
       "source_file": "scripts/convert_csv_to_sqlite.js",
       "source_location": "L345",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "scripts_convert_csv_to_sqlite_convertcsvtosqlite",
-      "target": "scripts_convert_csv_to_sqlite_ensuregamesplatformcolumns",
-      "confidence_score": 1.0
+      "target": "scripts_convert_csv_to_sqlite_ensuregamesplatformcolumns"
     },
     {
       "relation": "calls",
@@ -15899,9 +15909,9 @@
       "source_file": "scripts/convert_csv_to_sqlite.js",
       "source_location": "L347",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "scripts_convert_csv_to_sqlite_convertcsvtosqlite",
-      "target": "scripts_convert_csv_to_sqlite_rebuildplatformlibraries",
-      "confidence_score": 1.0
+      "target": "scripts_convert_csv_to_sqlite_rebuildplatformlibraries"
     },
     {
       "relation": "calls",
@@ -15910,9 +15920,9 @@
       "source_file": "scripts/convert_csv_to_sqlite.js",
       "source_location": "L349",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "scripts_convert_csv_to_sqlite_convertcsvtosqlite",
-      "target": "scripts_convert_csv_to_sqlite_rebuildcoverindex",
-      "confidence_score": 1.0
+      "target": "scripts_convert_csv_to_sqlite_rebuildcoverindex"
     },
     {
       "relation": "calls",
@@ -15921,9 +15931,9 @@
       "source_file": "scripts/convert_csv_to_sqlite.js",
       "source_location": "L352",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "scripts_convert_csv_to_sqlite_convertcsvtosqlite",
-      "target": "scripts_convert_csv_to_sqlite_rebuildgameview",
-      "confidence_score": 1.0
+      "target": "scripts_convert_csv_to_sqlite_rebuildgameview"
     },
     {
       "relation": "calls",
@@ -15932,9 +15942,9 @@
       "source_file": "scripts/convert_csv_to_sqlite.js",
       "source_location": "L353",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "scripts_convert_csv_to_sqlite_convertcsvtosqlite",
-      "target": "scripts_convert_csv_to_sqlite_rebuildsearchindex",
-      "confidence_score": 1.0
+      "target": "scripts_convert_csv_to_sqlite_rebuildsearchindex"
     },
     {
       "relation": "calls",
@@ -15943,9 +15953,9 @@
       "source_file": "scripts/convert_csv_to_sqlite.js",
       "source_location": "L354",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "scripts_convert_csv_to_sqlite_convertcsvtosqlite",
-      "target": "scripts_convert_csv_to_sqlite_optimizedatabase",
-      "confidence_score": 1.0
+      "target": "scripts_convert_csv_to_sqlite_optimizedatabase"
     },
     {
       "relation": "calls",
@@ -15954,9 +15964,9 @@
       "source_file": "scripts/convert_csv_to_sqlite.js",
       "source_location": "L355",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "scripts_convert_csv_to_sqlite_convertcsvtosqlite",
-      "target": "scripts_convert_csv_to_sqlite_verifysupportobjects",
-      "confidence_score": 1.0
+      "target": "scripts_convert_csv_to_sqlite_verifysupportobjects"
     },
     {
       "relation": "calls",
@@ -15965,9 +15975,9 @@
       "source_file": "scripts/convert_csv_to_sqlite.js",
       "source_location": "L342",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "scripts_convert_csv_to_sqlite_convertcsvtosqlite",
-      "target": "scripts_convert_csv_to_sqlite_importcsvfiles",
-      "confidence_score": 1.0
+      "target": "scripts_convert_csv_to_sqlite_importcsvfiles"
     },
     {
       "relation": "calls",
@@ -15987,9 +15997,9 @@
       "source_file": "scripts/convert_csv_to_sqlite.js",
       "source_location": "L368",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "scripts_convert_csv_to_sqlite_main",
-      "target": "scripts_convert_csv_to_sqlite_convertcsvtosqlite",
-      "confidence_score": 1.0
+      "target": "scripts_convert_csv_to_sqlite_convertcsvtosqlite"
     },
     {
       "relation": "imports",
@@ -15998,9 +16008,9 @@
       "source_file": "scripts/convert_csv_to_sqlite.test.js",
       "source_location": "L7",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "scripts_convert_csv_to_sqlite_test",
-      "target": "scripts_convert_csv_to_sqlite_convertcsvtosqlite",
-      "confidence_score": 1.0
+      "target": "scripts_convert_csv_to_sqlite_convertcsvtosqlite"
     },
     {
       "relation": "contains",
@@ -16008,9 +16018,9 @@
       "source_file": "scripts/convert_csv_to_sqlite.test.js",
       "source_location": "L6",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "scripts_convert_csv_to_sqlite_test",
-      "target": "scripts_convert_csv_to_sqlite_test_auditsqlitesupport",
-      "confidence_score": 1.0
+      "target": "scripts_convert_csv_to_sqlite_test_auditsqlitesupport"
     },
     {
       "relation": "contains",
@@ -16018,9 +16028,9 @@
       "source_file": "scripts/convert_csv_to_sqlite.test.js",
       "source_location": "L7",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "scripts_convert_csv_to_sqlite_test",
-      "target": "scripts_convert_csv_to_sqlite_test_convertcsvtosqlite",
-      "confidence_score": 1.0
+      "target": "scripts_convert_csv_to_sqlite_test_convertcsvtosqlite"
     },
     {
       "relation": "contains",
@@ -16028,9 +16038,9 @@
       "source_file": "scripts/convert_csv_to_sqlite.test.js",
       "source_location": "L18",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "scripts_convert_csv_to_sqlite_test",
-      "target": "scripts_convert_csv_to_sqlite_test_createminigamebaseexport",
-      "confidence_score": 1.0
+      "target": "scripts_convert_csv_to_sqlite_test_createminigamebaseexport"
     },
     {
       "relation": "contains",
@@ -16038,9 +16048,9 @@
       "source_file": "scripts/convert_csv_to_sqlite.test.js",
       "source_location": "L4",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "scripts_convert_csv_to_sqlite_test",
-      "target": "scripts_convert_csv_to_sqlite_test_database",
-      "confidence_score": 1.0
+      "target": "scripts_convert_csv_to_sqlite_test_database"
     },
     {
       "relation": "contains",
@@ -16048,9 +16058,9 @@
       "source_file": "scripts/convert_csv_to_sqlite.test.js",
       "source_location": "L1",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "scripts_convert_csv_to_sqlite_test",
-      "target": "scripts_convert_csv_to_sqlite_test_fs",
-      "confidence_score": 1.0
+      "target": "scripts_convert_csv_to_sqlite_test_fs"
     },
     {
       "relation": "contains",
@@ -16058,9 +16068,9 @@
       "source_file": "scripts/convert_csv_to_sqlite.test.js",
       "source_location": "L2",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "scripts_convert_csv_to_sqlite_test",
-      "target": "scripts_convert_csv_to_sqlite_test_os",
-      "confidence_score": 1.0
+      "target": "scripts_convert_csv_to_sqlite_test_os"
     },
     {
       "relation": "contains",
@@ -16068,9 +16078,9 @@
       "source_file": "scripts/convert_csv_to_sqlite.test.js",
       "source_location": "L3",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "scripts_convert_csv_to_sqlite_test",
-      "target": "scripts_convert_csv_to_sqlite_test_path",
-      "confidence_score": 1.0
+      "target": "scripts_convert_csv_to_sqlite_test_path"
     },
     {
       "relation": "contains",
@@ -16078,9 +16088,9 @@
       "source_file": "scripts/convert_csv_to_sqlite.test.js",
       "source_location": "L9",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "scripts_convert_csv_to_sqlite_test",
-      "target": "scripts_convert_csv_to_sqlite_test_writecsv",
-      "confidence_score": 1.0
+      "target": "scripts_convert_csv_to_sqlite_test_writecsv"
     },
     {
       "relation": "calls",
@@ -16089,9 +16099,9 @@
       "source_file": "scripts/convert_csv_to_sqlite.test.js",
       "source_location": "L19",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "scripts_convert_csv_to_sqlite_test_createminigamebaseexport",
-      "target": "scripts_convert_csv_to_sqlite_test_writecsv",
-      "confidence_score": 1.0
+      "target": "scripts_convert_csv_to_sqlite_test_writecsv"
     },
     {
       "relation": "contains",
@@ -16263,9 +16273,9 @@
       "source_file": "scripts/db_pipeline.js",
       "source_location": "L146",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "scripts_db_pipeline",
-      "target": "scripts_db_pipeline_buildauditargs",
-      "confidence_score": 1.0
+      "target": "scripts_db_pipeline_buildauditargs"
     },
     {
       "relation": "contains",
@@ -16273,9 +16283,9 @@
       "source_file": "scripts/db_pipeline.js",
       "source_location": "L130",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "scripts_db_pipeline",
-      "target": "scripts_db_pipeline_buildconvertargs",
-      "confidence_score": 1.0
+      "target": "scripts_db_pipeline_buildconvertargs"
     },
     {
       "relation": "contains",
@@ -16313,9 +16323,9 @@
       "source_file": "scripts/db_pipeline.js",
       "source_location": "L6",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "scripts_db_pipeline",
-      "target": "scripts_db_pipeline_getplatformimportconfig",
-      "confidence_score": 1.0
+      "target": "scripts_db_pipeline_getplatformimportconfig"
     },
     {
       "relation": "contains",
@@ -16373,9 +16383,9 @@
       "source_file": "scripts/db_pipeline.js",
       "source_location": "L21",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "scripts_db_pipeline",
-      "target": "scripts_db_pipeline_resolvepathvalue",
-      "confidence_score": 1.0
+      "target": "scripts_db_pipeline_resolvepathvalue"
     },
     {
       "relation": "contains",
@@ -16383,9 +16393,9 @@
       "source_file": "scripts/db_pipeline.js",
       "source_location": "L25",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "scripts_db_pipeline",
-      "target": "scripts_db_pipeline_resolvepipelineconfig",
-      "confidence_score": 1.0
+      "target": "scripts_db_pipeline_resolvepipelineconfig"
     },
     {
       "relation": "contains",
@@ -16454,9 +16464,9 @@
       "source_file": "scripts/db_pipeline.js",
       "source_location": "L6",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "scripts_db_pipeline",
-      "target": "scripts_sqlite_support_config",
-      "confidence_score": 1.0
+      "target": "scripts_sqlite_support_config"
     },
     {
       "relation": "imports",
@@ -16465,9 +16475,9 @@
       "source_file": "scripts/db_pipeline.js",
       "source_location": "L6",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "scripts_db_pipeline",
-      "target": "scripts_sqlite_support_config_getplatformimportconfig",
-      "confidence_score": 1.0
+      "target": "scripts_sqlite_support_config_getplatformimportconfig"
     },
     {
       "relation": "imports_from",
@@ -16476,9 +16486,9 @@
       "source_file": "scripts/db_pipeline.test.js",
       "source_location": "L3",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "scripts_db_pipeline_test",
-      "target": "scripts_db_pipeline",
-      "confidence_score": 1.0
+      "target": "scripts_db_pipeline"
     },
     {
       "relation": "calls",
@@ -16509,9 +16519,9 @@
       "source_file": "scripts/db_pipeline.js",
       "source_location": "L50",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "scripts_db_pipeline_resolvepipelineconfig",
-      "target": "scripts_db_pipeline_hasflag",
-      "confidence_score": 1.0
+      "target": "scripts_db_pipeline_hasflag"
     },
     {
       "relation": "calls",
@@ -16520,9 +16530,9 @@
       "source_file": "scripts/db_pipeline.js",
       "source_location": "L30",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "scripts_db_pipeline_resolvepipelineconfig",
-      "target": "scripts_db_pipeline_getargvalue",
-      "confidence_score": 1.0
+      "target": "scripts_db_pipeline_getargvalue"
     },
     {
       "relation": "calls",
@@ -16531,9 +16541,9 @@
       "source_file": "scripts/db_pipeline.js",
       "source_location": "L38",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "scripts_db_pipeline_resolvepipelineconfig",
-      "target": "scripts_db_pipeline_resolvepathvalue",
-      "confidence_score": 1.0
+      "target": "scripts_db_pipeline_resolvepathvalue"
     },
     {
       "relation": "calls",
@@ -16542,9 +16552,9 @@
       "source_file": "scripts/db_pipeline.js",
       "source_location": "L161",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "scripts_db_pipeline_main",
-      "target": "scripts_db_pipeline_resolvepipelineconfig",
-      "confidence_score": 1.0
+      "target": "scripts_db_pipeline_resolvepipelineconfig"
     },
     {
       "relation": "calls",
@@ -16564,9 +16574,9 @@
       "source_file": "scripts/db_pipeline.test.js",
       "source_location": "L3",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "scripts_db_pipeline_test",
-      "target": "scripts_db_pipeline_resolvepipelineconfig",
-      "confidence_score": 1.0
+      "target": "scripts_db_pipeline_resolvepipelineconfig"
     },
     {
       "relation": "calls",
@@ -16663,9 +16673,9 @@
       "source_file": "scripts/db_pipeline.js",
       "source_location": "L143",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "scripts_db_pipeline_runconvert",
-      "target": "scripts_db_pipeline_buildconvertargs",
-      "confidence_score": 1.0
+      "target": "scripts_db_pipeline_buildconvertargs"
     },
     {
       "relation": "imports",
@@ -16674,9 +16684,9 @@
       "source_file": "scripts/db_pipeline.test.js",
       "source_location": "L3",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "scripts_db_pipeline_test",
-      "target": "scripts_db_pipeline_buildconvertargs",
-      "confidence_score": 1.0
+      "target": "scripts_db_pipeline_buildconvertargs"
     },
     {
       "relation": "calls",
@@ -16696,9 +16706,9 @@
       "source_file": "scripts/db_pipeline.js",
       "source_location": "L157",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "scripts_db_pipeline_runaudit",
-      "target": "scripts_db_pipeline_buildauditargs",
-      "confidence_score": 1.0
+      "target": "scripts_db_pipeline_buildauditargs"
     },
     {
       "relation": "imports",
@@ -16707,9 +16717,9 @@
       "source_file": "scripts/db_pipeline.test.js",
       "source_location": "L3",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "scripts_db_pipeline_test",
-      "target": "scripts_db_pipeline_buildauditargs",
-      "confidence_score": 1.0
+      "target": "scripts_db_pipeline_buildauditargs"
     },
     {
       "relation": "calls",
@@ -16728,9 +16738,9 @@
       "source_file": "scripts/db_pipeline.test.js",
       "source_location": "L3",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "scripts_db_pipeline_test",
-      "target": "scripts_db_pipeline_test_buildauditargs_buildconvertargs_resolvepipelineconfig",
-      "confidence_score": 1.0
+      "target": "scripts_db_pipeline_test_buildauditargs_buildconvertargs_resolvepipelineconfig"
     },
     {
       "relation": "contains",
@@ -16738,9 +16748,9 @@
       "source_file": "scripts/db_pipeline.test.js",
       "source_location": "L1",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "scripts_db_pipeline_test",
-      "target": "scripts_db_pipeline_test_path",
-      "confidence_score": 1.0
+      "target": "scripts_db_pipeline_test_path"
     },
     {
       "relation": "contains",
@@ -21038,9 +21048,9 @@
       "source_location": "L148",
       "weight": 1.0,
       "context": "generic_arg",
+      "confidence_score": 1.0,
       "source": "commands_platforms_get_platform_import_status_sync",
-      "target": "src_tauri_src_commands_platforms_rs_platformimportstatus",
-      "confidence_score": 1.0
+      "target": "src_tauri_src_commands_platforms_rs_platformimportstatus"
     },
     {
       "relation": "calls",
@@ -21109,9 +21119,9 @@
       "source_file": "src-tauri/src/commands/setup.rs",
       "source_location": "L47",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "commands_setup",
-      "target": "commands_setup_get_platform_import_status",
-      "confidence_score": 1.0
+      "target": "commands_setup_get_platform_import_status"
     },
     {
       "relation": "contains",
@@ -21129,9 +21139,9 @@
       "source_file": "src-tauri/src/commands/setup.rs",
       "source_location": "L52",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "commands_setup",
-      "target": "commands_setup_import_platform_database_from_mdb",
-      "confidence_score": 1.0
+      "target": "commands_setup_import_platform_database_from_mdb"
     },
     {
       "relation": "contains",
@@ -21149,9 +21159,9 @@
       "source_file": "src-tauri/src/commands/setup.rs",
       "source_location": "L115",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "commands_setup",
-      "target": "commands_setup_reject_obvious_wrong_platform_mdb",
-      "confidence_score": 1.0
+      "target": "commands_setup_reject_obvious_wrong_platform_mdb"
     },
     {
       "relation": "contains",
@@ -21159,9 +21169,9 @@
       "source_file": "src-tauri/src/commands/setup.rs",
       "source_location": "L102",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "commands_setup",
-      "target": "commands_setup_validate_existing_folder",
-      "confidence_score": 1.0
+      "target": "commands_setup_validate_existing_folder"
     },
     {
       "relation": "contains",
@@ -21169,9 +21179,9 @@
       "source_file": "src-tauri/src/commands/setup.rs",
       "source_location": "L69",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "commands_setup",
-      "target": "commands_setup_validate_platform_import_request",
-      "confidence_score": 1.0
+      "target": "commands_setup_validate_platform_import_request"
     },
     {
       "relation": "imports_from",
@@ -21180,9 +21190,9 @@
       "source_location": "L8",
       "weight": 1.0,
       "context": "import",
+      "confidence_score": 1.0,
       "source": "commands_setup",
-      "target": "src_tauri_src_commands_setup_rs_path",
-      "confidence_score": 1.0
+      "target": "src_tauri_src_commands_setup_rs_path"
     },
     {
       "relation": "references",
@@ -21246,9 +21256,9 @@
       "source_location": "L52",
       "weight": 1.0,
       "context": "parameter_type",
+      "confidence_score": 1.0,
       "source": "commands_setup_import_platform_database_from_mdb",
-      "target": "src_tauri_src_commands_setup_rs_apphandle",
-      "confidence_score": 1.0
+      "target": "src_tauri_src_commands_setup_rs_apphandle"
     },
     {
       "relation": "references",
@@ -21268,9 +21278,9 @@
       "source_location": "L47",
       "weight": 1.0,
       "context": "generic_arg",
+      "confidence_score": 1.0,
       "source": "commands_setup_get_platform_import_status",
-      "target": "src_tauri_src_commands_setup_rs_string",
-      "confidence_score": 1.0
+      "target": "src_tauri_src_commands_setup_rs_string"
     },
     {
       "relation": "references",
@@ -21290,9 +21300,9 @@
       "source_location": "L52",
       "weight": 1.0,
       "context": "generic_arg",
+      "confidence_score": 1.0,
       "source": "commands_setup_import_platform_database_from_mdb",
-      "target": "src_tauri_src_commands_setup_rs_string",
-      "confidence_score": 1.0
+      "target": "src_tauri_src_commands_setup_rs_string"
     },
     {
       "relation": "references",
@@ -21301,9 +21311,9 @@
       "source_location": "L115",
       "weight": 1.0,
       "context": "generic_arg",
+      "confidence_score": 1.0,
       "source": "commands_setup_reject_obvious_wrong_platform_mdb",
-      "target": "src_tauri_src_commands_setup_rs_string",
-      "confidence_score": 1.0
+      "target": "src_tauri_src_commands_setup_rs_string"
     },
     {
       "relation": "references",
@@ -21312,9 +21322,9 @@
       "source_location": "L102",
       "weight": 1.0,
       "context": "generic_arg",
+      "confidence_score": 1.0,
       "source": "commands_setup_validate_existing_folder",
-      "target": "src_tauri_src_commands_setup_rs_string",
-      "confidence_score": 1.0
+      "target": "src_tauri_src_commands_setup_rs_string"
     },
     {
       "relation": "references",
@@ -21323,9 +21333,9 @@
       "source_location": "L69",
       "weight": 1.0,
       "context": "generic_arg",
+      "confidence_score": 1.0,
       "source": "commands_setup_validate_platform_import_request",
-      "target": "src_tauri_src_commands_setup_rs_string",
-      "confidence_score": 1.0
+      "target": "src_tauri_src_commands_setup_rs_string"
     },
     {
       "relation": "references",
@@ -21389,9 +21399,9 @@
       "source_location": "L47",
       "weight": 1.0,
       "context": "return_type",
+      "confidence_score": 1.0,
       "source": "commands_setup_get_platform_import_status",
-      "target": "src_tauri_src_commands_setup_rs_result",
-      "confidence_score": 1.0
+      "target": "src_tauri_src_commands_setup_rs_result"
     },
     {
       "relation": "references",
@@ -21411,9 +21421,9 @@
       "source_location": "L52",
       "weight": 1.0,
       "context": "return_type",
+      "confidence_score": 1.0,
       "source": "commands_setup_import_platform_database_from_mdb",
-      "target": "src_tauri_src_commands_setup_rs_result",
-      "confidence_score": 1.0
+      "target": "src_tauri_src_commands_setup_rs_result"
     },
     {
       "relation": "references",
@@ -21422,9 +21432,9 @@
       "source_location": "L115",
       "weight": 1.0,
       "context": "return_type",
+      "confidence_score": 1.0,
       "source": "commands_setup_reject_obvious_wrong_platform_mdb",
-      "target": "src_tauri_src_commands_setup_rs_result",
-      "confidence_score": 1.0
+      "target": "src_tauri_src_commands_setup_rs_result"
     },
     {
       "relation": "references",
@@ -21433,9 +21443,9 @@
       "source_location": "L102",
       "weight": 1.0,
       "context": "return_type",
+      "confidence_score": 1.0,
       "source": "commands_setup_validate_existing_folder",
-      "target": "src_tauri_src_commands_setup_rs_result",
-      "confidence_score": 1.0
+      "target": "src_tauri_src_commands_setup_rs_result"
     },
     {
       "relation": "references",
@@ -21444,9 +21454,9 @@
       "source_location": "L69",
       "weight": 1.0,
       "context": "return_type",
+      "confidence_score": 1.0,
       "source": "commands_setup_validate_platform_import_request",
-      "target": "src_tauri_src_commands_setup_rs_result",
-      "confidence_score": 1.0
+      "target": "src_tauri_src_commands_setup_rs_result"
     },
     {
       "relation": "calls",
@@ -21488,9 +21498,9 @@
       "source_location": "L47",
       "weight": 1.0,
       "context": "generic_arg",
+      "confidence_score": 1.0,
       "source": "commands_setup_get_platform_import_status",
-      "target": "src_tauri_src_commands_setup_rs_platformimportstatus",
-      "confidence_score": 1.0
+      "target": "src_tauri_src_commands_setup_rs_platformimportstatus"
     },
     {
       "relation": "calls",
@@ -21499,9 +21509,9 @@
       "source_file": "src-tauri/src/commands/setup.rs",
       "source_location": "L56",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "commands_setup_import_platform_database_from_mdb",
-      "target": "commands_setup_validate_platform_import_request",
-      "confidence_score": 1.0
+      "target": "commands_setup_validate_platform_import_request"
     },
     {
       "relation": "references",
@@ -21510,9 +21520,9 @@
       "source_location": "L52",
       "weight": 1.0,
       "context": "generic_arg",
+      "confidence_score": 1.0,
       "source": "commands_setup_import_platform_database_from_mdb",
-      "target": "platformdatabaseimportresult",
-      "confidence_score": 1.0
+      "target": "platformdatabaseimportresult"
     },
     {
       "relation": "calls",
@@ -21543,9 +21553,9 @@
       "source_location": "L52",
       "weight": 1.0,
       "context": "parameter_type",
+      "confidence_score": 1.0,
       "source": "commands_setup_import_platform_database_from_mdb",
-      "target": "src_tauri_src_commands_setup_rs_importplatformdatabaserequest",
-      "confidence_score": 1.0
+      "target": "src_tauri_src_commands_setup_rs_importplatformdatabaserequest"
     },
     {
       "relation": "references",
@@ -21554,9 +21564,9 @@
       "source_location": "L69",
       "weight": 1.0,
       "context": "parameter_type",
+      "confidence_score": 1.0,
       "source": "commands_setup_validate_platform_import_request",
-      "target": "src_tauri_src_commands_setup_rs_importplatformdatabaserequest",
-      "confidence_score": 1.0
+      "target": "src_tauri_src_commands_setup_rs_importplatformdatabaserequest"
     },
     {
       "relation": "calls",
@@ -21565,9 +21575,9 @@
       "source_file": "src-tauri/src/commands/setup.rs",
       "source_location": "L92",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "commands_setup_validate_platform_import_request",
-      "target": "commands_setup_reject_obvious_wrong_platform_mdb",
-      "confidence_score": 1.0
+      "target": "commands_setup_reject_obvious_wrong_platform_mdb"
     },
     {
       "relation": "calls",
@@ -21576,9 +21586,9 @@
       "source_file": "src-tauri/src/commands/setup.rs",
       "source_location": "L93",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "commands_setup_validate_platform_import_request",
-      "target": "commands_setup_validate_existing_folder",
-      "confidence_score": 1.0
+      "target": "commands_setup_validate_existing_folder"
     },
     {
       "relation": "calls",
@@ -21609,9 +21619,9 @@
       "source_location": "L115",
       "weight": 1.0,
       "context": "parameter_type",
+      "confidence_score": 1.0,
       "source": "commands_setup_reject_obvious_wrong_platform_mdb",
-      "target": "src_tauri_src_commands_setup_rs_path",
-      "confidence_score": 1.0
+      "target": "src_tauri_src_commands_setup_rs_path"
     },
     {
       "relation": "contains",
@@ -21619,9 +21629,9 @@
       "source_file": "src-tauri/src/commands/setup/tests.rs",
       "source_location": "L18",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "setup_tests",
-      "target": "setup_tests_create_atari_folder_settings",
-      "confidence_score": 1.0
+      "target": "setup_tests_create_atari_folder_settings"
     },
     {
       "relation": "contains",
@@ -21629,9 +21639,9 @@
       "source_file": "src-tauri/src/commands/setup/tests.rs",
       "source_location": "L52",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "setup_tests",
-      "target": "setup_tests_rejects_atari800_import_request_missing_required_folder",
-      "confidence_score": 1.0
+      "target": "setup_tests_rejects_atari800_import_request_missing_required_folder"
     },
     {
       "relation": "contains",
@@ -21639,9 +21649,9 @@
       "source_file": "src-tauri/src/commands/setup/tests.rs",
       "source_location": "L65",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "setup_tests",
-      "target": "setup_tests_rejects_obvious_c64_mdb_for_atari800_import",
-      "confidence_score": 1.0
+      "target": "setup_tests_rejects_obvious_c64_mdb_for_atari800_import"
     },
     {
       "relation": "contains",
@@ -21649,9 +21659,9 @@
       "source_file": "src-tauri/src/commands/setup/tests.rs",
       "source_location": "L6",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "setup_tests",
-      "target": "setup_tests_request_with_paths",
-      "confidence_score": 1.0
+      "target": "setup_tests_request_with_paths"
     },
     {
       "relation": "contains",
@@ -21659,9 +21669,9 @@
       "source_file": "src-tauri/src/commands/setup/tests.rs",
       "source_location": "L38",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "setup_tests",
-      "target": "setup_tests_validates_atari800_import_request_with_required_folders",
-      "confidence_score": 1.0
+      "target": "setup_tests_validates_atari800_import_request_with_required_folders"
     },
     {
       "relation": "calls",
@@ -21670,9 +21680,9 @@
       "source_file": "src-tauri/src/commands/setup/tests.rs",
       "source_location": "L58",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "setup_tests_rejects_atari800_import_request_missing_required_folder",
-      "target": "setup_tests_request_with_paths",
-      "confidence_score": 1.0
+      "target": "setup_tests_request_with_paths"
     },
     {
       "relation": "calls",
@@ -21681,9 +21691,9 @@
       "source_file": "src-tauri/src/commands/setup/tests.rs",
       "source_location": "L69",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "setup_tests_rejects_obvious_c64_mdb_for_atari800_import",
-      "target": "setup_tests_request_with_paths",
-      "confidence_score": 1.0
+      "target": "setup_tests_request_with_paths"
     },
     {
       "relation": "references",
@@ -21692,9 +21702,9 @@
       "source_location": "L6",
       "weight": 1.0,
       "context": "return_type",
+      "confidence_score": 1.0,
       "source": "setup_tests_request_with_paths",
-      "target": "src_tauri_src_commands_setup_tests_rs_importplatformdatabaserequest",
-      "confidence_score": 1.0
+      "target": "src_tauri_src_commands_setup_tests_rs_importplatformdatabaserequest"
     },
     {
       "relation": "references",
@@ -21703,9 +21713,9 @@
       "source_location": "L6",
       "weight": 1.0,
       "context": "parameter_type",
+      "confidence_score": 1.0,
       "source": "setup_tests_request_with_paths",
-      "target": "src_tauri_src_commands_setup_tests_rs_platformfoldersettings",
-      "confidence_score": 1.0
+      "target": "src_tauri_src_commands_setup_tests_rs_platformfoldersettings"
     },
     {
       "relation": "references",
@@ -21714,9 +21724,9 @@
       "source_location": "L6",
       "weight": 1.0,
       "context": "parameter_type",
+      "confidence_score": 1.0,
       "source": "setup_tests_request_with_paths",
-      "target": "src_tauri_src_commands_setup_tests_rs_string",
-      "confidence_score": 1.0
+      "target": "src_tauri_src_commands_setup_tests_rs_string"
     },
     {
       "relation": "calls",
@@ -21725,9 +21735,9 @@
       "source_file": "src-tauri/src/commands/setup/tests.rs",
       "source_location": "L42",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "setup_tests_validates_atari800_import_request_with_required_folders",
-      "target": "setup_tests_request_with_paths",
-      "confidence_score": 1.0
+      "target": "setup_tests_request_with_paths"
     },
     {
       "relation": "references",
@@ -21736,9 +21746,9 @@
       "source_location": "L18",
       "weight": 1.0,
       "context": "return_type",
+      "confidence_score": 1.0,
       "source": "setup_tests_create_atari_folder_settings",
-      "target": "src_tauri_src_commands_setup_tests_rs_platformfoldersettings",
-      "confidence_score": 1.0
+      "target": "src_tauri_src_commands_setup_tests_rs_platformfoldersettings"
     },
     {
       "relation": "references",
@@ -21747,9 +21757,9 @@
       "source_location": "L18",
       "weight": 1.0,
       "context": "parameter_type",
+      "confidence_score": 1.0,
       "source": "setup_tests_create_atari_folder_settings",
-      "target": "src_tauri_src_commands_setup_tests_rs_path",
-      "confidence_score": 1.0
+      "target": "src_tauri_src_commands_setup_tests_rs_path"
     },
     {
       "relation": "calls",
@@ -21758,9 +21768,9 @@
       "source_file": "src-tauri/src/commands/setup/tests.rs",
       "source_location": "L56",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "setup_tests_rejects_atari800_import_request_missing_required_folder",
-      "target": "setup_tests_create_atari_folder_settings",
-      "confidence_score": 1.0
+      "target": "setup_tests_create_atari_folder_settings"
     },
     {
       "relation": "calls",
@@ -21769,9 +21779,9 @@
       "source_file": "src-tauri/src/commands/setup/tests.rs",
       "source_location": "L72",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "setup_tests_rejects_obvious_c64_mdb_for_atari800_import",
-      "target": "setup_tests_create_atari_folder_settings",
-      "confidence_score": 1.0
+      "target": "setup_tests_create_atari_folder_settings"
     },
     {
       "relation": "calls",
@@ -21780,9 +21790,9 @@
       "source_file": "src-tauri/src/commands/setup/tests.rs",
       "source_location": "L45",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "setup_tests_validates_atari800_import_request_with_required_folders",
-      "target": "setup_tests_create_atari_folder_settings",
-      "confidence_score": 1.0
+      "target": "setup_tests_create_atari_folder_settings"
     },
     {
       "relation": "contains",
@@ -24750,9 +24760,9 @@
       "source_file": "src-tauri/src/models.rs",
       "source_location": "L133",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "src_models",
-      "target": "src_models_importplatformdatabaserequest",
-      "confidence_score": 1.0
+      "target": "src_models_importplatformdatabaserequest"
     },
     {
       "relation": "contains",
@@ -24790,9 +24800,9 @@
       "source_file": "src-tauri/src/models.rs",
       "source_location": "L141",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "src_models",
-      "target": "src_models_platformdatabaseimportresult",
-      "confidence_score": 1.0
+      "target": "src_models_platformdatabaseimportresult"
     },
     {
       "relation": "contains",
@@ -24959,9 +24969,9 @@
       "source_location": "L135",
       "weight": 1.0,
       "context": "field",
+      "confidence_score": 1.0,
       "source": "src_models_importplatformdatabaserequest",
-      "target": "src_tauri_src_models_rs_string",
-      "confidence_score": 1.0
+      "target": "src_tauri_src_models_rs_string"
     },
     {
       "relation": "references",
@@ -25003,9 +25013,9 @@
       "source_location": "L143",
       "weight": 1.0,
       "context": "field",
+      "confidence_score": 1.0,
       "source": "src_models_platformdatabaseimportresult",
-      "target": "src_tauri_src_models_rs_string",
-      "confidence_score": 1.0
+      "target": "src_tauri_src_models_rs_string"
     },
     {
       "relation": "references",
@@ -25190,9 +25200,9 @@
       "source_location": "L136",
       "weight": 1.0,
       "context": "field",
+      "confidence_score": 1.0,
       "source": "src_models_importplatformdatabaserequest",
-      "target": "src_tauri_src_models_rs_platformfoldersettings",
-      "confidence_score": 1.0
+      "target": "src_tauri_src_models_rs_platformfoldersettings"
     },
     {
       "relation": "method",
@@ -26203,6 +26213,17 @@
       "target": "lib_platform_capabilities_platform_profiles"
     },
     {
+      "relation": "imports",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "src/app/page.tsx",
+      "source_location": "L33",
+      "weight": 1.0,
+      "source": "app_page",
+      "target": "lib_platform_capabilities_supported_platforms",
+      "confidence_score": 1.0
+    },
+    {
       "relation": "imports_from",
       "context": "import",
       "confidence": "EXTRACTED",
@@ -26275,9 +26296,9 @@
       "source_file": "src/app/page.tsx",
       "source_location": "L5",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "app_page",
-      "target": "lib_tauri_bridge_importplatformdatabasefrommdb",
-      "confidence_score": 1.0
+      "target": "lib_tauri_bridge_importplatformdatabasefrommdb"
     },
     {
       "relation": "imports",
@@ -26286,9 +26307,9 @@
       "source_file": "src/app/page.tsx",
       "source_location": "L5",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "app_page",
-      "target": "lib_tauri_bridge_opendirectorydialog",
-      "confidence_score": 1.0
+      "target": "lib_tauri_bridge_opendirectorydialog"
     },
     {
       "relation": "imports",
@@ -26440,9 +26461,9 @@
       "source_file": "src/app/page.tsx",
       "source_location": "L34",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "app_page",
-      "target": "types_platform",
-      "confidence_score": 1.0
+      "target": "types_platform"
     },
     {
       "relation": "imports",
@@ -26451,9 +26472,9 @@
       "source_file": "src/app/page.tsx",
       "source_location": "L34",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "app_page",
-      "target": "types_platform_platformfoldersettings",
-      "confidence_score": 1.0
+      "target": "types_platform_platformfoldersettings"
     },
     {
       "relation": "calls",
@@ -31735,9 +31756,9 @@
       "source_file": "src/components/setup/DatabaseSetupView.tsx",
       "source_location": "L32",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "setup_databasesetupview",
-      "target": "setup_databasesetupview_folderlabels",
-      "confidence_score": 1.0
+      "target": "setup_databasesetupview_folderlabels"
     },
     {
       "relation": "imports_from",
@@ -31746,9 +31767,9 @@
       "source_file": "src/components/setup/DatabaseSetupView.tsx",
       "source_location": "L3",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "setup_databasesetupview",
-      "target": "types_platform",
-      "confidence_score": 1.0
+      "target": "types_platform"
     },
     {
       "relation": "imports",
@@ -31757,9 +31778,9 @@
       "source_file": "src/components/setup/DatabaseSetupView.tsx",
       "source_location": "L3",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "setup_databasesetupview",
-      "target": "types_platform_platformfoldersettings",
-      "confidence_score": 1.0
+      "target": "types_platform_platformfoldersettings"
     },
     {
       "relation": "references",
@@ -31768,9 +31789,9 @@
       "source_file": "src/components/setup/DatabaseSetupView.tsx",
       "source_location": "L13",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "setup_databasesetupview_databasesetupviewprops",
-      "target": "types_platform_platformfoldersettings",
-      "confidence_score": 1.0
+      "target": "types_platform_platformfoldersettings"
     },
     {
       "relation": "imports_from",
@@ -32963,6 +32984,16 @@
       "confidence_score": 1.0,
       "source": "contexts_settingscontext",
       "target": "contexts_settingscontext_migrateplatformsettings"
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src/contexts/SettingsContext.tsx",
+      "source_location": "L188",
+      "weight": 1.0,
+      "source": "contexts_settingscontext",
+      "target": "contexts_settingscontext_resolvestartupplatformid",
+      "confidence_score": 1.0
     },
     {
       "relation": "contains",
@@ -35913,9 +35944,9 @@
       "source_file": "src/lib/tauri-bridge.ts",
       "source_location": "L360",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "lib_tauri_bridge_getplatformimportstatus",
-      "target": "lib_platform_capabilities",
-      "confidence_score": 1.0
+      "target": "lib_platform_capabilities"
     },
     {
       "relation": "imports_from",
@@ -36271,9 +36302,9 @@
       "source_file": "src/lib/tauri-bridge.ts",
       "source_location": "L358",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "lib_tauri_bridge",
-      "target": "lib_tauri_bridge_getplatformimportstatus",
-      "confidence_score": 1.0
+      "target": "lib_tauri_bridge_getplatformimportstatus"
     },
     {
       "relation": "contains",
@@ -36331,9 +36362,9 @@
       "source_file": "src/lib/tauri-bridge.ts",
       "source_location": "L376",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "lib_tauri_bridge",
-      "target": "lib_tauri_bridge_importplatformdatabasefrommdb",
-      "confidence_score": 1.0
+      "target": "lib_tauri_bridge_importplatformdatabasefrommdb"
     },
     {
       "relation": "contains",
@@ -36431,9 +36462,9 @@
       "source_file": "src/lib/tauri-bridge.ts",
       "source_location": "L105",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "lib_tauri_bridge",
-      "target": "lib_tauri_bridge_platformdatabaseimportresult",
-      "confidence_score": 1.0
+      "target": "lib_tauri_bridge_platformdatabaseimportresult"
     },
     {
       "relation": "contains",
@@ -36441,9 +36472,9 @@
       "source_file": "src/lib/tauri-bridge.ts",
       "source_location": "L84",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "lib_tauri_bridge",
-      "target": "lib_tauri_bridge_platformfolderimportsettings",
-      "confidence_score": 1.0
+      "target": "lib_tauri_bridge_platformfolderimportsettings"
     },
     {
       "relation": "contains",
@@ -36451,9 +36482,9 @@
       "source_file": "src/lib/tauri-bridge.ts",
       "source_location": "L91",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "lib_tauri_bridge",
-      "target": "lib_tauri_bridge_platformimportrequest",
-      "confidence_score": 1.0
+      "target": "lib_tauri_bridge_platformimportrequest"
     },
     {
       "relation": "contains",
@@ -36461,9 +36492,9 @@
       "source_file": "src/lib/tauri-bridge.ts",
       "source_location": "L97",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "lib_tauri_bridge",
-      "target": "lib_tauri_bridge_platformimportstatusresponse",
-      "confidence_score": 1.0
+      "target": "lib_tauri_bridge_platformimportstatusresponse"
     },
     {
       "relation": "contains",
@@ -36722,9 +36753,9 @@
       "source_file": "src/lib/tauri-bridge.ts",
       "source_location": "L359",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "lib_tauri_bridge_getplatformimportstatus",
-      "target": "lib_tauri_bridge_istauri",
-      "confidence_score": 1.0
+      "target": "lib_tauri_bridge_istauri"
     },
     {
       "relation": "calls",
@@ -36788,9 +36819,9 @@
       "source_file": "src/lib/tauri-bridge.ts",
       "source_location": "L379",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "lib_tauri_bridge_importplatformdatabasefrommdb",
-      "target": "lib_tauri_bridge_istauri",
-      "confidence_score": 1.0
+      "target": "lib_tauri_bridge_istauri"
     },
     {
       "relation": "calls",
@@ -36986,9 +37017,9 @@
       "source_file": "src/lib/tauri-bridge.ts",
       "source_location": "L373",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "lib_tauri_bridge_getplatformimportstatus",
-      "target": "lib_tauri_bridge_invoke",
-      "confidence_score": 1.0
+      "target": "lib_tauri_bridge_invoke"
     },
     {
       "relation": "calls",
@@ -37041,9 +37072,9 @@
       "source_file": "src/lib/tauri-bridge.ts",
       "source_location": "L382",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "lib_tauri_bridge_importplatformdatabasefrommdb",
-      "target": "lib_tauri_bridge_invoke",
-      "confidence_score": 1.0
+      "target": "lib_tauri_bridge_invoke"
     },
     {
       "relation": "calls",
@@ -40824,5 +40855,5 @@
       "source_file": "GB64_Modern_Frontend_Requirements.md"
     }
   ],
-  "built_at_commit": "7a93f49045981b543785672df2ca3baf72b89616"
+  "built_at_commit": "fd890ca0340944ab515581bde0a776666180384e"
 }

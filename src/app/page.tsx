@@ -30,7 +30,7 @@ import { WindowGameListSection } from '@/components/library/WindowGameListSectio
 import { AppLaunchSplash } from '@/components/AppLaunchSplash';
 import { DatabaseSetupView } from '@/components/setup/DatabaseSetupView';
 import { useWindowLibraryShelves } from '@/hooks/useWindowLibraryShelves';
-import { PLATFORM_PROFILES } from '@/lib/platform-capabilities';
+import { PLATFORM_PROFILES, SUPPORTED_PLATFORMS } from '@/lib/platform-capabilities';
 import type { PlatformFolderSettings } from '@/types/platform';
 import {
   playRotatingUiSoundEffectAndWait,
@@ -289,14 +289,27 @@ function LibraryApp() {
           isImporting={isPlatformImporting}
           mdbPath={activePlatformSettings.library.sourceMdbPath ?? ''}
           platformName={activePlatform.displayName}
+          platformOptions={SUPPORTED_PLATFORMS.map((platform) => ({
+            id: platform.id,
+            displayName: platform.displayName,
+            importStatus: settings.platformSettings[platform.id].library.importStatus,
+          }))}
           requiredFolderKeys={
             settings.activePlatformId === 'atari800'
               ? ['gamesPath', 'musicPath', 'photosPath', 'screenshotsPath']
               : []
           }
+          selectedPlatformId={settings.activePlatformId}
           onBrowse={handleBrowsePlatformMdb}
           onBrowseFolder={handleBrowsePlatformFolder}
           onFolderChange={handlePlatformFolderChange}
+          onPlatformSelect={(platformId) => {
+            if (platformId in PLATFORM_PROFILES) {
+              setActivePlatform(platformId as keyof typeof PLATFORM_PROFILES);
+              setPlatformSetupError(null);
+              setPlatformSetupResult(null);
+            }
+          }}
           onImport={handlePlatformImport}
         />
       </>

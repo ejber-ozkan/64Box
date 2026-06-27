@@ -185,6 +185,18 @@ function migratePlatformSettings(values: Partial<Settings>): Record<PlatformId, 
   return platformSettings;
 }
 
+function resolveStartupPlatformId(
+  requestedPlatformId: PlatformId,
+  platformSettings: Record<PlatformId, PlatformSettings>,
+): PlatformId {
+  if (platformSettings[requestedPlatformId]?.library.importStatus === 'imported') {
+    return requestedPlatformId;
+  }
+
+  return (Object.keys(platformSettings) as PlatformId[])
+    .find((platformId) => platformSettings[platformId].library.importStatus === 'imported') ?? requestedPlatformId;
+}
+
 export function SettingsProvider({ children }: { children: ReactNode }) {
   const [isLoaded, setIsLoaded] = useState(false);
   const [settings, setSettings] = useState<Settings>(defaultSettings);
@@ -242,16 +254,26 @@ export function SettingsProvider({ children }: { children: ReactNode }) {
       const activePlatformId = isPlatformId(combinedSettings.activePlatformId)
         ? combinedSettings.activePlatformId
         : 'c64';
-      const lastUsedPlatformId = combinedSettings.lastUsedPlatformId && isPlatformId(combinedSettings.lastUsedPlatformId)
-        ? combinedSettings.lastUsedPlatformId
-        : 'c64';
+
+      const platformSettings = migratePlatformSettings(combinedSettings);
+      const startupPlatformId = resolveStartupPlatformId(activePlatformId, platformSettings);
+
+      (Object.keys(platformSettings) as PlatformId[]).forEach((platformId) => {
+        platformSettings[platformId] = {
+          ...platformSettings[platformId],
+          library: {
+            ...platformSettings[platformId].library,
+            active: platformId === startupPlatformId,
+          },
+        };
+      });
 
       // 5. Set final combined state
       setSettings({
         ...combinedSettings,
-        activePlatformId,
-        lastUsedPlatformId,
-        platformSettings: migratePlatformSettings(combinedSettings),
+        activePlatformId: startupPlatformId,
+        lastUsedPlatformId: startupPlatformId,
+        platformSettings,
       });
       setIsLoaded(true);
     }

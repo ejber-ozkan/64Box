@@ -9,12 +9,19 @@ interface DatabaseSetupViewProps {
   isImporting: boolean;
   mdbPath: string;
   platformName?: string;
+  selectedPlatformId?: string;
+  platformOptions?: Array<{
+    id: string;
+    displayName: string;
+    importStatus: string;
+  }>;
   folderSettings?: PlatformFolderSettings;
   requiredFolderKeys?: Array<keyof Pick<
     PlatformFolderSettings,
     'gamesPath' | 'musicPath' | 'photosPath' | 'screenshotsPath'
   >>;
   onBrowse: () => void;
+  onPlatformSelect?: (platformId: string) => void;
   onBrowseFolder?: (folderKey: keyof Pick<
     PlatformFolderSettings,
     'gamesPath' | 'musicPath' | 'photosPath' | 'screenshotsPath'
@@ -43,14 +50,18 @@ export function DatabaseSetupView({
   isImporting,
   mdbPath,
   platformName = 'GameBase64',
+  selectedPlatformId,
+  platformOptions = [],
   folderSettings,
   requiredFolderKeys = [],
   onBrowse,
+  onPlatformSelect,
   onBrowseFolder,
   onFolderChange,
   onImport,
 }: DatabaseSetupViewProps) {
   const hasRequiredFolders = requiredFolderKeys.length > 0 && folderSettings;
+  const showPlatformPicker = platformOptions.length > 1 && selectedPlatformId && onPlatformSelect;
 
   return (
     <main className="min-h-screen bg-[radial-gradient(circle_at_top,#162033_0%,#0b1020_42%,#06080f_100%)] px-6 py-10 text-white">
@@ -67,6 +78,26 @@ export function DatabaseSetupView({
               64Box needs the original <span className="font-bold text-white">{platformName}</span>{' '}
               MDB file to build the local SQLite database for search, filters, favorites, and BigBox browsing.
             </p>
+            {showPlatformPicker ? (
+              <label className="mt-6 block max-w-sm">
+                <span className="text-[11px] font-black uppercase tracking-[0.24em] text-cyan-300/80">
+                  GameBase
+                </span>
+                <select
+                  value={selectedPlatformId}
+                  onChange={(event) => onPlatformSelect(event.target.value)}
+                  disabled={isImporting}
+                  className="mt-2 w-full rounded-2xl border border-white/10 bg-black/30 px-4 py-3 text-sm font-bold text-white outline-none transition-all focus:border-cyan-300/45 disabled:cursor-not-allowed disabled:opacity-45"
+                >
+                  {platformOptions.map((platform) => (
+                    <option key={platform.id} value={platform.id} className="bg-slate-950 text-white">
+                      {platform.displayName}
+                      {platform.importStatus === 'imported' ? ' (imported)' : ''}
+                    </option>
+                  ))}
+                </select>
+              </label>
+            ) : null}
           </div>
 
           <div className="grid gap-6 lg:grid-cols-[1.25fr_0.9fr]">
