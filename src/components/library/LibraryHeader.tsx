@@ -57,11 +57,10 @@ export function LibraryHeader({
             </div>
           </div>
           <div className="mx-2 h-8 w-px bg-white/10" />
+          <PlatformSwitcher activePlatformId={activePlatformId} onPlatformSelect={onPlatformSelect} />
         </div>
 
         <div className="flex items-center gap-4">
-          <PlatformSwitcher activePlatformId={activePlatformId} onPlatformSelect={onPlatformSelect} />
-
           <div className="relative">
             <input
               type="text"
