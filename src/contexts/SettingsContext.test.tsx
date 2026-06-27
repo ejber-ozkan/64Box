@@ -1,7 +1,8 @@
 import { expect, test, describe, beforeEach } from 'vitest';
 import { render, screen, fireEvent, waitFor } from '@testing-library/react';
-import { SettingsProvider, useSettings } from './SettingsContext';
+import { applyPlatformImportStatuses, SettingsProvider, useSettings } from './SettingsContext';
 import React from 'react';
+import { createDefaultPlatformSettingsMap } from '../lib/platform-capabilities';
 
 // Wrapper component to consume and test the Context hooks natively
 function SettingsTestComponent() {
@@ -159,5 +160,23 @@ describe('SettingsContext', () => {
     await waitFor(() => {
       expect(screen.getByTestId('active-platform').textContent).toBe('c64');
     });
+  });
+
+  test('applies backend platform import statuses to platform settings', () => {
+    const platformSettings = createDefaultPlatformSettingsMap();
+
+    const synced = applyPlatformImportStatuses(platformSettings, [
+      {
+        platformId: 'atari800',
+        importStatus: 'imported',
+        sourceMdbPath: 'E:/Atari/Atari 800 v12.mdb',
+        gameCount: 7288,
+        lastImportError: null,
+      },
+    ]);
+
+    expect(synced.atari800.library.importStatus).toBe('imported');
+    expect(synced.atari800.library.sourceMdbPath).toBe('E:/Atari/Atari 800 v12.mdb');
+    expect(synced.atari800.library.gameCount).toBe(7288);
   });
 });

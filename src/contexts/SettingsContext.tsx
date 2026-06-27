@@ -1,10 +1,11 @@
 "use client";
 
 import React, { createContext, useContext, useState, ReactNode, useEffect, useCallback } from 'react';
-import { getSecureSetting, saveSecureSetting } from '../lib/tauri-bridge';
+import { getPlatformImportStatus, getSecureSetting, saveSecureSetting } from '../lib/tauri-bridge';
 import {
   createDefaultPlatformSettingsMap,
   isPlatformId,
+  SUPPORTED_PLATFORMS,
 } from '../lib/platform-capabilities';
 import type { PlatformId, PlatformSettings } from '../types/platform';
 
@@ -185,6 +186,40 @@ function migratePlatformSettings(values: Partial<Settings>): Record<PlatformId, 
   return platformSettings;
 }
 
+type PlatformImportStatusSnapshot = {
+  platformId: string;
+  importStatus: string;
+  sourceMdbPath?: string | null;
+  gameCount: number;
+  lastImportError?: string | null;
+};
+
+export function applyPlatformImportStatuses(
+  platformSettings: Record<PlatformId, PlatformSettings>,
+  statuses: PlatformImportStatusSnapshot[],
+): Record<PlatformId, PlatformSettings> {
+  const next = { ...platformSettings };
+
+  statuses.forEach((status) => {
+    if (!isPlatformId(status.platformId)) {
+      return;
+    }
+
+    next[status.platformId] = {
+      ...next[status.platformId],
+      library: {
+        ...next[status.platformId].library,
+        importStatus: status.importStatus,
+        sourceMdbPath: status.sourceMdbPath ?? next[status.platformId].library.sourceMdbPath,
+        lastImportError: status.lastImportError ?? null,
+        gameCount: status.gameCount,
+      },
+    };
+  });
+
+  return next;
+}
+
 function resolveStartupPlatformId(
   requestedPlatformId: PlatformId,
   platformSettings: Record<PlatformId, PlatformSettings>,
@@ -255,7 +290,11 @@ export function SettingsProvider({ children }: { children: ReactNode }) {
         ? combinedSettings.activePlatformId
         : 'c64';
 
-      const platformSettings = migratePlatformSettings(combinedSettings);
+      let platformSettings = migratePlatformSettings(combinedSettings);
+      const platformStatuses = await Promise.all(
+        SUPPORTED_PLATFORMS.map((platform) => getPlatformImportStatus(platform.id)),
+      );
+      platformSettings = applyPlatformImportStatuses(platformSettings, platformStatuses);
       const startupPlatformId = resolveStartupPlatformId(activePlatformId, platformSettings);
 
       (Object.keys(platformSettings) as PlatformId[]).forEach((platformId) => {

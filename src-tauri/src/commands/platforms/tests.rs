@@ -2,6 +2,8 @@ use super::{
     get_active_platform, get_platform_import_status_sync, get_supported_platforms,
     set_active_platform,
 };
+use rusqlite::Connection;
+use tempfile::NamedTempFile;
 
 #[tokio::test]
 async fn test_get_supported_platforms_includes_atari800_capabilities() {
@@ -46,9 +48,115 @@ async fn test_set_active_platform_routes_unimported_atari800_to_import() {
 
 #[test]
 fn test_platform_import_status_is_platform_scoped() {
+    let temp_db = NamedTempFile::new().unwrap();
+    let db_path = temp_db.path().to_string_lossy().to_string();
+    std::env::set_var("VIC40_DB_PATH", &db_path);
+
     let status = get_platform_import_status_sync("atari800").unwrap();
 
     assert_eq!(status.platform_id, "atari800");
     assert_eq!(status.import_status, "notImported");
     assert_eq!(status.game_count, 0);
+
+    std::env::remove_var("VIC40_DB_PATH");
+}
+
+#[test]
+fn test_platform_import_status_reads_imported_sqlite_library() {
+    let temp_db = NamedTempFile::new().unwrap();
+    let db_path = temp_db.path().to_string_lossy().to_string();
+    std::env::set_var("VIC40_DB_PATH", &db_path);
+
+    {
+        let conn = Connection::open(&db_path).unwrap();
+        conn.execute(
+            "CREATE TABLE PlatformLibraries (
+                platform_id TEXT PRIMARY KEY,
+                display_name TEXT NOT NULL,
+                import_status TEXT NOT NULL,
+                source_mdb_path TEXT,
+                game_count INTEGER NOT NULL DEFAULT 0,
+                last_import_error TEXT,
+                last_imported_at TEXT
+            )",
+            [],
+        )
+        .unwrap();
+        conn.execute(
+            "INSERT INTO PlatformLibraries (
+                platform_id,
+                display_name,
+                import_status,
+                source_mdb_path,
+                game_count,
+                last_import_error,
+                last_imported_at
+            ) VALUES (?1, ?2, ?3, ?4, ?5, NULL, datetime('now'))",
+            rusqlite::params![
+                "atari800",
+                "Atari 800",
+                "imported",
+                "E:/Atari/Atari 800 v12.mdb",
+                7288,
+            ],
+        )
+        .unwrap();
+    }
+
+    let status = get_platform_import_status_sync("atari800").unwrap();
+
+    assert_eq!(status.platform_id, "atari800");
+    assert_eq!(status.import_status, "imported");
+    assert_eq!(status.game_count, 7288);
+    assert_eq!(
+        status.source_mdb_path,
+        Some("E:/Atari/Atari 800 v12.mdb".to_string())
+    );
+
+    std::env::remove_var("VIC40_DB_PATH");
+}
+
+#[test]
+fn test_platform_import_status_treats_missing_library_row_as_not_imported() {
+    let temp_db = NamedTempFile::new().unwrap();
+    let db_path = temp_db.path().to_string_lossy().to_string();
+    std::env::set_var("VIC40_DB_PATH", &db_path);
+
+    {
+        let conn = Connection::open(&db_path).unwrap();
+        conn.execute(
+            "CREATE TABLE PlatformLibraries (
+                platform_id TEXT PRIMARY KEY,
+                display_name TEXT NOT NULL,
+                import_status TEXT NOT NULL,
+                source_mdb_path TEXT,
+                game_count INTEGER NOT NULL DEFAULT 0,
+                last_import_error TEXT,
+                last_imported_at TEXT
+            )",
+            [],
+        )
+        .unwrap();
+        conn.execute(
+            "INSERT INTO PlatformLibraries (
+                platform_id,
+                display_name,
+                import_status,
+                source_mdb_path,
+                game_count,
+                last_import_error,
+                last_imported_at
+            ) VALUES (?1, ?2, ?3, NULL, ?4, NULL, datetime('now'))",
+            rusqlite::params!["atari800", "Atari 800", "imported", 7288],
+        )
+        .unwrap();
+    }
+
+    let status = get_platform_import_status_sync("c64").unwrap();
+
+    assert_eq!(status.platform_id, "c64");
+    assert_eq!(status.import_status, "notImported");
+    assert_eq!(status.game_count, 0);
+
+    std::env::remove_var("VIC40_DB_PATH");
 }
