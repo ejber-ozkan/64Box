@@ -1,0 +1,109 @@
+# Quickstart: Validate Multi-Platform GameBase Libraries
+
+## Prerequisites
+
+- Existing C64 library still imports and browses.
+- Atari 800 GameBase MDB available as `Atari 800 v12.mdb` or equivalent.
+- Atari 800 folder roots available:
+  - Games
+  - Music
+  - Photos
+  - Screenshots
+- RetroArch installed with the Atari800 core available.
+- Altirra available on a supported local system when validating Altirra behavior.
+
+## Setup
+
+1. Start from a clean app state or a state with only C64 imported.
+2. Open the app.
+3. Confirm the active platform is C64 when C64 is the last-used imported platform.
+4. Open the top menu platform switcher.
+5. Select Atari 800.
+
+Expected result: If Atari 800 is not imported, the app routes to the Atari 800 import flow.
+
+## Validate Atari 800 Import
+
+1. In the Atari 800 import flow, choose `Atari 800 v12.mdb` or equivalent.
+2. Set Atari 800 folders:
+   - Games
+   - Music
+   - Photos
+   - Screenshots
+3. Start import.
+4. Wait for import completion.
+5. Enter the Atari 800 library.
+
+Expected result: Atari 800 appears as an imported platform, game count is non-zero for a valid import, and C64 remains available.
+
+## Validate Platform Switching
+
+1. Browse Atari 800.
+2. Switch to C64 from the top menu.
+3. Switch back to Atari 800.
+4. Restart the app.
+
+Expected result: Switching does not require restart, and the app restores the last-used imported platform on startup.
+
+## Validate Workflow Parity
+
+Run these checks for C64 and Atari 800:
+
+1. Browse grid view.
+2. Browse list view.
+3. Search by title.
+4. Filter by genre/subgenre where metadata exists.
+5. Scroll through a large result set.
+6. Use alphabet navigation.
+7. Open game details.
+8. View screenshots/photos/media where configured.
+9. Select extras where data exists.
+10. Select versions/variants where data exists.
+11. Toggle favorite.
+12. Return from detail view to the prior browsing position.
+13. Repeat core navigation in BigBox/fullscreen mode.
+
+Expected result: Workflows behave consistently across platforms, while content remains scoped to the active platform.
+
+## Validate RetroArch Atari 800
+
+1. Open Atari 800 launch settings.
+2. Select RetroArch Atari800 as preferred emulator.
+3. Set RetroArch executable path.
+4. Set Atari800 core path.
+5. Run emulator profile test.
+6. Launch a representative Atari 800 game.
+
+Expected result: Test passes with valid paths, launch starts through RetroArch, and failures name Atari 800 and RetroArch when paths are invalid.
+
+## Validate Altirra
+
+1. Open Atari 800 launch settings.
+2. Select Altirra.
+3. Set Altirra executable path.
+4. Run emulator profile test.
+5. Launch or dry-run-test a representative Atari 800 game.
+6. Switch to C64 settings.
+
+Expected result: Altirra appears for Atari 800, does not require a RetroArch core, and does not appear as a C64 emulator setting.
+
+## Validate Platform Isolation
+
+1. Mark an Atari 800 game as favorite.
+2. Search for a title that also exists in C64, if available.
+3. Switch to C64.
+4. Review favorites and search results.
+5. Switch back to Atari 800.
+
+Expected result: Favorites, search results, media paths, launch settings, and selected emulator remain scoped to each platform.
+
+## Recommended Commands
+
+```bash
+npm run lint
+npm run test:frontend
+npm run test:backend
+npm run build
+```
+
+Run Playwright coverage for platform selection, import routing, settings, and workflow parity once implementation exists.
