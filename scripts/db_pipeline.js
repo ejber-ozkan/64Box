@@ -3,22 +3,55 @@ const fs = require("fs");
 const readline = require("readline");
 const { spawnSync } = require("child_process");
 
-function hasFlag(flag) {
-  return process.argv.includes(flag);
+const { getPlatformImportConfig } = require("./sqlite_support_config");
+
+function hasFlag(flag, argv = process.argv) {
+  return argv.includes(flag);
 }
 
-function getArgValue(flag) {
-  const index = process.argv.indexOf(flag);
-  if (index === -1 || index === process.argv.length - 1) {
+function getArgValue(flag, argv = process.argv) {
+  const index = argv.indexOf(flag);
+  if (index === -1 || index === argv.length - 1) {
     return undefined;
   }
 
-  return process.argv[index + 1];
+  return argv[index + 1];
 }
 
-function resolvePath(flag, envVar, fallbackPath) {
-  const explicitPath = getArgValue(flag) || process.env[envVar];
-  return path.resolve(explicitPath || fallbackPath);
+function resolvePathValue(value, fallbackPath) {
+  return path.resolve(value || fallbackPath);
+}
+
+function resolvePipelineConfig({
+  argv = process.argv,
+  env = process.env,
+  projectRoot = path.resolve(__dirname, ".."),
+} = {}) {
+  const platformId = getArgValue("--platform", argv) || env.GAMEBASE_PLATFORM_ID || "c64";
+  const platformConfig = getPlatformImportConfig(platformId);
+  const exportDirName = platformId === "c64" ? "gb64_export" : `${platformId}_export`;
+  const dbFileName = platformId === "c64" ? "gb64.sqlite" : `${platformId}.sqlite`;
+
+  return {
+    platformId,
+    platformConfig,
+    mdbPath: resolvePathValue(
+      getArgValue("--mdb", argv) || env.GB64_MDB_PATH || env.GAMEBASE_MDB_PATH,
+      platformConfig.referenceMdbPath || path.join(projectRoot, platformConfig.sourceMdbName || "GBC_v19.mdb")
+    ),
+    exportDir: resolvePathValue(
+      getArgValue("--export-dir", argv) || env.GB64_EXPORT_DIR || env.GAMEBASE_EXPORT_DIR,
+      path.join(projectRoot, exportDirName)
+    ),
+    dbPath: resolvePathValue(
+      getArgValue("--db", argv) || env.GB64_SQLITE_PATH || env.GAMEBASE_SQLITE_PATH,
+      path.join(projectRoot, dbFileName)
+    ),
+    auditOnly: hasFlag("--audit-only", argv),
+    skipExport: hasFlag("--skip-export", argv),
+    skipImport: hasFlag("--skip-import", argv),
+    yes: hasFlag("--yes", argv),
+  };
 }
 
 function runCommand(command, args, options = {}) {
@@ -51,12 +84,13 @@ function prompt(question) {
   });
 }
 
-async function confirmProceed({ mdbPath, exportDir, dbPath }) {
-  if (hasFlag("--yes")) {
+async function confirmProceed({ platformId, mdbPath, exportDir, dbPath, yes }) {
+  if (yes) {
     return true;
   }
 
-  console.log("WARNING: This pipeline re-exports the MDB, rewrites imported GB64 tables, rebuilds GameView, recreates GameCoverIndex, rebuilds GameSearchIndex, and reruns SQLite optimization.");
+  console.log("WARNING: This pipeline re-exports the MDB, rewrites imported GameBase tables, rebuilds GameView, recreates GameCoverIndex, rebuilds GameSearchIndex, and reruns SQLite optimization.");
+  console.log(`Platform: ${platformId}`);
   console.log(`MDB source: ${mdbPath}`);
   console.log(`CSV export dir: ${exportDir}`);
   console.log(`SQLite target: ${dbPath}`);
@@ -93,71 +127,89 @@ function runUnixExport(mdbPath, exportDir) {
   runCommand("bash", [path.join(__dirname, "mdb-export-all.sh"), mdbPath, exportDir]);
 }
 
-function runConvert(exportDir, dbPath) {
-  runCommand("node", [
+function buildConvertArgs(exportDir, dbPath, platformId) {
+  return [
     path.join(__dirname, "convert_csv_to_sqlite.js"),
     "--input-dir",
     exportDir,
     "--db",
     dbPath,
-  ]);
+    "--platform",
+    platformId,
+  ];
 }
 
-function runAudit(dbPath) {
-  runCommand("node", [
+function runConvert(exportDir, dbPath, platformId) {
+  runCommand("node", buildConvertArgs(exportDir, dbPath, platformId));
+}
+
+function buildAuditArgs(dbPath, platformId) {
+  return [
     path.join(__dirname, "check_sqlite_support.js"),
     "--db",
     dbPath,
-  ]);
+    "--platform",
+    platformId,
+  ];
 }
 
-async function main() {
-  const projectRoot = path.resolve(__dirname, "..");
-  const mdbPath = resolvePath("--mdb", "GB64_MDB_PATH", path.join(projectRoot, "GBC_v19.mdb"));
-  const exportDir = resolvePath("--export-dir", "GB64_EXPORT_DIR", path.join(projectRoot, "gb64_export"));
-  const dbPath = resolvePath("--db", "GB64_SQLITE_PATH", path.join(projectRoot, "gb64.sqlite"));
-  const auditOnly = hasFlag("--audit-only");
-  const skipExport = hasFlag("--skip-export");
-  const skipImport = hasFlag("--skip-import");
+function runAudit(dbPath, platformId) {
+  runCommand("node", buildAuditArgs(dbPath, platformId));
+}
 
-  if (!(await confirmProceed({ mdbPath, exportDir, dbPath }))) {
+async function main(argv = process.argv, env = process.env) {
+  const config = resolvePipelineConfig({ argv, env });
+
+  if (!(await confirmProceed(config))) {
     console.log("Aborted.");
     process.exit(1);
   }
 
-  if (auditOnly) {
-    runAudit(dbPath);
+  if (config.auditOnly) {
+    runAudit(config.dbPath, config.platformId);
     return;
   }
 
-  if (!skipExport) {
-    if (!fs.existsSync(mdbPath)) {
-      throw new Error(`MDB file not found at ${mdbPath}`);
+  if (!config.skipExport) {
+    if (!fs.existsSync(config.mdbPath)) {
+      throw new Error(`MDB file not found at ${config.mdbPath}`);
     }
 
     console.log("[1/3] Exporting MDB to CSV...");
     if (process.platform === "win32") {
-      runWindowsExport(mdbPath, exportDir);
+      runWindowsExport(config.mdbPath, config.exportDir);
     } else {
-      runUnixExport(mdbPath, exportDir);
+      runUnixExport(config.mdbPath, config.exportDir);
     }
   } else {
     console.log("[1/3] Skipping MDB export.");
   }
 
-  if (!skipImport) {
+  if (!config.skipImport) {
     console.log("[2/3] Converting CSV export to optimized SQLite...");
-    runConvert(exportDir, dbPath);
+    runConvert(config.exportDir, config.dbPath, config.platformId);
   } else {
     console.log("[2/3] Skipping SQLite import.");
   }
 
   console.log("[3/3] Auditing expected SQLite indexes and support objects...");
-  runAudit(dbPath);
+  runAudit(config.dbPath, config.platformId);
   console.log("Database export/import pipeline completed successfully.");
 }
 
-main().catch((error) => {
-  console.error(`[ERROR] ${error.message}`);
-  process.exit(1);
-});
+if (require.main === module) {
+  main().catch((error) => {
+    console.error(`[ERROR] ${error.message}`);
+    process.exit(1);
+  });
+}
+
+module.exports = {
+  buildAuditArgs,
+  buildConvertArgs,
+  getArgValue,
+  hasFlag,
+  resolvePipelineConfig,
+  runAudit,
+  runConvert,
+};

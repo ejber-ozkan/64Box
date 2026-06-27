@@ -22,6 +22,10 @@ function resolveDbPath() {
   return path.resolve(explicitPath || path.join(__dirname, "..", "gb64.sqlite"));
 }
 
+function resolvePlatformId() {
+  return getArgValue("--platform") || process.env.GAMEBASE_PLATFORM_ID || "c64";
+}
+
 function sqliteObjectExists(db, name, type) {
   return Boolean(
     db.prepare(
@@ -85,11 +89,9 @@ function listMissingPlatformColumns(db) {
   return requiredPlatformColumns.filter((column) => !columns.includes(column));
 }
 
-function main() {
-  const dbPath = resolveDbPath();
+function auditSqliteSupport(dbPath, platformId = "c64") {
   if (!fs.existsSync(dbPath)) {
-    console.error(`[ERROR] SQLite database not found at ${dbPath}`);
-    process.exit(1);
+    throw new Error(`SQLite database not found at ${dbPath}`);
   }
 
   const db = new Database(dbPath, { readonly: true });
@@ -101,6 +103,7 @@ function main() {
     const shadowTables = listFtsShadowTables(db);
 
     console.log(`Auditing SQLite support objects in ${dbPath}`);
+    console.log(`Platform scope: ${platformId}`);
     console.log(`Expected performance indexes: ${performanceIndexes.length}`);
     console.log(`Expected support objects: ${supportObjects.length}`);
     console.log(`Expected platform identity columns: ${requiredPlatformColumns.join(", ")}`);
@@ -116,29 +119,51 @@ function main() {
       missingPlatformColumns.length === 0
     ) {
       console.log("[OK] All expected indexes and support objects are present.");
-      return;
+      return {
+        missingIndexes,
+        missingSupportObjects,
+        missingPlatformColumns,
+        shadowTables,
+      };
     }
 
+    const messages = [];
+
     if (missingIndexes.length > 0) {
-      console.error(`[ERROR] Missing indexes: ${missingIndexes.join(", ")}`);
+      messages.push(`Missing indexes: ${missingIndexes.join(", ")}`);
     }
 
     if (missingSupportObjects.length > 0) {
-      console.error(
-        `[ERROR] Missing support objects: ${missingSupportObjects.join(", ")}`
-      );
+      messages.push(`Missing support objects: ${missingSupportObjects.join(", ")}`);
     }
 
     if (missingPlatformColumns.length > 0) {
-      console.error(
-        `[ERROR] Missing platform identity columns on Games: ${missingPlatformColumns.join(", ")}`
-      );
+      messages.push(`Missing platform identity columns on Games: ${missingPlatformColumns.join(", ")}`);
     }
 
-    process.exit(1);
+    throw new Error(messages.join("\n"));
   } finally {
     db.close();
   }
 }
 
-main();
+function main() {
+  try {
+    auditSqliteSupport(resolveDbPath(), resolvePlatformId());
+  } catch (error) {
+    console.error(`[ERROR] ${error.message}`);
+    process.exit(1);
+  }
+}
+
+if (require.main === module) {
+  main();
+}
+
+module.exports = {
+  auditSqliteSupport,
+  listMissingPlatformColumns,
+  listMissingSupportObjects,
+  listMissingIndexes,
+  tableColumns,
+};

@@ -1,7 +1,11 @@
 use crate::database::{
     configure_runtime_db_path, get_db_path, import_mdb_to_sqlite, is_database_ready,
 };
-use crate::models::{DatabaseBootstrapStatus, DatabaseImportResult};
+use crate::models::{
+    DatabaseBootstrapStatus, DatabaseImportResult, ImportPlatformDatabaseRequest,
+    PlatformDatabaseImportResult, PlatformImportStatus,
+};
+use std::path::Path;
 use tauri_plugin_dialog::DialogExt;
 
 #[tauri::command]
@@ -15,7 +19,9 @@ pub async fn open_mdb_file_dialog(app: tauri::AppHandle) -> Option<String> {
 }
 
 #[tauri::command]
-pub fn get_database_bootstrap_status(app: tauri::AppHandle) -> Result<DatabaseBootstrapStatus, String> {
+pub fn get_database_bootstrap_status(
+    app: tauri::AppHandle,
+) -> Result<DatabaseBootstrapStatus, String> {
     let _ = configure_runtime_db_path(&app)?;
     let db_path = get_db_path();
     let ready = is_database_ready()?;
@@ -38,3 +44,96 @@ pub fn import_database_from_mdb(
     let _ = configure_runtime_db_path(&app)?;
     import_mdb_to_sqlite(&mdb_path)
 }
+
+#[tauri::command]
+pub fn get_platform_import_status(platform_id: String) -> Result<PlatformImportStatus, String> {
+    crate::commands::platforms::get_platform_import_status_sync(&platform_id)
+}
+
+#[tauri::command]
+pub fn import_platform_database_from_mdb(
+    app: tauri::AppHandle,
+    request: ImportPlatformDatabaseRequest,
+) -> Result<PlatformDatabaseImportResult, String> {
+    validate_platform_import_request(&request)?;
+    let _ = configure_runtime_db_path(&app)?;
+    let result = import_mdb_to_sqlite(&request.mdb_path)?;
+
+    Ok(PlatformDatabaseImportResult {
+        platform_id: request.platform_id,
+        db_path: result.db_path,
+        exported_tables: result.exported_tables,
+        imported_tables: result.imported_tables,
+        game_count: 0,
+    })
+}
+
+pub(super) fn validate_platform_import_request(
+    request: &ImportPlatformDatabaseRequest,
+) -> Result<(), String> {
+    match request.platform_id.as_str() {
+        "c64" | "atari800" => {}
+        other => return Err(format!("Unsupported platform import: {other}")),
+    }
+
+    let mdb_path = Path::new(&request.mdb_path);
+    if !mdb_path.exists() {
+        return Err(format!("MDB file not found: {}", request.mdb_path));
+    }
+
+    if mdb_path
+        .extension()
+        .and_then(|value| value.to_str())
+        .map(|value| !value.eq_ignore_ascii_case("mdb"))
+        .unwrap_or(true)
+    {
+        return Err("Selected database must be an MDB file.".to_string());
+    }
+
+    if request.platform_id == "atari800" {
+        reject_obvious_wrong_platform_mdb(mdb_path)?;
+        validate_existing_folder("Games", &request.folder_settings.games_path)?;
+        validate_existing_folder("Music", &request.folder_settings.music_path)?;
+        validate_existing_folder("Photos", &request.folder_settings.photos_path)?;
+        validate_existing_folder("Screenshots", &request.folder_settings.screenshots_path)?;
+    }
+
+    Ok(())
+}
+
+fn validate_existing_folder(label: &str, folder_path: &str) -> Result<(), String> {
+    if folder_path.trim().is_empty() {
+        return Err(format!("{label} folder is required."));
+    }
+
+    let path = Path::new(folder_path);
+    if !path.is_dir() {
+        return Err(format!("{label} folder does not exist: {folder_path}"));
+    }
+
+    Ok(())
+}
+
+fn reject_obvious_wrong_platform_mdb(mdb_path: &Path) -> Result<(), String> {
+    let file_name = mdb_path
+        .file_name()
+        .and_then(|value| value.to_str())
+        .unwrap_or_default()
+        .to_ascii_lowercase();
+
+    let obvious_c64_markers = ["gb64", "gamebase64", "gbc_v", "commodore"];
+    if obvious_c64_markers
+        .iter()
+        .any(|marker| file_name.contains(marker))
+    {
+        return Err(
+            "The selected MDB looks like a Commodore 64 database, not Atari 800.".to_string(),
+        );
+    }
+
+    Ok(())
+}
+
+#[cfg(test)]
+#[path = "setup/tests.rs"]
+mod tests;

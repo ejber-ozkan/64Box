@@ -8,6 +8,8 @@ import {
   getGenres,
   getSubGenres,
   importDatabaseFromMdb,
+  importPlatformDatabaseFromMdb,
+  openDirectoryDialog,
   openMdbFileDialog,
 } from '@/lib/tauri-bridge';
 import { useSettings } from '@/contexts/SettingsContext';
@@ -29,6 +31,7 @@ import { AppLaunchSplash } from '@/components/AppLaunchSplash';
 import { DatabaseSetupView } from '@/components/setup/DatabaseSetupView';
 import { useWindowLibraryShelves } from '@/hooks/useWindowLibraryShelves';
 import { PLATFORM_PROFILES } from '@/lib/platform-capabilities';
+import type { PlatformFolderSettings } from '@/types/platform';
 import {
   playRotatingUiSoundEffectAndWait,
   playUiSoundEffect,
@@ -65,6 +68,7 @@ function LibraryApp() {
   const [bigBoxSession, setBigBoxSession] = useState<BigBoxSessionState | null>(null);
   const [platformSetupError, setPlatformSetupError] = useState<string | null>(null);
   const [platformSetupResult, setPlatformSetupResult] = useState<string | null>(null);
+  const [isPlatformImporting, setIsPlatformImporting] = useState(false);
   const previousFullscreenRef = useRef(settings.isFullscreen);
   const { classicGames, favoriteGames, recentGames } = useWindowLibraryShelves({
     favoriteIds: favorites,
@@ -163,12 +167,115 @@ function LibraryApp() {
     updateSettings,
   ]);
 
-  const handlePlatformImport = useCallback(() => {
+  const handlePlatformFolderChange = useCallback((
+    folderKey: keyof Pick<PlatformFolderSettings, 'gamesPath' | 'musicPath' | 'photosPath' | 'screenshotsPath'>,
+    value: string,
+  ) => {
+    updateSettings({
+      platformSettings: {
+        ...settings.platformSettings,
+        [settings.activePlatformId]: {
+          ...activePlatformSettings,
+          folders: {
+            ...activePlatformSettings.folders,
+            [folderKey]: value,
+          },
+        },
+      },
+    });
+  }, [
+    activePlatformSettings,
+    settings.activePlatformId,
+    settings.platformSettings,
+    updateSettings,
+  ]);
+
+  const handleBrowsePlatformFolder = useCallback(async (
+    folderKey: keyof Pick<PlatformFolderSettings, 'gamesPath' | 'musicPath' | 'photosPath' | 'screenshotsPath'>,
+  ) => {
+    const selected = await openDirectoryDialog();
+    if (!selected) {
+      return;
+    }
+    handlePlatformFolderChange(folderKey, selected);
+  }, [handlePlatformFolderChange]);
+
+  const handlePlatformImport = useCallback(async () => {
     setPlatformSetupResult(null);
-    setPlatformSetupError(
-      `${activePlatform.displayName} MDB selection is ready. The next implementation slice adds platform-aware MDB export/import plus required Games, Music, Photos, and Screenshots folder fields.`,
-    );
-  }, [activePlatform.displayName]);
+    setPlatformSetupError(null);
+
+    if (!activePlatformSettings.library.sourceMdbPath) {
+      setPlatformSetupError(`Select the ${activePlatform.displayName} MDB file first.`);
+      return;
+    }
+
+    if (settings.activePlatformId === 'atari800') {
+      const missingFolder = (['gamesPath', 'musicPath', 'photosPath', 'screenshotsPath'] as const)
+        .find((folderKey) => !activePlatformSettings.folders[folderKey]?.trim());
+      if (missingFolder) {
+        setPlatformSetupError(`Select the ${missingFolder.replace('Path', '')} folder first.`);
+        return;
+      }
+    }
+
+    setIsPlatformImporting(true);
+    try {
+      const result = await importPlatformDatabaseFromMdb({
+        platformId: settings.activePlatformId,
+        mdbPath: activePlatformSettings.library.sourceMdbPath,
+        folderSettings: {
+          gamesPath: activePlatformSettings.folders.gamesPath,
+          musicPath: activePlatformSettings.folders.musicPath,
+          photosPath: activePlatformSettings.folders.photosPath,
+          screenshotsPath: activePlatformSettings.folders.screenshotsPath,
+        },
+      });
+      updateSettings({
+        platformSettings: {
+          ...settings.platformSettings,
+          [settings.activePlatformId]: {
+            ...activePlatformSettings,
+            library: {
+              ...activePlatformSettings.library,
+              importStatus: 'imported',
+              sourceMdbPath: activePlatformSettings.library.sourceMdbPath,
+              sqliteScope: result.platformId,
+              lastImportedAt: new Date().toISOString(),
+              lastImportError: null,
+              gameCount: result.gameCount,
+            },
+          },
+        },
+      });
+      setPlatformSetupResult(
+        `Imported ${activePlatform.displayName} and prepared ${result.importedTables} tables at ${result.dbPath}.`,
+      );
+    } catch (error) {
+      const message = error instanceof Error ? error.message : `${activePlatform.displayName} import failed.`;
+      setPlatformSetupError(message);
+      updateSettings({
+        platformSettings: {
+          ...settings.platformSettings,
+          [settings.activePlatformId]: {
+            ...activePlatformSettings,
+            library: {
+              ...activePlatformSettings.library,
+              importStatus: 'failed',
+              lastImportError: message,
+            },
+          },
+        },
+      });
+    } finally {
+      setIsPlatformImporting(false);
+    }
+  }, [
+    activePlatform.displayName,
+    activePlatformSettings,
+    settings.activePlatformId,
+    settings.platformSettings,
+    updateSettings,
+  ]);
 
   if (activePlatformSettings.library.importStatus !== 'imported') {
     return (
@@ -177,11 +284,19 @@ function LibraryApp() {
         <DatabaseSetupView
           dbPath={activePlatformSettings.library.sqliteScope}
           error={platformSetupError ?? `${activePlatform.displayName} has not been imported yet.`}
+          folderSettings={activePlatformSettings.folders}
           importResult={platformSetupResult}
-          isImporting={false}
+          isImporting={isPlatformImporting}
           mdbPath={activePlatformSettings.library.sourceMdbPath ?? ''}
           platformName={activePlatform.displayName}
+          requiredFolderKeys={
+            settings.activePlatformId === 'atari800'
+              ? ['gamesPath', 'musicPath', 'photosPath', 'screenshotsPath']
+              : []
+          }
           onBrowse={handleBrowsePlatformMdb}
+          onBrowseFolder={handleBrowsePlatformFolder}
+          onFolderChange={handlePlatformFolderChange}
           onImport={handlePlatformImport}
         />
       </>

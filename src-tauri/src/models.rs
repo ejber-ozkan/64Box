@@ -128,6 +128,24 @@ pub struct DatabaseImportResult {
     pub imported_tables: usize,
 }
 
+#[derive(Debug, Serialize, Deserialize, Clone)]
+#[serde(rename_all = "camelCase")]
+pub struct ImportPlatformDatabaseRequest {
+    pub platform_id: String,
+    pub mdb_path: String,
+    pub folder_settings: PlatformFolderSettings,
+}
+
+#[derive(Debug, Serialize, Deserialize, Clone)]
+#[serde(rename_all = "camelCase")]
+pub struct PlatformDatabaseImportResult {
+    pub platform_id: String,
+    pub db_path: String,
+    pub exported_tables: usize,
+    pub imported_tables: usize,
+    pub game_count: usize,
+}
+
 #[derive(Debug, Serialize, Deserialize, Clone, PartialEq, Eq)]
 #[serde(rename_all = "camelCase")]
 pub enum PlatformId {

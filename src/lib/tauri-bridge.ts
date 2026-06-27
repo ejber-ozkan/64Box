@@ -81,6 +81,35 @@ export interface DatabaseImportResult {
   importedTables: number;
 }
 
+export interface PlatformFolderImportSettings {
+  gamesPath: string;
+  musicPath: string;
+  photosPath: string;
+  screenshotsPath: string;
+}
+
+export interface PlatformImportRequest {
+  platformId: string;
+  mdbPath: string;
+  folderSettings: PlatformFolderImportSettings;
+}
+
+export interface PlatformImportStatusResponse {
+  platformId: string;
+  importStatus: string;
+  sourceMdbPath?: string | null;
+  gameCount: number;
+  lastImportError?: string | null;
+}
+
+export interface PlatformDatabaseImportResult {
+  platformId: string;
+  dbPath: string;
+  exportedTables: number;
+  importedTables: number;
+  gameCount: number;
+}
+
 export interface SupportedPlatformProfile {
   id: string;
   displayName: string;
@@ -324,6 +353,33 @@ export async function importDatabaseFromMdb(mdbPath: string): Promise<DatabaseIm
     throw new Error('Database import is only available in the desktop app');
   }
   return invoke<DatabaseImportResult>('import_database_from_mdb', { mdbPath });
+}
+
+export async function getPlatformImportStatus(platformId: string): Promise<PlatformImportStatusResponse> {
+  if (!isTauri()) {
+    const { PLATFORM_PROFILES } = await import('./platform-capabilities');
+    const platform = PLATFORM_PROFILES[platformId as keyof typeof PLATFORM_PROFILES];
+    if (!platform) {
+      throw new Error(`Unsupported platform: ${platformId}`);
+    }
+    return {
+      platformId,
+      importStatus: platform.importStatus,
+      sourceMdbPath: null,
+      gameCount: 0,
+      lastImportError: null,
+    };
+  }
+  return invoke<PlatformImportStatusResponse>('get_platform_import_status', { platformId });
+}
+
+export async function importPlatformDatabaseFromMdb(
+  request: PlatformImportRequest,
+): Promise<PlatformDatabaseImportResult> {
+  if (!isTauri()) {
+    throw new Error('Platform database import is only available in the desktop app');
+  }
+  return invoke<PlatformDatabaseImportResult>('import_platform_database_from_mdb', { request });
 }
 
 export async function getSupportedPlatforms(): Promise<SupportedPlatformProfile[]> {

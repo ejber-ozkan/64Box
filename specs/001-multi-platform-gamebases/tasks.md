@@ -90,21 +90,21 @@
 
 ### Tests for User Story 2
 
-- [ ] T035 [P] [US2] Add Node tests for platform-aware MDB/export/db path arguments in `scripts/db_pipeline.test.js`
-- [ ] T036 [P] [US2] Add SQLite conversion tests for platform identity and platform-scoped views in `scripts/convert_csv_to_sqlite.test.js`
-- [ ] T037 [P] [US2] Add Tauri setup command tests for Atari 800 import request validation in `src-tauri/src/commands/setup/tests.rs`
-- [ ] T038 [P] [US2] Add Playwright Atari 800 import routing test in `e2e/platform-import.spec.ts`
+- [X] T035 [P] [US2] Add Node tests for platform-aware MDB/export/db path arguments in `scripts/db_pipeline.test.js`
+- [X] T036 [P] [US2] Add SQLite conversion tests for platform identity and platform-scoped views in `scripts/convert_csv_to_sqlite.test.js`
+- [X] T037 [P] [US2] Add Tauri setup command tests for Atari 800 import request validation in `src-tauri/src/commands/setup/tests.rs`
+- [X] T038 [P] [US2] Add Playwright Atari 800 import routing test in `e2e/platform-import.spec.ts`
 
 ### Implementation for User Story 2
 
-- [ ] T039 [US2] Extend `scripts/db_pipeline.js` to accept `--platform`, Atari 800 MDB path, export dir, and SQLite target arguments
-- [ ] T040 [US2] Extend `scripts/convert_csv_to_sqlite.js` to write platform identity and build platform-scoped library support objects
-- [ ] T041 [US2] Extend `scripts/check_sqlite_support.js` to audit platform-scoped tables, views, indexes, and search support
-- [ ] T042 [US2] Add `import_platform_database_from_mdb` request and result models in `src-tauri/src/models.rs`
-- [ ] T043 [US2] Implement `get_platform_import_status` and `import_platform_database_from_mdb` in `src-tauri/src/commands/setup.rs`
-- [ ] T044 [US2] Add platform-aware setup wrappers in `src/lib/tauri-bridge.ts`
-- [ ] T045 [US2] Update `src/components/setup/DatabaseSetupView.tsx` to show Atari 800 MDB selection and Games/Music/Photos/Screenshots folder fields
-- [ ] T046 [US2] Save Atari 800 import status and folder settings through `src/contexts/SettingsContext.tsx`
+- [X] T039 [US2] Extend `scripts/db_pipeline.js` to accept `--platform`, Atari 800 MDB path, export dir, and SQLite target arguments
+- [X] T040 [US2] Extend `scripts/convert_csv_to_sqlite.js` to write platform identity and build platform-scoped library support objects
+- [X] T041 [US2] Extend `scripts/check_sqlite_support.js` to audit platform-scoped tables, views, indexes, and search support
+- [X] T042 [US2] Add `import_platform_database_from_mdb` request and result models in `src-tauri/src/models.rs`
+- [X] T043 [US2] Implement `get_platform_import_status` and `import_platform_database_from_mdb` in `src-tauri/src/commands/setup.rs`
+- [X] T044 [US2] Add platform-aware setup wrappers in `src/lib/tauri-bridge.ts`
+- [X] T045 [US2] Update `src/components/setup/DatabaseSetupView.tsx` to show Atari 800 MDB selection and Games/Music/Photos/Screenshots folder fields
+- [X] T046 [US2] Save Atari 800 import status and folder settings through `src/contexts/SettingsContext.tsx`
 - [ ] T047 [US2] Scope `get_db_games`, `get_db_game_count`, `get_game_detail`, `get_game_extras`, `get_genres`, and `get_sub_genres` by active platform in `src-tauri/src/commands/db/games.rs`
 - [ ] T048 [US2] Scope query builder filters by platform in `src-tauri/src/commands/db/querying.rs`
 - [ ] T049 [US2] Add platform-aware query wrapper parameters in `src/lib/tauri-bridge.ts`

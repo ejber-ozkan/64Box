@@ -11,6 +11,8 @@ const performanceIndexes = [
   ["Games", "idx_games_ar_id", "CREATE INDEX IF NOT EXISTS idx_games_ar_id ON Games(AR_Id)"],
   ["Games", "idx_games_classic", "CREATE INDEX IF NOT EXISTS idx_games_classic ON Games(Classic)"],
   ["Games", "idx_games_adult", "CREATE INDEX IF NOT EXISTS idx_games_adult ON Games(Adult)"],
+  ["Games", "idx_games_platform_id", "CREATE INDEX IF NOT EXISTS idx_games_platform_id ON Games(platform_id)"],
+  ["Games", "idx_games_platform_source_game_id", "CREATE INDEX IF NOT EXISTS idx_games_platform_source_game_id ON Games(platform_id, source_game_id)"],
   ["Years", "idx_years_ye_id", "CREATE INDEX IF NOT EXISTS idx_years_ye_id ON Years(YE_Id)"],
   ["Genres", "idx_genres_ge_id", "CREATE INDEX IF NOT EXISTS idx_genres_ge_id ON Genres(GE_Id)"],
   ["Genres", "idx_genres_pg_id", "CREATE INDEX IF NOT EXISTS idx_genres_pg_id ON Genres(PG_Id)"],
@@ -28,8 +30,9 @@ const performanceIndexes = [
 const supportObjects = [
   { name: "GameView", type: "view" },
   { name: "GameCoverIndex", type: "table" },
-  { name: "idx_game_cover_index_ga_id", type: "index" },
+  { name: "idx_game_cover_index_platform_ga_id", type: "index" },
   { name: "GameSearchIndex", type: "table" },
+  { name: "PlatformLibraries", type: "table" },
 ];
 
 const requiredPlatformColumns = ["platform_id", "source_game_id"];

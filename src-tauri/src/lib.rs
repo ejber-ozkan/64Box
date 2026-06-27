@@ -40,6 +40,8 @@ pub fn run() {
             commands::setup::open_mdb_file_dialog,
             commands::setup::get_database_bootstrap_status,
             commands::setup::import_database_from_mdb,
+            commands::setup::get_platform_import_status,
+            commands::setup::import_platform_database_from_mdb,
             commands::platforms::get_supported_platforms,
             commands::platforms::get_active_platform,
             commands::platforms::set_active_platform,

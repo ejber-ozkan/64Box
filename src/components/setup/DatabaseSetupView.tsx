@@ -1,5 +1,7 @@
 "use client";
 
+import type { PlatformFolderSettings } from '@/types/platform';
+
 interface DatabaseSetupViewProps {
   dbPath: string;
   error: string | null;
@@ -7,9 +9,32 @@ interface DatabaseSetupViewProps {
   isImporting: boolean;
   mdbPath: string;
   platformName?: string;
+  folderSettings?: PlatformFolderSettings;
+  requiredFolderKeys?: Array<keyof Pick<
+    PlatformFolderSettings,
+    'gamesPath' | 'musicPath' | 'photosPath' | 'screenshotsPath'
+  >>;
   onBrowse: () => void;
+  onBrowseFolder?: (folderKey: keyof Pick<
+    PlatformFolderSettings,
+    'gamesPath' | 'musicPath' | 'photosPath' | 'screenshotsPath'
+  >) => void;
+  onFolderChange?: (
+    folderKey: keyof Pick<
+      PlatformFolderSettings,
+      'gamesPath' | 'musicPath' | 'photosPath' | 'screenshotsPath'
+    >,
+    value: string,
+  ) => void;
   onImport: () => void;
 }
+
+const folderLabels = {
+  gamesPath: 'Games',
+  musicPath: 'Music',
+  photosPath: 'Photos',
+  screenshotsPath: 'Screenshots',
+} as const;
 
 export function DatabaseSetupView({
   dbPath,
@@ -18,9 +43,15 @@ export function DatabaseSetupView({
   isImporting,
   mdbPath,
   platformName = 'GameBase64',
+  folderSettings,
+  requiredFolderKeys = [],
   onBrowse,
+  onBrowseFolder,
+  onFolderChange,
   onImport,
 }: DatabaseSetupViewProps) {
+  const hasRequiredFolders = requiredFolderKeys.length > 0 && folderSettings;
+
   return (
     <main className="min-h-screen bg-[radial-gradient(circle_at_top,#162033_0%,#0b1020_42%,#06080f_100%)] px-6 py-10 text-white">
       <div className="mx-auto flex min-h-[calc(100vh-5rem)] max-w-6xl items-center justify-center">
@@ -68,6 +99,39 @@ export function DatabaseSetupView({
                   {isImporting ? 'Importing…' : 'Build Database'}
                 </button>
               </div>
+
+              {hasRequiredFolders ? (
+                <div className="mt-7 space-y-4">
+                  <div className="text-[11px] font-black uppercase tracking-[0.24em] text-cyan-300/80">
+                    Platform Folders
+                  </div>
+                  {requiredFolderKeys.map((folderKey) => (
+                    <label key={folderKey} className="block">
+                      <span className="text-xs font-black uppercase tracking-[0.18em] text-white/38">
+                        {folderLabels[folderKey]}
+                      </span>
+                      <div className="mt-2 flex gap-3">
+                        <input
+                          type="text"
+                          value={folderSettings[folderKey]}
+                          onChange={(event) => onFolderChange?.(folderKey, event.target.value)}
+                          disabled={isImporting}
+                          className="min-w-0 flex-1 rounded-2xl border border-white/10 bg-black/20 px-4 py-3 text-sm text-white/82 outline-none transition-all placeholder:text-white/25 focus:border-cyan-300/35 disabled:cursor-not-allowed disabled:opacity-45"
+                          placeholder={`Select ${folderLabels[folderKey]} folder`}
+                        />
+                        <button
+                          type="button"
+                          onClick={() => onBrowseFolder?.(folderKey)}
+                          disabled={isImporting || !onBrowseFolder}
+                          className="rounded-full border border-white/12 bg-white/[0.06] px-4 py-3 text-xs font-black uppercase tracking-[0.16em] text-white/80 transition-all hover:border-cyan-200/35 hover:bg-cyan-400/12 disabled:cursor-not-allowed disabled:opacity-45"
+                        >
+                          Browse
+                        </button>
+                      </div>
+                    </label>
+                  ))}
+                </div>
+              ) : null}
 
               {error ? (
                 <div className="mt-5 rounded-[22px] border border-red-400/25 bg-red-500/10 p-4 text-sm leading-7 text-red-100/90">
