@@ -2,7 +2,7 @@ use crate::models::GameFilters;
 use rusqlite::{params_from_iter, Connection};
 use tempfile::NamedTempFile;
 
-use super::games::{build_game_detail_query, build_game_summary_query};
+use super::games::build_game_summary_query;
 use super::querying::{
     build_fts_match_query, build_game_query, load_game_count_with_fallback,
     load_ordered_game_ids_with_fallback, SearchMode,
@@ -24,6 +24,7 @@ fn sqlite_table_exists(conn: &Connection, table_name: &str) -> bool {
 fn create_search_fallback_fixture(conn: &Connection) {
     conn.execute(
         "CREATE TABLE Games (
+            platform_id TEXT DEFAULT 'c64',
             GA_Id TEXT,
             Name TEXT,
             MU_Id TEXT,
@@ -52,6 +53,8 @@ fn create_search_fallback_fixture(conn: &Connection) {
     .unwrap();
     conn.execute(
         "CREATE TABLE GameView (
+            platformId TEXT DEFAULT 'c64',
+            sourceGameId TEXT,
             id TEXT,
             name TEXT,
             filename TEXT,
@@ -85,7 +88,7 @@ fn create_search_fallback_fixture(conn: &Connection) {
         .unwrap();
     conn.execute("CREATE TABLE Developers (DE_Id TEXT, Developer TEXT)", [])
         .unwrap();
-    conn.execute("CREATE TABLE Extras (GA_Id TEXT, Path TEXT)", [])
+    conn.execute("CREATE TABLE Extras (platform_id TEXT DEFAULT 'c64', GA_Id TEXT, Path TEXT)", [])
         .unwrap();
 
     conn.execute(
@@ -131,16 +134,21 @@ fn test_build_game_query_search_and_favorites() {
     };
 
     let (query, params) =
-        build_game_query(25, 10, Some(filters), SearchMode::Fts).expect("query should build");
+        build_game_query("atari800", 25, 10, Some(filters), SearchMode::Fts)
+            .expect("query should build");
+    assert!(query.contains("gv.platformId = ?"));
+    assert!(query.contains("WHERE platform_id = ?"));
     assert!(query.contains("FROM GameSearchIndex"));
     assert!(query.contains("GameSearchIndex MATCH ?"));
     assert!(query.contains("gv.id IN (?,?)"));
-    assert_eq!(params.len(), 5);
-    assert_eq!(params[0], "Ejber*");
-    assert_eq!(params[1], "7933");
-    assert_eq!(params[2], "4100");
-    assert_eq!(params[3], "25");
-    assert_eq!(params[4], "10");
+    assert_eq!(params.len(), 7);
+    assert_eq!(params[0], "atari800");
+    assert_eq!(params[1], "atari800");
+    assert_eq!(params[2], "Ejber*");
+    assert_eq!(params[3], "7933");
+    assert_eq!(params[4], "4100");
+    assert_eq!(params[5], "25");
+    assert_eq!(params[6], "10");
 }
 
 #[test]
@@ -164,9 +172,13 @@ fn test_build_game_query_invalid_fts_input_matches_nothing() {
     };
 
     let (query, params) =
-        build_game_query(10, 0, Some(filters), SearchMode::Fts).expect("query should build");
+        build_game_query("c64", 10, 0, Some(filters), SearchMode::Fts)
+            .expect("query should build");
     assert!(query.contains("AND 1=0"));
-    assert_eq!(params, vec!["10".to_string(), "0".to_string()]);
+    assert_eq!(
+        params,
+        vec!["c64".to_string(), "10".to_string(), "0".to_string()]
+    );
 }
 
 #[test]
@@ -176,7 +188,7 @@ fn test_build_game_query_empty_favorites_short_circuit() {
         ..Default::default()
     };
 
-    assert!(build_game_query(10, 0, Some(filters), SearchMode::Fts).is_none());
+    assert!(build_game_query("c64", 10, 0, Some(filters), SearchMode::Fts).is_none());
 }
 
 #[test]
@@ -187,11 +199,13 @@ fn test_build_game_query_like_fallback_uses_legacy_predicates() {
     };
 
     let (query, params) =
-        build_game_query(10, 0, Some(filters), SearchMode::Like).expect("query should build");
+        build_game_query("c64", 10, 0, Some(filters), SearchMode::Like)
+            .expect("query should build");
     assert!(query.contains("LOWER(gv.name) LIKE ?"));
     assert!(query.contains("LOWER(COALESCE(ar.Artist, '')) LIKE ?"));
-    assert_eq!(params.len(), 8);
-    assert_eq!(params[0], "%ejber%");
+    assert_eq!(params.len(), 9);
+    assert_eq!(params[0], "c64");
+    assert_eq!(params[1], "%ejber%");
 }
 
 #[test]
@@ -199,6 +213,7 @@ fn test_build_game_summary_query_preserves_requested_id_order_in_sql() {
     let conn = Connection::open_in_memory().unwrap();
     conn.execute(
         "CREATE TABLE Games (
+            platform_id TEXT DEFAULT 'c64',
             GA_Id TEXT,
             Name TEXT,
             MU_Id TEXT,
@@ -225,6 +240,8 @@ fn test_build_game_summary_query_preserves_requested_id_order_in_sql() {
     .unwrap();
     conn.execute(
         "CREATE TABLE GameView (
+            platformId TEXT DEFAULT 'c64',
+            sourceGameId TEXT,
             id TEXT,
             name TEXT,
             filename TEXT,
@@ -281,7 +298,7 @@ fn test_build_game_summary_query_preserves_requested_id_order_in_sql() {
     .unwrap();
 
     let ordered_ids = vec!["2".to_string(), "1".to_string()];
-    let (query, params) = build_game_summary_query(&ordered_ids, false);
+    let (query, params) = build_game_summary_query("c64", &ordered_ids, false);
     let mut stmt = conn.prepare(&query).unwrap();
     let game_ids = stmt
         .query_map(params_from_iter(params), |row| row.get::<_, String>("id"))
@@ -323,7 +340,7 @@ async fn test_get_genres() {
 
     {
         let conn = Connection::open(&db_path).unwrap();
-        conn.execute("CREATE TABLE GameView (parentGenre TEXT)", [])
+        conn.execute("CREATE TABLE GameView (platformId TEXT DEFAULT 'c64', parentGenre TEXT)", [])
             .unwrap();
         conn.execute("INSERT INTO GameView (parentGenre) VALUES (?)", ["Action"])
             .unwrap();
@@ -333,7 +350,7 @@ async fn test_get_genres() {
             .unwrap();
     }
 
-    let genres = get_genres().await.expect("Failed to get genres");
+    let genres = get_genres(None).await.expect("Failed to get genres");
     assert_eq!(genres.len(), 2);
     assert!(genres.contains(&"Action".to_string()));
     assert!(genres.contains(&"Puzzle".to_string()));
@@ -353,7 +370,7 @@ async fn test_get_sub_genres() {
 
     {
         let conn = Connection::open(&db_path).unwrap();
-        conn.execute("CREATE TABLE GameView (parentGenre TEXT, subGenre TEXT)", [])
+        conn.execute("CREATE TABLE GameView (platformId TEXT DEFAULT 'c64', parentGenre TEXT, subGenre TEXT)", [])
             .unwrap();
         conn.execute(
             "INSERT INTO GameView (parentGenre, subGenre) VALUES (?, ?)",
@@ -372,14 +389,14 @@ async fn test_get_sub_genres() {
         .unwrap();
     }
 
-    let platform_sub_genres = get_sub_genres(Some("Platform".to_string()))
+    let platform_sub_genres = get_sub_genres(Some("Platform".to_string()), None)
         .await
         .expect("Failed to get sub-genres");
     assert_eq!(platform_sub_genres.len(), 2);
     assert!(platform_sub_genres.contains(&"Arcade".to_string()));
     assert!(platform_sub_genres.contains(&"Collect'em Up".to_string()));
 
-    let no_filter_sub_genres = get_sub_genres(None)
+    let no_filter_sub_genres = get_sub_genres(None, None)
         .await
         .expect("Failed to get sub-genres without a genre");
     assert!(no_filter_sub_genres.is_empty());
@@ -396,8 +413,18 @@ async fn test_get_game_extras() {
     {
         let conn = Connection::open(&db_path).unwrap();
         conn.execute(
-            "CREATE TABLE Extras (GA_Id TEXT, EX_Id TEXT, Name TEXT, Path TEXT, Type TEXT, DisplayOrder INTEGER)",
+            "CREATE TABLE Games (platform_id TEXT DEFAULT 'c64', GA_Id TEXT, Name TEXT, Adult TEXT)",
             [],
+        )
+        .unwrap();
+        conn.execute(
+            "CREATE TABLE Extras (platform_id TEXT DEFAULT 'c64', GA_Id TEXT, EX_Id TEXT, Name TEXT, Path TEXT, Type TEXT, DisplayOrder INTEGER)",
+            [],
+        )
+        .unwrap();
+        conn.execute(
+            "INSERT INTO Games (GA_Id, Name, Adult) VALUES (?, ?, ?)",
+            ["game1", "Extra Game", "False"],
         )
         .unwrap();
         conn.execute(
@@ -407,11 +434,128 @@ async fn test_get_game_extras() {
         .unwrap();
     }
 
-    let extras = get_game_extras("game1".to_string())
+    let extras = get_game_extras("game1".to_string(), None)
         .await
         .expect("Failed to get extras");
     assert_eq!(extras.len(), 1);
     assert_eq!(extras[0].name, "Manual");
+
+    std::env::remove_var("VIC40_DB_PATH");
+}
+
+#[tokio::test]
+async fn test_platform_scoped_queries_do_not_mix_duplicate_source_ids() {
+    let temp_db = NamedTempFile::new().unwrap();
+    let db_path = temp_db.path().to_string_lossy().to_string();
+    std::env::set_var("VIC40_DB_PATH", &db_path);
+
+    {
+        let conn = Connection::open(&db_path).unwrap();
+        conn.execute(
+            "CREATE TABLE Games (
+                platform_id TEXT,
+                GA_Id TEXT,
+                Name TEXT,
+                MU_Id TEXT,
+                PR_Id TEXT,
+                AR_Id TEXT,
+                Adult TEXT,
+                Control TEXT,
+                PlayersFrom TEXT,
+                PlayersTo TEXT,
+                PlayersSim TEXT,
+                Comment TEXT,
+                ReviewRating TEXT,
+                V_Trainers TEXT,
+                V_Length TEXT,
+                V_LoadingScreen TEXT,
+                V_HighScoreSaver TEXT,
+                V_IncludedDocs TEXT,
+                V_TrueDriveEmu TEXT,
+                V_PalNTSC TEXT,
+                MemoText TEXT
+            )",
+            [],
+        )
+        .unwrap();
+        conn.execute(
+            "CREATE TABLE GameView (
+                platformId TEXT,
+                sourceGameId TEXT,
+                id TEXT,
+                name TEXT,
+                filename TEXT,
+                gameFilename TEXT,
+                screenshotFilename TEXT,
+                boxFrontFilename TEXT,
+                titlescreenFilename TEXT,
+                videoSnapFilename TEXT,
+                sidFilename TEXT,
+                crc TEXT,
+                year TEXT,
+                isPal INTEGER,
+                isNtsc INTEGER,
+                trueDriveEmu INTEGER,
+                isClassic INTEGER,
+                parentGenre TEXT,
+                subGenre TEXT,
+                developer_name TEXT,
+                publisher_name TEXT,
+                musician_name TEXT,
+                languages TEXT
+            )",
+            [],
+        )
+        .unwrap();
+        conn.execute("CREATE TABLE Musicians (MU_Id TEXT, Photo TEXT, Nick TEXT, Grp TEXT, Musician TEXT)", []).unwrap();
+        conn.execute("CREATE TABLE Programmers (PR_Id TEXT, Programmer TEXT)", []).unwrap();
+        conn.execute("CREATE TABLE Artists (AR_Id TEXT, Artist TEXT)", []).unwrap();
+        conn.execute("CREATE TABLE Extras (platform_id TEXT, GA_Id TEXT, EX_Id TEXT, Name TEXT, Path TEXT, Type TEXT, DisplayOrder INTEGER)", []).unwrap();
+
+        for (platform_id, game_name, genre, extra_name) in [
+            ("c64", "C64 Duplicate", "Action", "C64 Manual"),
+            ("atari800", "Atari Duplicate", "Arcade", "Atari Manual"),
+        ] {
+            conn.execute(
+                "INSERT INTO Games (platform_id, GA_Id, Name, Adult) VALUES (?, ?, ?, ?)",
+                rusqlite::params![platform_id, "1", game_name, "False"],
+            )
+            .unwrap();
+            conn.execute(
+                "INSERT INTO GameView (platformId, sourceGameId, id, name, filename, isPal, isNtsc, trueDriveEmu, isClassic, parentGenre, subGenre)
+                 VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
+                rusqlite::params![platform_id, "1", "1", game_name, "game.bin", 1, 0, 0, 0, genre, "Launchable"],
+            )
+            .unwrap();
+            conn.execute(
+                "INSERT INTO Extras (platform_id, GA_Id, EX_Id, Name, Path, Type, DisplayOrder) VALUES (?, ?, ?, ?, ?, ?, ?)",
+                rusqlite::params![platform_id, "1", format!("{platform_id}-extra"), extra_name, "extras/manual.pdf", "doc", 1],
+            )
+            .unwrap();
+        }
+    }
+
+    let atari_games = get_db_games(Some(10), Some(0), None, Some("atari800".to_string()))
+        .await
+        .expect("atari games should load");
+    assert_eq!(atari_games.len(), 1);
+    assert_eq!(atari_games[0].name, "Atari Duplicate");
+
+    let atari_count = get_db_game_count(None, Some("atari800".to_string()))
+        .await
+        .expect("atari count should load");
+    assert_eq!(atari_count, 1);
+
+    let atari_genres = get_genres(Some("atari800".to_string()))
+        .await
+        .expect("atari genres should load");
+    assert_eq!(atari_genres, vec!["Arcade".to_string()]);
+
+    let atari_extras = get_game_extras("1".to_string(), Some("atari800".to_string()))
+        .await
+        .expect("atari extras should load");
+    assert_eq!(atari_extras.len(), 1);
+    assert_eq!(atari_extras[0].name, "Atari Manual");
 
     std::env::remove_var("VIC40_DB_PATH");
 }
@@ -424,8 +568,8 @@ async fn test_get_db_games() {
 
     {
         let conn = Connection::open(&db_path).unwrap();
-        conn.execute("CREATE TABLE Games (GA_Id TEXT, Name TEXT, MU_Id TEXT, PR_Id TEXT, AR_Id TEXT, CR_Id TEXT, DE_Id TEXT, Adult TEXT, Control TEXT, PlayersFrom TEXT, PlayersTo TEXT, PlayersSim TEXT, Comment TEXT, ReviewRating TEXT, V_Trainers TEXT, V_Length TEXT, V_LoadingScreen TEXT, V_HighScoreSaver TEXT, V_IncludedDocs TEXT, V_TrueDriveEmu TEXT, V_PalNTSC TEXT, MemoText TEXT)", []).unwrap();
-        conn.execute("CREATE TABLE GameView (id TEXT, name TEXT, filename TEXT, gameFilename TEXT, screenshotFilename TEXT, boxFrontFilename TEXT, titlescreenFilename TEXT, videoSnapFilename TEXT, sidFilename TEXT, crc TEXT, year TEXT, isPal INTEGER, isNtsc INTEGER, trueDriveEmu INTEGER, isClassic INTEGER, parentGenre TEXT, subGenre TEXT, developer_name TEXT, publisher_name TEXT, musician_name TEXT, languages TEXT)", []).unwrap();
+        conn.execute("CREATE TABLE Games (platform_id TEXT DEFAULT 'c64', GA_Id TEXT, Name TEXT, MU_Id TEXT, PR_Id TEXT, AR_Id TEXT, CR_Id TEXT, DE_Id TEXT, Adult TEXT, Control TEXT, PlayersFrom TEXT, PlayersTo TEXT, PlayersSim TEXT, Comment TEXT, ReviewRating TEXT, V_Trainers TEXT, V_Length TEXT, V_LoadingScreen TEXT, V_HighScoreSaver TEXT, V_IncludedDocs TEXT, V_TrueDriveEmu TEXT, V_PalNTSC TEXT, MemoText TEXT)", []).unwrap();
+        conn.execute("CREATE TABLE GameView (platformId TEXT DEFAULT 'c64', sourceGameId TEXT, id TEXT, name TEXT, filename TEXT, gameFilename TEXT, screenshotFilename TEXT, boxFrontFilename TEXT, titlescreenFilename TEXT, videoSnapFilename TEXT, sidFilename TEXT, crc TEXT, year TEXT, isPal INTEGER, isNtsc INTEGER, trueDriveEmu INTEGER, isClassic INTEGER, parentGenre TEXT, subGenre TEXT, developer_name TEXT, publisher_name TEXT, musician_name TEXT, languages TEXT)", []).unwrap();
         conn.execute("CREATE TABLE Musicians (MU_Id TEXT, Photo TEXT, Nick TEXT, Grp TEXT, Musician TEXT)", []).unwrap();
         conn.execute("CREATE TABLE Programmers (PR_Id TEXT, Programmer TEXT)", [])
             .unwrap();
@@ -455,7 +599,7 @@ async fn test_get_db_games() {
             rusqlite::params!["1", "Maniac Mansion", "maniac.d64", "Action", "Adventure", 1, 0, 0, 1]).unwrap();
     }
 
-    let games = get_db_games(Some(10), Some(0), None)
+    let games = get_db_games(Some(10), Some(0), None, None)
         .await
         .expect("Failed basic fetch");
     assert_eq!(games.len(), 1);
@@ -465,7 +609,7 @@ async fn test_get_db_games() {
         letter: Some("M".to_string()),
         ..Default::default()
     };
-    let res_m = get_db_games(Some(10), Some(0), Some(filters_m))
+    let res_m = get_db_games(Some(10), Some(0), Some(filters_m), None)
         .await
         .unwrap();
     assert_eq!(res_m.len(), 1);
@@ -474,7 +618,7 @@ async fn test_get_db_games() {
         letter: Some("Z".to_string()),
         ..Default::default()
     };
-    let res_z = get_db_games(Some(10), Some(0), Some(filters_z))
+    let res_z = get_db_games(Some(10), Some(0), Some(filters_z), None)
         .await
         .unwrap();
     assert_eq!(res_z.len(), 0);
@@ -483,7 +627,7 @@ async fn test_get_db_games() {
         search_query: Some("Maniac".to_string()),
         ..Default::default()
     };
-    let res_sq = get_db_games(Some(10), Some(0), Some(filters_sq))
+    let res_sq = get_db_games(Some(10), Some(0), Some(filters_sq), None)
         .await
         .unwrap();
     assert_eq!(res_sq.len(), 1);
@@ -492,7 +636,7 @@ async fn test_get_db_games() {
         search_query: Some("Ejber".to_string()),
         ..Default::default()
     };
-    let res_graphics = get_db_games(Some(10), Some(0), Some(filters_graphics))
+    let res_graphics = get_db_games(Some(10), Some(0), Some(filters_graphics), None)
         .await
         .unwrap();
     assert_eq!(res_graphics.len(), 1);
@@ -501,7 +645,7 @@ async fn test_get_db_games() {
         search_query: Some("Programmer".to_string()),
         ..Default::default()
     };
-    let res_programmer = get_db_games(Some(10), Some(0), Some(filters_programmer))
+    let res_programmer = get_db_games(Some(10), Some(0), Some(filters_programmer), None)
         .await
         .unwrap();
     assert_eq!(res_programmer.len(), 1);
@@ -510,7 +654,7 @@ async fn test_get_db_games() {
         hide_adult: Some(true),
         ..Default::default()
     };
-    let res_adult = get_db_games(Some(10), Some(0), Some(filters_adult))
+    let res_adult = get_db_games(Some(10), Some(0), Some(filters_adult), None)
         .await
         .unwrap();
     assert_eq!(res_adult.len(), 1);
@@ -520,7 +664,7 @@ async fn test_get_db_games() {
         sub_genre: Some("Adventure".to_string()),
         ..Default::default()
     };
-    let res_sub_genre = get_db_games(Some(10), Some(0), Some(filters_sub_genre))
+    let res_sub_genre = get_db_games(Some(10), Some(0), Some(filters_sub_genre), None)
         .await
         .unwrap();
     assert_eq!(res_sub_genre.len(), 1);
@@ -540,8 +684,8 @@ async fn test_get_db_games_symbol_filter() {
 
     {
         let conn = Connection::open(&db_path).unwrap();
-        conn.execute("CREATE TABLE Games (GA_Id TEXT, Name TEXT, MU_Id TEXT, PR_Id TEXT, AR_Id TEXT, CR_Id TEXT, DE_Id TEXT, Adult TEXT, Control TEXT, PlayersFrom TEXT, PlayersTo TEXT, PlayersSim TEXT, Comment TEXT, ReviewRating TEXT, V_Trainers TEXT, V_Length TEXT, V_LoadingScreen TEXT, V_HighScoreSaver TEXT, V_IncludedDocs TEXT, V_TrueDriveEmu TEXT, V_PalNTSC TEXT, MemoText TEXT)", []).unwrap();
-        conn.execute("CREATE TABLE GameView (id TEXT, name TEXT, filename TEXT, gameFilename TEXT, screenshotFilename TEXT, boxFrontFilename TEXT, titlescreenFilename TEXT, videoSnapFilename TEXT, sidFilename TEXT, crc TEXT, year TEXT, isPal INTEGER, isNtsc INTEGER, trueDriveEmu INTEGER, isClassic INTEGER, parentGenre TEXT, subGenre TEXT, developer_name TEXT, publisher_name TEXT, musician_name TEXT, languages TEXT)", []).unwrap();
+        conn.execute("CREATE TABLE Games (platform_id TEXT DEFAULT 'c64', GA_Id TEXT, Name TEXT, MU_Id TEXT, PR_Id TEXT, AR_Id TEXT, CR_Id TEXT, DE_Id TEXT, Adult TEXT, Control TEXT, PlayersFrom TEXT, PlayersTo TEXT, PlayersSim TEXT, Comment TEXT, ReviewRating TEXT, V_Trainers TEXT, V_Length TEXT, V_LoadingScreen TEXT, V_HighScoreSaver TEXT, V_IncludedDocs TEXT, V_TrueDriveEmu TEXT, V_PalNTSC TEXT, MemoText TEXT)", []).unwrap();
+        conn.execute("CREATE TABLE GameView (platformId TEXT DEFAULT 'c64', sourceGameId TEXT, id TEXT, name TEXT, filename TEXT, gameFilename TEXT, screenshotFilename TEXT, boxFrontFilename TEXT, titlescreenFilename TEXT, videoSnapFilename TEXT, sidFilename TEXT, crc TEXT, year TEXT, isPal INTEGER, isNtsc INTEGER, trueDriveEmu INTEGER, isClassic INTEGER, parentGenre TEXT, subGenre TEXT, developer_name TEXT, publisher_name TEXT, musician_name TEXT, languages TEXT)", []).unwrap();
         conn.execute("CREATE TABLE Musicians (MU_Id TEXT, Photo TEXT, Nick TEXT, Grp TEXT, Musician TEXT)", []).unwrap();
         conn.execute("CREATE TABLE Programmers (PR_Id TEXT, Programmer TEXT)", [])
             .unwrap();
@@ -565,7 +709,7 @@ async fn test_get_db_games_symbol_filter() {
         letter: Some("#".to_string()),
         ..Default::default()
     };
-    let res = get_db_games(Some(10), Some(0), Some(filters))
+    let res = get_db_games(Some(10), Some(0), Some(filters), None)
         .await
         .unwrap();
     assert_eq!(res.len(), 1);
@@ -582,8 +726,8 @@ async fn test_get_db_games_pagination() {
 
     {
         let conn = Connection::open(&db_path).unwrap();
-        conn.execute("CREATE TABLE Games (GA_Id TEXT, Name TEXT, MU_Id TEXT, PR_Id TEXT, AR_Id TEXT, CR_Id TEXT, DE_Id TEXT, Adult TEXT, Control TEXT, PlayersFrom TEXT, PlayersTo TEXT, PlayersSim TEXT, Comment TEXT, ReviewRating TEXT, V_Trainers TEXT, V_Length TEXT, V_LoadingScreen TEXT, V_HighScoreSaver TEXT, V_IncludedDocs TEXT, V_TrueDriveEmu TEXT, V_PalNTSC TEXT, MemoText TEXT)", []).unwrap();
-        conn.execute("CREATE TABLE GameView (id TEXT, name TEXT, filename TEXT, gameFilename TEXT, screenshotFilename TEXT, boxFrontFilename TEXT, titlescreenFilename TEXT, videoSnapFilename TEXT, sidFilename TEXT, crc TEXT, year TEXT, isPal INTEGER, isNtsc INTEGER, trueDriveEmu INTEGER, isClassic INTEGER, parentGenre TEXT, subGenre TEXT, developer_name TEXT, publisher_name HEX, musician_name TEXT, languages TEXT)", []).unwrap();
+        conn.execute("CREATE TABLE Games (platform_id TEXT DEFAULT 'c64', GA_Id TEXT, Name TEXT, MU_Id TEXT, PR_Id TEXT, AR_Id TEXT, CR_Id TEXT, DE_Id TEXT, Adult TEXT, Control TEXT, PlayersFrom TEXT, PlayersTo TEXT, PlayersSim TEXT, Comment TEXT, ReviewRating TEXT, V_Trainers TEXT, V_Length TEXT, V_LoadingScreen TEXT, V_HighScoreSaver TEXT, V_IncludedDocs TEXT, V_TrueDriveEmu TEXT, V_PalNTSC TEXT, MemoText TEXT)", []).unwrap();
+        conn.execute("CREATE TABLE GameView (platformId TEXT DEFAULT 'c64', sourceGameId TEXT, id TEXT, name TEXT, filename TEXT, gameFilename TEXT, screenshotFilename TEXT, boxFrontFilename TEXT, titlescreenFilename TEXT, videoSnapFilename TEXT, sidFilename TEXT, crc TEXT, year TEXT, isPal INTEGER, isNtsc INTEGER, trueDriveEmu INTEGER, isClassic INTEGER, parentGenre TEXT, subGenre TEXT, developer_name TEXT, publisher_name HEX, musician_name TEXT, languages TEXT)", []).unwrap();
         conn.execute("CREATE TABLE Musicians (MU_Id TEXT, Photo TEXT, Nick TEXT, Grp TEXT, Musician TEXT)", []).unwrap();
         conn.execute("CREATE TABLE Programmers (PR_Id TEXT, Programmer TEXT)", [])
             .unwrap();
@@ -606,15 +750,15 @@ async fn test_get_db_games_pagination() {
         }
     }
 
-    let page1 = get_db_games(Some(2), Some(0), None).await.unwrap();
+    let page1 = get_db_games(Some(2), Some(0), None, None).await.unwrap();
     assert_eq!(page1.len(), 2);
     assert_eq!(page1[0].name, "Game 1");
 
-    let page2 = get_db_games(Some(2), Some(2), None).await.unwrap();
+    let page2 = get_db_games(Some(2), Some(2), None, None).await.unwrap();
     assert_eq!(page2.len(), 2);
     assert_eq!(page2[0].name, "Game 3");
 
-    let page3 = get_db_games(Some(2), Some(4), None).await.unwrap();
+    let page3 = get_db_games(Some(2), Some(4), None, None).await.unwrap();
     assert_eq!(page3.len(), 1);
     assert_eq!(page3[0].name, "Game 5");
 
@@ -629,8 +773,8 @@ async fn test_get_db_game_count() {
 
     {
         let conn = Connection::open(&db_path).unwrap();
-        conn.execute("CREATE TABLE Games (GA_Id TEXT, Name TEXT, MU_Id TEXT, PR_Id TEXT, AR_Id TEXT, CR_Id TEXT, DE_Id TEXT, Adult TEXT, Control TEXT, PlayersFrom TEXT, PlayersTo TEXT, PlayersSim TEXT, Comment TEXT, ReviewRating TEXT, V_Trainers TEXT, V_Length TEXT, V_LoadingScreen TEXT, V_HighScoreSaver TEXT, V_IncludedDocs TEXT, V_TrueDriveEmu TEXT, V_PalNTSC TEXT, MemoText TEXT)", []).unwrap();
-        conn.execute("CREATE TABLE GameView (id TEXT, name TEXT, filename TEXT, gameFilename TEXT, screenshotFilename TEXT, boxFrontFilename TEXT, titlescreenFilename TEXT, videoSnapFilename TEXT, sidFilename TEXT, crc TEXT, year TEXT, isPal INTEGER, isNtsc INTEGER, trueDriveEmu INTEGER, isClassic INTEGER, parentGenre TEXT, subGenre TEXT, developer_name TEXT, publisher_name TEXT, musician_name TEXT, languages TEXT)", []).unwrap();
+        conn.execute("CREATE TABLE Games (platform_id TEXT DEFAULT 'c64', GA_Id TEXT, Name TEXT, MU_Id TEXT, PR_Id TEXT, AR_Id TEXT, CR_Id TEXT, DE_Id TEXT, Adult TEXT, Control TEXT, PlayersFrom TEXT, PlayersTo TEXT, PlayersSim TEXT, Comment TEXT, ReviewRating TEXT, V_Trainers TEXT, V_Length TEXT, V_LoadingScreen TEXT, V_HighScoreSaver TEXT, V_IncludedDocs TEXT, V_TrueDriveEmu TEXT, V_PalNTSC TEXT, MemoText TEXT)", []).unwrap();
+        conn.execute("CREATE TABLE GameView (platformId TEXT DEFAULT 'c64', sourceGameId TEXT, id TEXT, name TEXT, filename TEXT, gameFilename TEXT, screenshotFilename TEXT, boxFrontFilename TEXT, titlescreenFilename TEXT, videoSnapFilename TEXT, sidFilename TEXT, crc TEXT, year TEXT, isPal INTEGER, isNtsc INTEGER, trueDriveEmu INTEGER, isClassic INTEGER, parentGenre TEXT, subGenre TEXT, developer_name TEXT, publisher_name TEXT, musician_name TEXT, languages TEXT)", []).unwrap();
         conn.execute("CREATE TABLE Musicians (MU_Id TEXT, Photo TEXT, Nick TEXT, Grp TEXT, Musician TEXT)", []).unwrap();
         conn.execute("CREATE TABLE Programmers (PR_Id TEXT, Programmer TEXT)", []).unwrap();
         conn.execute("CREATE TABLE Artists (AR_Id TEXT, Artist TEXT)", []).unwrap();
@@ -661,13 +805,13 @@ async fn test_get_db_game_count() {
             rusqlite::params!["3", "California Games", "california.d64", "Sports", "Misc", 1, 0, 0, 0]).unwrap();
     }
 
-    let total = get_db_game_count(None).await.unwrap();
+    let total = get_db_game_count(None, None).await.unwrap();
     assert_eq!(total, 3);
 
     let genre_filtered = get_db_game_count(Some(GameFilters {
         genre: Some("Platform".to_string()),
         ..Default::default()
-    }))
+    }), None)
     .await
     .unwrap();
     assert_eq!(genre_filtered, 1);
@@ -675,7 +819,7 @@ async fn test_get_db_game_count() {
     let search_filtered = get_db_game_count(Some(GameFilters {
         search_query: Some("California".to_string()),
         ..Default::default()
-    }))
+    }), None)
     .await
     .unwrap();
     assert_eq!(search_filtered, 1);
@@ -684,7 +828,7 @@ async fn test_get_db_game_count() {
         genre: Some("Platform".to_string()),
         sub_genre: Some("Arcade".to_string()),
         ..Default::default()
-    }))
+    }), None)
     .await
     .unwrap();
     assert_eq!(sub_genre_filtered, 1);
@@ -699,6 +843,7 @@ fn test_load_ordered_game_ids_falls_back_to_like_when_search_index_missing() {
 
     let ids = load_ordered_game_ids_with_fallback(
         &conn,
+        "c64",
         10,
         0,
         Some(GameFilters {
@@ -718,6 +863,7 @@ fn test_load_game_count_falls_back_to_like_when_search_index_missing() {
 
     let count = load_game_count_with_fallback(
         &conn,
+        "c64",
         Some(GameFilters {
             search_query: Some("Ejber".to_string()),
             ..Default::default()
@@ -736,8 +882,8 @@ async fn test_get_db_games_preserves_filtered_id_order_after_detail_hydration() 
 
     {
         let conn = Connection::open(&db_path).unwrap();
-        conn.execute("CREATE TABLE Games (GA_Id TEXT, Name TEXT, MU_Id TEXT, PR_Id TEXT, AR_Id TEXT, CR_Id TEXT, DE_Id TEXT, Adult TEXT, Control TEXT, PlayersFrom TEXT, PlayersTo TEXT, PlayersSim TEXT, Comment TEXT, ReviewRating TEXT, V_Trainers TEXT, V_Length TEXT, V_LoadingScreen TEXT, V_HighScoreSaver TEXT, V_IncludedDocs TEXT, V_TrueDriveEmu TEXT, V_PalNTSC TEXT, MemoText TEXT)", []).unwrap();
-        conn.execute("CREATE TABLE GameView (id TEXT, name TEXT, filename TEXT, gameFilename TEXT, screenshotFilename TEXT, boxFrontFilename TEXT, titlescreenFilename TEXT, videoSnapFilename TEXT, sidFilename TEXT, crc TEXT, year TEXT, isPal INTEGER, isNtsc INTEGER, trueDriveEmu INTEGER, isClassic INTEGER, parentGenre TEXT, subGenre TEXT, developer_name TEXT, publisher_name TEXT, musician_name TEXT, languages TEXT)", []).unwrap();
+        conn.execute("CREATE TABLE Games (platform_id TEXT DEFAULT 'c64', GA_Id TEXT, Name TEXT, MU_Id TEXT, PR_Id TEXT, AR_Id TEXT, CR_Id TEXT, DE_Id TEXT, Adult TEXT, Control TEXT, PlayersFrom TEXT, PlayersTo TEXT, PlayersSim TEXT, Comment TEXT, ReviewRating TEXT, V_Trainers TEXT, V_Length TEXT, V_LoadingScreen TEXT, V_HighScoreSaver TEXT, V_IncludedDocs TEXT, V_TrueDriveEmu TEXT, V_PalNTSC TEXT, MemoText TEXT)", []).unwrap();
+        conn.execute("CREATE TABLE GameView (platformId TEXT DEFAULT 'c64', sourceGameId TEXT, id TEXT, name TEXT, filename TEXT, gameFilename TEXT, screenshotFilename TEXT, boxFrontFilename TEXT, titlescreenFilename TEXT, videoSnapFilename TEXT, sidFilename TEXT, crc TEXT, year TEXT, isPal INTEGER, isNtsc INTEGER, trueDriveEmu INTEGER, isClassic INTEGER, parentGenre TEXT, subGenre TEXT, developer_name TEXT, publisher_name TEXT, musician_name TEXT, languages TEXT)", []).unwrap();
         conn.execute("CREATE TABLE Musicians (MU_Id TEXT, Photo TEXT, Nick TEXT, Grp TEXT, Musician TEXT)", []).unwrap();
         conn.execute("CREATE TABLE Programmers (PR_Id TEXT, Programmer TEXT)", []).unwrap();
         conn.execute("CREATE TABLE Artists (AR_Id TEXT, Artist TEXT)", []).unwrap();
@@ -761,7 +907,7 @@ async fn test_get_db_games_preserves_filtered_id_order_after_detail_hydration() 
             rusqlite::params!["2", "Alpha Game", "alpha.d64", "Action", "Arcade", 1, 0, 0, 0]).unwrap();
     }
 
-    let games = get_db_games(Some(10), Some(0), None)
+    let games = get_db_games(Some(10), Some(0), None, None)
         .await
         .expect("ordered results should load");
 

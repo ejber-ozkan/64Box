@@ -21,6 +21,7 @@ describe('getAlphabetRailCacheKey', () => {
     expect(parsed.letter).toBe('A');
     expect(parsed.genre).toBe('Action');
     expect(parsed.hideAdult).toBe(true);
+    expect(parsed.platformId).toBe('c64');
     expect(parsed.searchInput).toBeNull();
   });
 
@@ -48,6 +49,12 @@ describe('getAlphabetRailCacheKey', () => {
   it('produces different keys when genre changes', () => {
     const key1 = getAlphabetRailCacheKey('A', { genre: 'Action' }, '');
     const key2 = getAlphabetRailCacheKey('A', { genre: 'Adventure' }, '');
+    expect(key1).not.toBe(key2);
+  });
+
+  it('produces different keys when platform changes', () => {
+    const key1 = getAlphabetRailCacheKey('A', { genre: 'Action' }, '', 'c64');
+    const key2 = getAlphabetRailCacheKey('A', { genre: 'Action' }, '', 'atari800');
     expect(key1).not.toBe(key2);
   });
 });

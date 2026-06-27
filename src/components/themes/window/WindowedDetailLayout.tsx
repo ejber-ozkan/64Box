@@ -71,14 +71,14 @@ export function WindowedDetailLayout({
   isFavorite,
   onToggleFavorite,
 }: WindowedDetailLayoutProps) {
-  const { resolveMediaPath } = useSettings();
+  const { resolveMediaPath, settings } = useSettings();
   const [extras, setExtras] = useState<Extra[]>([]);
   const [selectedMedia, setSelectedMedia] = useState<WindowedMediaId>('gameplay');
   const [activeTab, setActiveTab] = useState<WindowedDetailTab>('gallery');
 
   useEffect(() => {
     let isCancelled = false;
-    getGameExtras(game.id).then((items) => {
+    getGameExtras(game.id, settings.activePlatformId).then((items) => {
       if (!isCancelled) {
         setExtras(items);
       }
@@ -86,7 +86,7 @@ export function WindowedDetailLayout({
     return () => {
       isCancelled = true;
     };
-  }, [game.id]);
+  }, [game.id, settings.activePlatformId]);
 
   const studios = getGameStudios(game);
   const headerArtworkUrl = useResolvedBoxArtUrl(game);

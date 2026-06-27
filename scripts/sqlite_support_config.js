@@ -25,6 +25,7 @@ const performanceIndexes = [
   ["Artists", "idx_artists_ar_id", "CREATE INDEX IF NOT EXISTS idx_artists_ar_id ON Artists(AR_Id)"],
   ["Extras", "idx_extras_ga_id", "CREATE INDEX IF NOT EXISTS idx_extras_ga_id ON Extras(GA_Id)"],
   ["Extras", "idx_extras_ga_id_display_order", "CREATE INDEX IF NOT EXISTS idx_extras_ga_id_display_order ON Extras(GA_Id, DisplayOrder)"],
+  ["Extras", "idx_extras_platform_ga_id", "CREATE INDEX IF NOT EXISTS idx_extras_platform_ga_id ON Extras(platform_id, GA_Id)"],
 ];
 
 const supportObjects = [

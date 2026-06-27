@@ -5,6 +5,7 @@ import { getDbGames, type GameFilters } from '../lib/tauri-bridge';
 import type { Game } from '../types/game';
 
 interface UseWindowLibraryShelvesProps {
+  activePlatformId: string;
   favoriteIds: string[];
   filters: GameFilters;
   recentlyPlayedIds: string[];
@@ -12,6 +13,7 @@ interface UseWindowLibraryShelvesProps {
 }
 
 export function useWindowLibraryShelves({
+  activePlatformId,
   favoriteIds,
   filters,
   recentlyPlayedIds,
@@ -32,7 +34,7 @@ export function useWindowLibraryShelves({
           ...filters,
           favoriteIds: recentlyPlayedIds,
           searchQuery,
-        });
+        }, activePlatformId);
 
         if (!isCancelled) {
           const byId = new Map(recentResults.map((game) => [game.id.toString(), game]));
@@ -51,7 +53,7 @@ export function useWindowLibraryShelves({
           ...filters,
           favoriteIds,
           searchQuery,
-        });
+        }, activePlatformId);
         if (!isCancelled) {
           setFavoriteGames(favorites);
         }
@@ -63,7 +65,7 @@ export function useWindowLibraryShelves({
         ...filters,
         isClassic: true,
         searchQuery,
-      });
+      }, activePlatformId);
       if (!isCancelled) {
         setClassicGames(classics);
       }
@@ -74,7 +76,7 @@ export function useWindowLibraryShelves({
     return () => {
       isCancelled = true;
     };
-  }, [favoriteIds, filters, recentlyPlayedIds, searchInput]);
+  }, [activePlatformId, favoriteIds, filters, recentlyPlayedIds, searchInput]);
 
   return useMemo(
     () => ({

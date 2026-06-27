@@ -44,7 +44,7 @@ export function useLibraryBrowserState() {
 
   useEffect(() => {
     async function fetchGames() {
-      const dbGames = await getDbGames(500, 0, effectiveFilters);
+      const dbGames = await getDbGames(500, 0, effectiveFilters, settings.activePlatformId);
       setGames(dbGames);
 
       if (!isRestored) {
@@ -54,7 +54,12 @@ export function useLibraryBrowserState() {
             setFocusedIndex(dbGames.indexOf(found));
             setSelectedGame(found);
           } else {
-            const single = await getDbGames(1, 0, { favoriteIds: [settings.lastSelectedGameId] });
+            const single = await getDbGames(
+              1,
+              0,
+              { favoriteIds: [settings.lastSelectedGameId] },
+              settings.activePlatformId,
+            );
             if (single.length > 0) {
               setSelectedGame(single[0]);
             }
@@ -73,7 +78,15 @@ export function useLibraryBrowserState() {
     }
 
     void fetchGames();
-  }, [effectiveFilters, focusedIndex, isRestored, selectedGame, settings.lastFocusedIndex, settings.lastSelectedGameId]);
+  }, [
+    effectiveFilters,
+    focusedIndex,
+    isRestored,
+    selectedGame,
+    settings.activePlatformId,
+    settings.lastFocusedIndex,
+    settings.lastSelectedGameId,
+  ]);
 
   useEffect(() => {
     if (isRestored) {
@@ -150,7 +163,7 @@ export function useLibraryBrowserState() {
   }, [getFocusedLibraryGame, toggleFavorite]);
 
   const openTigerHeliFromSettings = useCallback(async () => {
-    const tigerHeli = await getDbGames(1, 0, { favoriteIds: ['7933'] });
+    const tigerHeli = await getDbGames(1, 0, { favoriteIds: ['7933'] }, settings.activePlatformId);
     const game = tigerHeli[0];
     if (!game) {
       console.warn('Tiger Heli (7933) was not found in the local database.');
@@ -159,7 +172,7 @@ export function useLibraryBrowserState() {
 
     setViewMode('grid');
     handleGameSelect(game);
-  }, [handleGameSelect]);
+  }, [handleGameSelect, settings.activePlatformId]);
 
   const handleSort = useCallback((column: keyof Game) => {
     const newDirection = sortCol === column && sortDir === 'asc' ? 'desc' : 'asc';

@@ -10,6 +10,7 @@ import { useDetailNavigation, DetailNavigationHook, NavigationConfig } from '../
 import { useInputMode } from '../hooks/useInputMode';
 import { useGamepad } from '../hooks/useGamepad';
 import { useFavorites } from '../hooks/useFavorites';
+import { useSettings } from '../contexts/SettingsContext';
 import { usePopupOpenSound } from '../hooks/usePopupOpenSound';
 import { FullscreenLayoutMetrics, useFullscreenLayoutMetrics } from '../hooks/useFullscreenLayoutMetrics';
 
@@ -49,6 +50,7 @@ const DETAIL_CONFIG: NavigationConfig = {
 };
 
 export function DetailView({ game, onBack }: DetailViewProps) {
+  const { settings } = useSettings();
   const { isFavorite, toggleFavorite } = useFavorites();
   const [fullscreenMedia, setFullscreenMedia] = useState<DetailFullscreenMedia | null>(null);
   const [detailedGame, setDetailedGame] = useState<GameDetail | null>(null);
@@ -76,11 +78,11 @@ export function DetailView({ game, onBack }: DetailViewProps) {
 
   useEffect(() => {
     let cancelled = false;
-    getDbGameDetail(game.id.toString()).then(detail => {
+    getDbGameDetail(game.id.toString(), settings.activePlatformId).then(detail => {
       if (!cancelled && detail) setDetailedGame(detail);
     });
     return () => { cancelled = true; };
-  }, [game.id]);
+  }, [game.id, settings.activePlatformId]);
 
   useGamepad({
     onButtonDown: (button) => {

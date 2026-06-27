@@ -73,6 +73,7 @@ export function BigBoxView({
 
   const { genres, loading, rails, subGenres, totalGameCount } = useBigBoxLibraryData({
     activeRailIndex,
+    activePlatformId: settings.activePlatformId,
     favorites,
     filters,
     recentlyPlayedIds: settings.recentlyPlayedIds,

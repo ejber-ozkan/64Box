@@ -60,20 +60,28 @@ function createPerformanceIndexes(db) {
   }
 }
 
-function ensureGamesPlatformColumns(db, platformId) {
-  if (!tableExists(db, "Games")) {
+function ensureTablePlatformColumns(db, tableName, platformId, sourceIdColumn) {
+  if (!tableExists(db, tableName)) {
     return;
   }
 
-  const columns = tableColumns(db, "Games");
+  const columns = tableColumns(db, tableName);
   for (const column of requiredPlatformColumns) {
     if (!columns.includes(column)) {
-      db.exec(`ALTER TABLE Games ADD COLUMN ${column} TEXT`);
+      db.exec(`ALTER TABLE "${tableName}" ADD COLUMN ${column} TEXT`);
     }
   }
 
-  db.prepare("UPDATE Games SET platform_id = ? WHERE platform_id IS NULL OR platform_id = ''").run(platformId);
-  db.exec("UPDATE Games SET source_game_id = GA_Id WHERE source_game_id IS NULL OR source_game_id = ''");
+  db.prepare(`UPDATE "${tableName}" SET platform_id = ? WHERE platform_id IS NULL OR platform_id = ''`).run(platformId);
+  db.exec(`UPDATE "${tableName}" SET source_game_id = "${sourceIdColumn}" WHERE source_game_id IS NULL OR source_game_id = ''`);
+}
+
+function ensureGamesPlatformColumns(db, platformId) {
+  ensureTablePlatformColumns(db, "Games", platformId, "GA_Id");
+}
+
+function ensureExtrasPlatformColumns(db, platformId) {
+  ensureTablePlatformColumns(db, "Extras", platformId, "GA_Id");
 }
 
 function rebuildPlatformLibraries(db, platformId, platformConfig) {
@@ -127,7 +135,7 @@ function rebuildCoverIndex(db) {
     CREATE TABLE GameCoverIndex AS
     SELECT
       Extras.GA_Id,
-      platform_id,
+      Games.platform_id,
       MIN(Path) as cover_path
     FROM Extras
     LEFT JOIN Games ON Extras.GA_Id = Games.GA_Id
@@ -343,6 +351,7 @@ function convertCsvToSqlite({ inputDir, dbPath, platformId = "c64" }) {
 
     console.log("Creating optimized views...");
     ensureGamesPlatformColumns(db, platformId);
+    ensureExtrasPlatformColumns(db, platformId);
     createPerformanceIndexes(db);
     rebuildPlatformLibraries(db, platformId, platformConfig);
     if (tableExists(db, "Extras")) {
@@ -374,7 +383,9 @@ if (require.main === module) {
 
 module.exports = {
   convertCsvToSqlite,
+  ensureExtrasPlatformColumns,
   ensureGamesPlatformColumns,
+  ensureTablePlatformColumns,
   getArgValue,
   rebuildSearchIndex,
   rebuildPlatformLibraries,

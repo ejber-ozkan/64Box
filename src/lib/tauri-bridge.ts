@@ -485,23 +485,23 @@ export interface GameFilters {
   isClassic?: boolean;
 }
 
-export async function getGenres(): Promise<string[]> {
+export async function getGenres(platformId: string = 'c64'): Promise<string[]> {
   try {
     const { invoke } = await import('@tauri-apps/api/core');
-    return await invoke<string[]>('get_genres');
+    return await invoke<string[]>('get_genres', { platformId });
   } catch {
     // Fallback to the known GB64 genres for browser dev mode
     return ["Adventure","Arcade","Board Game","Brain","Cards","Educational","Gambling","Miscellaneous","Racing","Shoot'em Up","Simulation","Sports","Strategy"];
   }
 }
 
-export async function getSubGenres(genre?: string): Promise<string[]> {
+export async function getSubGenres(genre?: string, platformId: string = 'c64'): Promise<string[]> {
   if (!genre?.trim()) {
     return [];
   }
 
   if (!isTauri()) {
-    const games = await getDbGames(5000, 0, { genre });
+    const games = await getDbGames(5000, 0, { genre }, platformId);
     return Array.from(
       new Set(
         games
@@ -512,21 +512,21 @@ export async function getSubGenres(genre?: string): Promise<string[]> {
   }
 
   try {
-    return await invoke<string[]>('get_sub_genres', { genre });
+    return await invoke<string[]>('get_sub_genres', { genre, platformId });
   } catch (err) {
     console.error('Failed to get sub-genres from database:', err);
     return [];
   }
 }
 
-export async function getDbGameCount(filters?: GameFilters): Promise<number> {
+export async function getDbGameCount(filters?: GameFilters, platformId: string = 'c64'): Promise<number> {
   if (!isTauri()) {
-    const games = await getDbGames(5000, 0, filters);
+    const games = await getDbGames(5000, 0, filters, platformId);
     return games.length;
   }
 
   try {
-    return await invoke<number>('get_db_game_count', { filters });
+    return await invoke<number>('get_db_game_count', { filters, platformId });
   } catch (err) {
     console.error('Failed to get game count from database:', err);
     return 0;
@@ -536,13 +536,16 @@ export async function getDbGameCount(filters?: GameFilters): Promise<number> {
 /**
  * Fetch extras for a specific game from the database.
  */
-export async function getGameExtras(gameId: number): Promise<import('../types/game').Extra[]> {
+export async function getGameExtras(
+  gameId: number,
+  platformId: string = 'c64',
+): Promise<import('../types/game').Extra[]> {
   if (!isTauri()) {
     const { mockGames } = await import('../data/mockGames');
     return (mockGames as unknown as import('../types/game').GameDetail[]).find((game) => game.id === gameId)?.extras ?? [];
   }
   try {
-    const rawExtras = await invoke<RawExtraRow[]>('get_game_extras', { gameId: gameId.toString() });
+    const rawExtras = await invoke<RawExtraRow[]>('get_game_extras', { gameId: gameId.toString(), platformId });
     return rawExtras.map(ex => ({
       id: ex.id,
       name: ex.name,
@@ -559,7 +562,12 @@ export async function getGameExtras(gameId: number): Promise<import('../types/ga
  * Fetch games from the local SQLite database.
  * In browser mode (dev), this falls back to the mock games array.
  */
-export async function getDbGames(limit: number = 50, offset: number = 0, filters?: GameFilters): Promise<import('../types/game').Game[]> {
+export async function getDbGames(
+  limit: number = 50,
+  offset: number = 0,
+  filters?: GameFilters,
+  platformId: string = 'c64',
+): Promise<import('../types/game').Game[]> {
   if (!isTauri()) {
     console.warn('[tauri-bridge] getDbGames: not in Tauri, falling back to mockData');
     const { mockGames } = await import('../data/mockGames');
@@ -639,7 +647,7 @@ export async function getDbGames(limit: number = 50, offset: number = 0, filters
     }));
   }
   try {
-    const rawGames = await invoke<RawGameRow[]>('get_db_games', { limit, offset, filters });
+    const rawGames = await invoke<RawGameRow[]>('get_db_games', { limit, offset, filters, platformId });
     
     return rawGames.map((row) => ({
       id: parseInt(row.id, 10),
@@ -669,7 +677,10 @@ export async function getDbGames(limit: number = 50, offset: number = 0, filters
   }
 }
 
-export async function getDbGameDetail(gameId: string): Promise<import('../types/game').GameDetail | null> {
+export async function getDbGameDetail(
+  gameId: string,
+  platformId: string = 'c64',
+): Promise<import('../types/game').GameDetail | null> {
   if (!isTauri()) {
     const { mockGames } = await import('../data/mockGames');
     const game = mockGames.find((g) => g.id.toString() === gameId);
@@ -677,7 +688,7 @@ export async function getDbGameDetail(gameId: string): Promise<import('../types/
   }
 
   try {
-    const raw = await invoke<RawGameDetailRow | null>('get_game_detail', { gameId });
+    const raw = await invoke<RawGameDetailRow | null>('get_game_detail', { gameId, platformId });
     if (!raw) return null;
     const rawGame = raw.game ?? raw;
 

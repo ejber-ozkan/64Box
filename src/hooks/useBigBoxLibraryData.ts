@@ -18,6 +18,7 @@ export type BigBoxRailCategory = {
 
 interface UseBigBoxLibraryDataProps {
   activeRailIndex: number;
+  activePlatformId: string;
   favorites: string[];
   filters: GameFilters;
   recentlyPlayedIds: Settings['recentlyPlayedIds'];
@@ -29,12 +30,18 @@ const LETTER_RAIL_PAGE_SIZE = 1000;
 const LETTER_RAIL_CACHE = new Map<string, Game[]>();
 
 /** @internal Exported for unit testing */
-export function getAlphabetRailCacheKey(letter: string, filters: GameFilters, searchInput: string) {
+export function getAlphabetRailCacheKey(
+  letter: string,
+  filters: GameFilters,
+  searchInput: string,
+  platformId: string = 'c64',
+) {
   return JSON.stringify({
     genre: filters.genre ?? null,
     subGenre: filters.subGenre ?? null,
     hideAdult: filters.hideAdult ?? null,
     letter,
+    platformId,
     searchInput: searchInput || null,
   });
 }
@@ -52,6 +59,7 @@ export function sortRecentGames(games: Game[], recentlyPlayedIds: readonly strin
 
 export function useBigBoxLibraryData({
   activeRailIndex,
+  activePlatformId,
   favorites,
   filters,
   recentlyPlayedIds,
@@ -68,14 +76,14 @@ export function useBigBoxLibraryData({
   const activeLetterRequestRef = useRef(0);
 
   useEffect(() => {
-    getGenres().then(setGenres);
-  }, []);
+    getGenres(activePlatformId).then(setGenres);
+  }, [activePlatformId]);
 
   useEffect(() => {
     let cancelled = false;
 
     async function loadSubGenres() {
-      const items = await getSubGenres(filters.genre);
+      const items = await getSubGenres(filters.genre, activePlatformId);
       if (!cancelled) {
         setSubGenres(items);
       }
@@ -86,7 +94,7 @@ export function useBigBoxLibraryData({
     return () => {
       cancelled = true;
     };
-  }, [filters.genre]);
+  }, [activePlatformId, filters.genre]);
 
   useEffect(() => {
     async function initData() {
@@ -94,10 +102,10 @@ export function useBigBoxLibraryData({
       try {
         const query = searchInput || undefined;
         const libraryFilters = { ...filters, searchQuery: query };
-        const gameCountPromise = getDbGameCount(libraryFilters);
+        const gameCountPromise = getDbGameCount(libraryFilters, activePlatformId);
 
         if (recentlyPlayedIds.length > 0) {
-          const recent = await getDbGames(100, 0, { ...libraryFilters, favoriteIds: recentlyPlayedIds });
+          const recent = await getDbGames(100, 0, { ...libraryFilters, favoriteIds: recentlyPlayedIds }, activePlatformId);
           setRecentGames(sortRecentGames(recent, recentlyPlayedIds));
         } else {
           setRecentGames([]);
@@ -105,13 +113,13 @@ export function useBigBoxLibraryData({
 
 
         if (favorites.length > 0) {
-          const favoriteResults = await getDbGames(100, 0, { ...libraryFilters, favoriteIds: favorites });
+          const favoriteResults = await getDbGames(100, 0, { ...libraryFilters, favoriteIds: favorites }, activePlatformId);
           setFavoriteGames(favoriteResults);
         } else {
           setFavoriteGames([]);
         }
 
-        const classics = await getDbGames(100, 0, { ...libraryFilters, isClassic: true });
+        const classics = await getDbGames(100, 0, { ...libraryFilters, isClassic: true }, activePlatformId);
         setClassicGames(classics);
 
         if (!query) {
@@ -119,13 +127,13 @@ export function useBigBoxLibraryData({
             BIGBOX_LETTERS.map((letter) => ({
               id: `alpha-${letter}`,
               title: letter === '#' ? '0-9 & Symbols' : `Letter ${letter}`,
-              games: LETTER_RAIL_CACHE.get(getAlphabetRailCacheKey(letter, filters, searchInput)) ?? [],
+              games: LETTER_RAIL_CACHE.get(getAlphabetRailCacheKey(letter, filters, searchInput, activePlatformId)) ?? [],
               type: 'alphabet',
               letter,
             }))
           );
         } else {
-          const results = await getDbGames(500, 0, libraryFilters);
+          const results = await getDbGames(500, 0, libraryFilters, activePlatformId);
           setAlphabetRails([
             {
               id: 'search-results',
@@ -145,7 +153,7 @@ export function useBigBoxLibraryData({
     }
 
     void initData();
-  }, [favorites, filters, recentlyPlayedIds, searchInput]);
+  }, [activePlatformId, favorites, filters, recentlyPlayedIds, searchInput]);
 
   const rails = useMemo<BigBoxRailCategory[]>(() => {
     if (searchInput) {
@@ -170,7 +178,7 @@ export function useBigBoxLibraryData({
       return;
     }
 
-    const cacheKey = getAlphabetRailCacheKey(currentRail.letter, filters, searchInput);
+    const cacheKey = getAlphabetRailCacheKey(currentRail.letter, filters, searchInput, activePlatformId);
     const cachedGames = LETTER_RAIL_CACHE.get(cacheKey);
     if (cachedGames) {
       setAlphabetRails((previous) => {
@@ -200,7 +208,7 @@ export function useBigBoxLibraryData({
             ...filters,
             letter: currentRail.letter,
             searchQuery: searchInput || undefined,
-          });
+          }, activePlatformId);
 
           if (cancelled || activeLetterRequestRef.current !== requestId) {
             return;
@@ -232,7 +240,7 @@ export function useBigBoxLibraryData({
       cancelled = true;
       window.clearTimeout(timeoutId);
     };
-  }, [activeRailIndex, alphabetRails.length, filters, rails, searchInput]);
+  }, [activePlatformId, activeRailIndex, alphabetRails.length, filters, rails, searchInput]);
 
   return {
     genres,

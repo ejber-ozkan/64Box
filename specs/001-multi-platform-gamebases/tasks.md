@@ -105,9 +105,9 @@
 - [X] T044 [US2] Add platform-aware setup wrappers in `src/lib/tauri-bridge.ts`
 - [X] T045 [US2] Update `src/components/setup/DatabaseSetupView.tsx` to show Atari 800 MDB selection and Games/Music/Photos/Screenshots folder fields
 - [X] T046 [US2] Save Atari 800 import status and folder settings through `src/contexts/SettingsContext.tsx`
-- [ ] T047 [US2] Scope `get_db_games`, `get_db_game_count`, `get_game_detail`, `get_game_extras`, `get_genres`, and `get_sub_genres` by active platform in `src-tauri/src/commands/db/games.rs`
-- [ ] T048 [US2] Scope query builder filters by platform in `src-tauri/src/commands/db/querying.rs`
-- [ ] T049 [US2] Add platform-aware query wrapper parameters in `src/lib/tauri-bridge.ts`
+- [X] T047 [US2] Scope `get_db_games`, `get_db_game_count`, `get_game_detail`, `get_game_extras`, `get_genres`, and `get_sub_genres` by active platform in `src-tauri/src/commands/db/games.rs`
+- [X] T048 [US2] Scope query builder filters by platform in `src-tauri/src/commands/db/querying.rs`
+- [X] T049 [US2] Add platform-aware query wrapper parameters in `src/lib/tauri-bridge.ts`
 
 **Checkpoint**: Atari 800 import produces platform-scoped data and does not disturb C64 import or browsing.
 

@@ -357,7 +357,7 @@ export function NeonArchiveDetailLayout({
 
   useEffect(() => {
     let cancelled = false;
-    getGameExtras(game.id).then((items) => {
+    getGameExtras(game.id, settings.activePlatformId).then((items) => {
       if (!cancelled) {
         setExtras(items);
       }
@@ -366,7 +366,7 @@ export function NeonArchiveDetailLayout({
     return () => {
       cancelled = true;
     };
-  }, [game.id]);
+  }, [game.id, settings.activePlatformId]);
 
   const groupedExtras = useMemo(() => groupExtras(extras), [extras]);
   const launchableExtras = useMemo(

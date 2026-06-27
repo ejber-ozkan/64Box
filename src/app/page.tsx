@@ -71,6 +71,7 @@ function LibraryApp() {
   const [isPlatformImporting, setIsPlatformImporting] = useState(false);
   const previousFullscreenRef = useRef(settings.isFullscreen);
   const { classicGames, favoriteGames, recentGames } = useWindowLibraryShelves({
+    activePlatformId: settings.activePlatformId,
     favoriteIds: favorites,
     filters,
     recentlyPlayedIds: settings.recentlyPlayedIds,
@@ -80,14 +81,14 @@ function LibraryApp() {
   const activePlatformSettings = settings.platformSettings[settings.activePlatformId];
 
   useEffect(() => {
-    void getGenres().then(setGenres);
-  }, []);
+    void getGenres(settings.activePlatformId).then(setGenres);
+  }, [settings.activePlatformId]);
 
   useEffect(() => {
     let cancelled = false;
 
     async function loadSubGenres() {
-      const items = await getSubGenres(filters.genre);
+      const items = await getSubGenres(filters.genre, settings.activePlatformId);
       if (!cancelled) {
         setSubGenres(items);
       }
@@ -98,7 +99,7 @@ function LibraryApp() {
     return () => {
       cancelled = true;
     };
-  }, [filters.genre]);
+  }, [filters.genre, settings.activePlatformId]);
 
   useEffect(() => {
     const timeoutId = window.setTimeout(() => {

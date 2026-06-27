@@ -7,7 +7,7 @@ const FILTERED_IDS_QUERY_PREFIX: &str = "
             g.GA_Id as id,
             g.Name as sort_name
         FROM Games g
-        JOIN GameView gv ON gv.id = g.GA_Id
+        JOIN GameView gv ON gv.id = g.GA_Id AND gv.platformId = g.platform_id
         LEFT JOIN Programmers pr ON g.PR_Id = pr.PR_Id
         LEFT JOIN Artists ar ON g.AR_Id = ar.AR_Id
         WHERE 1=1";
@@ -52,12 +52,16 @@ struct GameQueryBuilder {
 }
 
 impl GameQueryBuilder {
-    fn new(search_mode: SearchMode) -> Self {
+    fn new(platform_id: &str, search_mode: SearchMode) -> Self {
         Self {
             filter_query: FILTERED_IDS_QUERY_PREFIX.to_string(),
-            params: Vec::new(),
+            params: vec![platform_id.to_string()],
             search_mode,
         }
+    }
+
+    fn push_platform_filter(&mut self) {
+        self.filter_query.push_str(" AND gv.platformId = ?");
     }
 
     fn push_search_filter(&mut self, search_query: Option<&str>) {
@@ -76,9 +80,11 @@ impl GameQueryBuilder {
                     " AND gv.id IN (
                         SELECT id
                         FROM GameSearchIndex
-                        WHERE GameSearchIndex MATCH ?
+                        WHERE platform_id = ?
+                          AND GameSearchIndex MATCH ?
                     )",
                 );
+                self.params.push(self.params[0].clone());
                 self.params.push(match_query);
             }
             SearchMode::Like => {
@@ -178,12 +184,14 @@ fn apply_game_filters(builder: &mut GameQueryBuilder, filters: GameFilters) -> b
 }
 
 pub(crate) fn build_game_query(
+    platform_id: &str,
     limit: usize,
     offset: usize,
     filters: Option<GameFilters>,
     search_mode: SearchMode,
 ) -> Option<(String, Vec<String>)> {
-    let mut builder = GameQueryBuilder::new(search_mode);
+    let mut builder = GameQueryBuilder::new(platform_id, search_mode);
+    builder.push_platform_filter();
 
     if let Some(filters) = filters {
         if !apply_game_filters(&mut builder, filters) {
@@ -195,10 +203,12 @@ pub(crate) fn build_game_query(
 }
 
 fn build_game_count_query(
+    platform_id: &str,
     filters: Option<GameFilters>,
     search_mode: SearchMode,
 ) -> Option<(String, Vec<String>)> {
-    let mut builder = GameQueryBuilder::new(search_mode);
+    let mut builder = GameQueryBuilder::new(platform_id, search_mode);
+    builder.push_platform_filter();
 
     if let Some(filters) = filters {
         if !apply_game_filters(&mut builder, filters) {
@@ -211,6 +221,7 @@ fn build_game_count_query(
 
 pub(crate) fn load_ordered_game_ids_with_fallback(
     conn: &Connection,
+    platform_id: &str,
     limit: usize,
     offset: usize,
     filters: Option<GameFilters>,
@@ -219,7 +230,9 @@ pub(crate) fn load_ordered_game_ids_with_fallback(
 
     let load_ids =
         |search_mode: SearchMode, filters: Option<GameFilters>| -> Result<Vec<String>, String> {
-            let Some((query, params)) = build_game_query(limit, offset, filters, search_mode) else {
+            let Some((query, params)) =
+                build_game_query(platform_id, limit, offset, filters, search_mode)
+            else {
                 return Ok(Vec::new());
             };
 
@@ -245,13 +258,15 @@ pub(crate) fn load_ordered_game_ids_with_fallback(
 
 pub(crate) fn load_game_count_with_fallback(
     conn: &Connection,
+    platform_id: &str,
     filters: Option<GameFilters>,
 ) -> Result<usize, String> {
     let filters_for_retry = filters.clone();
 
     let load_count =
         |search_mode: SearchMode, filters: Option<GameFilters>| -> Result<usize, String> {
-            let Some((query, params)) = build_game_count_query(filters, search_mode) else {
+            let Some((query, params)) = build_game_count_query(platform_id, filters, search_mode)
+            else {
                 return Ok(0);
             };
 

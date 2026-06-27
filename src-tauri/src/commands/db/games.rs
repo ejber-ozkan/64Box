@@ -7,6 +7,7 @@ use super::querying::{
 };
 
 pub(crate) fn build_game_summary_query(
+    platform_id: &str,
     ids: &[String],
     include_cover_index: bool,
 ) -> (String, Vec<String>) {
@@ -22,7 +23,7 @@ pub(crate) fn build_game_summary_query(
         "NULL as cover_path,"
     };
     let cover_join = if include_cover_index {
-        "LEFT JOIN GameCoverIndex cover ON cover.GA_Id = g.GA_Id"
+        "LEFT JOIN GameCoverIndex cover ON cover.GA_Id = g.GA_Id AND cover.platform_id = gv.platformId"
     } else {
         ""
     };
@@ -39,15 +40,19 @@ pub(crate) fn build_game_summary_query(
             {cover_select}
             g.Adult as isAdult
         FROM requested_ids
-        JOIN GameView gv ON gv.id = requested_ids.id
-        JOIN Games g ON gv.id = g.GA_Id 
+        JOIN GameView gv ON gv.id = requested_ids.id AND gv.platformId = ?
+        JOIN Games g ON gv.id = g.GA_Id AND g.platform_id = gv.platformId
         {cover_join}
         ORDER BY requested_ids.order_index"
     );
-    (query, ids.to_vec())
+    let mut params = Vec::with_capacity(ids.len() + 1);
+    params.extend(ids.iter().cloned());
+    params.push(platform_id.to_string());
+    (query, params)
 }
 
 pub(crate) fn build_game_detail_query(
+    platform_id: &str,
     id: &str,
     include_cover_index: bool,
 ) -> (String, Vec<String>) {
@@ -57,7 +62,7 @@ pub(crate) fn build_game_detail_query(
         "NULL as cover_path,"
     };
     let cover_join = if include_cover_index {
-        "LEFT JOIN GameCoverIndex cover ON cover.GA_Id = g.GA_Id"
+        "LEFT JOIN GameCoverIndex cover ON cover.GA_Id = g.GA_Id AND cover.platform_id = gv.platformId"
     } else {
         ""
     };
@@ -88,14 +93,15 @@ pub(crate) fn build_game_detail_query(
             g.V_PalNTSC as v_pal_ntsc,
             g.MemoText as memo
         FROM GameView gv
-        JOIN Games g ON gv.id = g.GA_Id 
+        JOIN Games g ON gv.id = g.GA_Id AND g.platform_id = gv.platformId
         LEFT JOIN Musicians mu ON g.MU_Id = mu.MU_Id
         {cover_join}
         LEFT JOIN Programmers pr ON g.PR_Id = pr.PR_Id
         LEFT JOIN Artists ar ON g.AR_Id = ar.AR_Id
-        WHERE gv.id = ?"
+        WHERE gv.id = ?
+          AND gv.platformId = ?"
     );
-    (query, vec![id.to_string()])
+    (query, vec![id.to_string(), platform_id.to_string()])
 }
 
 fn map_game_row(row: &Row<'_>) -> rusqlite::Result<GameRow> {
@@ -153,37 +159,43 @@ fn map_game_detail_row(row: &Row<'_>) -> rusqlite::Result<GameDetailRow> {
     })
 }
 
-pub async fn get_genres() -> Result<Vec<String>, String> {
+pub async fn get_genres(platform_id: Option<String>) -> Result<Vec<String>, String> {
+    let platform_id = platform_id.unwrap_or_else(|| "c64".to_string());
     let conn = open_db_connection("DB error")?;
     let mut stmt = conn
-        .prepare("SELECT DISTINCT parentGenre FROM GameView WHERE parentGenre != '' ORDER BY parentGenre")
+        .prepare("SELECT DISTINCT parentGenre FROM GameView WHERE platformId = ?1 AND parentGenre != '' ORDER BY parentGenre")
         .map_err(|e| e.to_string())?;
     let genres: Vec<String> = stmt
-        .query_map([], |row| row.get(0))
+        .query_map([platform_id], |row| row.get(0))
         .map_err(|e| e.to_string())?
         .filter_map(|r| r.ok())
         .collect();
     Ok(genres)
 }
 
-pub async fn get_sub_genres(genre: Option<String>) -> Result<Vec<String>, String> {
+pub async fn get_sub_genres(
+    genre: Option<String>,
+    platform_id: Option<String>,
+) -> Result<Vec<String>, String> {
     let Some(selected_genre) = genre.filter(|value| !value.trim().is_empty()) else {
         return Ok(Vec::new());
     };
+    let platform_id = platform_id.unwrap_or_else(|| "c64".to_string());
 
     let conn = open_db_connection("DB error")?;
     let mut stmt = conn
         .prepare(
             "SELECT DISTINCT subGenre
              FROM GameView
-             WHERE parentGenre = ?1
+             WHERE platformId = ?1
+               AND parentGenre = ?2
                AND subGenre IS NOT NULL
                AND TRIM(subGenre) != ''
              ORDER BY subGenre COLLATE NOCASE",
         )
         .map_err(|e| e.to_string())?;
     let sub_genres: Vec<String> = stmt
-        .query_map([selected_genre], |row| row.get(0))
+        .query_map([platform_id, selected_genre], |row| row.get(0))
         .map_err(|e| e.to_string())?
         .filter_map(|r| r.ok())
         .collect();
@@ -194,10 +206,13 @@ pub async fn get_db_games(
     limit: Option<usize>,
     offset: Option<usize>,
     filters: Option<GameFilters>,
+    platform_id: Option<String>,
 ) -> Result<Vec<GameRow>, String> {
+    let platform_id = platform_id.unwrap_or_else(|| "c64".to_string());
     let conn = open_db_connection("Database error")?;
     let ordered_ids = load_ordered_game_ids_with_fallback(
         &conn,
+        &platform_id,
         limit.unwrap_or(50),
         offset.unwrap_or(0),
         filters,
@@ -208,7 +223,8 @@ pub async fn get_db_games(
     }
 
     let include_cover_index = sqlite_table_exists(&conn, "GameCoverIndex")?;
-    let (details_query, detail_params) = build_game_summary_query(&ordered_ids, include_cover_index);
+    let (details_query, detail_params) =
+        build_game_summary_query(&platform_id, &ordered_ids, include_cover_index);
     let mut details_stmt = conn
         .prepare(&details_query)
         .map_err(|e| format!("Prepare error: {e}"))?;
@@ -224,10 +240,14 @@ pub async fn get_db_games(
     Ok(games)
 }
 
-pub async fn get_game_detail(game_id: String) -> Result<Option<GameDetailRow>, String> {
+pub async fn get_game_detail(
+    game_id: String,
+    platform_id: Option<String>,
+) -> Result<Option<GameDetailRow>, String> {
+    let platform_id = platform_id.unwrap_or_else(|| "c64".to_string());
     let conn = open_db_connection("Database error")?;
     let include_cover_index = sqlite_table_exists(&conn, "GameCoverIndex")?;
-    let (query, params) = build_game_detail_query(&game_id, include_cover_index);
+    let (query, params) = build_game_detail_query(&platform_id, &game_id, include_cover_index);
     
     let mut stmt = conn.prepare(&query).map_err(|e| format!("Prepare error: {e}"))?;
     
@@ -241,19 +261,33 @@ pub async fn get_game_detail(game_id: String) -> Result<Option<GameDetailRow>, S
     }
 }
 
-pub async fn get_db_game_count(filters: Option<GameFilters>) -> Result<usize, String> {
+pub async fn get_db_game_count(
+    filters: Option<GameFilters>,
+    platform_id: Option<String>,
+) -> Result<usize, String> {
+    let platform_id = platform_id.unwrap_or_else(|| "c64".to_string());
     let conn = open_db_connection("Database error")?;
-    load_game_count_with_fallback(&conn, filters)
+    load_game_count_with_fallback(&conn, &platform_id, filters)
 }
 
-pub async fn get_game_extras(game_id: String) -> Result<Vec<ExtraRow>, String> {
+pub async fn get_game_extras(
+    game_id: String,
+    platform_id: Option<String>,
+) -> Result<Vec<ExtraRow>, String> {
+    let platform_id = platform_id.unwrap_or_else(|| "c64".to_string());
     let conn = open_db_connection("DB error")?;
     let mut stmt = conn
-        .prepare("SELECT EX_Id, Name, Path, Type FROM Extras WHERE GA_Id = ? ORDER BY DisplayOrder ASC")
+        .prepare(
+            "SELECT e.EX_Id, e.Name, e.Path, e.Type
+             FROM Extras e
+             WHERE e.GA_Id = ?1
+               AND e.platform_id = ?2
+             ORDER BY e.DisplayOrder ASC",
+        )
         .map_err(|e| e.to_string())?;
 
     let extra_iter = stmt
-        .query_map([game_id], |row| {
+        .query_map([game_id, platform_id], |row| {
             Ok(ExtraRow {
                 id: row.get(0)?,
                 name: row.get(1)?,
