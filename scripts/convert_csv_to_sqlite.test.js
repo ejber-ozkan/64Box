@@ -70,6 +70,10 @@ describe("convert CSV to SQLite platform support", () => {
         platform_id: "atari800",
         source_game_id: "42",
       });
+      expect(db.prepare("SELECT platform_id, source_game_id FROM Developers").get()).toEqual({
+        platform_id: "atari800",
+        source_game_id: "1",
+      });
       expect(db.prepare("SELECT platformId, sourceGameId, sidFilename FROM GameView").get()).toEqual({
         platformId: "atari800",
         sourceGameId: "42",

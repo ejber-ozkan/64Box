@@ -10,6 +10,20 @@ const {
   supportObjects,
 } = require("./sqlite_support_config");
 
+const platformScopedTables = [
+  ["Games", "GA_Id"],
+  ["Extras", "GA_Id"],
+  ["Years", "YE_Id"],
+  ["Genres", "GE_Id"],
+  ["PGenres", "PG_Id"],
+  ["Developers", "DE_Id"],
+  ["Publishers", "PU_Id"],
+  ["Musicians", "MU_Id"],
+  ["Languages", "LA_Id"],
+  ["Programmers", "PR_Id"],
+  ["Artists", "AR_Id"],
+];
+
 function getArgValue(flag, argv = process.argv) {
   const index = argv.indexOf(flag);
   if (index === -1 || index === argv.length - 1) {
@@ -84,6 +98,12 @@ function ensureExtrasPlatformColumns(db, platformId) {
   ensureTablePlatformColumns(db, "Extras", platformId, "GA_Id");
 }
 
+function ensureImportPlatformColumns(db, platformId) {
+  for (const [tableName, sourceIdColumn] of platformScopedTables) {
+    ensureTablePlatformColumns(db, tableName, platformId, sourceIdColumn);
+  }
+}
+
 function rebuildPlatformLibraries(db, platformId, platformConfig) {
   console.log("Creating platform library metadata...");
   db.exec(`
@@ -135,10 +155,11 @@ function rebuildCoverIndex(db) {
     CREATE TABLE GameCoverIndex AS
     SELECT
       Extras.GA_Id,
-      Games.platform_id,
+      COALESCE(Extras.platform_id, Games.platform_id, 'c64') as platform_id,
       MIN(Path) as cover_path
     FROM Extras
     LEFT JOIN Games ON Extras.GA_Id = Games.GA_Id
+      AND COALESCE(Extras.platform_id, 'c64') = COALESCE(Games.platform_id, 'c64')
     WHERE LOWER(REPLACE(Path, '\\\\', '/')) LIKE 'cover/%'
       AND (
         LOWER(Path) LIKE '%.jpg'
@@ -148,7 +169,7 @@ function rebuildCoverIndex(db) {
         OR LOWER(Path) LIKE '%.gif'
         OR LOWER(Path) LIKE '%.bmp'
       )
-    GROUP BY Extras.GA_Id, Games.platform_id
+    GROUP BY Extras.GA_Id, COALESCE(Extras.platform_id, Games.platform_id, 'c64')
   `);
   db.exec(
     "CREATE INDEX IF NOT EXISTS idx_game_cover_index_platform_ga_id ON GameCoverIndex(platform_id, GA_Id)"
@@ -184,13 +205,13 @@ SELECT
   mu.Musician as musician_name,
   la.Language as languages
 FROM Games g
-LEFT JOIN Years y ON g.YE_Id = y.YE_Id
-LEFT JOIN Genres ge ON g.GE_Id = ge.GE_Id
-LEFT JOIN PGenres pg ON ge.PG_Id = pg.PG_Id
-LEFT JOIN Developers de ON g.DE_Id = de.DE_Id
-LEFT JOIN Publishers pu ON g.PU_Id = pu.PU_Id
-LEFT JOIN Musicians mu ON g.MU_Id = mu.MU_Id
-LEFT JOIN Languages la ON g.LA_Id = la.LA_Id;
+LEFT JOIN Years y ON g.YE_Id = y.YE_Id AND y.platform_id = g.platform_id
+LEFT JOIN Genres ge ON g.GE_Id = ge.GE_Id AND ge.platform_id = g.platform_id
+LEFT JOIN PGenres pg ON ge.PG_Id = pg.PG_Id AND pg.platform_id = g.platform_id
+LEFT JOIN Developers de ON g.DE_Id = de.DE_Id AND de.platform_id = g.platform_id
+LEFT JOIN Publishers pu ON g.PU_Id = pu.PU_Id AND pu.platform_id = g.platform_id
+LEFT JOIN Musicians mu ON g.MU_Id = mu.MU_Id AND mu.platform_id = g.platform_id
+LEFT JOIN Languages la ON g.LA_Id = la.LA_Id AND la.platform_id = g.platform_id;
 `);
 }
 
@@ -236,8 +257,8 @@ function rebuildSearchIndex(db) {
       ifnull(ar.Artist, '')
     FROM GameView gv
     JOIN Games g ON gv.id = g.GA_Id AND gv.platformId = g.platform_id
-    LEFT JOIN Programmers pr ON g.PR_Id = pr.PR_Id
-    LEFT JOIN Artists ar ON g.AR_Id = ar.AR_Id
+    LEFT JOIN Programmers pr ON g.PR_Id = pr.PR_Id AND pr.platform_id = g.platform_id
+    LEFT JOIN Artists ar ON g.AR_Id = ar.AR_Id AND ar.platform_id = g.platform_id
   `);
   db.exec("INSERT INTO GameSearchIndex(GameSearchIndex) VALUES('optimize')");
 }
@@ -350,8 +371,7 @@ function convertCsvToSqlite({ inputDir, dbPath, platformId = "c64" }) {
     const importedFiles = importCsvFiles(db, inputDir);
 
     console.log("Creating optimized views...");
-    ensureGamesPlatformColumns(db, platformId);
-    ensureExtrasPlatformColumns(db, platformId);
+    ensureImportPlatformColumns(db, platformId);
     createPerformanceIndexes(db);
     rebuildPlatformLibraries(db, platformId, platformConfig);
     if (tableExists(db, "Extras")) {

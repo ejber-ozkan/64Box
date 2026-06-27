@@ -179,4 +179,19 @@ describe('SettingsContext', () => {
     expect(synced.atari800.library.sourceMdbPath).toBe('E:/Atari/Atari 800 v12.mdb');
     expect(synced.atari800.library.gameCount).toBe(7288);
   });
+
+  test('ignores unsupported backend platform import status values', () => {
+    const platformSettings = createDefaultPlatformSettingsMap();
+
+    const synced = applyPlatformImportStatuses(platformSettings, [
+      {
+        platformId: 'atari800',
+        importStatus: 'unexpected',
+        gameCount: 7288,
+      },
+    ]);
+
+    expect(synced.atari800.library.importStatus).toBe('notImported');
+    expect(synced.atari800.library.gameCount).toBe(0);
+  });
 });

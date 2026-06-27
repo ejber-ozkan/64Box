@@ -7,7 +7,7 @@ import {
   isPlatformId,
   SUPPORTED_PLATFORMS,
 } from '../lib/platform-capabilities';
-import type { PlatformId, PlatformSettings } from '../types/platform';
+import type { PlatformId, PlatformImportStatus, PlatformSettings } from '../types/platform';
 
 export interface Settings {
   screenshotsPath: string;
@@ -194,6 +194,10 @@ type PlatformImportStatusSnapshot = {
   lastImportError?: string | null;
 };
 
+function isPlatformImportStatus(value: string): value is PlatformImportStatus {
+  return ['notImported', 'importing', 'imported', 'failed'].includes(value);
+}
+
 export function applyPlatformImportStatuses(
   platformSettings: Record<PlatformId, PlatformSettings>,
   statuses: PlatformImportStatusSnapshot[],
@@ -202,6 +206,9 @@ export function applyPlatformImportStatuses(
 
   statuses.forEach((status) => {
     if (!isPlatformId(status.platformId)) {
+      return;
+    }
+    if (!isPlatformImportStatus(status.importStatus)) {
       return;
     }
 

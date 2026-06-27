@@ -130,14 +130,29 @@ const QUERY_SUPPORT_INDEXES: &[(&str, &[&str], &str)] = &[
     ),
 ];
 
+const PLATFORM_SCOPED_TABLES: &[(&str, &str)] = &[
+    ("Games", "GA_Id"),
+    ("Extras", "GA_Id"),
+    ("Years", "YE_Id"),
+    ("Genres", "GE_Id"),
+    ("PGenres", "PG_Id"),
+    ("Developers", "DE_Id"),
+    ("Publishers", "PU_Id"),
+    ("Musicians", "MU_Id"),
+    ("Languages", "LA_Id"),
+    ("Programmers", "PR_Id"),
+    ("Artists", "AR_Id"),
+];
+
 const COVER_INDEX_POPULATE_SQL: &str = "
     INSERT OR REPLACE INTO GameCoverIndex (GA_Id, platform_id, cover_path)
     SELECT
         Extras.GA_Id,
-        COALESCE(Games.platform_id, 'c64') as platform_id,
+        COALESCE(Extras.platform_id, Games.platform_id, 'c64') as platform_id,
         MIN(Extras.Path) as cover_path
     FROM Extras
     LEFT JOIN Games ON Extras.GA_Id = Games.GA_Id
+        AND COALESCE(Extras.platform_id, 'c64') = COALESCE(Games.platform_id, 'c64')
     WHERE LOWER(REPLACE(Path, '\\', '/')) LIKE 'cover/%'
       AND (
           LOWER(Path) LIKE '%.jpg'
@@ -147,7 +162,7 @@ const COVER_INDEX_POPULATE_SQL: &str = "
           OR LOWER(Path) LIKE '%.gif'
           OR LOWER(Path) LIKE '%.bmp'
       )
-    GROUP BY Extras.GA_Id, COALESCE(Games.platform_id, 'c64')
+    GROUP BY Extras.GA_Id, COALESCE(Extras.platform_id, Games.platform_id, 'c64')
 ";
 
 const FTS_INDEX_POPULATE_SQL: &str = "
@@ -174,8 +189,8 @@ const FTS_INDEX_POPULATE_SQL: &str = "
         COALESCE(ar.Artist, '')
     FROM GameView gv
     JOIN Games g ON gv.id = g.GA_Id AND gv.platformId = g.platform_id
-    LEFT JOIN Programmers pr ON g.PR_Id = pr.PR_Id
-    LEFT JOIN Artists ar ON g.AR_Id = ar.AR_Id
+    LEFT JOIN Programmers pr ON g.PR_Id = pr.PR_Id AND pr.platform_id = g.platform_id
+    LEFT JOIN Artists ar ON g.AR_Id = ar.AR_Id AND ar.platform_id = g.platform_id
 ";
 
 const GAME_VIEW_SQL: &str = "
@@ -205,13 +220,13 @@ SELECT
     mu.Musician as musician_name,
     la.Language as languages
 FROM Games g
-LEFT JOIN Years y ON g.YE_Id = y.YE_Id
-LEFT JOIN Genres ge ON g.GE_Id = ge.GE_Id
-LEFT JOIN PGenres pg ON ge.PG_Id = pg.PG_Id
-LEFT JOIN Developers de ON g.DE_Id = de.DE_Id
-LEFT JOIN Publishers pu ON g.PU_Id = pu.PU_Id
-LEFT JOIN Musicians mu ON g.MU_Id = mu.MU_Id
-LEFT JOIN Languages la ON g.LA_Id = la.LA_Id;
+LEFT JOIN Years y ON g.YE_Id = y.YE_Id AND y.platform_id = g.platform_id
+LEFT JOIN Genres ge ON g.GE_Id = ge.GE_Id AND ge.platform_id = g.platform_id
+LEFT JOIN PGenres pg ON ge.PG_Id = pg.PG_Id AND pg.platform_id = g.platform_id
+LEFT JOIN Developers de ON g.DE_Id = de.DE_Id AND de.platform_id = g.platform_id
+LEFT JOIN Publishers pu ON g.PU_Id = pu.PU_Id AND pu.platform_id = g.platform_id
+LEFT JOIN Musicians mu ON g.MU_Id = mu.MU_Id AND mu.platform_id = g.platform_id
+LEFT JOIN Languages la ON g.LA_Id = la.LA_Id AND la.platform_id = g.platform_id;
 ";
 
 const EMBEDDED_MDB_EXPORT_SCRIPT: &str = r#"
@@ -331,9 +346,8 @@ fn sqlite_object_exists(
         .map(|_| "?")
         .collect::<Vec<_>>()
         .join(",");
-    let query = format!(
-        "SELECT 1 FROM sqlite_master WHERE name = ? AND type IN ({placeholders}) LIMIT 1"
-    );
+    let query =
+        format!("SELECT 1 FROM sqlite_master WHERE name = ? AND type IN ({placeholders}) LIMIT 1");
 
     let mut params = Vec::with_capacity(object_types.len() + 1);
     params.push(object_name.to_string());
@@ -358,7 +372,17 @@ fn table_has_columns(
 }
 
 fn table_columns(conn: &Connection, table_name: &str) -> Result<Vec<String>, String> {
-    let pragma = format!("PRAGMA table_info('{table_name}')");
+    table_columns_in_schema(conn, "main", table_name)
+}
+
+fn table_columns_in_schema(
+    conn: &Connection,
+    schema_name: &str,
+    table_name: &str,
+) -> Result<Vec<String>, String> {
+    let quoted_schema = quote_identifier(schema_name)?;
+    let quoted_table = quote_identifier(table_name)?;
+    let pragma = format!("PRAGMA {quoted_schema}.table_info({quoted_table})");
     let mut stmt = conn.prepare(&pragma).map_err(|e| e.to_string())?;
     let columns = stmt
         .query_map([], |row| row.get::<_, String>(1))
@@ -390,26 +414,54 @@ fn ensure_table_platform_columns(
         return Ok(());
     }
 
+    let quoted_table_name = quote_identifier(table_name)?;
     if !table_has_columns(conn, table_name, &["platform_id"])? {
-        let sql = format!("ALTER TABLE {table_name} ADD COLUMN platform_id TEXT");
+        let sql = format!("ALTER TABLE {quoted_table_name} ADD COLUMN platform_id TEXT");
         conn.execute(&sql, []).map_err(|e| e.to_string())?;
     }
     if !table_has_columns(conn, table_name, &["source_game_id"])? {
-        let sql = format!("ALTER TABLE {table_name} ADD COLUMN source_game_id TEXT");
+        let sql = format!("ALTER TABLE {quoted_table_name} ADD COLUMN source_game_id TEXT");
         conn.execute(&sql, []).map_err(|e| e.to_string())?;
     }
 
     let platform_sql = format!(
-        "UPDATE {table_name} SET platform_id = ?1 WHERE platform_id IS NULL OR platform_id = ''"
+        "UPDATE {quoted_table_name} SET platform_id = ?1 WHERE platform_id IS NULL OR platform_id = ''"
     );
     conn.execute(&platform_sql, [platform_id])
         .map_err(|e| e.to_string())?;
 
     if table_has_columns(conn, table_name, &[source_id_column])? {
+        let quoted_source_id_column = quote_identifier(source_id_column)?;
         let source_sql = format!(
-            "UPDATE {table_name} SET source_game_id = {source_id_column} WHERE source_game_id IS NULL OR source_game_id = ''"
+            "UPDATE {quoted_table_name} SET source_game_id = {quoted_source_id_column} WHERE source_game_id IS NULL OR source_game_id = ''"
         );
         conn.execute(&source_sql, []).map_err(|e| e.to_string())?;
+    }
+
+    Ok(())
+}
+
+fn infer_legacy_platform_id(
+    conn: &Connection,
+    fallback_platform_id: &str,
+) -> Result<String, String> {
+    if !table_exists(conn, "Games")? || !table_has_columns(conn, "Games", &["platform_id"])? {
+        return Ok(fallback_platform_id.to_string());
+    }
+
+    conn.query_row(
+        "SELECT platform_id FROM Games WHERE platform_id IS NOT NULL AND platform_id != '' GROUP BY platform_id HAVING COUNT(*) > 0 LIMIT 1",
+        [],
+        |row| row.get::<_, String>(0),
+    )
+    .optional()
+    .map(|value| value.unwrap_or_else(|| fallback_platform_id.to_string()))
+    .map_err(|error| error.to_string())
+}
+
+fn ensure_import_platform_columns(conn: &Connection, platform_id: &str) -> Result<(), String> {
+    for (table_name, source_id_column) in PLATFORM_SCOPED_TABLES {
+        ensure_table_platform_columns(conn, table_name, source_id_column, platform_id)?;
     }
 
     Ok(())
@@ -418,7 +470,8 @@ fn ensure_table_platform_columns(
 fn recreate_game_view(conn: &Connection) -> Result<(), String> {
     conn.execute_batch("DROP VIEW IF EXISTS GameView")
         .map_err(|e| e.to_string())?;
-    conn.execute_batch(GAME_VIEW_SQL).map_err(|e| e.to_string())?;
+    conn.execute_batch(GAME_VIEW_SQL)
+        .map_err(|e| e.to_string())?;
     Ok(())
 }
 
@@ -427,8 +480,11 @@ fn ensure_game_view(conn: &Connection) -> Result<(), String> {
         && !table_has_columns(conn, "GameView", &["platformId", "sourceGameId"])?
     {
         if !table_has_columns(conn, "GameView", &["platformId"])? {
-            conn.execute("ALTER TABLE GameView ADD COLUMN platformId TEXT DEFAULT 'c64'", [])
-                .map_err(|e| e.to_string())?;
+            conn.execute(
+                "ALTER TABLE GameView ADD COLUMN platformId TEXT DEFAULT 'c64'",
+                [],
+            )
+            .map_err(|e| e.to_string())?;
         }
         if !table_has_columns(conn, "GameView", &["sourceGameId"])? {
             conn.execute("ALTER TABLE GameView ADD COLUMN sourceGameId TEXT", [])
@@ -595,8 +651,8 @@ fn rebuild_search_index(conn: &Connection) -> Result<(), String> {
 }
 
 pub fn ensure_query_support_objects(conn: &Connection) -> Result<(), String> {
-    ensure_table_platform_columns(conn, "Games", "GA_Id", "c64")?;
-    ensure_table_platform_columns(conn, "Extras", "GA_Id", "c64")?;
+    let legacy_platform_id = infer_legacy_platform_id(conn, "c64")?;
+    ensure_import_platform_columns(conn, &legacy_platform_id)?;
     ensure_game_view(conn)?;
     ensure_query_indexes(conn)?;
     ensure_cover_index(conn)?;
@@ -657,16 +713,14 @@ fn list_csv_files(export_dir: &Path) -> Result<Vec<PathBuf>, String> {
     Ok(files)
 }
 
-fn import_single_csv_table(
-    conn: &mut Connection,
-    csv_path: &Path,
-) -> Result<bool, String> {
+fn import_single_csv_table(conn: &mut Connection, csv_path: &Path) -> Result<bool, String> {
     let table_name = csv_path
         .file_stem()
         .and_then(|value| value.to_str())
         .ok_or_else(|| format!("Invalid CSV filename: {}", csv_path.display()))?;
     let quoted_table_name = quote_identifier(table_name)?;
-    let file = fs::File::open(csv_path).map_err(|error| format!("{}: {error}", csv_path.display()))?;
+    let file =
+        fs::File::open(csv_path).map_err(|error| format!("{}: {error}", csv_path.display()))?;
     let mut reader = BufReader::new(file);
     let Some(header_line) = read_csv_record(&mut reader, csv_path)? else {
         return Ok(false);
@@ -687,7 +741,8 @@ fn import_single_csv_table(
     }
 
     let drop_sql = format!("DROP TABLE IF EXISTS {quoted_table_name}");
-    conn.execute(&drop_sql, []).map_err(|error| error.to_string())?;
+    conn.execute(&drop_sql, [])
+        .map_err(|error| error.to_string())?;
 
     let column_definitions = header_values
         .iter()
@@ -695,7 +750,8 @@ fn import_single_csv_table(
         .collect::<Result<Vec<_>, _>>()?
         .join(", ");
     let create_sql = format!("CREATE TABLE {quoted_table_name} ({column_definitions})");
-    conn.execute(&create_sql, []).map_err(|error| error.to_string())?;
+    conn.execute(&create_sql, [])
+        .map_err(|error| error.to_string())?;
 
     let quoted_columns = header_values
         .iter()
@@ -739,7 +795,10 @@ fn normalize_record_values(record: Vec<String>, width: usize) -> Vec<String> {
         .collect()
 }
 
-fn read_csv_record<R: BufRead>(reader: &mut R, source_path: &Path) -> Result<Option<String>, String> {
+fn read_csv_record<R: BufRead>(
+    reader: &mut R,
+    source_path: &Path,
+) -> Result<Option<String>, String> {
     let mut record = String::new();
 
     loop {
@@ -923,29 +982,317 @@ fn create_import_temp_db_path(db_path: &Path) -> Result<PathBuf, String> {
     Ok(db_path.with_file_name(format!("{file_name}.importing.{timestamp}")))
 }
 
-fn replace_database_atomically(temp_db_path: &Path, live_db_path: &Path) -> Result<(), String> {
-    let backup_db_path = live_db_path.with_extension("sqlite.backup");
+fn table_exists_in_schema(
+    conn: &Connection,
+    schema_name: &str,
+    table_name: &str,
+) -> Result<bool, String> {
+    validate_identifier(schema_name)?;
+    conn.query_row(
+        &format!(
+            "SELECT 1 FROM {schema_name}.sqlite_master WHERE type = 'table' AND name = ?1 LIMIT 1"
+        ),
+        [table_name],
+        |_| Ok(()),
+    )
+    .optional()
+    .map(|row| row.is_some())
+    .map_err(|error| error.to_string())
+}
 
-    remove_sqlite_artifacts(&backup_db_path)?;
+fn importable_table_names(conn: &Connection, schema_name: &str) -> Result<Vec<String>, String> {
+    validate_identifier(schema_name)?;
+    let sql = format!(
+        "SELECT name FROM {schema_name}.sqlite_master
+         WHERE type = 'table'
+           AND name NOT LIKE 'sqlite_%'
+           AND name != 'SecureSettings'
+           AND name != 'PlatformLibraries'
+           AND name != 'GameCoverIndex'
+           AND name NOT LIKE 'GameSearchIndex%'
+         ORDER BY name"
+    );
+    let mut stmt = conn.prepare(&sql).map_err(|error| error.to_string())?;
+    let table_names = stmt
+        .query_map([], |row| row.get::<_, String>(0))
+        .map_err(|error| error.to_string())?
+        .map(|table_name| {
+            let table_name = table_name.map_err(|error| error.to_string())?;
+            validate_identifier(&table_name)?;
+            Ok(table_name)
+        })
+        .collect::<Result<Vec<_>, String>>()?;
+    Ok(table_names)
+}
 
-    let live_exists = live_db_path.exists();
-    if live_exists {
-        fs::rename(live_db_path, &backup_db_path).map_err(|error| error.to_string())?;
+fn ensure_schema_table_platform_column(
+    conn: &Connection,
+    schema_name: &str,
+    table_name: &str,
+    platform_id: &str,
+) -> Result<(), String> {
+    let columns = table_columns_in_schema(conn, schema_name, table_name)?;
+    let quoted_schema = quote_identifier(schema_name)?;
+    let quoted_table = quote_identifier(table_name)?;
+    let qualified_table = format!("{quoted_schema}.{quoted_table}");
+
+    if !columns.iter().any(|column| column == "platform_id") {
+        conn.execute(
+            &format!("ALTER TABLE {qualified_table} ADD COLUMN platform_id TEXT"),
+            [],
+        )
+        .map_err(|error| error.to_string())?;
     }
 
-    if let Err(error) = fs::rename(temp_db_path, live_db_path) {
-        if live_exists && backup_db_path.exists() {
-            let _ = fs::rename(&backup_db_path, live_db_path);
+    conn.execute(
+        &format!(
+            "UPDATE {qualified_table} SET platform_id = ?1 WHERE platform_id IS NULL OR platform_id = ''"
+        ),
+        [platform_id],
+    )
+    .map_err(|error| error.to_string())?;
+
+    Ok(())
+}
+
+fn ensure_imported_table_columns(
+    conn: &Connection,
+    schema_name: &str,
+    table_name: &str,
+    platform_id: &str,
+) -> Result<(), String> {
+    if let Some((_, source_id_column)) = PLATFORM_SCOPED_TABLES
+        .iter()
+        .find(|(scoped_table, _)| *scoped_table == table_name)
+    {
+        if schema_name == "main" {
+            ensure_table_platform_columns(conn, table_name, source_id_column, platform_id)?;
+        } else {
+            ensure_schema_table_platform_column(conn, schema_name, table_name, platform_id)?;
+            let columns = table_columns_in_schema(conn, schema_name, table_name)?;
+            let quoted_schema = quote_identifier(schema_name)?;
+            let quoted_table = quote_identifier(table_name)?;
+            let qualified_table = format!("{quoted_schema}.{quoted_table}");
+
+            if !columns.iter().any(|column| column == "source_game_id") {
+                conn.execute(
+                    &format!("ALTER TABLE {qualified_table} ADD COLUMN source_game_id TEXT"),
+                    [],
+                )
+                .map_err(|error| error.to_string())?;
+            }
+
+            if columns.iter().any(|column| column == source_id_column) {
+                let quoted_source_id_column = quote_identifier(source_id_column)?;
+                conn.execute(
+                    &format!(
+                        "UPDATE {qualified_table} SET source_game_id = {quoted_source_id_column} WHERE source_game_id IS NULL OR source_game_id = ''"
+                    ),
+                    [],
+                )
+                .map_err(|error| error.to_string())?;
+            }
         }
-        let _ = remove_sqlite_artifacts(temp_db_path);
-        return Err(error.to_string());
-    }
-
-    if live_exists {
-        remove_sqlite_artifacts(&backup_db_path)?;
+    } else {
+        ensure_schema_table_platform_column(conn, schema_name, table_name, platform_id)?;
     }
 
     Ok(())
+}
+
+fn ensure_live_table_matches_import(
+    conn: &Connection,
+    table_name: &str,
+    legacy_platform_id: &str,
+) -> Result<(), String> {
+    let quoted_table = quote_identifier(table_name)?;
+    if !table_exists_in_schema(conn, "main", table_name)? {
+        conn.execute(
+            &format!(
+                "CREATE TABLE {quoted_table} AS SELECT * FROM imported.{quoted_table} WHERE 0"
+            ),
+            [],
+        )
+        .map_err(|error| error.to_string())?;
+    }
+
+    ensure_imported_table_columns(conn, "main", table_name, legacy_platform_id)?;
+
+    let live_columns = table_columns_in_schema(conn, "main", table_name)?;
+    let imported_columns = table_columns_in_schema(conn, "imported", table_name)?;
+    for column in imported_columns {
+        if !live_columns
+            .iter()
+            .any(|live_column| live_column == &column)
+        {
+            let quoted_column = quote_identifier(&column)?;
+            conn.execute(
+                &format!("ALTER TABLE {quoted_table} ADD COLUMN {quoted_column} TEXT"),
+                [],
+            )
+            .map_err(|error| error.to_string())?;
+        }
+    }
+
+    Ok(())
+}
+
+fn merge_imported_table(
+    conn: &Connection,
+    table_name: &str,
+    platform_id: &str,
+) -> Result<(), String> {
+    let quoted_table = quote_identifier(table_name)?;
+    let live_columns = table_columns_in_schema(conn, "main", table_name)?;
+    let imported_columns = table_columns_in_schema(conn, "imported", table_name)?;
+
+    conn.execute(
+        &format!("DELETE FROM {quoted_table} WHERE platform_id = ?1"),
+        [platform_id],
+    )
+    .map_err(|error| error.to_string())?;
+
+    let insert_columns = live_columns
+        .iter()
+        .map(|column| quote_identifier(column))
+        .collect::<Result<Vec<_>, _>>()?;
+    let select_columns = live_columns
+        .iter()
+        .map(|column| {
+            let quoted_column = quote_identifier(column)?;
+            if imported_columns.iter().any(|imported| imported == column) {
+                Ok(quoted_column)
+            } else {
+                Ok(format!("NULL AS {quoted_column}"))
+            }
+        })
+        .collect::<Result<Vec<_>, String>>()?;
+
+    conn.execute(
+        &format!(
+            "INSERT INTO {quoted_table} ({}) SELECT {} FROM imported.{quoted_table}",
+            insert_columns.join(", "),
+            select_columns.join(", ")
+        ),
+        [],
+    )
+    .map_err(|error| error.to_string())?;
+
+    Ok(())
+}
+
+fn platform_display_name(platform_id: &str) -> &str {
+    match platform_id {
+        "c64" => "Commodore 64",
+        "atari800" => "Atari 800",
+        "atari2600" => "Atari 2600",
+        _ => platform_id,
+    }
+}
+
+fn refresh_platform_libraries(conn: &Connection) -> Result<(), String> {
+    conn.execute(
+        "CREATE TABLE IF NOT EXISTS PlatformLibraries (
+            platform_id TEXT PRIMARY KEY,
+            display_name TEXT NOT NULL,
+            import_status TEXT NOT NULL,
+            source_mdb_path TEXT,
+            game_count INTEGER NOT NULL DEFAULT 0,
+            last_import_error TEXT,
+            last_imported_at TEXT
+        )",
+        [],
+    )
+    .map_err(|error| error.to_string())?;
+
+    if !table_exists(conn, "Games")? || !table_has_columns(conn, "Games", &["platform_id"])? {
+        return Ok(());
+    }
+
+    let platform_counts = conn
+        .prepare("SELECT platform_id, COUNT(*) FROM Games GROUP BY platform_id")
+        .map_err(|error| error.to_string())?
+        .query_map([], |row| {
+            Ok((row.get::<_, String>(0)?, row.get::<_, i64>(1)?))
+        })
+        .map_err(|error| error.to_string())?
+        .collect::<Result<Vec<_>, _>>()
+        .map_err(|error| error.to_string())?;
+
+    for (platform_id, game_count) in platform_counts {
+        conn.execute(
+            "INSERT INTO PlatformLibraries (
+                platform_id,
+                display_name,
+                import_status,
+                source_mdb_path,
+                game_count,
+                last_import_error,
+                last_imported_at
+            )
+            VALUES (?1, ?2, 'imported', NULL, ?3, NULL, datetime('now'))
+            ON CONFLICT(platform_id) DO UPDATE SET
+                display_name = excluded.display_name,
+                import_status = excluded.import_status,
+                game_count = excluded.game_count,
+                last_import_error = excluded.last_import_error,
+                last_imported_at = excluded.last_imported_at",
+            rusqlite::params![
+                &platform_id,
+                platform_display_name(&platform_id),
+                game_count
+            ],
+        )
+        .map_err(|error| error.to_string())?;
+    }
+
+    Ok(())
+}
+
+fn merge_imported_database(
+    temp_db_path: &Path,
+    live_db_path: &Path,
+    platform_id: &str,
+) -> Result<(), String> {
+    let conn = Connection::open(live_db_path).map_err(|error| error.to_string())?;
+    conn.execute_batch("PRAGMA journal_mode = WAL;")
+        .map_err(|error| error.to_string())?;
+    conn.execute(
+        "ATTACH DATABASE ?1 AS imported",
+        [temp_db_path.to_string_lossy().as_ref()],
+    )
+    .map_err(|error| error.to_string())?;
+
+    let merge_result = (|| -> Result<(), String> {
+        let legacy_platform_id = infer_legacy_platform_id(&conn, platform_id)?;
+        let table_names = importable_table_names(&conn, "imported")?;
+        conn.execute_batch("BEGIN IMMEDIATE")
+            .map_err(|error| error.to_string())?;
+
+        for table_name in &table_names {
+            ensure_imported_table_columns(&conn, "imported", table_name, platform_id)?;
+            ensure_live_table_matches_import(&conn, table_name, &legacy_platform_id)?;
+            merge_imported_table(&conn, table_name, platform_id)?;
+        }
+
+        recreate_game_view(&conn)?;
+        ensure_query_indexes(&conn)?;
+        rebuild_cover_index(&conn)?;
+        rebuild_search_index(&conn)?;
+        ensure_secure_table_on_connection(&conn)?;
+        refresh_platform_libraries(&conn)?;
+
+        conn.execute_batch("COMMIT")
+            .map_err(|error| error.to_string())?;
+        Ok(())
+    })();
+
+    if merge_result.is_err() {
+        let _ = conn.execute_batch("ROLLBACK");
+    }
+    conn.execute("DETACH DATABASE imported", [])
+        .map_err(|error| error.to_string())?;
+    merge_result
 }
 
 fn import_csv_directory_to_sqlite(export_dir: &Path, platform_id: &str) -> Result<usize, String> {
@@ -971,8 +1318,7 @@ fn import_csv_directory_to_sqlite(export_dir: &Path, platform_id: &str) -> Resul
             }
         }
 
-        ensure_table_platform_columns(&conn, "Games", "GA_Id", &platform_id)?;
-        ensure_table_platform_columns(&conn, "Extras", "GA_Id", &platform_id)?;
+        ensure_import_platform_columns(&conn, &platform_id)?;
         recreate_game_view(&conn)?;
         ensure_query_indexes(&conn)?;
         rebuild_cover_index(&conn)?;
@@ -991,7 +1337,8 @@ fn import_csv_directory_to_sqlite(export_dir: &Path, platform_id: &str) -> Resul
         }
     };
 
-    replace_database_atomically(&temp_db_path, &live_db_path)?;
+    merge_imported_database(&temp_db_path, &live_db_path, &platform_id)?;
+    remove_sqlite_artifacts(&temp_db_path)?;
 
     Ok(imported_tables)
 }
@@ -1378,16 +1725,20 @@ mod tests {
 
         let conn = Connection::open(&db_path).unwrap();
         let game_platform: String = conn
-            .query_row("SELECT platform_id FROM Games WHERE GA_Id = ?1", ["1"], |row| {
-                row.get(0)
-            })
+            .query_row(
+                "SELECT platform_id FROM Games WHERE GA_Id = ?1",
+                ["1"],
+                |row| row.get(0),
+            )
             .unwrap();
         assert_eq!(game_platform, "atari800");
 
         let view_platform: String = conn
-            .query_row("SELECT platformId FROM GameView WHERE id = ?1", ["1"], |row| {
-                row.get(0)
-            })
+            .query_row(
+                "SELECT platformId FROM GameView WHERE id = ?1",
+                ["1"],
+                |row| row.get(0),
+            )
             .unwrap();
         assert_eq!(view_platform, "atari800");
 
@@ -1399,6 +1750,120 @@ mod tests {
             )
             .unwrap();
         assert_eq!(search_platform, "atari800");
+
+        std::env::remove_var("VIC40_DB_PATH");
+    }
+
+    #[test]
+    fn test_import_csv_directory_to_sqlite_merges_platforms_without_replacing_existing_library() {
+        let temp_db = NamedTempFile::new().unwrap();
+        let db_path = temp_db.path().to_string_lossy().to_string();
+        std::env::set_var("VIC40_DB_PATH", &db_path);
+
+        let c64_export_dir = tempdir().unwrap();
+        let c64_tables = [
+            ("Games.csv", "GA_Id,Name,Filename,FileToRun,ScrnshotFilename,SidFilename,CRC,YE_Id,GE_Id,DE_Id,PU_Id,MU_Id,LA_Id,PR_Id,AR_Id,V_PalNTSC,V_TrueDriveEmu,Classic,Adult\n1,Tiger Heli,tiger.zip,,tiger.png,tiger.sid,abc,1,1,1,1,1,1,1,1,P,1,True,False\n"),
+            ("Years.csv", "YE_Id,Year\n1,1988\n"),
+            ("Genres.csv", "GE_Id,Genre,PG_Id\n1,Shoot'em Up,1\n"),
+            ("PGenres.csv", "PG_Id,ParentGenre\n1,Arcade\n"),
+            ("Developers.csv", "DE_Id,Developer\n1,SEUCK\n"),
+            ("Publishers.csv", "PU_Id,Publisher\n1,Firebird\n"),
+            ("Musicians.csv", "MU_Id,Musician,Photo,Nick,Grp\n1,Rob Hubbard,photo.jpg,Hub,Group\n"),
+            ("Languages.csv", "LA_Id,Language\n1,English\n"),
+            ("Programmers.csv", "PR_Id,Programmer\n1,Chris Yates\n"),
+            ("Artists.csv", "AR_Id,Artist\n1,Ejber Ozkan\n"),
+            ("Extras.csv", "GA_Id,DisplayOrder,Path\n1,1,Cover/Tiger Heli.png\n"),
+        ];
+        for (filename, contents) in c64_tables {
+            fs::write(c64_export_dir.path().join(filename), contents).unwrap();
+        }
+
+        let atari_export_dir = tempdir().unwrap();
+        let atari_tables = [
+            ("Games.csv", "GA_Id,Name,Filename,FileToRun,ScrnshotFilename,SidFilename,CRC,YE_Id,GE_Id,DE_Id,PU_Id,MU_Id,LA_Id,PR_Id,AR_Id,V_PalNTSC,V_TrueDriveEmu,Classic,Adult\n1,Airstrike,airstrike.xex,,airstrike.png,,def,1,1,1,1,1,1,1,1,N,0,False,False\n"),
+            ("Years.csv", "YE_Id,Year\n1,1982\n"),
+            ("Genres.csv", "GE_Id,Genre,PG_Id\n1,Shooter,1\n"),
+            ("PGenres.csv", "PG_Id,ParentGenre\n1,Action\n"),
+            ("Developers.csv", "DE_Id,Developer\n1,Atari Studio\n"),
+            ("Publishers.csv", "PU_Id,Publisher\n1,Atari\n"),
+            ("Musicians.csv", "MU_Id,Musician,Photo,Nick,Grp\n1,,,,\n"),
+            ("Languages.csv", "LA_Id,Language\n1,English\n"),
+            ("Programmers.csv", "PR_Id,Programmer\n1,Atari Coder\n"),
+            ("Artists.csv", "AR_Id,Artist\n1,Atari Artist\n"),
+            ("Extras.csv", "GA_Id,DisplayOrder,Path\n1,1,Cover/Airstrike.png\n"),
+        ];
+        for (filename, contents) in atari_tables {
+            fs::write(atari_export_dir.path().join(filename), contents).unwrap();
+        }
+
+        import_csv_directory_to_sqlite(c64_export_dir.path(), "c64").unwrap();
+        import_csv_directory_to_sqlite(atari_export_dir.path(), "atari800").unwrap();
+
+        let conn = Connection::open(&db_path).unwrap();
+        let c64_games: i64 = conn
+            .query_row(
+                "SELECT COUNT(*) FROM Games WHERE platform_id = ?1",
+                ["c64"],
+                |row| row.get(0),
+            )
+            .unwrap();
+        let atari_games: i64 = conn
+            .query_row(
+                "SELECT COUNT(*) FROM Games WHERE platform_id = ?1",
+                ["atari800"],
+                |row| row.get(0),
+            )
+            .unwrap();
+        assert_eq!(c64_games, 1);
+        assert_eq!(atari_games, 1);
+
+        let imported_platforms = conn
+            .prepare("SELECT platform_id, game_count FROM PlatformLibraries ORDER BY platform_id")
+            .unwrap()
+            .query_map([], |row| {
+                Ok((row.get::<_, String>(0)?, row.get::<_, i64>(1)?))
+            })
+            .unwrap()
+            .collect::<Result<Vec<_>, _>>()
+            .unwrap();
+        assert_eq!(
+            imported_platforms,
+            vec![("atari800".to_string(), 1), ("c64".to_string(), 1)]
+        );
+
+        let c64_developer: String = conn
+            .query_row(
+                "SELECT developer_name FROM GameView WHERE platformId = ?1 AND id = ?2",
+                ["c64", "1"],
+                |row| row.get(0),
+            )
+            .unwrap();
+        let atari_developer: String = conn
+            .query_row(
+                "SELECT developer_name FROM GameView WHERE platformId = ?1 AND id = ?2",
+                ["atari800", "1"],
+                |row| row.get(0),
+            )
+            .unwrap();
+        assert_eq!(c64_developer, "SEUCK");
+        assert_eq!(atari_developer, "Atari Studio");
+
+        let c64_search_platform: String = conn
+            .query_row(
+                "SELECT platform_id FROM GameSearchIndex WHERE GameSearchIndex MATCH ?1 AND platform_id = ?2 LIMIT 1",
+                ["tiger*", "c64"],
+                |row| row.get(0),
+            )
+            .unwrap();
+        let atari_search_platform: String = conn
+            .query_row(
+                "SELECT platform_id FROM GameSearchIndex WHERE GameSearchIndex MATCH ?1 AND platform_id = ?2 LIMIT 1",
+                ["airstrike*", "atari800"],
+                |row| row.get(0),
+            )
+            .unwrap();
+        assert_eq!(c64_search_platform, "c64");
+        assert_eq!(atari_search_platform, "atari800");
 
         std::env::remove_var("VIC40_DB_PATH");
     }
@@ -1461,22 +1926,15 @@ mod tests {
 
         {
             let conn = Connection::open(&db_path).unwrap();
-            conn.execute("CREATE TABLE Marker (value TEXT)", []).unwrap();
+            conn.execute("CREATE TABLE Marker (value TEXT)", [])
+                .unwrap();
             conn.execute("INSERT INTO Marker (value) VALUES (?1)", ["before"])
                 .unwrap();
         }
 
         let export_dir = tempdir().unwrap();
-        fs::write(
-            export_dir.path().join("Alpha.csv"),
-            "Name\nTiger Heli\n",
-        )
-        .unwrap();
-        fs::write(
-            export_dir.path().join("Broken.csv"),
-            "bad-header\nvalue\n",
-        )
-        .unwrap();
+        fs::write(export_dir.path().join("Alpha.csv"), "Name\nTiger Heli\n").unwrap();
+        fs::write(export_dir.path().join("Broken.csv"), "bad-header\nvalue\n").unwrap();
 
         let error = import_csv_directory_to_sqlite(export_dir.path(), "c64")
             .expect_err("import should fail when a CSV header contains an unsupported identifier");
