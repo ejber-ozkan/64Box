@@ -1,5 +1,6 @@
 use crate::database::{
-    configure_runtime_db_path, get_db_path, import_mdb_to_sqlite, is_database_ready,
+    configure_runtime_db_path, get_db_path, import_mdb_to_sqlite, import_mdb_to_sqlite_for_platform,
+    is_database_ready,
 };
 use crate::models::{
     DatabaseBootstrapStatus, DatabaseImportResult, ImportPlatformDatabaseRequest,
@@ -57,7 +58,7 @@ pub fn import_platform_database_from_mdb(
 ) -> Result<PlatformDatabaseImportResult, String> {
     validate_platform_import_request(&request)?;
     let _ = configure_runtime_db_path(&app)?;
-    let result = import_mdb_to_sqlite(&request.mdb_path)?;
+    let result = import_mdb_to_sqlite_for_platform(&request.mdb_path, &request.platform_id)?;
 
     Ok(PlatformDatabaseImportResult {
         platform_id: request.platform_id,

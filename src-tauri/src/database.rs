@@ -384,6 +384,7 @@ fn ensure_table_platform_columns(
     conn: &Connection,
     table_name: &str,
     source_id_column: &str,
+    platform_id: &str,
 ) -> Result<(), String> {
     if !table_exists(conn, table_name)? {
         return Ok(());
@@ -398,9 +399,11 @@ fn ensure_table_platform_columns(
         conn.execute(&sql, []).map_err(|e| e.to_string())?;
     }
 
-    let platform_sql =
-        format!("UPDATE {table_name} SET platform_id = 'c64' WHERE platform_id IS NULL OR platform_id = ''");
-    conn.execute(&platform_sql, []).map_err(|e| e.to_string())?;
+    let platform_sql = format!(
+        "UPDATE {table_name} SET platform_id = ?1 WHERE platform_id IS NULL OR platform_id = ''"
+    );
+    conn.execute(&platform_sql, [platform_id])
+        .map_err(|e| e.to_string())?;
 
     if table_has_columns(conn, table_name, &[source_id_column])? {
         let source_sql = format!(
@@ -592,8 +595,8 @@ fn rebuild_search_index(conn: &Connection) -> Result<(), String> {
 }
 
 pub fn ensure_query_support_objects(conn: &Connection) -> Result<(), String> {
-    ensure_table_platform_columns(conn, "Games", "GA_Id")?;
-    ensure_table_platform_columns(conn, "Extras", "GA_Id")?;
+    ensure_table_platform_columns(conn, "Games", "GA_Id", "c64")?;
+    ensure_table_platform_columns(conn, "Extras", "GA_Id", "c64")?;
     ensure_game_view(conn)?;
     ensure_query_indexes(conn)?;
     ensure_cover_index(conn)?;
@@ -945,7 +948,8 @@ fn replace_database_atomically(temp_db_path: &Path, live_db_path: &Path) -> Resu
     Ok(())
 }
 
-fn import_csv_directory_to_sqlite(export_dir: &Path) -> Result<usize, String> {
+fn import_csv_directory_to_sqlite(export_dir: &Path, platform_id: &str) -> Result<usize, String> {
+    let platform_id = normalize_platform_id(Some(platform_id))?;
     let live_db_path = PathBuf::from(get_db_path());
     let temp_db_path = create_import_temp_db_path(&live_db_path)?;
     remove_sqlite_artifacts(&temp_db_path)?;
@@ -967,8 +971,8 @@ fn import_csv_directory_to_sqlite(export_dir: &Path) -> Result<usize, String> {
             }
         }
 
-        ensure_table_platform_columns(&conn, "Games", "GA_Id")?;
-        ensure_table_platform_columns(&conn, "Extras", "GA_Id")?;
+        ensure_table_platform_columns(&conn, "Games", "GA_Id", &platform_id)?;
+        ensure_table_platform_columns(&conn, "Extras", "GA_Id", &platform_id)?;
         recreate_game_view(&conn)?;
         ensure_query_indexes(&conn)?;
         rebuild_cover_index(&conn)?;
@@ -997,6 +1001,14 @@ fn cleanup_export_directory(export_dir: &Path) {
 }
 
 pub fn import_mdb_to_sqlite(mdb_path: &str) -> Result<DatabaseImportResult, String> {
+    import_mdb_to_sqlite_for_platform(mdb_path, "c64")
+}
+
+pub fn import_mdb_to_sqlite_for_platform(
+    mdb_path: &str,
+    platform_id: &str,
+) -> Result<DatabaseImportResult, String> {
+    let platform_id = normalize_platform_id(Some(platform_id))?;
     let mdb_path = PathBuf::from(mdb_path);
     if !mdb_path.exists() {
         return Err(format!("MDB file was not found: {}", mdb_path.display()));
@@ -1014,7 +1026,8 @@ pub fn import_mdb_to_sqlite(mdb_path: &str) -> Result<DatabaseImportResult, Stri
     let export_dir = create_export_directory()?;
     let export_result = export_mdb_to_csv(&mdb_path, &export_dir);
     let import_result = export_result.and_then(|exported_tables| {
-        import_csv_directory_to_sqlite(&export_dir).map(|imported_tables| (exported_tables, imported_tables))
+        import_csv_directory_to_sqlite(&export_dir, &platform_id)
+            .map(|imported_tables| (exported_tables, imported_tables))
     });
     cleanup_export_directory(&export_dir);
 
@@ -1317,7 +1330,7 @@ mod tests {
             fs::write(export_dir.path().join(filename), contents).unwrap();
         }
 
-        let imported_tables = import_csv_directory_to_sqlite(export_dir.path()).unwrap();
+        let imported_tables = import_csv_directory_to_sqlite(export_dir.path(), "c64").unwrap();
         assert_eq!(imported_tables, 11);
         assert!(is_database_ready().unwrap());
 
@@ -1330,6 +1343,62 @@ mod tests {
             )
             .unwrap();
         assert_eq!(search_hit, "1");
+
+        std::env::remove_var("VIC40_DB_PATH");
+    }
+
+    #[test]
+    fn test_import_csv_directory_to_sqlite_preserves_requested_platform_scope() {
+        let temp_db = NamedTempFile::new().unwrap();
+        let db_path = temp_db.path().to_string_lossy().to_string();
+        std::env::set_var("VIC40_DB_PATH", &db_path);
+
+        let export_dir = tempdir().unwrap();
+        let tables = [
+            ("Games.csv", "GA_Id,Name,Filename,FileToRun,ScrnshotFilename,SidFilename,CRC,YE_Id,GE_Id,DE_Id,PU_Id,MU_Id,LA_Id,PR_Id,AR_Id,V_PalNTSC,V_TrueDriveEmu,Classic,Adult\n1,Airstrike,airstrike.xex,,airstrike.png,,abc,1,1,1,1,1,1,1,1,N,0,False,False\n"),
+            ("Years.csv", "YE_Id,Year\n1,1982\n"),
+            ("Genres.csv", "GE_Id,Genre,PG_Id\n1,Shooter,1\n"),
+            ("PGenres.csv", "PG_Id,ParentGenre\n1,Action\n"),
+            ("Developers.csv", "DE_Id,Developer\n1,Atari Studio\n"),
+            ("Publishers.csv", "PU_Id,Publisher\n1,Atari\n"),
+            ("Musicians.csv", "MU_Id,Musician,Photo,Nick,Grp\n1,,,,\n"),
+            ("Languages.csv", "LA_Id,Language\n1,English\n"),
+            ("Programmers.csv", "PR_Id,Programmer\n1,Atari Coder\n"),
+            ("Artists.csv", "AR_Id,Artist\n1,Atari Artist\n"),
+            ("Extras.csv", "GA_Id,DisplayOrder,Path\n1,1,Cover/Airstrike.png\n"),
+        ];
+
+        for (filename, contents) in tables {
+            fs::write(export_dir.path().join(filename), contents).unwrap();
+        }
+
+        let imported_tables =
+            import_csv_directory_to_sqlite(export_dir.path(), "atari800").unwrap();
+        assert_eq!(imported_tables, 11);
+
+        let conn = Connection::open(&db_path).unwrap();
+        let game_platform: String = conn
+            .query_row("SELECT platform_id FROM Games WHERE GA_Id = ?1", ["1"], |row| {
+                row.get(0)
+            })
+            .unwrap();
+        assert_eq!(game_platform, "atari800");
+
+        let view_platform: String = conn
+            .query_row("SELECT platformId FROM GameView WHERE id = ?1", ["1"], |row| {
+                row.get(0)
+            })
+            .unwrap();
+        assert_eq!(view_platform, "atari800");
+
+        let search_platform: String = conn
+            .query_row(
+                "SELECT platform_id FROM GameSearchIndex WHERE GameSearchIndex MATCH ?1 LIMIT 1",
+                ["airstrike*"],
+                |row| row.get(0),
+            )
+            .unwrap();
+        assert_eq!(search_platform, "atari800");
 
         std::env::remove_var("VIC40_DB_PATH");
     }
@@ -1409,7 +1478,7 @@ mod tests {
         )
         .unwrap();
 
-        let error = import_csv_directory_to_sqlite(export_dir.path())
+        let error = import_csv_directory_to_sqlite(export_dir.path(), "c64")
             .expect_err("import should fail when a CSV header contains an unsupported identifier");
         assert!(error.contains("Unsupported identifier"));
 
