@@ -495,6 +495,7 @@ pub async fn launch_emulator(request: LaunchRequest) -> Result<LaunchResult, Str
 #[cfg(test)]
 mod tests {
     use super::*;
+    use crate::test_helpers::DbEnvGuard;
 
     #[test]
     fn test_altirra_rom_args_extension_mapping() {
@@ -701,7 +702,8 @@ mod tests {
         write_zip(&zip_path, &[("disk1.d64", b"disk1"), ("boot.prg", b"boot")]);
 
         let temp_db = NamedTempFile::new().unwrap();
-        std::env::set_var("VIC40_DB_PATH", temp_db.path());
+        let db_path = temp_db.path().to_string_lossy().to_string();
+        let _env = DbEnvGuard::set(&db_path);
         let conn = Connection::open(temp_db.path()).unwrap();
         conn.execute("CREATE TABLE Games (GA_Id TEXT, FileToRun TEXT)", [])
             .unwrap();
@@ -720,8 +722,6 @@ mod tests {
 
         let result = launch_emulator(request).await.unwrap();
         assert!(result.success);
-
-        std::env::remove_var("VIC40_DB_PATH");
     }
 
     #[tokio::test]
@@ -962,7 +962,9 @@ mod tests {
 
         let result = test_emulator_profile(request).await.unwrap();
         assert!(!result.success);
-        assert!(result.message.contains("Atari 800 RetroArch core path is required"));
+        assert!(result
+            .message
+            .contains("Atari 800 RetroArch core path is required"));
     }
 
     #[tokio::test]

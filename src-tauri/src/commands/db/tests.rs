@@ -12,6 +12,7 @@ use super::{
     get_sub_genres, save_secure_setting,
 };
 use crate::database::init_database;
+use crate::test_helpers::DbEnvGuard;
 
 fn sqlite_table_exists(conn: &Connection, table_name: &str) -> bool {
     conn.query_row(
@@ -81,16 +82,22 @@ fn create_search_fallback_fixture(conn: &Connection) {
         [],
     )
     .unwrap();
-    conn.execute("CREATE TABLE Musicians (MU_Id TEXT, Photo TEXT, Nick TEXT, Grp TEXT, Musician TEXT)", [])
-        .unwrap();
+    conn.execute(
+        "CREATE TABLE Musicians (MU_Id TEXT, Photo TEXT, Nick TEXT, Grp TEXT, Musician TEXT)",
+        [],
+    )
+    .unwrap();
     conn.execute("CREATE TABLE Programmers (PR_Id TEXT, Programmer TEXT)", [])
         .unwrap();
     conn.execute("CREATE TABLE Artists (AR_Id TEXT, Artist TEXT)", [])
         .unwrap();
     conn.execute("CREATE TABLE Developers (DE_Id TEXT, Developer TEXT)", [])
         .unwrap();
-    conn.execute("CREATE TABLE Extras (platform_id TEXT DEFAULT 'c64', GA_Id TEXT, Path TEXT)", [])
-        .unwrap();
+    conn.execute(
+        "CREATE TABLE Extras (platform_id TEXT DEFAULT 'c64', GA_Id TEXT, Path TEXT)",
+        [],
+    )
+    .unwrap();
 
     conn.execute(
         "INSERT INTO Programmers (PR_Id, Programmer) VALUES (?, ?)",
@@ -134,9 +141,8 @@ fn test_build_game_query_search_and_favorites() {
         ..Default::default()
     };
 
-    let (query, params) =
-        build_game_query("atari800", 25, 10, Some(filters), SearchMode::Fts)
-            .expect("query should build");
+    let (query, params) = build_game_query("atari800", 25, 10, Some(filters), SearchMode::Fts)
+        .expect("query should build");
     assert!(query.contains("gv.platformId = ?"));
     assert!(query.contains("WHERE platform_id = ?"));
     assert!(query.contains("FROM GameSearchIndex"));
@@ -173,8 +179,7 @@ fn test_build_game_query_invalid_fts_input_matches_nothing() {
     };
 
     let (query, params) =
-        build_game_query("c64", 10, 0, Some(filters), SearchMode::Fts)
-            .expect("query should build");
+        build_game_query("c64", 10, 0, Some(filters), SearchMode::Fts).expect("query should build");
     assert!(query.contains("AND 1=0"));
     assert_eq!(
         params,
@@ -199,9 +204,8 @@ fn test_build_game_query_like_fallback_uses_legacy_predicates() {
         ..Default::default()
     };
 
-    let (query, params) =
-        build_game_query("c64", 10, 0, Some(filters), SearchMode::Like)
-            .expect("query should build");
+    let (query, params) = build_game_query("c64", 10, 0, Some(filters), SearchMode::Like)
+        .expect("query should build");
     assert!(query.contains("LOWER(gv.name) LIKE ?"));
     assert!(query.contains("LOWER(COALESCE(ar.Artist, '')) LIKE ?"));
     assert_eq!(params.len(), 9);
@@ -268,8 +272,11 @@ fn test_build_game_summary_query_preserves_requested_id_order_in_sql() {
         [],
     )
     .unwrap();
-    conn.execute("CREATE TABLE Musicians (MU_Id TEXT, Photo TEXT, Nick TEXT, Grp TEXT)", [])
-        .unwrap();
+    conn.execute(
+        "CREATE TABLE Musicians (MU_Id TEXT, Photo TEXT, Nick TEXT, Grp TEXT)",
+        [],
+    )
+    .unwrap();
     conn.execute("CREATE TABLE Programmers (PR_Id TEXT, Programmer TEXT)", [])
         .unwrap();
     conn.execute("CREATE TABLE Artists (AR_Id TEXT, Artist TEXT)", [])
@@ -310,11 +317,11 @@ fn test_build_game_summary_query_preserves_requested_id_order_in_sql() {
     assert_eq!(game_ids, ordered_ids);
 }
 
-#[tokio::test]
+#[tokio::test(flavor = "current_thread")]
 async fn test_secure_settings_roundtrip() {
     let temp_db = NamedTempFile::new().unwrap();
     let db_path = temp_db.path().to_string_lossy().to_string();
-    std::env::set_var("VIC40_DB_PATH", &db_path);
+    let _env = DbEnvGuard::set(&db_path);
 
     save_secure_setting("test_key".to_string(), "test_password".to_string())
         .await
@@ -329,20 +336,21 @@ async fn test_secure_settings_roundtrip() {
         .await
         .expect("Failed to get unknown");
     assert!(missing.is_none());
-
-    std::env::remove_var("VIC40_DB_PATH");
 }
 
-#[tokio::test]
+#[tokio::test(flavor = "current_thread")]
 async fn test_get_genres() {
     let temp_db = NamedTempFile::new().unwrap();
     let db_path = temp_db.path().to_string_lossy().to_string();
-    std::env::set_var("VIC40_DB_PATH", &db_path);
+    let _env = DbEnvGuard::set(&db_path);
 
     {
         let conn = Connection::open(&db_path).unwrap();
-        conn.execute("CREATE TABLE GameView (platformId TEXT DEFAULT 'c64', parentGenre TEXT)", [])
-            .unwrap();
+        conn.execute(
+            "CREATE TABLE GameView (platformId TEXT DEFAULT 'c64', parentGenre TEXT)",
+            [],
+        )
+        .unwrap();
         conn.execute("INSERT INTO GameView (parentGenre) VALUES (?)", ["Action"])
             .unwrap();
         conn.execute("INSERT INTO GameView (parentGenre) VALUES (?)", ["Puzzle"])
@@ -359,15 +367,13 @@ async fn test_get_genres() {
     let conn = Connection::open(&db_path).unwrap();
     assert!(!sqlite_table_exists(&conn, "GameCoverIndex"));
     assert!(!sqlite_table_exists(&conn, "GameSearchIndex"));
-
-    std::env::remove_var("VIC40_DB_PATH");
 }
 
-#[tokio::test]
+#[tokio::test(flavor = "current_thread")]
 async fn test_get_sub_genres() {
     let temp_db = NamedTempFile::new().unwrap();
     let db_path = temp_db.path().to_string_lossy().to_string();
-    std::env::set_var("VIC40_DB_PATH", &db_path);
+    let _env = DbEnvGuard::set(&db_path);
 
     {
         let conn = Connection::open(&db_path).unwrap();
@@ -401,15 +407,13 @@ async fn test_get_sub_genres() {
         .await
         .expect("Failed to get sub-genres without a genre");
     assert!(no_filter_sub_genres.is_empty());
-
-    std::env::remove_var("VIC40_DB_PATH");
 }
 
-#[tokio::test]
+#[tokio::test(flavor = "current_thread")]
 async fn test_get_game_extras() {
     let temp_db = NamedTempFile::new().unwrap();
     let db_path = temp_db.path().to_string_lossy().to_string();
-    std::env::set_var("VIC40_DB_PATH", &db_path);
+    let _env = DbEnvGuard::set(&db_path);
 
     {
         let conn = Connection::open(&db_path).unwrap();
@@ -440,15 +444,13 @@ async fn test_get_game_extras() {
         .expect("Failed to get extras");
     assert_eq!(extras.len(), 1);
     assert_eq!(extras[0].name, "Manual");
-
-    std::env::remove_var("VIC40_DB_PATH");
 }
 
-#[tokio::test]
+#[tokio::test(flavor = "current_thread")]
 async fn test_platform_scoped_queries_do_not_mix_duplicate_source_ids() {
     let temp_db = NamedTempFile::new().unwrap();
     let db_path = temp_db.path().to_string_lossy().to_string();
-    std::env::set_var("VIC40_DB_PATH", &db_path);
+    let _env = DbEnvGuard::set(&db_path);
 
     {
         let conn = Connection::open(&db_path).unwrap();
@@ -508,9 +510,15 @@ async fn test_platform_scoped_queries_do_not_mix_duplicate_source_ids() {
             [],
         )
         .unwrap();
-        conn.execute("CREATE TABLE Musicians (MU_Id TEXT, Photo TEXT, Nick TEXT, Grp TEXT, Musician TEXT)", []).unwrap();
-        conn.execute("CREATE TABLE Programmers (PR_Id TEXT, Programmer TEXT)", []).unwrap();
-        conn.execute("CREATE TABLE Artists (AR_Id TEXT, Artist TEXT)", []).unwrap();
+        conn.execute(
+            "CREATE TABLE Musicians (MU_Id TEXT, Photo TEXT, Nick TEXT, Grp TEXT, Musician TEXT)",
+            [],
+        )
+        .unwrap();
+        conn.execute("CREATE TABLE Programmers (PR_Id TEXT, Programmer TEXT)", [])
+            .unwrap();
+        conn.execute("CREATE TABLE Artists (AR_Id TEXT, Artist TEXT)", [])
+            .unwrap();
         conn.execute("CREATE TABLE Extras (platform_id TEXT, GA_Id TEXT, EX_Id TEXT, Name TEXT, Path TEXT, Type TEXT, DisplayOrder INTEGER)", []).unwrap();
 
         for (platform_id, game_name, genre, extra_name) in [
@@ -557,15 +565,13 @@ async fn test_platform_scoped_queries_do_not_mix_duplicate_source_ids() {
         .expect("atari extras should load");
     assert_eq!(atari_extras.len(), 1);
     assert_eq!(atari_extras[0].name, "Atari Manual");
-
-    std::env::remove_var("VIC40_DB_PATH");
 }
 
-#[tokio::test]
+#[tokio::test(flavor = "current_thread")]
 async fn test_init_database_repairs_stale_game_view_without_platform_id() {
     let temp_db = NamedTempFile::new().unwrap();
     let db_path = temp_db.path().to_string_lossy().to_string();
-    std::env::set_var("VIC40_DB_PATH", &db_path);
+    let _env = DbEnvGuard::set(&db_path);
 
     {
         let conn = Connection::open(&db_path).unwrap();
@@ -635,21 +641,34 @@ async fn test_init_database_repairs_stale_game_view_without_platform_id() {
             [],
         )
         .unwrap();
-        conn.execute("CREATE TABLE Years (YE_Id TEXT, Year TEXT)", []).unwrap();
-        conn.execute("CREATE TABLE Genres (GE_Id TEXT, Genre TEXT, PG_Id TEXT)", []).unwrap();
-        conn.execute("CREATE TABLE PGenres (PG_Id TEXT, ParentGenre TEXT)", []).unwrap();
-        conn.execute("CREATE TABLE Developers (DE_Id TEXT, Developer TEXT)", []).unwrap();
-        conn.execute("CREATE TABLE Publishers (PU_Id TEXT, Publisher TEXT)", []).unwrap();
-        conn.execute("CREATE TABLE Musicians (MU_Id TEXT, Photo TEXT, Nick TEXT, Grp TEXT, Musician TEXT)", []).unwrap();
-        conn.execute("CREATE TABLE Languages (LA_Id TEXT, Language TEXT)", []).unwrap();
-        conn.execute("CREATE TABLE Programmers (PR_Id TEXT, Programmer TEXT)", []).unwrap();
-        conn.execute("CREATE TABLE Artists (AR_Id TEXT, Artist TEXT)", []).unwrap();
+        conn.execute("CREATE TABLE Years (YE_Id TEXT, Year TEXT)", [])
+            .unwrap();
+        conn.execute(
+            "CREATE TABLE Genres (GE_Id TEXT, Genre TEXT, PG_Id TEXT)",
+            [],
+        )
+        .unwrap();
+        conn.execute("CREATE TABLE PGenres (PG_Id TEXT, ParentGenre TEXT)", [])
+            .unwrap();
+        conn.execute("CREATE TABLE Developers (DE_Id TEXT, Developer TEXT)", [])
+            .unwrap();
+        conn.execute("CREATE TABLE Publishers (PU_Id TEXT, Publisher TEXT)", [])
+            .unwrap();
+        conn.execute(
+            "CREATE TABLE Musicians (MU_Id TEXT, Photo TEXT, Nick TEXT, Grp TEXT, Musician TEXT)",
+            [],
+        )
+        .unwrap();
+        conn.execute("CREATE TABLE Languages (LA_Id TEXT, Language TEXT)", [])
+            .unwrap();
+        conn.execute("CREATE TABLE Programmers (PR_Id TEXT, Programmer TEXT)", [])
+            .unwrap();
+        conn.execute("CREATE TABLE Artists (AR_Id TEXT, Artist TEXT)", [])
+            .unwrap();
         conn.execute("CREATE TABLE Extras (platform_id TEXT, GA_Id TEXT, EX_Id TEXT, Name TEXT, Path TEXT, Type TEXT, DisplayOrder INTEGER)", []).unwrap();
 
-        for (platform_id, game_name) in [
-            ("c64", "C64 Duplicate"),
-            ("atari800", "Atari Duplicate"),
-        ] {
+        for (platform_id, game_name) in [("c64", "C64 Duplicate"), ("atari800", "Atari Duplicate")]
+        {
             conn.execute(
                 "INSERT INTO Games (platform_id, source_game_id, GA_Id, Name, Filename, Classic, Adult)
                  VALUES (?, ?, ?, ?, ?, ?, ?)",
@@ -666,21 +685,23 @@ async fn test_init_database_repairs_stale_game_view_without_platform_id() {
         .expect("atari games should load after repair");
     assert_eq!(atari_games.len(), 1);
     assert_eq!(atari_games[0].name, "Atari Duplicate");
-
-    std::env::remove_var("VIC40_DB_PATH");
 }
 
-#[tokio::test]
+#[tokio::test(flavor = "current_thread")]
 async fn test_get_db_games() {
     let temp_db = NamedTempFile::new().unwrap();
     let db_path = temp_db.path().to_string_lossy().to_string();
-    std::env::set_var("VIC40_DB_PATH", &db_path);
+    let _env = DbEnvGuard::set(&db_path);
 
     {
         let conn = Connection::open(&db_path).unwrap();
         conn.execute("CREATE TABLE Games (platform_id TEXT DEFAULT 'c64', GA_Id TEXT, Name TEXT, MU_Id TEXT, PR_Id TEXT, AR_Id TEXT, CR_Id TEXT, DE_Id TEXT, Adult TEXT, Control TEXT, PlayersFrom TEXT, PlayersTo TEXT, PlayersSim TEXT, Comment TEXT, ReviewRating TEXT, V_Trainers TEXT, V_Length TEXT, V_LoadingScreen TEXT, V_HighScoreSaver TEXT, V_IncludedDocs TEXT, V_TrueDriveEmu TEXT, V_PalNTSC TEXT, MemoText TEXT)", []).unwrap();
         conn.execute("CREATE TABLE GameView (platformId TEXT DEFAULT 'c64', sourceGameId TEXT, id TEXT, name TEXT, filename TEXT, gameFilename TEXT, screenshotFilename TEXT, boxFrontFilename TEXT, titlescreenFilename TEXT, videoSnapFilename TEXT, sidFilename TEXT, crc TEXT, year TEXT, isPal INTEGER, isNtsc INTEGER, trueDriveEmu INTEGER, isClassic INTEGER, parentGenre TEXT, subGenre TEXT, developer_name TEXT, publisher_name TEXT, musician_name TEXT, languages TEXT)", []).unwrap();
-        conn.execute("CREATE TABLE Musicians (MU_Id TEXT, Photo TEXT, Nick TEXT, Grp TEXT, Musician TEXT)", []).unwrap();
+        conn.execute(
+            "CREATE TABLE Musicians (MU_Id TEXT, Photo TEXT, Nick TEXT, Grp TEXT, Musician TEXT)",
+            [],
+        )
+        .unwrap();
         conn.execute("CREATE TABLE Programmers (PR_Id TEXT, Programmer TEXT)", [])
             .unwrap();
         conn.execute("CREATE TABLE Artists (AR_Id TEXT, Artist TEXT)", [])
@@ -782,21 +803,23 @@ async fn test_get_db_games() {
     let conn = Connection::open(&db_path).unwrap();
     assert!(!sqlite_table_exists(&conn, "GameCoverIndex"));
     assert!(!sqlite_table_exists(&conn, "GameSearchIndex"));
-
-    std::env::remove_var("VIC40_DB_PATH");
 }
 
-#[tokio::test]
+#[tokio::test(flavor = "current_thread")]
 async fn test_get_db_games_symbol_filter() {
     let temp_db = NamedTempFile::new().unwrap();
     let db_path = temp_db.path().to_string_lossy().to_string();
-    std::env::set_var("VIC40_DB_PATH", &db_path);
+    let _env = DbEnvGuard::set(&db_path);
 
     {
         let conn = Connection::open(&db_path).unwrap();
         conn.execute("CREATE TABLE Games (platform_id TEXT DEFAULT 'c64', GA_Id TEXT, Name TEXT, MU_Id TEXT, PR_Id TEXT, AR_Id TEXT, CR_Id TEXT, DE_Id TEXT, Adult TEXT, Control TEXT, PlayersFrom TEXT, PlayersTo TEXT, PlayersSim TEXT, Comment TEXT, ReviewRating TEXT, V_Trainers TEXT, V_Length TEXT, V_LoadingScreen TEXT, V_HighScoreSaver TEXT, V_IncludedDocs TEXT, V_TrueDriveEmu TEXT, V_PalNTSC TEXT, MemoText TEXT)", []).unwrap();
         conn.execute("CREATE TABLE GameView (platformId TEXT DEFAULT 'c64', sourceGameId TEXT, id TEXT, name TEXT, filename TEXT, gameFilename TEXT, screenshotFilename TEXT, boxFrontFilename TEXT, titlescreenFilename TEXT, videoSnapFilename TEXT, sidFilename TEXT, crc TEXT, year TEXT, isPal INTEGER, isNtsc INTEGER, trueDriveEmu INTEGER, isClassic INTEGER, parentGenre TEXT, subGenre TEXT, developer_name TEXT, publisher_name TEXT, musician_name TEXT, languages TEXT)", []).unwrap();
-        conn.execute("CREATE TABLE Musicians (MU_Id TEXT, Photo TEXT, Nick TEXT, Grp TEXT, Musician TEXT)", []).unwrap();
+        conn.execute(
+            "CREATE TABLE Musicians (MU_Id TEXT, Photo TEXT, Nick TEXT, Grp TEXT, Musician TEXT)",
+            [],
+        )
+        .unwrap();
         conn.execute("CREATE TABLE Programmers (PR_Id TEXT, Programmer TEXT)", [])
             .unwrap();
         conn.execute("CREATE TABLE Artists (AR_Id TEXT, Artist TEXT)", [])
@@ -824,21 +847,23 @@ async fn test_get_db_games_symbol_filter() {
         .unwrap();
     assert_eq!(res.len(), 1);
     assert_eq!(res[0].name, "1942");
-
-    std::env::remove_var("VIC40_DB_PATH");
 }
 
-#[tokio::test]
+#[tokio::test(flavor = "current_thread")]
 async fn test_get_db_games_pagination() {
     let temp_db = NamedTempFile::new().unwrap();
     let db_path = temp_db.path().to_string_lossy().to_string();
-    std::env::set_var("VIC40_DB_PATH", &db_path);
+    let _env = DbEnvGuard::set(&db_path);
 
     {
         let conn = Connection::open(&db_path).unwrap();
         conn.execute("CREATE TABLE Games (platform_id TEXT DEFAULT 'c64', GA_Id TEXT, Name TEXT, MU_Id TEXT, PR_Id TEXT, AR_Id TEXT, CR_Id TEXT, DE_Id TEXT, Adult TEXT, Control TEXT, PlayersFrom TEXT, PlayersTo TEXT, PlayersSim TEXT, Comment TEXT, ReviewRating TEXT, V_Trainers TEXT, V_Length TEXT, V_LoadingScreen TEXT, V_HighScoreSaver TEXT, V_IncludedDocs TEXT, V_TrueDriveEmu TEXT, V_PalNTSC TEXT, MemoText TEXT)", []).unwrap();
         conn.execute("CREATE TABLE GameView (platformId TEXT DEFAULT 'c64', sourceGameId TEXT, id TEXT, name TEXT, filename TEXT, gameFilename TEXT, screenshotFilename TEXT, boxFrontFilename TEXT, titlescreenFilename TEXT, videoSnapFilename TEXT, sidFilename TEXT, crc TEXT, year TEXT, isPal INTEGER, isNtsc INTEGER, trueDriveEmu INTEGER, isClassic INTEGER, parentGenre TEXT, subGenre TEXT, developer_name TEXT, publisher_name HEX, musician_name TEXT, languages TEXT)", []).unwrap();
-        conn.execute("CREATE TABLE Musicians (MU_Id TEXT, Photo TEXT, Nick TEXT, Grp TEXT, Musician TEXT)", []).unwrap();
+        conn.execute(
+            "CREATE TABLE Musicians (MU_Id TEXT, Photo TEXT, Nick TEXT, Grp TEXT, Musician TEXT)",
+            [],
+        )
+        .unwrap();
         conn.execute("CREATE TABLE Programmers (PR_Id TEXT, Programmer TEXT)", [])
             .unwrap();
         conn.execute("CREATE TABLE Artists (AR_Id TEXT, Artist TEXT)", [])
@@ -871,25 +896,31 @@ async fn test_get_db_games_pagination() {
     let page3 = get_db_games(Some(2), Some(4), None, None).await.unwrap();
     assert_eq!(page3.len(), 1);
     assert_eq!(page3[0].name, "Game 5");
-
-    std::env::remove_var("VIC40_DB_PATH");
 }
 
-#[tokio::test]
+#[tokio::test(flavor = "current_thread")]
 async fn test_get_db_game_count() {
     let temp_db = NamedTempFile::new().unwrap();
     let db_path = temp_db.path().to_string_lossy().to_string();
-    std::env::set_var("VIC40_DB_PATH", &db_path);
+    let _env = DbEnvGuard::set(&db_path);
 
     {
         let conn = Connection::open(&db_path).unwrap();
         conn.execute("CREATE TABLE Games (platform_id TEXT DEFAULT 'c64', GA_Id TEXT, Name TEXT, MU_Id TEXT, PR_Id TEXT, AR_Id TEXT, CR_Id TEXT, DE_Id TEXT, Adult TEXT, Control TEXT, PlayersFrom TEXT, PlayersTo TEXT, PlayersSim TEXT, Comment TEXT, ReviewRating TEXT, V_Trainers TEXT, V_Length TEXT, V_LoadingScreen TEXT, V_HighScoreSaver TEXT, V_IncludedDocs TEXT, V_TrueDriveEmu TEXT, V_PalNTSC TEXT, MemoText TEXT)", []).unwrap();
         conn.execute("CREATE TABLE GameView (platformId TEXT DEFAULT 'c64', sourceGameId TEXT, id TEXT, name TEXT, filename TEXT, gameFilename TEXT, screenshotFilename TEXT, boxFrontFilename TEXT, titlescreenFilename TEXT, videoSnapFilename TEXT, sidFilename TEXT, crc TEXT, year TEXT, isPal INTEGER, isNtsc INTEGER, trueDriveEmu INTEGER, isClassic INTEGER, parentGenre TEXT, subGenre TEXT, developer_name TEXT, publisher_name TEXT, musician_name TEXT, languages TEXT)", []).unwrap();
-        conn.execute("CREATE TABLE Musicians (MU_Id TEXT, Photo TEXT, Nick TEXT, Grp TEXT, Musician TEXT)", []).unwrap();
-        conn.execute("CREATE TABLE Programmers (PR_Id TEXT, Programmer TEXT)", []).unwrap();
-        conn.execute("CREATE TABLE Artists (AR_Id TEXT, Artist TEXT)", []).unwrap();
-        conn.execute("CREATE TABLE Developers (DE_Id TEXT, Developer TEXT)", []).unwrap();
-        conn.execute("CREATE TABLE Extras (GA_Id TEXT, Path TEXT)", []).unwrap();
+        conn.execute(
+            "CREATE TABLE Musicians (MU_Id TEXT, Photo TEXT, Nick TEXT, Grp TEXT, Musician TEXT)",
+            [],
+        )
+        .unwrap();
+        conn.execute("CREATE TABLE Programmers (PR_Id TEXT, Programmer TEXT)", [])
+            .unwrap();
+        conn.execute("CREATE TABLE Artists (AR_Id TEXT, Artist TEXT)", [])
+            .unwrap();
+        conn.execute("CREATE TABLE Developers (DE_Id TEXT, Developer TEXT)", [])
+            .unwrap();
+        conn.execute("CREATE TABLE Extras (GA_Id TEXT, Path TEXT)", [])
+            .unwrap();
 
         conn.execute(
             "INSERT INTO Games (GA_Id, Name, Adult) VALUES (?, ?, ?)",
@@ -918,32 +949,39 @@ async fn test_get_db_game_count() {
     let total = get_db_game_count(None, None).await.unwrap();
     assert_eq!(total, 3);
 
-    let genre_filtered = get_db_game_count(Some(GameFilters {
-        genre: Some("Platform".to_string()),
-        ..Default::default()
-    }), None)
+    let genre_filtered = get_db_game_count(
+        Some(GameFilters {
+            genre: Some("Platform".to_string()),
+            ..Default::default()
+        }),
+        None,
+    )
     .await
     .unwrap();
     assert_eq!(genre_filtered, 1);
 
-    let search_filtered = get_db_game_count(Some(GameFilters {
-        search_query: Some("California".to_string()),
-        ..Default::default()
-    }), None)
+    let search_filtered = get_db_game_count(
+        Some(GameFilters {
+            search_query: Some("California".to_string()),
+            ..Default::default()
+        }),
+        None,
+    )
     .await
     .unwrap();
     assert_eq!(search_filtered, 1);
 
-    let sub_genre_filtered = get_db_game_count(Some(GameFilters {
-        genre: Some("Platform".to_string()),
-        sub_genre: Some("Arcade".to_string()),
-        ..Default::default()
-    }), None)
+    let sub_genre_filtered = get_db_game_count(
+        Some(GameFilters {
+            genre: Some("Platform".to_string()),
+            sub_genre: Some("Arcade".to_string()),
+            ..Default::default()
+        }),
+        None,
+    )
     .await
     .unwrap();
     assert_eq!(sub_genre_filtered, 1);
-
-    std::env::remove_var("VIC40_DB_PATH");
 }
 
 #[test]
@@ -995,17 +1033,17 @@ fn test_load_ordered_game_ids_deduplicates_repeated_game_view_rows() {
     )
     .unwrap();
 
-    let ids = load_ordered_game_ids_with_fallback(&conn, "c64", 10, 0, None)
-        .expect("ids should load");
+    let ids =
+        load_ordered_game_ids_with_fallback(&conn, "c64", 10, 0, None).expect("ids should load");
 
     assert_eq!(ids, vec!["1".to_string(), "2".to_string()]);
 }
 
-#[tokio::test]
+#[tokio::test(flavor = "current_thread")]
 async fn test_get_db_games_deduplicates_repeated_game_view_rows() {
     let temp_db = NamedTempFile::new().unwrap();
     let db_path = temp_db.path().to_string_lossy().to_string();
-    std::env::set_var("VIC40_DB_PATH", &db_path);
+    let _env = DbEnvGuard::set(&db_path);
 
     {
         let conn = Connection::open(&db_path).unwrap();
@@ -1029,25 +1067,31 @@ async fn test_get_db_games_deduplicates_repeated_game_view_rows() {
         .await
         .expect("game count should load");
     assert_eq!(total, 2);
-
-    std::env::remove_var("VIC40_DB_PATH");
 }
 
-#[tokio::test]
+#[tokio::test(flavor = "current_thread")]
 async fn test_get_db_games_preserves_filtered_id_order_after_detail_hydration() {
     let temp_db = NamedTempFile::new().unwrap();
     let db_path = temp_db.path().to_string_lossy().to_string();
-    std::env::set_var("VIC40_DB_PATH", &db_path);
+    let _env = DbEnvGuard::set(&db_path);
 
     {
         let conn = Connection::open(&db_path).unwrap();
         conn.execute("CREATE TABLE Games (platform_id TEXT DEFAULT 'c64', GA_Id TEXT, Name TEXT, MU_Id TEXT, PR_Id TEXT, AR_Id TEXT, CR_Id TEXT, DE_Id TEXT, Adult TEXT, Control TEXT, PlayersFrom TEXT, PlayersTo TEXT, PlayersSim TEXT, Comment TEXT, ReviewRating TEXT, V_Trainers TEXT, V_Length TEXT, V_LoadingScreen TEXT, V_HighScoreSaver TEXT, V_IncludedDocs TEXT, V_TrueDriveEmu TEXT, V_PalNTSC TEXT, MemoText TEXT)", []).unwrap();
         conn.execute("CREATE TABLE GameView (platformId TEXT DEFAULT 'c64', sourceGameId TEXT, id TEXT, name TEXT, filename TEXT, gameFilename TEXT, screenshotFilename TEXT, boxFrontFilename TEXT, titlescreenFilename TEXT, videoSnapFilename TEXT, sidFilename TEXT, crc TEXT, year TEXT, isPal INTEGER, isNtsc INTEGER, trueDriveEmu INTEGER, isClassic INTEGER, parentGenre TEXT, subGenre TEXT, developer_name TEXT, publisher_name TEXT, musician_name TEXT, languages TEXT)", []).unwrap();
-        conn.execute("CREATE TABLE Musicians (MU_Id TEXT, Photo TEXT, Nick TEXT, Grp TEXT, Musician TEXT)", []).unwrap();
-        conn.execute("CREATE TABLE Programmers (PR_Id TEXT, Programmer TEXT)", []).unwrap();
-        conn.execute("CREATE TABLE Artists (AR_Id TEXT, Artist TEXT)", []).unwrap();
-        conn.execute("CREATE TABLE Developers (DE_Id TEXT, Developer TEXT)", []).unwrap();
-        conn.execute("CREATE TABLE Extras (GA_Id TEXT, Path TEXT)", []).unwrap();
+        conn.execute(
+            "CREATE TABLE Musicians (MU_Id TEXT, Photo TEXT, Nick TEXT, Grp TEXT, Musician TEXT)",
+            [],
+        )
+        .unwrap();
+        conn.execute("CREATE TABLE Programmers (PR_Id TEXT, Programmer TEXT)", [])
+            .unwrap();
+        conn.execute("CREATE TABLE Artists (AR_Id TEXT, Artist TEXT)", [])
+            .unwrap();
+        conn.execute("CREATE TABLE Developers (DE_Id TEXT, Developer TEXT)", [])
+            .unwrap();
+        conn.execute("CREATE TABLE Extras (GA_Id TEXT, Path TEXT)", [])
+            .unwrap();
 
         conn.execute(
             "INSERT INTO Games (GA_Id, Name, Adult) VALUES (?, ?, ?)",
@@ -1074,6 +1118,4 @@ async fn test_get_db_games_preserves_filtered_id_order_after_detail_hydration() 
         games.iter().map(|game| game.id.clone()).collect::<Vec<_>>(),
         vec!["2".to_string(), "1".to_string()]
     );
-
-    std::env::remove_var("VIC40_DB_PATH");
 }

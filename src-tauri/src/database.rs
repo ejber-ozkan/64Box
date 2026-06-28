@@ -1397,13 +1397,14 @@ pub fn init_secure_table() -> Result<(), String> {
 #[cfg(test)]
 mod tests {
     use super::*;
+    use crate::test_helpers::DbEnvGuard;
     use tempfile::{tempdir, NamedTempFile};
 
     #[test]
     fn test_init_secure_table() {
         let temp_db = NamedTempFile::new().unwrap();
         let db_path = temp_db.path().to_string_lossy().to_string();
-        std::env::set_var("VIC40_DB_PATH", &db_path);
+        let _env = DbEnvGuard::set(&db_path);
 
         init_secure_table().expect("Failed to init table");
 
@@ -1413,31 +1414,33 @@ mod tests {
             .unwrap();
         let exists: bool = stmt.exists([]).unwrap();
         assert!(exists);
-
-        std::env::remove_var("VIC40_DB_PATH");
     }
 
     #[test]
     fn test_get_db_path_prefers_environment_variable() {
-        std::env::set_var("VIC40_DB_PATH", "custom.sqlite");
+        let _env = DbEnvGuard::set("custom.sqlite");
         assert_eq!(get_db_path(), "custom.sqlite");
-        std::env::remove_var("VIC40_DB_PATH");
     }
 
     #[test]
     fn test_platform_db_helpers_default_to_c64_and_validate_platforms() {
-        std::env::set_var("VIC40_DB_PATH", "custom.sqlite");
+        let _env = DbEnvGuard::set("custom.sqlite");
 
         assert_eq!(get_platform_db_scope(None).unwrap(), "c64");
         assert_eq!(get_platform_db_scope(Some("atari800")).unwrap(), "atari800");
         assert_eq!(get_platform_db_path(Some("c64")).unwrap(), "custom.sqlite");
         assert!(get_platform_db_scope(Some("amiga")).is_err());
-
-        std::env::remove_var("VIC40_DB_PATH");
     }
 
     #[test]
     fn test_get_db_path_falls_back_to_local_files() {
+        let _guard = crate::test_helpers::DB_ENV_MUTEX
+            .lock()
+            .unwrap_or_else(|e| e.into_inner());
+        // Ensure VIC40_DB_PATH is unset so we exercise the fallback logic
+        let saved = std::env::var("VIC40_DB_PATH").ok();
+        std::env::remove_var("VIC40_DB_PATH");
+
         let temp_dir = tempdir().unwrap();
         let original_dir = std::env::current_dir().unwrap();
         let child_dir = temp_dir.path().join("workspace");
@@ -1452,13 +1455,16 @@ mod tests {
         assert_eq!(get_db_path(), "../gb64.sqlite");
 
         std::env::set_current_dir(original_dir).unwrap();
+        if let Some(v) = saved {
+            std::env::set_var("VIC40_DB_PATH", v);
+        }
     }
 
     #[test]
     fn test_init_database_creates_cover_index_and_query_indexes() {
         let temp_db = NamedTempFile::new().unwrap();
         let db_path = temp_db.path().to_string_lossy().to_string();
-        std::env::set_var("VIC40_DB_PATH", &db_path);
+        let _env = DbEnvGuard::set(&db_path);
 
         let conn = Connection::open(&db_path).unwrap();
         conn.execute("CREATE TABLE Games (GA_Id TEXT, Name TEXT, GE_Id TEXT, PR_Id TEXT, AR_Id TEXT, MU_Id TEXT, DE_Id TEXT, PU_Id TEXT, LA_Id TEXT, YE_Id TEXT, Classic TEXT, Adult TEXT, platform_id TEXT, source_game_id TEXT)", []).unwrap();
@@ -1533,15 +1539,13 @@ mod tests {
             )
             .unwrap();
         assert_eq!(search_hit, "1");
-
-        std::env::remove_var("VIC40_DB_PATH");
     }
 
     #[test]
     fn test_init_database_refreshes_stale_support_indexes() {
         let temp_db = NamedTempFile::new().unwrap();
         let db_path = temp_db.path().to_string_lossy().to_string();
-        std::env::set_var("VIC40_DB_PATH", &db_path);
+        let _env = DbEnvGuard::set(&db_path);
 
         let conn = Connection::open(&db_path).unwrap();
         conn.execute("CREATE TABLE Games (GA_Id TEXT, Name TEXT, GE_Id TEXT, PR_Id TEXT, AR_Id TEXT, MU_Id TEXT, DE_Id TEXT, PU_Id TEXT, LA_Id TEXT, YE_Id TEXT, Classic TEXT, Adult TEXT, platform_id TEXT, source_game_id TEXT)", []).unwrap();
@@ -1640,26 +1644,22 @@ mod tests {
             )
             .unwrap();
         assert_eq!(search_hit, "1");
-
-        std::env::remove_var("VIC40_DB_PATH");
     }
 
     #[test]
     fn test_is_database_ready_returns_false_without_base_tables() {
         let temp_db = NamedTempFile::new().unwrap();
         let db_path = temp_db.path().to_string_lossy().to_string();
-        std::env::set_var("VIC40_DB_PATH", &db_path);
+        let _env = DbEnvGuard::set(&db_path);
 
         assert!(!is_database_ready().unwrap());
-
-        std::env::remove_var("VIC40_DB_PATH");
     }
 
     #[test]
     fn test_import_csv_directory_to_sqlite_builds_ready_database() {
         let temp_db = NamedTempFile::new().unwrap();
         let db_path = temp_db.path().to_string_lossy().to_string();
-        std::env::set_var("VIC40_DB_PATH", &db_path);
+        let _env = DbEnvGuard::set(&db_path);
 
         let export_dir = tempdir().unwrap();
         let tables = [
@@ -1693,15 +1693,13 @@ mod tests {
             )
             .unwrap();
         assert_eq!(search_hit, "1");
-
-        std::env::remove_var("VIC40_DB_PATH");
     }
 
     #[test]
     fn test_import_csv_directory_to_sqlite_preserves_requested_platform_scope() {
         let temp_db = NamedTempFile::new().unwrap();
         let db_path = temp_db.path().to_string_lossy().to_string();
-        std::env::set_var("VIC40_DB_PATH", &db_path);
+        let _env = DbEnvGuard::set(&db_path);
 
         let export_dir = tempdir().unwrap();
         let tables = [
@@ -1753,15 +1751,13 @@ mod tests {
             )
             .unwrap();
         assert_eq!(search_platform, "atari800");
-
-        std::env::remove_var("VIC40_DB_PATH");
     }
 
     #[test]
     fn test_import_csv_directory_to_sqlite_merges_platforms_without_replacing_existing_library() {
         let temp_db = NamedTempFile::new().unwrap();
         let db_path = temp_db.path().to_string_lossy().to_string();
-        std::env::set_var("VIC40_DB_PATH", &db_path);
+        let _env = DbEnvGuard::set(&db_path);
 
         let c64_export_dir = tempdir().unwrap();
         let c64_tables = [
@@ -1867,8 +1863,6 @@ mod tests {
             .unwrap();
         assert_eq!(c64_search_platform, "c64");
         assert_eq!(atari_search_platform, "atari800");
-
-        std::env::remove_var("VIC40_DB_PATH");
     }
 
     #[test]
@@ -1925,7 +1919,7 @@ mod tests {
     fn test_import_csv_directory_to_sqlite_is_atomic_on_failure() {
         let temp_db = NamedTempFile::new().unwrap();
         let db_path = temp_db.path().to_string_lossy().to_string();
-        std::env::set_var("VIC40_DB_PATH", &db_path);
+        let _env = DbEnvGuard::set(&db_path);
 
         {
             let conn = Connection::open(&db_path).unwrap();
@@ -1957,7 +1951,5 @@ mod tests {
             )
             .unwrap();
         assert!(!alpha_exists);
-
-        std::env::remove_var("VIC40_DB_PATH");
     }
 }

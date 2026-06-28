@@ -2,10 +2,11 @@ use super::{
     get_active_platform, get_platform_import_status_sync, get_supported_platforms,
     set_active_platform,
 };
+use crate::test_helpers::DbEnvGuard;
 use rusqlite::Connection;
 use tempfile::NamedTempFile;
 
-#[tokio::test]
+#[tokio::test(flavor = "current_thread")]
 async fn test_get_supported_platforms_includes_atari800_capabilities() {
     let platforms = get_supported_platforms().await.unwrap();
     let atari800 = platforms
@@ -28,7 +29,7 @@ async fn test_get_supported_platforms_includes_atari800_capabilities() {
         .contains(&".xex".to_string()));
 }
 
-#[tokio::test]
+#[tokio::test(flavor = "current_thread")]
 async fn test_active_platform_defaults_to_c64() {
     let active = get_active_platform().await.unwrap();
 
@@ -37,7 +38,7 @@ async fn test_active_platform_defaults_to_c64() {
     assert!(!active.platform_selection_required);
 }
 
-#[tokio::test]
+#[tokio::test(flavor = "current_thread")]
 async fn test_set_active_platform_routes_unimported_atari800_to_import() {
     let response = set_active_platform("atari800".to_string()).await.unwrap();
 
@@ -50,22 +51,20 @@ async fn test_set_active_platform_routes_unimported_atari800_to_import() {
 fn test_platform_import_status_is_platform_scoped() {
     let temp_db = NamedTempFile::new().unwrap();
     let db_path = temp_db.path().to_string_lossy().to_string();
-    std::env::set_var("VIC40_DB_PATH", &db_path);
+    let _env = DbEnvGuard::set(&db_path);
 
     let status = get_platform_import_status_sync("atari800").unwrap();
 
     assert_eq!(status.platform_id, "atari800");
     assert_eq!(status.import_status, "notImported");
     assert_eq!(status.game_count, 0);
-
-    std::env::remove_var("VIC40_DB_PATH");
 }
 
 #[test]
 fn test_platform_import_status_reads_imported_sqlite_library() {
     let temp_db = NamedTempFile::new().unwrap();
     let db_path = temp_db.path().to_string_lossy().to_string();
-    std::env::set_var("VIC40_DB_PATH", &db_path);
+    let _env = DbEnvGuard::set(&db_path);
 
     {
         let conn = Connection::open(&db_path).unwrap();
@@ -112,15 +111,13 @@ fn test_platform_import_status_reads_imported_sqlite_library() {
         status.source_mdb_path,
         Some("E:/Atari/Atari 800 v12.mdb".to_string())
     );
-
-    std::env::remove_var("VIC40_DB_PATH");
 }
 
 #[test]
 fn test_platform_import_status_treats_missing_library_row_as_not_imported() {
     let temp_db = NamedTempFile::new().unwrap();
     let db_path = temp_db.path().to_string_lossy().to_string();
-    std::env::set_var("VIC40_DB_PATH", &db_path);
+    let _env = DbEnvGuard::set(&db_path);
 
     {
         let conn = Connection::open(&db_path).unwrap();
@@ -157,6 +154,4 @@ fn test_platform_import_status_treats_missing_library_row_as_not_imported() {
     assert_eq!(status.platform_id, "c64");
     assert_eq!(status.import_status, "notImported");
     assert_eq!(status.game_count, 0);
-
-    std::env::remove_var("VIC40_DB_PATH");
 }
