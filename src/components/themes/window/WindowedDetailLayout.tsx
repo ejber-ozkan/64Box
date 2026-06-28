@@ -10,7 +10,7 @@ import { isLaunchableExtra } from '../../../lib/extras';
 import { ImageSlider } from '../../ImageSlider';
 import { ExtrasDetail } from '../../ExtrasDetail';
 import { MusicianPhoto } from '../../MusicianPhoto';
-import { SidPlayer } from '../../SidPlayer';
+import { MusicPlayer } from '../../MusicPlayer';
 import { StatusRow } from '../../StatusRow';
 import { PlayButton } from '../PlayButton';
 import { DetailGameTitle } from '../../detail/DetailGameTitle';
@@ -153,7 +153,7 @@ export function WindowedDetailLayout({
   useEffect(() => {
     nav.registerAction('play', () => document.getElementById('play-game-btn')?.click());
     nav.registerAction('play-web', () => document.getElementById('play-browser-btn')?.click());
-    nav.registerAction('sid', () => document.getElementById('sid-play-btn')?.click());
+    nav.registerAction('sid', () => (document.getElementById('sid-play-btn') ?? document.getElementById('sap-play-btn'))?.click());
     nav.registerAction('favorite', onToggleFavorite);
     nav.registerAction('media-gameplay', () => onFullscreen(game.screenshotFilename));
     nav.registerAction('media-titlescreen', () => onFullscreen(game.titlescreenFilename));
@@ -420,12 +420,12 @@ export function WindowedDetailLayout({
                   </div>
                 </div>
                 <div onMouseEnter={() => nav.hoverZone('sid')} className={nav.focusCls('sid')}>
-                  <SidPlayer filename={game.sidFilename} />
+                  <MusicPlayer platformId={settings.activePlatformId} filename={game.sidFilename} />
                 </div>
               </div>
             ) : (
               <div onMouseEnter={() => nav.hoverZone('sid')} className={nav.focusCls('sid')}>
-                <SidPlayer filename={game.sidFilename} />
+                <MusicPlayer platformId={settings.activePlatformId} filename={game.sidFilename} />
               </div>
             )}
 

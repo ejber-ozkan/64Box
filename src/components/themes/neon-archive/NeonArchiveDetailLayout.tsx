@@ -5,12 +5,13 @@ import { getGameExtras } from '../../../lib/tauri-bridge';
 import { useSettings } from '../../../contexts/SettingsContext';
 import { cleanMetadataValue, getGameStudios } from '../../../lib/game-display';
 import type { Extra, Game } from '../../../types/game';
+import type { PlatformId } from '../../../types/platform';
 import { groupExtras, supportsAtariExtraCoverArt } from '../../../lib/extras';
 import { isLaunchableExtra } from '../../../lib/extras';
 import { ImageSlider } from '../../ImageSlider';
 import { ExtrasDetail, type ExtrasBigscreenNavigation } from '../../ExtrasDetail';
 import { MusicianPhoto } from '../../MusicianPhoto';
-import { SidPlayer } from '../../SidPlayer';
+import { MusicPlayer } from '../../MusicPlayer';
 import { StatusRow } from '../../StatusRow';
 import { PlayButton } from '../PlayButton';
 import { DetailGameTitle } from '../../detail/DetailGameTitle';
@@ -82,13 +83,19 @@ function openBoxArtFullscreen(
   }
 }
 
-function buildPersonnel(game: Game) {
+function getMusicGlyph(platformId: PlatformId) {
+  if (platformId === 'c64') return 'SID';
+  if (platformId === 'atari800') return 'SAP';
+  return 'MUS';
+}
+
+function buildPersonnel(game: Game, platformId: PlatformId) {
   const items = [
     { label: 'Developer', value: cleanMetadataValue(game.developer?.name), glyph: 'DEV' },
     { label: 'Publisher', value: cleanMetadataValue(game.publisher?.name), glyph: 'PUB' },
     { label: 'Coder', value: cleanMetadataValue(game.coderName), glyph: 'COD' },
     { label: 'Graphics', value: cleanMetadataValue(game.graphicsName), glyph: 'ART' },
-    { label: 'Music', value: cleanMetadataValue(game.musician?.name), glyph: 'SID' },
+    { label: 'Music', value: cleanMetadataValue(game.musician?.name), glyph: getMusicGlyph(platformId) },
   ];
 
   return items.filter((item): item is typeof items[number] & { value: string } => Boolean(item.value));
@@ -409,7 +416,7 @@ export function NeonArchiveDetailLayout({
   const versionIdsKey = versionIds.join('|');
   const detailLayout = fullscreenLayout?.detailLayoutSpec;
   const versionColumns = Math.min(versions.length, detailLayout?.alternativeColumns ?? 4);
-  const personnel = buildPersonnel(game);
+  const personnel = buildPersonnel(game, settings.activePlatformId);
   const useStackedColumns = detailLayout?.useStackedColumns ?? false;
   const shellMaxWidth = detailLayout?.shellMaxWidth ?? 1480;
   const panelGap = detailLayout?.panelGap ?? 16;
@@ -481,7 +488,7 @@ export function NeonArchiveDetailLayout({
     nav.registerAction('play', () => document.getElementById('play-game-btn')?.click());
     nav.registerAction('play-web', () => document.getElementById('play-browser-btn')?.click());
     nav.registerAction('favorite', onToggleFavorite);
-    nav.registerAction('sid', () => document.getElementById('sid-play-btn')?.click());
+    nav.registerAction('sid', () => (document.getElementById('sid-play-btn') ?? document.getElementById('sap-play-btn'))?.click());
     nav.registerAction('media-gameplay', handleOpenScreenshot);
     nav.registerAction('media-titlescreen', () => undefined);
     nav.registerAction('media-videosna', () => undefined);
@@ -994,12 +1001,14 @@ export function NeonArchiveDetailLayout({
                     />
                     <div className="min-w-0">
                       <div className="truncate font-black text-white" style={{ fontSize: `${Math.max(11, (detailLayout?.infoValueFontSize ?? 13) - 1)}px` }}>{game.musician.name}</div>
-                      <div className="text-[9px] font-bold uppercase tracking-[0.18em]" style={{ color: style.mutedText }}>SID archive</div>
+                      <div className="text-[9px] font-bold uppercase tracking-[0.18em]" style={{ color: style.mutedText }}>
+                        {settings.activePlatformId === 'c64' ? 'SID archive' : 'Music archive'}
+                      </div>
                     </div>
                   </div>
                 ) : null}
                 <div onMouseEnter={() => nav.hoverZone('sid')} className={nav.focusCls('sid')}>
-                  <SidPlayer filename={game.sidFilename} compact={true} />
+                  <MusicPlayer platformId={settings.activePlatformId} filename={game.sidFilename} compact={true} />
                 </div>
               </div>
             </SectionPanel>
