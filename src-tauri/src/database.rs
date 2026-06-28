@@ -153,8 +153,7 @@ const COVER_INDEX_POPULATE_SQL: &str = "
     FROM Extras
     LEFT JOIN Games ON Extras.GA_Id = Games.GA_Id
         AND COALESCE(Extras.platform_id, 'c64') = COALESCE(Games.platform_id, 'c64')
-    WHERE COALESCE(Extras.platform_id, Games.platform_id, 'c64') = 'atari800'
-      AND (
+    WHERE (
           LOWER(REPLACE(Path, '\\', '/')) LIKE 'cover/%'
           OR LOWER(REPLACE(Path, '\\', '/')) LIKE 'covers/%'
       )
