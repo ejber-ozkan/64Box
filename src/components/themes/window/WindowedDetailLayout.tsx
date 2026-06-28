@@ -5,7 +5,7 @@ import { getGameExtras } from '../../../lib/tauri-bridge';
 import { useSettings } from '../../../contexts/SettingsContext';
 import { cleanMetadataValue, getGameStudios } from '../../../lib/game-display';
 import type { Extra } from '../../../types/game';
-import { getVisibleDetailExtraCategories, groupExtras, supportsAtariExtraCoverArt } from '../../../lib/extras';
+import { getVisibleDetailExtraCategories, groupExtras } from '../../../lib/extras';
 import { isLaunchableExtra } from '../../../lib/extras';
 import { ImageSlider } from '../../ImageSlider';
 import { ExtrasDetail } from '../../ExtrasDetail';
@@ -90,7 +90,7 @@ export function WindowedDetailLayout({
 
   const studios = getGameStudios(game);
   const headerArtworkUrl = useResolvedBoxArtUrl(game);
-  const showBoxArtPanel = supportsAtariExtraCoverArt(settings.activePlatformId) && Boolean(game.coverPath || game.boxFrontFilename);
+  const showBoxArtPanel = Boolean(headerArtworkUrl);
   const groupedExtras = useMemo(() => groupExtras(extras), [extras]);
   const launchableExtras = useMemo(
     () => (groupedExtras.find((group) => group.category === 'games')?.items ?? []).filter(isLaunchableExtra),
@@ -349,6 +349,19 @@ export function WindowedDetailLayout({
                         muted
                         src={resolveMediaPath('screenshot', game.videoSnapFilename)}
                       />
+                    ) : activeMedia === 'boxfront' ? (
+                      <div className="h-full w-full flex items-center justify-center bg-black/50">
+                        {headerArtworkUrl ? (
+                          // eslint-disable-next-line @next/next/no-img-element
+                          <img
+                            src={headerArtworkUrl}
+                            alt={`${game.name} box art`}
+                            className="h-full w-full object-contain"
+                          />
+                        ) : (
+                          <span className="text-xs text-white/55">No Image</span>
+                        )}
+                      </div>
                     ) : (
                       <ImageSlider
                         type="screenshot"

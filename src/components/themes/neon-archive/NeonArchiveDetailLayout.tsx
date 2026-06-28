@@ -6,7 +6,7 @@ import { useSettings } from '../../../contexts/SettingsContext';
 import { cleanMetadataValue, getGameStudios } from '../../../lib/game-display';
 import type { Extra, Game } from '../../../types/game';
 import type { PlatformId } from '../../../types/platform';
-import { groupExtras, supportsAtariExtraCoverArt } from '../../../lib/extras';
+import { groupExtras } from '../../../lib/extras';
 import { isLaunchableExtra } from '../../../lib/extras';
 import { PLATFORM_PROFILES } from '../../../lib/platform-capabilities';
 import { ImageSlider } from '../../ImageSlider';
@@ -362,7 +362,7 @@ export function NeonArchiveDetailLayout({
   const extrasNavigationRef = useRef<ExtrasBigscreenNavigation | null>(null);
   const style = getNeonArchiveDetailStyle();
   const boxArtUrl = useResolvedBoxArtUrl(game);
-  const showBoxArtPanel = supportsAtariExtraCoverArt(settings.activePlatformId) && Boolean(game.coverPath || boxArtUrl);
+  const showBoxArtPanel = Boolean(boxArtUrl);
 
   useEffect(() => {
     let cancelled = false;
@@ -491,7 +491,7 @@ export function NeonArchiveDetailLayout({
   }, [onFullscreen, screenshotFilename]);
 
   const handleOpenBoxArt = useCallback(() => {
-    openBoxArtFullscreen(game.name, boxArtUrl, boxFrontFilename, onFullscreen);
+    openBoxArtFullscreen(game.name, boxArtUrl || '', boxFrontFilename, onFullscreen);
   }, [boxArtUrl, boxFrontFilename, game.name, onFullscreen]);
 
   useEffect(() => {

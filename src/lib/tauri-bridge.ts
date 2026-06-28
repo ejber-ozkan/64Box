@@ -24,7 +24,7 @@ type TauriAwareWindow = Window & {
   __TAURI__?: unknown;
 };
 
-const isTauri = (): boolean =>
+export const isTauri = (): boolean =>
   typeof window !== 'undefined' && (
     (window as TauriAwareWindow).__TAURI_INTERNALS__ !== undefined || 
     (window as TauriAwareWindow).__TAURI_IPC__ !== undefined || 

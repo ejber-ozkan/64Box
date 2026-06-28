@@ -2,8 +2,7 @@
 
 import { useEffect, useState } from 'react';
 import { useSettings } from '../contexts/SettingsContext';
-import { supportsAtariExtraCoverArt } from '../lib/extras';
-import { getAssetUrl, resolveMediaPath as resolveNativeMediaPath } from '../lib/tauri-bridge';
+import { getAssetUrl, isTauri, resolveMediaPath as resolveNativeMediaPath } from '../lib/tauri-bridge';
 import type { Game } from '../types/game';
 
 const COVER_ART_URL_CACHE = new Map<string, Promise<string | null>>();
@@ -12,15 +11,20 @@ function normalizePath(path: string) {
   return path.replace(/\\/g, '/').replace(/\/+/g, '/').replace(/^\/+/, '');
 }
 
-function getResolvedCoverArtUrl(extrasPath: string, coverPath: string) {
-  const cacheKey = `${extrasPath}|${coverPath}`;
+function getResolvedCoverArtUrl(basePath: string, relativePath: string) {
+  const cacheKey = `${basePath}|${relativePath}`;
   const cached = COVER_ART_URL_CACHE.get(cacheKey);
   if (cached) {
     return cached;
   }
 
   const promise = (async () => {
-    const resolved = await resolveNativeMediaPath(extrasPath, normalizePath(coverPath));
+    if (!isTauri()) {
+      // In browser dev mode, return the path directly without checking disk existence
+      return `${basePath}/${normalizePath(relativePath)}`;
+    }
+
+    const resolved = await resolveNativeMediaPath(basePath, normalizePath(relativePath));
     if (!resolved.exists) {
       return null;
     }
@@ -35,18 +39,19 @@ function getResolvedCoverArtUrl(extrasPath: string, coverPath: string) {
 type ResolvedBoxArtGame = Pick<Game, 'boxFrontFilename' | 'coverPath'>;
 
 export function useResolvedBoxArtUrl(game: ResolvedBoxArtGame, fallbackUrl = '') {
-  const { settings, resolveMediaPath } = useSettings();
-  const activePlatformExtrasPath = settings.platformSettings[settings.activePlatformId]?.folders.extrasPath || settings.extrasPath;
-  const canResolveExtraCoverArt = supportsAtariExtraCoverArt(settings.activePlatformId);
-  const [artUrl, setArtUrl] = useState(
-    game.boxFrontFilename ? resolveMediaPath('screenshot', game.boxFrontFilename) : fallbackUrl,
-  );
+  const { settings } = useSettings();
+  const activePlatformFolders = settings.platformSettings[settings.activePlatformId]?.folders;
+  const activePlatformExtrasPath = activePlatformFolders?.extrasPath || settings.extrasPath || '';
+  const activePlatformScreenshotsPath = activePlatformFolders?.screenshotsPath || settings.screenshotsPath || '';
+
+  const [artUrl, setArtUrl] = useState<string | null>(null);
 
   useEffect(() => {
     let cancelled = false;
 
     async function loadArt() {
-      if (canResolveExtraCoverArt && activePlatformExtrasPath.trim() && game.coverPath) {
+      // 1. Try to load cover path (Atari-style) if available
+      if (game.coverPath && activePlatformExtrasPath.trim()) {
         const resolvedCoverUrl = await getResolvedCoverArtUrl(activePlatformExtrasPath.trim(), game.coverPath);
         if (!cancelled && resolvedCoverUrl) {
           setArtUrl(resolvedCoverUrl);
@@ -54,8 +59,17 @@ export function useResolvedBoxArtUrl(game: ResolvedBoxArtGame, fallbackUrl = '')
         }
       }
 
+      // 2. Try to load boxFrontFilename (C64-style) if available
+      if (game.boxFrontFilename && activePlatformScreenshotsPath.trim()) {
+        const resolvedBoxUrl = await getResolvedCoverArtUrl(activePlatformScreenshotsPath.trim(), game.boxFrontFilename);
+        if (!cancelled && resolvedBoxUrl) {
+          setArtUrl(resolvedBoxUrl);
+          return;
+        }
+      }
+
       if (!cancelled) {
-        setArtUrl(game.boxFrontFilename ? resolveMediaPath('screenshot', game.boxFrontFilename) : fallbackUrl);
+        setArtUrl(fallbackUrl || null);
       }
     }
 
@@ -64,7 +78,7 @@ export function useResolvedBoxArtUrl(game: ResolvedBoxArtGame, fallbackUrl = '')
     return () => {
       cancelled = true;
     };
-  }, [activePlatformExtrasPath, canResolveExtraCoverArt, fallbackUrl, game.boxFrontFilename, game.coverPath, resolveMediaPath]);
+  }, [activePlatformExtrasPath, activePlatformScreenshotsPath, fallbackUrl, game.boxFrontFilename, game.coverPath]);
 
   return artUrl;
 }
