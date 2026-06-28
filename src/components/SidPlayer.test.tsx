@@ -6,7 +6,8 @@ import { SidPlayer } from './SidPlayer';
 vi.mock('../contexts/SettingsContext', () => ({
   useSettings: () => ({
     settings: {
-      scrapedMediaPath: '/media/scraped'
+      scrapedMediaPath: '/media/scraped',
+      activePlatformId: 'c64'
     },
     markAsPlayed: vi.fn(),
     resolveMediaPath: vi.fn()

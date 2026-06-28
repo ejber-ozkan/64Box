@@ -152,18 +152,18 @@
 
 ### Tests for User Story 4
 
-- [ ] T063 [P] [US4] Add media capability unit tests in `src/lib/platform-capabilities.test.ts`
-- [ ] T064 [P] [US4] Add detail view capability tests in `src/components/DetailView.test.tsx`
-- [ ] T065 [P] [US4] Add visual extras capability tests in `src/components/extras/VisualExtrasBrowser.test.tsx`
+- [x] T063 [P] [US4] Add media capability unit tests in `src/lib/platform-capabilities.test.ts`
+- [x] T064 [P] [US4] Add detail view capability tests in `src/components/DetailView.test.tsx`
+- [x] T065 [P] [US4] Add visual extras capability tests in `src/components/extras/VisualExtrasBrowser.test.tsx`
 
 ### Implementation for User Story 4
 
-- [ ] T066 [US4] Add platform media capability helpers in `src/lib/platform-capabilities.ts`
-- [ ] T067 [US4] Update `resolveMediaPath` and `findAllVariants` to use active platform folder settings in `src/contexts/SettingsContext.tsx`
-- [ ] T068 [US4] Hide SID-specific controls for non-SID platforms in `src/components/SidPlayer.tsx`
-- [ ] T069 [US4] Gate detail media sections by platform capabilities in `src/components/DetailView.tsx`
-- [ ] T070 [US4] Resolve Atari 800 Photos and Screenshots in `src/components/ImageWithFallback.tsx`
-- [ ] T071 [US4] Scope extras media resolution by active platform in `src/components/extras/ResolvedExtraMedia.tsx`
+- [x] T066 [US4] Add platform media capability helpers in `src/lib/platform-capabilities.ts`
+- [x] T067 [US4] Update `resolveMediaPath` and `findAllVariants` to use active platform folder settings in `src/contexts/SettingsContext.tsx`
+- [x] T068 [US4] Hide SID-specific controls for non-SID platforms in `src/components/SidPlayer.tsx`
+- [x] T069 [US4] Gate detail media sections by platform capabilities in `src/components/DetailView.tsx`
+- [x] T070 [US4] Resolve Atari 800 Photos and Screenshots in `src/components/ImageWithFallback.tsx`
+- [x] T071 [US4] Scope extras media resolution by active platform in `src/components/extras/ResolvedExtraMedia.tsx`
 
 **Checkpoint**: Platform media capability differences are visible only where intended and do not break shared detail/extras workflows.
 

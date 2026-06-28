@@ -3,6 +3,7 @@
 import { useState, useEffect } from 'react';
 import { useSettings } from '../contexts/SettingsContext';
 import { downloadMediaAsset, resolveMediaPath, getMediaUrl } from '../lib/tauri-bridge';
+import { PLATFORM_PROFILES } from '../lib/platform-capabilities';
 
 interface SidPlayerRuntime {
   loadstart: (url: string, subtune: number) => void;
@@ -30,6 +31,9 @@ interface SidPlayerProps {
 
 export function SidPlayer({ filename, audioUrl, compact = false }: SidPlayerProps) {
   const { settings } = useSettings();
+  const platformId = settings?.activePlatformId || 'c64';
+  const isSidPlatform = PLATFORM_PROFILES[platformId]?.mediaCapabilities.music === 'sid';
+
   const [isPlaying, setIsPlaying] = useState(false);
   const [volume, setVolume] = useState(0.5);
   const [localUrl, setLocalUrl] = useState<string | undefined>(audioUrl);
@@ -129,6 +133,10 @@ export function SidPlayer({ filename, audioUrl, compact = false }: SidPlayerProp
       setIsDownloading(false);
     }
   };
+
+  if (!isSidPlatform) {
+    return null;
+  }
 
   if (!filename) {
     return <div className={`text-gray-500 ${compact ? 'text-xs' : 'text-sm'}`}>No SID track available</div>;

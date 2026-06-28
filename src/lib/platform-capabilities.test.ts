@@ -8,6 +8,11 @@ import {
   createDefaultPlatformSettings,
   isPlatformId,
   supportsEmbeddedEmulation,
+  hasMusicCapability,
+  hasPhotosCapability,
+  hasScreenshotsCapability,
+  hasExtrasCapability,
+  hasVideosCapability,
 } from './platform-capabilities';
 
 describe('platform-capabilities', () => {
@@ -62,5 +67,28 @@ describe('platform-capabilities', () => {
     expect(isPlatformId('c64')).toBe(true);
     expect(isPlatformId('atari800')).toBe(true);
     expect(isPlatformId('amiga')).toBe(false);
+  });
+
+  test('validates platform capability query helpers', () => {
+
+    expect(hasMusicCapability('c64')).toBe(true);
+    expect(hasMusicCapability('atari800')).toBe(true);
+    expect(hasMusicCapability('atari2600')).toBe(false);
+
+    expect(hasPhotosCapability('c64')).toBe(true);
+    expect(hasPhotosCapability('atari800')).toBe(true);
+    expect(hasPhotosCapability('atari2600')).toBe(false);
+
+    expect(hasScreenshotsCapability('c64')).toBe(true);
+    expect(hasScreenshotsCapability('atari800')).toBe(true);
+    expect(hasScreenshotsCapability('atari2600')).toBe(true);
+
+    expect(hasExtrasCapability('c64')).toBe(true);
+    expect(hasExtrasCapability('atari800')).toBe(true);
+    expect(hasExtrasCapability('atari2600')).toBe(true);
+
+    expect(hasVideosCapability('c64')).toBe(true);
+    expect(hasVideosCapability('atari800')).toBe(false);
+    expect(hasVideosCapability('atari2600')).toBe(false);
   });
 });

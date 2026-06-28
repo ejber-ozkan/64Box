@@ -228,7 +228,7 @@ export function ExtrasDetail({
                   <VisualExtraCard
                     key={item.id}
                     extra={item}
-                    extrasPath={settings.extrasPath}
+                    extrasPath={settings.platformSettings[settings.activePlatformId].folders.extrasPath || settings.extrasPath}
                     extraIndex={index}
                     enableCarousel={false}
                     visualExtras={group.items}

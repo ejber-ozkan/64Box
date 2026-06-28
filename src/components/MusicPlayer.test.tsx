@@ -6,7 +6,9 @@ vi.mock('../contexts/SettingsContext', () => ({
   useSettings: () => ({
     settings: {
       scrapedMediaPath: '/media/scraped',
+      activePlatformId: 'c64',
     },
+    resolveMediaPath: (type: string, filename: string) => `/mocked-${type}/${filename}`,
   }),
 }));
 

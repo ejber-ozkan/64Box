@@ -439,29 +439,46 @@ export function SettingsProvider({ children }: { children: ReactNode }) {
 
 
   const resolveMediaPath = useCallback((type: 'screenshot' | 'sound' | 'musician' | 'extras', filename: string) => {
-    switch (type) {
-      case 'screenshot':
-        return `${settings.screenshotsPath}/${filename}`;
-      case 'sound':
-        return `${settings.soundsPath}/${filename}`;
-      case 'musician':
-        return `${settings.musicianPhotosPath}/${filename}`;
-      case 'extras':
-        return `${settings.extrasPath}/${filename}`;
-      default:
-        return filename;
-    }
-  }, [settings.screenshotsPath, settings.soundsPath, settings.musicianPhotosPath, settings.extrasPath]);
+    const folders = settings.platformSettings[settings.activePlatformId]?.folders;
+    const basePath = (() => {
+      switch (type) {
+        case 'screenshot':
+          return folders?.screenshotsPath || settings.screenshotsPath;
+        case 'sound':
+          return folders?.musicPath || settings.soundsPath;
+        case 'musician':
+          return folders?.photosPath || settings.musicianPhotosPath;
+        case 'extras':
+          return folders?.extrasPath || settings.extrasPath;
+        default:
+          return '';
+      }
+    })();
+    return basePath ? `${basePath}/${filename}` : filename;
+  }, [settings.platformSettings, settings.activePlatformId, settings.screenshotsPath, settings.soundsPath, settings.musicianPhotosPath, settings.extrasPath]);
 
   const findAllVariants = useCallback(async (type: 'screenshot' | 'sound' | 'musician' | 'extras', filename: string): Promise<string[]> => {
     if (typeof window === 'undefined') return [];
     
     try {
       const { findAllMediaVariants, getMediaUrl } = await import('../lib/tauri-bridge');
-      let baseDir = settings.screenshotsPath;
-      if (type === 'sound') baseDir = settings.soundsPath;
-      if (type === 'musician') baseDir = settings.musicianPhotosPath;
-      if (type === 'extras') baseDir = settings.extrasPath;
+      const folders = settings.platformSettings[settings.activePlatformId]?.folders;
+      const baseDir = (() => {
+        switch (type) {
+          case 'screenshot':
+            return folders?.screenshotsPath || settings.screenshotsPath;
+          case 'sound':
+            return folders?.musicPath || settings.soundsPath;
+          case 'musician':
+            return folders?.photosPath || settings.musicianPhotosPath;
+          case 'extras':
+            return folders?.extrasPath || settings.extrasPath;
+          default:
+            return '';
+        }
+      })();
+
+      if (!baseDir) return [resolveMediaPath(type, filename)];
 
       const variants = await findAllMediaVariants(baseDir, filename);
       
@@ -470,7 +487,7 @@ export function SettingsProvider({ children }: { children: ReactNode }) {
     } catch {
       return [resolveMediaPath(type, filename)];
     }
-  }, [settings.screenshotsPath, settings.soundsPath, settings.musicianPhotosPath, settings.extrasPath, resolveMediaPath]);
+  }, [settings.platformSettings, settings.activePlatformId, settings.screenshotsPath, settings.soundsPath, settings.musicianPhotosPath, settings.extrasPath, resolveMediaPath]);
   
   const markAsPlayed = useCallback((gameId: string) => {
     setSettings(prev => {

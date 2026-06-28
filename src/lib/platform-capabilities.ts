@@ -184,3 +184,23 @@ export function createDefaultPlatformSettingsMap(): Record<PlatformId, PlatformS
     atari2600: createDefaultPlatformSettings('atari2600'),
   };
 }
+
+export function hasMusicCapability(platformId: PlatformId): boolean {
+  return PLATFORM_PROFILES[platformId]?.mediaCapabilities.music !== 'none';
+}
+
+export function hasPhotosCapability(platformId: PlatformId): boolean {
+  return PLATFORM_PROFILES[platformId]?.mediaCapabilities.photos === true;
+}
+
+export function hasScreenshotsCapability(platformId: PlatformId): boolean {
+  return PLATFORM_PROFILES[platformId]?.mediaCapabilities.screenshots === true;
+}
+
+export function hasExtrasCapability(platformId: PlatformId): boolean {
+  return PLATFORM_PROFILES[platformId]?.mediaCapabilities.extras === true;
+}
+
+export function hasVideosCapability(platformId: PlatformId): boolean {
+  return PLATFORM_PROFILES[platformId]?.mediaCapabilities.videos === true;
+}

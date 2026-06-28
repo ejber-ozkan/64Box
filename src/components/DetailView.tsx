@@ -1,9 +1,10 @@
 "use client";
 
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useMemo } from 'react';
 import { Game, GameDetail } from '../types/game';
 import { getDbGameDetail } from '../lib/tauri-bridge';
 import { NeonArchiveDetailLayout } from './themes/neon-archive/NeonArchiveDetailLayout';
+import { PLATFORM_PROFILES } from '../lib/platform-capabilities';
 import { ImageSlider } from './ImageSlider';
 import { ImageWithFallback } from './ImageWithFallback';
 import { useDetailNavigation, DetailNavigationHook, NavigationConfig } from '../hooks/useDetailNavigation';
@@ -59,7 +60,26 @@ export function DetailView({ game, onBack }: DetailViewProps) {
   usePopupOpenSound(Boolean(fullscreenMedia), 'detail-fullscreen-image');
 
   const fullscreenLayout = useFullscreenLayoutMetrics();
-  const nav = useDetailNavigation({ onBack, config: DETAIL_CONFIG, enabled: !fullscreenMedia });
+  const showSoundtrack = PLATFORM_PROFILES[settings.activePlatformId]?.mediaCapabilities.music !== 'none';
+
+  const detailConfig = useMemo(() => {
+    const config = { ...DETAIL_CONFIG } as Partial<typeof DETAIL_CONFIG>;
+    if (!showSoundtrack) {
+      delete config['sid'];
+      if (config['media-extras']?.right === 'sid') {
+        config['media-extras'] = { ...config['media-extras'], right: undefined };
+      }
+      if (config['versions']?.down === 'sid') {
+        config['versions'] = { ...config['versions'], down: undefined };
+      }
+      if (config['screenshot']?.down === 'sid') {
+        config['screenshot'] = { ...config['screenshot'], down: undefined };
+      }
+    }
+    return config;
+  }, [showSoundtrack]);
+
+  const nav = useDetailNavigation({ onBack, config: detailConfig as NavigationConfig, enabled: !fullscreenMedia });
   const hasBlockingModal = () => typeof document !== 'undefined' && Boolean(document.querySelector('[data-detail-modal="open"]'));
 
   const handleFullscreen = (media: DetailFullscreenRequest) => {

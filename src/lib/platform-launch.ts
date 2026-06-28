@@ -13,7 +13,8 @@ export interface PlatformLaunchSettings {
   providerLabel: string;
 }
 
-function normalizePathSegment(segment: string): string {
+function normalizePathSegment(segment: string | null | undefined): string {
+  if (!segment) return '';
   return segment.replace(/\\/g, '/').replace(/^\/+|\/+$/g, '');
 }
 

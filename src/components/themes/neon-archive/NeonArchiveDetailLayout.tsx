@@ -8,6 +8,7 @@ import type { Extra, Game } from '../../../types/game';
 import type { PlatformId } from '../../../types/platform';
 import { groupExtras, supportsAtariExtraCoverArt } from '../../../lib/extras';
 import { isLaunchableExtra } from '../../../lib/extras';
+import { PLATFORM_PROFILES } from '../../../lib/platform-capabilities';
 import { ImageSlider } from '../../ImageSlider';
 import { ExtrasDetail, type ExtrasBigscreenNavigation } from '../../ExtrasDetail';
 import { MusicianPhoto } from '../../MusicianPhoto';
@@ -439,7 +440,16 @@ export function NeonArchiveDetailLayout({
   const renderScale = detailLayout?.renderScale ?? 1;
   const surfaceWidth = detailLayout?.surfaceWidth ?? designWidth * renderScale;
   const surfaceHeight = detailLayout?.surfaceHeight ?? designHeight * renderScale;
-  const sidebarTrackHeights = detailLayout?.sidebarRowHeights ?? [170, 150, 240, 220];
+  const showSoundtrack = PLATFORM_PROFILES[settings.activePlatformId]?.mediaCapabilities.music !== 'none';
+  const sidebarTrackHeights = (() => {
+    const raw = detailLayout?.sidebarRowHeights ?? [170, 150, 240, 220];
+    if (!showSoundtrack) {
+      const copy = [...raw];
+      copy.splice(1, 1);
+      return copy;
+    }
+    return raw;
+  })();
   const sidebarTemplateRows = sidebarTrackHeights.map((value) => `${value}px`).join(' ');
   const infoDensity: InfoDensity = {
     gap: detailLayout?.infoRowGap ?? 12,
@@ -988,30 +998,34 @@ export function NeonArchiveDetailLayout({
               </div>
             </SectionPanel>
 
-            <SectionPanel panelColor={style.panel} borderColor={style.border} className="min-h-0">
-              <div className="flex h-full min-h-0 flex-col" style={{ gap: Math.max(6, panelInnerGap - 8), padding: Math.max(8, panelPadding - 4) }}>
-                <SectionHeading title="Soundtrack Module" accent={style.accent} mutedText={style.mutedText} />
-                {game.musician ? (
-                  <div className="flex items-center gap-2">
-                    <MusicianPhoto
-                      className="shrink-0"
-                      musicianName={game.musician.name}
-                      photoFilename={game.musician.photoPath}
-                      style={{ height: `${Math.max(28, (detailLayout?.musicianAvatarSize ?? 40) - 8)}px`, width: `${Math.max(28, (detailLayout?.musicianAvatarSize ?? 40) - 8)}px` }}
-                    />
-                    <div className="min-w-0">
-                      <div className="truncate font-black text-white" style={{ fontSize: `${Math.max(11, (detailLayout?.infoValueFontSize ?? 13) - 1)}px` }}>{game.musician.name}</div>
-                      <div className="text-[9px] font-bold uppercase tracking-[0.18em]" style={{ color: style.mutedText }}>
-                        {settings.activePlatformId === 'c64' ? 'SID archive' : 'Music archive'}
+            {showSoundtrack && (
+              <SectionPanel panelColor={style.panel} borderColor={style.border} className="min-h-0">
+                <div className="flex h-full min-h-0 flex-col" style={{ gap: Math.max(6, panelInnerGap - 8), padding: Math.max(8, panelPadding - 4) }}>
+                  <SectionHeading title="Soundtrack Module" accent={style.accent} mutedText={style.mutedText} />
+                  {game.musician ? (
+                    <div className="flex items-center gap-2">
+                      {PLATFORM_PROFILES[settings.activePlatformId]?.mediaCapabilities.photos ? (
+                        <MusicianPhoto
+                          className="shrink-0"
+                          musicianName={game.musician.name}
+                          photoFilename={game.musician.photoPath}
+                          style={{ height: `${Math.max(28, (detailLayout?.musicianAvatarSize ?? 40) - 8)}px`, width: `${Math.max(28, (detailLayout?.musicianAvatarSize ?? 40) - 8)}px` }}
+                        />
+                      ) : null}
+                      <div className="min-w-0">
+                        <div className="truncate font-black text-white" style={{ fontSize: `${Math.max(11, (detailLayout?.infoValueFontSize ?? 13) - 1)}px` }}>{game.musician.name}</div>
+                        <div className="text-[9px] font-bold uppercase tracking-[0.18em]" style={{ color: style.mutedText }}>
+                          {settings.activePlatformId === 'c64' ? 'SID Composer' : 'Music Composer'}
+                        </div>
                       </div>
                     </div>
+                  ) : null}
+                  <div onMouseEnter={() => nav.hoverZone('sid')} className={nav.focusCls('sid')}>
+                    <MusicPlayer platformId={settings.activePlatformId} filename={game.sidFilename} compact={true} />
                   </div>
-                ) : null}
-                <div onMouseEnter={() => nav.hoverZone('sid')} className={nav.focusCls('sid')}>
-                  <MusicPlayer platformId={settings.activePlatformId} filename={game.sidFilename} compact={true} />
                 </div>
-              </div>
-            </SectionPanel>
+              </SectionPanel>
+            )}
 
             <SectionPanel panelColor={style.panel} borderColor={style.border} className="min-h-0">
               <div className="flex h-full min-h-0 flex-col" style={{ gap: Math.max(10, panelPadding - 2), padding: panelPadding }}>
