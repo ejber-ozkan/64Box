@@ -81,6 +81,42 @@ export function PathsSettingsTab({
   onMouseFocus,
   isFocused,
 }: PathsSettingsTabProps) {
+  const activePlatformSettings = draft.platformSettings[draft.activePlatformId];
+  const activeEmulatorSettings = activePlatformSettings.emulator;
+  const isAtari800 = draft.activePlatformId === 'atari800';
+
+  const setPlatformExecutablePath = (profileId: string, value: string) => {
+    setField('platformSettings', {
+      ...draft.platformSettings,
+      [draft.activePlatformId]: {
+        ...activePlatformSettings,
+        emulator: {
+          ...activeEmulatorSettings,
+          executablePaths: {
+            ...activeEmulatorSettings.executablePaths,
+            [profileId]: value,
+          },
+        },
+      },
+    });
+  };
+
+  const setPlatformCorePath = (profileId: string, value: string) => {
+    setField('platformSettings', {
+      ...draft.platformSettings,
+      [draft.activePlatformId]: {
+        ...activePlatformSettings,
+        emulator: {
+          ...activeEmulatorSettings,
+          corePaths: {
+            ...activeEmulatorSettings.corePaths,
+            [profileId]: value,
+          },
+        },
+      },
+    });
+  };
+
   return (
     <>
       <div className="flex flex-col gap-4">
@@ -151,100 +187,142 @@ export function PathsSettingsTab({
           -------- Emulator Paths --------
         </div>
 
-        <div className="space-y-6 rounded-xl border border-gray-700 bg-gray-800/50 p-4">
-          <div className="mb-4 flex items-center justify-between border-b border-gray-700 pb-4">
-            <div>
-              <span className="block text-sm font-bold uppercase tracking-wider text-white">Default Desktop Emulator</span>
-              <span className="mt-1 block text-[10px] text-gray-500">Which engine to use when clicking &quot;▶ Desktop&quot;</span>
+        {!isAtari800 && (
+          <div className="space-y-6 rounded-xl border border-gray-700 bg-gray-800/50 p-4">
+            <div className="mb-4 flex items-center justify-between border-b border-gray-700 pb-4">
+              <div>
+                <span className="block text-sm font-bold uppercase tracking-wider text-white">Default Desktop Emulator</span>
+                <span className="mt-1 block text-[10px] text-gray-500">Which engine to use when clicking &quot;▶ Desktop&quot;</span>
+              </div>
+              <div className="flex rounded-lg border border-gray-700 bg-gray-950 p-1">
+                {(['vice', 'retroarch'] as const).map((emu, idx) => (
+                  <button
+                    key={emu}
+                    onClick={() => setField('preferredEmulator', emu)}
+                    onMouseEnter={() => isMouseMode && onMouseFocus(idx + 10)}
+                    className={`focus-idx-${idx + 10} rounded-md px-4 py-1.5 text-[10px] font-black uppercase tracking-widest transition-all ${
+                      (draft.preferredEmulator === emu && ![10, 11].some(isFocused)) || isFocused(idx + 10)
+                        ? 'bg-blue-600 text-white shadow-lg'
+                        : 'text-gray-500 hover:text-gray-300'
+                    }`}
+                  >
+                    {emu}
+                  </button>
+                ))}
+              </div>
             </div>
-            <div className="flex rounded-lg border border-gray-700 bg-gray-950 p-1">
-              {(['vice', 'retroarch'] as const).map((emu, idx) => (
-                <button
-                  key={emu}
-                  onClick={() => setField('preferredEmulator', emu)}
-                  onMouseEnter={() => isMouseMode && onMouseFocus(idx + 10)}
-                  className={`focus-idx-${idx + 10} rounded-md px-4 py-1.5 text-[10px] font-black uppercase tracking-widest transition-all ${
-                    (draft.preferredEmulator === emu && ![10, 11].some(isFocused)) || isFocused(idx + 10)
-                      ? 'bg-blue-600 text-white shadow-lg'
-                      : 'text-gray-500 hover:text-gray-300'
-                  }`}
-                >
-                  {emu}
-                </button>
-              ))}
+
+            <div className={`space-y-3 transition-opacity ${draft.preferredEmulator !== 'vice' ? 'opacity-50' : ''}`}>
+              <PathRow
+                label="VICE Executable (x64sc.exe)"
+                value={draft.emulatorPath}
+                onChange={(value) => setField('emulatorPath', value)}
+                placeholder="e.g. C:/VICE/x64sc.exe"
+                inputIndex={12}
+                isMouseMode={isMouseMode}
+                onMouseFocus={onMouseFocus}
+                isFocused={isFocused}
+              />
+              <button
+                onClick={() => void onBrowseFile('emulatorPath')}
+                onMouseEnter={() => isMouseMode && onMouseFocus(13)}
+                className={`focus-idx-13 rounded border px-3 py-2 text-xs transition ${
+                  isFocused(13)
+                    ? 'border-blue-400 bg-blue-600 text-white'
+                    : 'border-gray-700 bg-gray-700 text-gray-300 hover:bg-gray-600'
+                }`}
+              >
+                Browse for VICE (x64sc)...
+              </button>
+            </div>
+
+            <div className={`space-y-3 transition-opacity ${draft.preferredEmulator !== 'retroarch' ? 'opacity-50' : ''}`}>
+              <PathRow
+                label="RetroArch Executable (retroarch.exe)"
+                value={draft.retroarchPath}
+                onChange={(value) => setField('retroarchPath', value)}
+                placeholder="e.g. C:/RetroArch/retroarch.exe"
+                inputIndex={14}
+                isMouseMode={isMouseMode}
+                onMouseFocus={onMouseFocus}
+                isFocused={isFocused}
+              />
+              <button
+                onClick={() => void onBrowseFile('retroarchPath')}
+                onMouseEnter={() => isMouseMode && onMouseFocus(15)}
+                className={`focus-idx-15 rounded border px-3 py-2 text-xs transition ${
+                  isFocused(15)
+                    ? 'border-blue-400 bg-blue-600 text-white'
+                    : 'border-gray-700 bg-gray-700 text-gray-300 hover:bg-gray-600'
+                }`}
+              >
+                Browse for RetroArch...
+              </button>
+
+              <PathRow
+                label="RetroArch Core (e.g. vice_x64sc_libretro.dll)"
+                value={draft.retroarchCorePath}
+                onChange={(value) => setField('retroarchCorePath', value)}
+                placeholder="e.g. C:/RetroArch/cores/vice_x64sc_libretro.dll"
+                inputIndex={16}
+                isMouseMode={isMouseMode}
+                onMouseFocus={onMouseFocus}
+                isFocused={isFocused}
+              />
+              <button
+                onClick={() => void onBrowseFile('retroarchCorePath')}
+                onMouseEnter={() => isMouseMode && onMouseFocus(17)}
+                className={`focus-idx-17 rounded border px-3 py-2 text-xs transition ${
+                  isFocused(17)
+                    ? 'border-blue-400 bg-blue-600 text-white'
+                    : 'border-gray-700 bg-gray-700 text-gray-300 hover:bg-gray-600'
+                }`}
+              >
+                Browse for Core DLL/SO...
+              </button>
             </div>
           </div>
+        )}
 
-          <div className={`space-y-3 transition-opacity ${draft.preferredEmulator !== 'vice' ? 'opacity-50' : ''}`}>
-            <PathRow
-              label="VICE Executable (x64sc.exe)"
-              value={draft.emulatorPath}
-              onChange={(value) => setField('emulatorPath', value)}
-              placeholder="e.g. C:/VICE/x64sc.exe"
-              inputIndex={12}
-              isMouseMode={isMouseMode}
-              onMouseFocus={onMouseFocus}
-              isFocused={isFocused}
-            />
-            <button
-              onClick={() => void onBrowseFile('emulatorPath')}
-              onMouseEnter={() => isMouseMode && onMouseFocus(13)}
-              className={`focus-idx-13 rounded border px-3 py-2 text-xs transition ${
-                isFocused(13)
-                  ? 'border-blue-400 bg-blue-600 text-white'
-                  : 'border-gray-700 bg-gray-700 text-gray-300 hover:bg-gray-600'
-              }`}
-            >
-              Browse for VICE (x64sc)...
-            </button>
+        {isAtari800 && (
+          <div className="space-y-6 rounded-xl border border-gray-700 bg-gray-800/50 p-4">
+            <div className="mb-4 border-b border-gray-700 pb-4">
+              <span className="block text-sm font-bold uppercase tracking-wider text-white">Atari 800 Emulators</span>
+            </div>
+            <div className="space-y-3">
+              <PathRow
+                label="RetroArch Executable (retroarch.exe)"
+                value={activeEmulatorSettings.executablePaths['retroarch-atari800'] ?? ''}
+                onChange={(value) => setPlatformExecutablePath('retroarch-atari800', value)}
+                placeholder="e.g. C:/RetroArch/retroarch.exe"
+                inputIndex={12}
+                isMouseMode={isMouseMode}
+                onMouseFocus={onMouseFocus}
+                isFocused={isFocused}
+              />
+              <PathRow
+                label="RetroArch Atari800 Core"
+                value={activeEmulatorSettings.corePaths['retroarch-atari800'] ?? ''}
+                onChange={(value) => setPlatformCorePath('retroarch-atari800', value)}
+                placeholder="e.g. C:/RetroArch/cores/atari800_libretro.dll"
+                inputIndex={13}
+                isMouseMode={isMouseMode}
+                onMouseFocus={onMouseFocus}
+                isFocused={isFocused}
+              />
+              <PathRow
+                label="Altirra Executable (Altirra64.exe)"
+                value={activeEmulatorSettings.executablePaths['altirra-atari800'] ?? ''}
+                onChange={(value) => setPlatformExecutablePath('altirra-atari800', value)}
+                placeholder="e.g. C:/Altirra/Altirra64.exe"
+                inputIndex={14}
+                isMouseMode={isMouseMode}
+                onMouseFocus={onMouseFocus}
+                isFocused={isFocused}
+              />
+            </div>
           </div>
-
-          <div className={`space-y-3 transition-opacity ${draft.preferredEmulator !== 'retroarch' ? 'opacity-50' : ''}`}>
-            <PathRow
-              label="RetroArch Executable (retroarch.exe)"
-              value={draft.retroarchPath}
-              onChange={(value) => setField('retroarchPath', value)}
-              placeholder="e.g. C:/RetroArch/retroarch.exe"
-              inputIndex={14}
-              isMouseMode={isMouseMode}
-              onMouseFocus={onMouseFocus}
-              isFocused={isFocused}
-            />
-            <button
-              onClick={() => void onBrowseFile('retroarchPath')}
-              onMouseEnter={() => isMouseMode && onMouseFocus(15)}
-              className={`focus-idx-15 rounded border px-3 py-2 text-xs transition ${
-                isFocused(15)
-                  ? 'border-blue-400 bg-blue-600 text-white'
-                  : 'border-gray-700 bg-gray-700 text-gray-300 hover:bg-gray-600'
-              }`}
-            >
-              Browse for RetroArch...
-            </button>
-
-            <PathRow
-              label="RetroArch Core (e.g. vice_x64sc_libretro.dll)"
-              value={draft.retroarchCorePath}
-              onChange={(value) => setField('retroarchCorePath', value)}
-              placeholder="e.g. C:/RetroArch/cores/vice_x64sc_libretro.dll"
-              inputIndex={16}
-              isMouseMode={isMouseMode}
-              onMouseFocus={onMouseFocus}
-              isFocused={isFocused}
-            />
-            <button
-              onClick={() => void onBrowseFile('retroarchCorePath')}
-              onMouseEnter={() => isMouseMode && onMouseFocus(17)}
-              className={`focus-idx-17 rounded border px-3 py-2 text-xs transition ${
-                isFocused(17)
-                  ? 'border-blue-400 bg-blue-600 text-white'
-                  : 'border-gray-700 bg-gray-700 text-gray-300 hover:bg-gray-600'
-              }`}
-            >
-              Browse for Core DLL/SO...
-            </button>
-          </div>
-        </div>
+        )}
 
         <hr className="mb-1 mt-2 border-gray-700" />
         <PathRow

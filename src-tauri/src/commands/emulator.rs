@@ -13,7 +13,10 @@ fn create_launch_temp_dir() -> Result<PathBuf, String> {
             .duration_since(UNIX_EPOCH)
             .map_err(|e| e.to_string())?
             .as_nanos();
-        let candidate = base_dir.join(format!("64BoxTemp-{}-{}-{}", process_id, timestamp, attempt));
+        let candidate = base_dir.join(format!(
+            "64BoxTemp-{}-{}-{}",
+            process_id, timestamp, attempt
+        ));
 
         match std::fs::create_dir(&candidate) {
             Ok(()) => return Ok(candidate),
@@ -25,7 +28,11 @@ fn create_launch_temp_dir() -> Result<PathBuf, String> {
     Err("Failed to create a unique temporary launch directory".to_string())
 }
 
-fn require_existing_file(path: &Path, not_found_message: impl FnOnce() -> String, not_file_message: impl FnOnce() -> String) -> Result<(), String> {
+fn require_existing_file(
+    path: &Path,
+    not_found_message: impl FnOnce() -> String,
+    not_file_message: impl FnOnce() -> String,
+) -> Result<(), String> {
     if !path.exists() {
         return Err(not_found_message());
     }
@@ -37,21 +44,72 @@ fn require_existing_file(path: &Path, not_found_message: impl FnOnce() -> String
     Ok(())
 }
 
+fn platform_display_name(platform_id: Option<&str>) -> &'static str {
+    match platform_id {
+        Some("atari800") => "Atari 800",
+        Some("atari2600") => "Atari 2600",
+        _ => "C64",
+    }
+}
+
+fn emulator_profile_display_name(profile_id: Option<&str>, is_retroarch: bool) -> &'static str {
+    match profile_id {
+        Some("altirra-atari800") => "Altirra",
+        Some("retroarch-atari800") if is_retroarch => "RetroArch",
+        Some("retroarch-c64") if is_retroarch => "RetroArch",
+        Some("vice-c64") => "VICE",
+        _ if is_retroarch => "RetroArch",
+        _ => "emulator",
+    }
+}
+
+fn launch_extensions_for_platform(platform_id: Option<&str>) -> &'static [&'static str] {
+    match platform_id {
+        Some("atari800") => &[
+            "atr", "atx", "xfd", "dcm", "xex", "com", "bin", "car", "rom",
+        ],
+        _ => &["d64", "g64", "t64", "tap", "prg", "crt", "nib"],
+    }
+}
+
+fn retroarch_core_not_found_message(platform_id: Option<&str>, core_path: &str) -> String {
+    match platform_id {
+        Some("atari800") => format!("Atari 800 RetroArch core file not found: {}", core_path),
+        _ => format!("RetroArch Core file not found: {}", core_path),
+    }
+}
+
+fn retroarch_core_not_file_message(platform_id: Option<&str>, core_path: &str) -> String {
+    match platform_id {
+        Some("atari800") => format!("Atari 800 RetroArch core path is not a file: {}", core_path),
+        _ => format!("RetroArch Core path is not a file: {}", core_path),
+    }
+}
+
 #[tauri::command]
 pub async fn launch_emulator(request: LaunchRequest) -> Result<LaunchResult, String> {
     let mut emulator = PathBuf::from(&request.emulator_path);
+    let platform_id = request.platform_id.as_deref();
     require_existing_file(
         &emulator,
-        || format!("Emulator path not found: {}", request.emulator_path),
-        || format!("Emulator path is not a file: {}", request.emulator_path),
+        || {
+            format!(
+                "{} {} executable path not found: {}",
+                platform_display_name(platform_id),
+                emulator_profile_display_name(request.emulator_profile_id.as_deref(), false),
+                request.emulator_path
+            )
+        },
+        || {
+            format!(
+                "{} {} executable path is not a file: {}",
+                platform_display_name(platform_id),
+                emulator_profile_display_name(request.emulator_profile_id.as_deref(), false),
+                request.emulator_path
+            )
+        },
     )
-    .or_else(|err| {
-        if emulator.is_dir() {
-            Ok(())
-        } else {
-            Err(err)
-        }
-    })?;
+    .or_else(|err| if emulator.is_dir() { Ok(()) } else { Err(err) })?;
 
     if emulator.is_dir() {
         let possible_exes = [
@@ -64,6 +122,10 @@ pub async fn launch_emulator(request: LaunchRequest) -> Result<LaunchResult, Str
             "vice",
             "x64dtv.exe",
             "xpet.exe",
+            "altirra64.exe",
+            "altirra64",
+            "altirra.exe",
+            "altirra",
         ];
         let mut found = false;
         for exe in possible_exes {
@@ -95,14 +157,19 @@ pub async fn launch_emulator(request: LaunchRequest) -> Result<LaunchResult, Str
         .unwrap_or("")
         .to_lowercase();
     let is_retroarch = exe_name.contains("retroarch");
+    let is_altirra = request
+        .emulator_profile_id
+        .as_deref()
+        .is_some_and(|profile_id| profile_id == "altirra-atari800")
+        || exe_name.contains("altirra");
 
     if is_retroarch {
         if let Some(cp) = &request.core_path {
             if !cp.is_empty() {
                 require_existing_file(
                     Path::new(cp),
-                    || format!("RetroArch Core file not found: {}", cp),
-                    || format!("RetroArch Core path is not a file: {}", cp),
+                    || retroarch_core_not_found_message(platform_id, cp),
+                    || retroarch_core_not_file_message(platform_id, cp),
                 )?;
             }
         }
@@ -164,14 +231,17 @@ pub async fn launch_emulator(request: LaunchRequest) -> Result<LaunchResult, Str
                     .and_then(|e| e.to_str())
                     .unwrap_or("")
                     .to_lowercase();
-                if ["d64", "g64", "t64", "tap", "prg", "crt", "nib"].contains(&ext.as_str()) {
+                if launch_extensions_for_platform(platform_id).contains(&ext.as_str()) {
                     extracted_roms.push(outpath.clone());
                 }
             }
         }
 
         if extracted_roms.is_empty() {
-            return Err("No compatible C64 ROMs found inside the ZIP file.".to_string());
+            return Err(format!(
+                "No compatible {} launch files found inside the ZIP file.",
+                platform_display_name(platform_id)
+            ));
         }
 
         extracted_roms.sort();
@@ -218,6 +288,8 @@ pub async fn launch_emulator(request: LaunchRequest) -> Result<LaunchResult, Str
             } else {
                 args.push(resolved_primary_rom.to_string_lossy().to_string());
             }
+        } else if is_altirra {
+            args.push(resolved_primary_rom.to_string_lossy().to_string());
         } else {
             args.push("-autostart".to_string());
             args.push(resolved_primary_rom.to_string_lossy().to_string());
@@ -248,6 +320,8 @@ pub async fn launch_emulator(request: LaunchRequest) -> Result<LaunchResult, Str
                     args.push(cp.clone());
                 }
             }
+            args.push(rom.to_string_lossy().to_string());
+        } else if is_altirra {
             args.push(rom.to_string_lossy().to_string());
         } else {
             args.push("-autostart".to_string());
@@ -320,6 +394,7 @@ mod tests {
             is_pal: true,
             game_id: None,
             core_path: None,
+            ..Default::default()
         };
         let res = launch_emulator(req).await;
         assert!(res.is_err());
@@ -441,7 +516,9 @@ mod tests {
 
         let result = launch_emulator(request).await;
         assert!(result.is_err());
-        assert!(result.unwrap_err().contains("RetroArch Core path is not a file"));
+        assert!(result
+            .unwrap_err()
+            .contains("RetroArch Core path is not a file"));
     }
 
     #[tokio::test]
@@ -547,7 +624,10 @@ mod tests {
         copy_test_emulator(&emulator_path);
 
         let zip_path = dir.path().join("collection.zip");
-        write_zip(&zip_path, &[("disk1.d64", b"disk1"), ("disk2.d64", b"disk2")]);
+        write_zip(
+            &zip_path,
+            &[("disk1.d64", b"disk1"), ("disk2.d64", b"disk2")],
+        );
 
         let request = LaunchRequest {
             emulator_path: emulator_path.to_string_lossy().to_string(),
@@ -560,5 +640,85 @@ mod tests {
         assert!(sentinel.exists());
 
         let _ = std::fs::remove_dir_all(&shared_temp_dir);
+    }
+
+    #[tokio::test]
+    async fn test_launch_emulator_atari800_retroarch_zip_success() {
+        let dir = tempdir().unwrap();
+        let emulator_path = dir.path().join(if cfg!(windows) {
+            "retroarch.exe"
+        } else {
+            "retroarch"
+        });
+        copy_test_emulator(&emulator_path);
+
+        let core_path = dir.path().join("atari800_libretro.dll");
+        std::fs::write(&core_path, b"core").unwrap();
+
+        let zip_path = dir.path().join("atari800.zip");
+        write_zip(
+            &zip_path,
+            &[("disk1.atr", b"disk1"), ("disk2.xex", b"disk2")],
+        );
+
+        let request = LaunchRequest {
+            platform_id: Some("atari800".to_string()),
+            emulator_profile_id: Some("retroarch-atari800".to_string()),
+            emulator_path: emulator_path.to_string_lossy().to_string(),
+            rom_path: zip_path.to_string_lossy().to_string(),
+            core_path: Some(core_path.to_string_lossy().to_string()),
+            ..Default::default()
+        };
+
+        let result = launch_emulator(request).await.unwrap();
+        assert!(result.success);
+    }
+
+    #[tokio::test]
+    async fn test_launch_emulator_atari800_retroarch_missing_core_names_platform_and_profile() {
+        let dir = tempdir().unwrap();
+        let emulator_path = dir.path().join(if cfg!(windows) {
+            "retroarch.exe"
+        } else {
+            "retroarch"
+        });
+        copy_test_emulator(&emulator_path);
+
+        let rom_path = dir.path().join("game.atr");
+        std::fs::write(&rom_path, b"dummy rom").unwrap();
+
+        let request = LaunchRequest {
+            platform_id: Some("atari800".to_string()),
+            emulator_profile_id: Some("retroarch-atari800".to_string()),
+            emulator_path: emulator_path.to_string_lossy().to_string(),
+            rom_path: rom_path.to_string_lossy().to_string(),
+            core_path: Some(dir.path().join("missing.dll").to_string_lossy().to_string()),
+            ..Default::default()
+        };
+
+        let error = launch_emulator(request).await.unwrap_err();
+        assert!(error.contains("Atari 800 RetroArch"));
+    }
+
+    #[tokio::test]
+    async fn test_launch_emulator_atari800_altirra_missing_executable_names_platform_and_profile() {
+        let dir = tempdir().unwrap();
+        let rom_path = dir.path().join("game.atr");
+        std::fs::write(&rom_path, b"dummy rom").unwrap();
+
+        let request = LaunchRequest {
+            platform_id: Some("atari800".to_string()),
+            emulator_profile_id: Some("altirra-atari800".to_string()),
+            emulator_path: dir
+                .path()
+                .join("missing-altirra.exe")
+                .to_string_lossy()
+                .to_string(),
+            rom_path: rom_path.to_string_lossy().to_string(),
+            ..Default::default()
+        };
+
+        let error = launch_emulator(request).await.unwrap_err();
+        assert!(error.contains("Atari 800 Altirra"));
     }
 }

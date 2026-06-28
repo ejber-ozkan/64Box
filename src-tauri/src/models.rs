@@ -27,6 +27,8 @@ pub struct ResolvedPath {
 /// Launch request from the frontend
 #[derive(Debug, Serialize, Deserialize, Default)]
 pub struct LaunchRequest {
+    pub platform_id: Option<String>,
+    pub emulator_profile_id: Option<String>,
     pub emulator_path: String,
     pub rom_path: String,
     pub true_drive_emulation: bool,

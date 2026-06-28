@@ -121,9 +121,9 @@
 
 ### Tests for User Story 3
 
-- [ ] T050 [P] [US3] Add backend tests for Atari 800 launch extension allowlist and launch artifact creation in `src-tauri/src/commands/emulator.rs`
-- [ ] T051 [P] [US3] Add backend tests for RetroArch Atari800 core validation and Altirra executable validation in `src-tauri/src/commands/emulator.rs`
-- [ ] T052 [P] [US3] Add frontend settings tests for Atari 800 emulator profile visibility in `src/components/SettingsModal.test.tsx`
+- [X] T050 [P] [US3] Add backend tests for Atari 800 launch extension allowlist and launch artifact creation in `src-tauri/src/commands/emulator.rs`
+- [X] T051 [P] [US3] Add backend tests for RetroArch Atari800 core validation and Altirra executable validation in `src-tauri/src/commands/emulator.rs`
+- [X] T052 [P] [US3] Add frontend settings tests for Atari 800 emulator profile visibility in `src/components/SettingsModal.test.tsx`
 - [ ] T053 [P] [US3] Add Playwright Atari 800 emulator settings test in `e2e/platform-launch-settings.spec.ts`
 
 ### Implementation for User Story 3
@@ -134,7 +134,7 @@
 - [ ] T057 [US3] Add Altirra executable detection and launch argument handling in `src-tauri/src/commands/emulator.rs`
 - [ ] T058 [US3] Implement `test_emulator_profile` in `src-tauri/src/commands/emulator.rs`
 - [ ] T059 [US3] Add `testEmulatorProfile` and platform-aware `launchGame` wrappers in `src/lib/tauri-bridge.ts`
-- [ ] T060 [US3] Extend `src/components/SettingsModal.tsx` with Atari 800 RetroArch core and Altirra path controls
+- [X] T060 [US3] Extend `src/components/SettingsModal.tsx` with Atari 800 RetroArch core and Altirra path controls
 - [ ] T061 [US3] Update game launch call sites to pass active platform and emulator profile in `src/components/DetailView.tsx`
 - [ ] T062 [US3] Preserve C64 VICE and RetroArch compatibility paths in `src-tauri/src/commands/emulator.rs`
 

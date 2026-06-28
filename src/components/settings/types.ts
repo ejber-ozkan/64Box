@@ -61,6 +61,8 @@ export type EditableSettings = Pick<
   | 'scrollNavigation'
   | 'menuSoundEffects'
   | 'bigBoxAnimateVertical'
+  | 'activePlatformId'
+  | 'platformSettings'
 >;
 
 export function getEditableSettings(settings: Settings): EditableSettings {
@@ -93,6 +95,8 @@ export function getEditableSettings(settings: Settings): EditableSettings {
     scrollNavigation: settings.scrollNavigation,
     menuSoundEffects: settings.menuSoundEffects,
     bigBoxAnimateVertical: settings.bigBoxAnimateVertical,
+    activePlatformId: settings.activePlatformId,
+    platformSettings: settings.platformSettings,
   };
 }
 
