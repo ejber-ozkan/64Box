@@ -101,6 +101,42 @@ fn is_retroarch_profile(profile_id: &str) -> bool {
     profile_id.starts_with("retroarch-")
 }
 
+fn push_altirra_rom_args(args: &mut Vec<String>, rom_path: &Path) {
+    let ext = rom_path
+        .extension()
+        .and_then(|e| e.to_str())
+        .unwrap_or("")
+        .to_lowercase();
+    let rom_str = rom_path.to_string_lossy().to_string();
+
+    match ext.as_str() {
+        "atr" | "atx" | "xfd" | "dcm" => {
+            args.push("/disk".to_string());
+            args.push(rom_str);
+        }
+        "cas" => {
+            args.push("/tape".to_string());
+            args.push(rom_str);
+            args.push("/casautoboot".to_string());
+        }
+        "bin" | "car" | "rom" => {
+            args.push("/cart".to_string());
+            args.push(rom_str);
+        }
+        "xex" | "com" => {
+            args.push("/run".to_string());
+            args.push(rom_str);
+        }
+        "bas" => {
+            args.push("/runbas".to_string());
+            args.push(rom_str);
+        }
+        _ => {
+            args.push(rom_str);
+        }
+    }
+}
+
 #[tauri::command]
 pub async fn test_emulator_profile(
     request: EmulatorProfileTestRequest,
@@ -271,7 +307,13 @@ pub async fn launch_emulator(request: LaunchRequest) -> Result<LaunchResult, Str
     }
 
     let mut args: Vec<String> = Vec::new();
-    if !is_retroarch {
+    if is_altirra {
+        if request.is_pal {
+            args.push("/pal".to_string());
+        } else {
+            args.push("/ntsc".to_string());
+        }
+    } else if !is_retroarch {
         if request.true_drive_emulation {
             args.push("-truedrive".to_string());
         }
@@ -384,7 +426,7 @@ pub async fn launch_emulator(request: LaunchRequest) -> Result<LaunchResult, Str
                 args.push(resolved_primary_rom.to_string_lossy().to_string());
             }
         } else if is_altirra {
-            args.push(resolved_primary_rom.to_string_lossy().to_string());
+            push_altirra_rom_args(&mut args, &resolved_primary_rom);
         } else {
             args.push("-autostart".to_string());
             args.push(resolved_primary_rom.to_string_lossy().to_string());
@@ -417,7 +459,7 @@ pub async fn launch_emulator(request: LaunchRequest) -> Result<LaunchResult, Str
             }
             args.push(rom.to_string_lossy().to_string());
         } else if is_altirra {
-            args.push(rom.to_string_lossy().to_string());
+            push_altirra_rom_args(&mut args, &rom);
         } else {
             args.push("-autostart".to_string());
             args.push(rom.to_string_lossy().to_string());
@@ -448,6 +490,32 @@ pub async fn launch_emulator(request: LaunchRequest) -> Result<LaunchResult, Str
 #[cfg(test)]
 mod tests {
     use super::*;
+
+    #[test]
+    fn test_altirra_rom_args_extension_mapping() {
+        let test_cases = vec![
+            ("game.atr", vec!["/disk", "game.atr"]),
+            ("game.atx", vec!["/disk", "game.atx"]),
+            ("game.xfd", vec!["/disk", "game.xfd"]),
+            ("game.dcm", vec!["/disk", "game.dcm"]),
+            ("game.cas", vec!["/tape", "game.cas", "/casautoboot"]),
+            ("game.bin", vec!["/cart", "game.bin"]),
+            ("game.car", vec!["/cart", "game.car"]),
+            ("game.rom", vec!["/cart", "game.rom"]),
+            ("game.xex", vec!["/run", "game.xex"]),
+            ("game.com", vec!["/run", "game.com"]),
+            ("game.bas", vec!["/runbas", "game.bas"]),
+            ("game.txt", vec!["game.txt"]),
+        ];
+
+        for (filename, expected) in test_cases {
+            let mut args = Vec::new();
+            let path = Path::new(filename);
+            push_altirra_rom_args(&mut args, &path);
+            let expected_strs: Vec<String> = expected.iter().map(|s| s.to_string()).collect();
+            assert_eq!(args, expected_strs, "Failed for {}", filename);
+        }
+    }
     use rusqlite::Connection;
     use tempfile::{tempdir, NamedTempFile};
     use zip::write::FileOptions;
