@@ -5,7 +5,7 @@ import { getGameExtras } from '../../../lib/tauri-bridge';
 import { useSettings } from '../../../contexts/SettingsContext';
 import { cleanMetadataValue, getGameStudios } from '../../../lib/game-display';
 import type { Extra, Game } from '../../../types/game';
-import { groupExtras } from '../../../lib/extras';
+import { groupExtras, supportsAtariExtraCoverArt } from '../../../lib/extras';
 import { isLaunchableExtra } from '../../../lib/extras';
 import { ImageSlider } from '../../ImageSlider';
 import { ExtrasDetail, type ExtrasBigscreenNavigation } from '../../ExtrasDetail';
@@ -354,6 +354,7 @@ export function NeonArchiveDetailLayout({
   const extrasNavigationRef = useRef<ExtrasBigscreenNavigation | null>(null);
   const style = getNeonArchiveDetailStyle();
   const boxArtUrl = useResolvedBoxArtUrl(game);
+  const showBoxArtPanel = supportsAtariExtraCoverArt(settings.activePlatformId) && Boolean(game.coverPath || boxArtUrl);
 
   useEffect(() => {
     let cancelled = false;
@@ -787,7 +788,9 @@ export function NeonArchiveDetailLayout({
                     className="grid h-full min-h-0"
                     style={{
                       gap: panelGap,
-                      gridTemplateColumns: `minmax(0,1fr) ${detailLayout?.boxArtWidth ?? 200}px`,
+                      gridTemplateColumns: showBoxArtPanel
+                        ? `minmax(0,1fr) ${detailLayout?.boxArtWidth ?? 200}px`
+                        : 'minmax(0,1fr)',
                       padding: panelPadding,
                     }}
                   >
@@ -809,37 +812,39 @@ export function NeonArchiveDetailLayout({
                       </div>
                     </button>
 
-                    <button
-                      type="button"
-                      onClick={handleOpenBoxArt}
-                      onMouseEnter={() => nav.hoverZone('media-boxfront')}
-                      className={`min-h-0 overflow-hidden rounded-[22px] border text-left transition-all ${nav.focusCls('media-boxfront')}`}
-                      style={{ background: style.panelMuted, borderColor: style.border }}
-                    >
-                      <div className="flex h-full min-h-0 w-full flex-col" style={{ padding: Math.max(10, panelPadding - 1) }}>
-                        <div className="text-[11px] font-black uppercase tracking-[0.24em]" style={{ color: style.accent }}>
-                          Box Art
-                        </div>
-                        <div
-                          className="mt-3 flex min-h-0 flex-1 items-center justify-center overflow-hidden rounded-[16px] border border-white/8 bg-black/35"
-                          style={{ padding: detailLayout?.boxArtViewportPadding ?? panelPadding }}
-                        >
-                          <div className="h-full w-full">
-                            {boxArtUrl ? (
-                              // eslint-disable-next-line @next/next/no-img-element
-                              <img src={boxArtUrl} alt={`${game.name} box art`} className="h-full w-full object-contain object-center" />
-                            ) : (
-                              <div className="flex h-full items-center justify-center text-sm" style={{ color: style.mutedText }}>
-                                No box art
-                              </div>
-                            )}
+                    {showBoxArtPanel ? (
+                      <button
+                        type="button"
+                        onClick={handleOpenBoxArt}
+                        onMouseEnter={() => nav.hoverZone('media-boxfront')}
+                        className={`min-h-0 overflow-hidden rounded-[22px] border text-left transition-all ${nav.focusCls('media-boxfront')}`}
+                        style={{ background: style.panelMuted, borderColor: style.border }}
+                      >
+                        <div className="flex h-full min-h-0 w-full flex-col" style={{ padding: Math.max(10, panelPadding - 1) }}>
+                          <div className="text-[11px] font-black uppercase tracking-[0.24em]" style={{ color: style.accent }}>
+                            Box Art
+                          </div>
+                          <div
+                            className="mt-3 flex min-h-0 flex-1 items-center justify-center overflow-hidden rounded-[16px] border border-white/8 bg-black/35"
+                            style={{ padding: detailLayout?.boxArtViewportPadding ?? panelPadding }}
+                          >
+                            <div className="h-full w-full">
+                              {boxArtUrl ? (
+                                // eslint-disable-next-line @next/next/no-img-element
+                                <img src={boxArtUrl} alt={`${game.name} box art`} className="h-full w-full object-contain object-center" />
+                              ) : (
+                                <div className="flex h-full items-center justify-center text-sm" style={{ color: style.mutedText }}>
+                                  No box art
+                                </div>
+                              )}
+                            </div>
+                          </div>
+                          <div className="mt-3 text-[11px]" style={{ color: style.mutedText }}>
+                            Press Enter for fullscreen
                           </div>
                         </div>
-                        <div className="mt-3 text-[11px]" style={{ color: style.mutedText }}>
-                          Press Enter for fullscreen
-                        </div>
-                      </div>
-                    </button>
+                      </button>
+                    ) : null}
                   </div>
                 </SectionPanel>
 

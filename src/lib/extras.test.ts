@@ -1,5 +1,12 @@
 import { describe, expect, test } from 'vitest';
-import { groupExtras, buildExtraAssetPath } from './extras';
+import {
+  buildExtraAssetPath,
+  getVisibleDetailExtraCategories,
+  groupExtras,
+  isAtariAdvertExtra,
+  isAtariCoverArtExtra,
+  supportsAtariExtraCoverArt,
+} from './extras';
 
 describe('groupExtras', () => {
 
@@ -89,5 +96,21 @@ describe('steam extras helpers', () => {
     expect(getExtraLaunchLabel({ id: '4', name: 'Disk', path: 'Disks/game.d64', type: 'game' })).toBe('Launch Disk');
     expect(getExtraLaunchLabel({ id: '5', name: 'Cart', path: 'Carts/game.crt', type: 'game' })).toBe('Launch Cart');
     expect(getExtraLaunchLabel({ id: '6', name: 'Other', path: 'Variants/game.zip', type: 'game' })).toBe('Launch Variant');
+  });
+
+  test('treats Atari adverts as visible detail extras', () => {
+    const advert = { id: '7', name: 'Magazine Ad', path: 'Adverts/game.pdf', type: 'doc' };
+
+    expect(isAtariAdvertExtra(advert)).toBe(true);
+    expect(getVisibleDetailExtraCategories('atari800')).toEqual(['visual', 'docs', 'media']);
+  });
+
+  test('treats cover extras as Atari-only box art', () => {
+    const cover = { id: '8', name: 'Atari Box', path: 'Covers/game.png', type: 'image' };
+
+    expect(isAtariCoverArtExtra(cover, 'atari800')).toBe(true);
+    expect(isAtariCoverArtExtra(cover, 'c64')).toBe(false);
+    expect(supportsAtariExtraCoverArt('atari800')).toBe(true);
+    expect(supportsAtariExtraCoverArt('c64')).toBe(false);
   });
 });

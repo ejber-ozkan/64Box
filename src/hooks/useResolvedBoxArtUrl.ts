@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from 'react';
 import { useSettings } from '../contexts/SettingsContext';
+import { supportsAtariExtraCoverArt } from '../lib/extras';
 import { getAssetUrl, resolveMediaPath as resolveNativeMediaPath } from '../lib/tauri-bridge';
 import type { Game } from '../types/game';
 
@@ -35,6 +36,8 @@ type ResolvedBoxArtGame = Pick<Game, 'boxFrontFilename' | 'coverPath'>;
 
 export function useResolvedBoxArtUrl(game: ResolvedBoxArtGame, fallbackUrl = '') {
   const { settings, resolveMediaPath } = useSettings();
+  const activePlatformExtrasPath = settings.platformSettings[settings.activePlatformId]?.folders.extrasPath || settings.extrasPath;
+  const canResolveExtraCoverArt = supportsAtariExtraCoverArt(settings.activePlatformId);
   const [artUrl, setArtUrl] = useState(
     game.boxFrontFilename ? resolveMediaPath('screenshot', game.boxFrontFilename) : fallbackUrl,
   );
@@ -43,8 +46,8 @@ export function useResolvedBoxArtUrl(game: ResolvedBoxArtGame, fallbackUrl = '')
     let cancelled = false;
 
     async function loadArt() {
-      if (settings.extrasPath.trim() && game.coverPath) {
-        const resolvedCoverUrl = await getResolvedCoverArtUrl(settings.extrasPath.trim(), game.coverPath);
+      if (canResolveExtraCoverArt && activePlatformExtrasPath.trim() && game.coverPath) {
+        const resolvedCoverUrl = await getResolvedCoverArtUrl(activePlatformExtrasPath.trim(), game.coverPath);
         if (!cancelled && resolvedCoverUrl) {
           setArtUrl(resolvedCoverUrl);
           return;
@@ -61,7 +64,7 @@ export function useResolvedBoxArtUrl(game: ResolvedBoxArtGame, fallbackUrl = '')
     return () => {
       cancelled = true;
     };
-  }, [fallbackUrl, game.boxFrontFilename, game.coverPath, resolveMediaPath, settings.extrasPath]);
+  }, [activePlatformExtrasPath, canResolveExtraCoverArt, fallbackUrl, game.boxFrontFilename, game.coverPath, resolveMediaPath]);
 
   return artUrl;
 }

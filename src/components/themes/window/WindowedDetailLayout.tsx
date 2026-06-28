@@ -5,7 +5,7 @@ import { getGameExtras } from '../../../lib/tauri-bridge';
 import { useSettings } from '../../../contexts/SettingsContext';
 import { cleanMetadataValue, getGameStudios } from '../../../lib/game-display';
 import type { Extra } from '../../../types/game';
-import { groupExtras } from '../../../lib/extras';
+import { getVisibleDetailExtraCategories, groupExtras, supportsAtariExtraCoverArt } from '../../../lib/extras';
 import { isLaunchableExtra } from '../../../lib/extras';
 import { ImageSlider } from '../../ImageSlider';
 import { ExtrasDetail } from '../../ExtrasDetail';
@@ -90,6 +90,7 @@ export function WindowedDetailLayout({
 
   const studios = getGameStudios(game);
   const headerArtworkUrl = useResolvedBoxArtUrl(game);
+  const showBoxArtPanel = supportsAtariExtraCoverArt(settings.activePlatformId) && Boolean(game.coverPath || game.boxFrontFilename);
   const groupedExtras = useMemo(() => groupExtras(extras), [extras]);
   const launchableExtras = useMemo(
     () => (groupedExtras.find((group) => group.category === 'games')?.items ?? []).filter(isLaunchableExtra),
@@ -97,9 +98,9 @@ export function WindowedDetailLayout({
   );
   const galleryExtras = useMemo(
     () => groupedExtras
-      .filter((group) => group.category === 'visual' || group.category === 'media')
+      .filter((group) => getVisibleDetailExtraCategories(settings.activePlatformId).includes(group.category))
       .flatMap((group) => group.items),
-    [groupedExtras],
+    [groupedExtras, settings.activePlatformId],
   );
   const availableTabs = useMemo(() => {
     const tabs: WindowedDetailTab[] = ['gallery'];
@@ -123,11 +124,11 @@ export function WindowedDetailLayout({
     if (game.videoSnapFilename) {
       items.push({ id: 'videosna', label: 'Video', filename: game.videoSnapFilename });
     }
-    if (game.coverPath || game.boxFrontFilename) {
+    if (showBoxArtPanel) {
       items.push({ id: 'boxfront', label: 'Box Art', filename: game.boxFrontFilename ?? game.coverPath ?? null });
     }
     return items;
-  }, [game.boxFrontFilename, game.coverPath, game.screenshotFilename, game.titlescreenFilename, game.videoSnapFilename]);
+  }, [game.boxFrontFilename, game.coverPath, game.screenshotFilename, game.titlescreenFilename, game.videoSnapFilename, showBoxArtPanel]);
 
   const focusedMedia = ZONE_TO_MEDIA[nav.focusedZone];
   const activeMedia = focusedMedia ?? selectedMedia;
@@ -372,7 +373,7 @@ export function WindowedDetailLayout({
                   onMouseEnter={() => nav.hoverZone('media-extras')}
                   className={`rounded-[22px] border border-white/6 bg-black/15 p-4 ${nav.focusCls('media-extras')}`}
                 >
-                  <ExtrasDetail game={game} extras={galleryExtras} visibleCategories={['visual', 'media']} hideEmptyState />
+                  <ExtrasDetail game={game} extras={galleryExtras} visibleCategories={getVisibleDetailExtraCategories(settings.activePlatformId)} hideEmptyState />
                 </div>
               )}
             </div>

@@ -66,7 +66,7 @@ fn emulator_profile_display_name(profile_id: Option<&str>, is_retroarch: bool) -
 fn launch_extensions_for_platform(platform_id: Option<&str>) -> &'static [&'static str] {
     match platform_id {
         Some("atari800") => &[
-            "atr", "atx", "xfd", "dcm", "xex", "com", "bin", "car", "rom",
+            "atr", "atx", "xfd", "dcm", "cas", "xex", "com", "bin", "car", "rom",
         ],
         _ => &["d64", "g64", "t64", "tap", "prg", "crt", "nib"],
     }
@@ -755,6 +755,35 @@ mod tests {
             &zip_path,
             &[("disk1.atr", b"disk1"), ("disk2.xex", b"disk2")],
         );
+
+        let request = LaunchRequest {
+            platform_id: Some("atari800".to_string()),
+            emulator_profile_id: Some("retroarch-atari800".to_string()),
+            emulator_path: emulator_path.to_string_lossy().to_string(),
+            rom_path: zip_path.to_string_lossy().to_string(),
+            core_path: Some(core_path.to_string_lossy().to_string()),
+            ..Default::default()
+        };
+
+        let result = launch_emulator(request).await.unwrap();
+        assert!(result.success);
+    }
+
+    #[tokio::test]
+    async fn test_launch_emulator_atari800_zip_accepts_tape_and_cart_formats() {
+        let dir = tempdir().unwrap();
+        let emulator_path = dir.path().join(if cfg!(windows) {
+            "retroarch.exe"
+        } else {
+            "retroarch"
+        });
+        copy_test_emulator(&emulator_path);
+
+        let core_path = dir.path().join("atari800_libretro.dll");
+        std::fs::write(&core_path, b"core").unwrap();
+
+        let zip_path = dir.path().join("atari800-tape-cart.zip");
+        write_zip(&zip_path, &[("cassette.cas", b"tape")]);
 
         let request = LaunchRequest {
             platform_id: Some("atari800".to_string()),

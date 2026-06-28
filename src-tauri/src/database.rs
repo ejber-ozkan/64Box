@@ -153,7 +153,11 @@ const COVER_INDEX_POPULATE_SQL: &str = "
     FROM Extras
     LEFT JOIN Games ON Extras.GA_Id = Games.GA_Id
         AND COALESCE(Extras.platform_id, 'c64') = COALESCE(Games.platform_id, 'c64')
-    WHERE LOWER(REPLACE(Path, '\\', '/')) LIKE 'cover/%'
+    WHERE COALESCE(Extras.platform_id, Games.platform_id, 'c64') = 'atari800'
+      AND (
+          LOWER(REPLACE(Path, '\\', '/')) LIKE 'cover/%'
+          OR LOWER(REPLACE(Path, '\\', '/')) LIKE 'covers/%'
+      )
       AND (
           LOWER(Path) LIKE '%.jpg'
           OR LOWER(Path) LIKE '%.jpeg'
@@ -1458,9 +1462,9 @@ mod tests {
         std::env::set_var("VIC40_DB_PATH", &db_path);
 
         let conn = Connection::open(&db_path).unwrap();
-        conn.execute("CREATE TABLE Games (GA_Id TEXT, Name TEXT, GE_Id TEXT, PR_Id TEXT, AR_Id TEXT, MU_Id TEXT, DE_Id TEXT, PU_Id TEXT, LA_Id TEXT, YE_Id TEXT, Classic TEXT, Adult TEXT)", []).unwrap();
+        conn.execute("CREATE TABLE Games (GA_Id TEXT, Name TEXT, GE_Id TEXT, PR_Id TEXT, AR_Id TEXT, MU_Id TEXT, DE_Id TEXT, PU_Id TEXT, LA_Id TEXT, YE_Id TEXT, Classic TEXT, Adult TEXT, platform_id TEXT, source_game_id TEXT)", []).unwrap();
         conn.execute(
-            "CREATE TABLE GameView (id TEXT, name TEXT, developer_name TEXT, publisher_name TEXT, musician_name TEXT)",
+            "CREATE TABLE GameView (id TEXT, platformId TEXT, sourceGameId TEXT, name TEXT, developer_name TEXT, publisher_name TEXT, musician_name TEXT)",
             [],
         )
         .unwrap();
@@ -1469,13 +1473,13 @@ mod tests {
         conn.execute("CREATE TABLE Artists (AR_Id TEXT, Artist TEXT)", [])
             .unwrap();
         conn.execute(
-            "CREATE TABLE Extras (GA_Id TEXT, Path TEXT, DisplayOrder TEXT)",
+            "CREATE TABLE Extras (GA_Id TEXT, Path TEXT, DisplayOrder TEXT, platform_id TEXT, source_game_id TEXT)",
             [],
         )
         .unwrap();
         conn.execute(
-            "INSERT INTO Extras (GA_Id, Path, DisplayOrder) VALUES (?1, ?2, ?3)",
-            ["1", "Cover/Test Cover.png", "1"],
+            "INSERT INTO Extras (GA_Id, Path, DisplayOrder, platform_id, source_game_id) VALUES (?1, ?2, ?3, ?4, ?5)",
+            ["1", "Covers/Test Cover.png", "1", "atari800", "1"],
         )
         .unwrap();
         conn.execute(
@@ -1489,13 +1493,13 @@ mod tests {
         )
         .unwrap();
         conn.execute(
-            "INSERT INTO Games (GA_Id, Name, PR_Id, AR_Id) VALUES (?1, ?2, ?3, ?4)",
-            ["1", "Tiger Heli", "pr1", "ar1"],
+            "INSERT INTO Games (GA_Id, Name, PR_Id, AR_Id, platform_id, source_game_id) VALUES (?1, ?2, ?3, ?4, ?5, ?6)",
+            ["1", "Tiger Heli", "pr1", "ar1", "atari800", "1"],
         )
         .unwrap();
         conn.execute(
-            "INSERT INTO GameView (id, name, developer_name, publisher_name, musician_name) VALUES (?1, ?2, ?3, ?4, ?5)",
-            ["1", "Tiger Heli", "SEUCK", "", ""],
+            "INSERT INTO GameView (id, platformId, sourceGameId, name, developer_name, publisher_name, musician_name) VALUES (?1, ?2, ?3, ?4, ?5, ?6, ?7)",
+            ["1", "atari800", "1", "Tiger Heli", "SEUCK", "", ""],
         )
         .unwrap();
         drop(conn);
@@ -1505,12 +1509,12 @@ mod tests {
         let conn = Connection::open(&db_path).unwrap();
         let cover: String = conn
             .query_row(
-                "SELECT cover_path FROM GameCoverIndex WHERE GA_Id = ?1",
-                ["1"],
+                "SELECT cover_path FROM GameCoverIndex WHERE platform_id = ?1 AND GA_Id = ?2",
+                ["atari800", "1"],
                 |row| row.get(0),
             )
             .unwrap();
-        assert_eq!(cover, "Cover/Test Cover.png");
+        assert_eq!(cover, "Covers/Test Cover.png");
 
         let games_indexes: Vec<String> = conn
             .prepare("PRAGMA index_list('Games')")
@@ -1541,9 +1545,9 @@ mod tests {
         std::env::set_var("VIC40_DB_PATH", &db_path);
 
         let conn = Connection::open(&db_path).unwrap();
-        conn.execute("CREATE TABLE Games (GA_Id TEXT, Name TEXT, GE_Id TEXT, PR_Id TEXT, AR_Id TEXT, MU_Id TEXT, DE_Id TEXT, PU_Id TEXT, LA_Id TEXT, YE_Id TEXT, Classic TEXT, Adult TEXT)", []).unwrap();
+        conn.execute("CREATE TABLE Games (GA_Id TEXT, Name TEXT, GE_Id TEXT, PR_Id TEXT, AR_Id TEXT, MU_Id TEXT, DE_Id TEXT, PU_Id TEXT, LA_Id TEXT, YE_Id TEXT, Classic TEXT, Adult TEXT, platform_id TEXT, source_game_id TEXT)", []).unwrap();
         conn.execute(
-            "CREATE TABLE GameView (id TEXT, name TEXT, developer_name TEXT, publisher_name TEXT, musician_name TEXT)",
+            "CREATE TABLE GameView (id TEXT, platformId TEXT, sourceGameId TEXT, name TEXT, developer_name TEXT, publisher_name TEXT, musician_name TEXT)",
             [],
         )
         .unwrap();
@@ -1552,13 +1556,13 @@ mod tests {
         conn.execute("CREATE TABLE Artists (AR_Id TEXT, Artist TEXT)", [])
             .unwrap();
         conn.execute(
-            "CREATE TABLE Extras (GA_Id TEXT, Path TEXT, DisplayOrder TEXT)",
+            "CREATE TABLE Extras (GA_Id TEXT, Path TEXT, DisplayOrder TEXT, platform_id TEXT, source_game_id TEXT)",
             [],
         )
         .unwrap();
         conn.execute(
-            "INSERT INTO Extras (GA_Id, Path, DisplayOrder) VALUES (?1, ?2, ?3)",
-            ["1", "Cover/Fresh Cover.png", "1"],
+            "INSERT INTO Extras (GA_Id, Path, DisplayOrder, platform_id, source_game_id) VALUES (?1, ?2, ?3, ?4, ?5)",
+            ["1", "Covers/Fresh Cover.png", "1", "atari800", "1"],
         )
         .unwrap();
         conn.execute(
@@ -1572,13 +1576,13 @@ mod tests {
         )
         .unwrap();
         conn.execute(
-            "INSERT INTO Games (GA_Id, Name, PR_Id, AR_Id) VALUES (?1, ?2, ?3, ?4)",
-            ["1", "Tiger Heli", "pr1", "ar1"],
+            "INSERT INTO Games (GA_Id, Name, PR_Id, AR_Id, platform_id, source_game_id) VALUES (?1, ?2, ?3, ?4, ?5, ?6)",
+            ["1", "Tiger Heli", "pr1", "ar1", "atari800", "1"],
         )
         .unwrap();
         conn.execute(
-            "INSERT INTO GameView (id, name, developer_name, publisher_name, musician_name) VALUES (?1, ?2, ?3, ?4, ?5)",
-            ["1", "Tiger Heli", "SEUCK", "", ""],
+            "INSERT INTO GameView (id, platformId, sourceGameId, name, developer_name, publisher_name, musician_name) VALUES (?1, ?2, ?3, ?4, ?5, ?6, ?7)",
+            ["1", "atari800", "1", "Tiger Heli", "SEUCK", "", ""],
         )
         .unwrap();
 
@@ -1622,12 +1626,12 @@ mod tests {
         let conn = Connection::open(&db_path).unwrap();
         let cover: String = conn
             .query_row(
-                "SELECT cover_path FROM GameCoverIndex WHERE GA_Id = ?1",
-                ["1"],
+                "SELECT cover_path FROM GameCoverIndex WHERE platform_id = ?1 AND GA_Id = ?2",
+                ["atari800", "1"],
                 |row| row.get(0),
             )
             .unwrap();
-        assert_eq!(cover, "Cover/Fresh Cover.png");
+        assert_eq!(cover, "Covers/Fresh Cover.png");
 
         let search_hit: String = conn
             .query_row(

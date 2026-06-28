@@ -48,7 +48,10 @@ function createMiniGameBaseExport(dir) {
   writeCsv(dir, "Languages.csv", [{ LA_Id: "1", Language: "English" }]);
   writeCsv(dir, "Programmers.csv", [{ PR_Id: "1", Programmer: "Atari Coder" }]);
   writeCsv(dir, "Artists.csv", [{ AR_Id: "1", Artist: "Atari Artist" }]);
-  writeCsv(dir, "Extras.csv", [{ GA_Id: "42", DisplayOrder: "1", Path: "Cover/ATARI_TEST.png" }]);
+  writeCsv(dir, "Extras.csv", [
+    { GA_Id: "42", DisplayOrder: "1", Path: "Covers/ATARI_TEST.png" },
+    { GA_Id: "42", DisplayOrder: "2", Path: "Adverts/ATARI_TEST.pdf" },
+  ]);
 }
 
 describe("convert CSV to SQLite platform support", () => {
@@ -70,6 +73,12 @@ describe("convert CSV to SQLite platform support", () => {
         platform_id: "atari800",
         source_game_id: "42",
       });
+      expect(db.prepare("SELECT Path FROM Extras WHERE Path = ?").get("Adverts/ATARI_TEST.pdf")).toEqual({
+        Path: "Adverts/ATARI_TEST.pdf",
+      });
+      expect(db.prepare("SELECT cover_path FROM GameCoverIndex WHERE platform_id = ? AND GA_Id = ?").get("atari800", "42")).toEqual({
+        cover_path: "Covers/ATARI_TEST.png",
+      });
       expect(db.prepare("SELECT platform_id, source_game_id FROM Developers").get()).toEqual({
         platform_id: "atari800",
         source_game_id: "1",
@@ -88,6 +97,21 @@ describe("convert CSV to SQLite platform support", () => {
         import_status: "imported",
         game_count: 1,
       });
+    } finally {
+      db.close();
+    }
+  });
+
+  test("does not index C64 Cover extras as Atari 800 box art", () => {
+    const tempDir = fs.mkdtempSync(path.join(os.tmpdir(), "gb-c64-cover-export-"));
+    const dbPath = path.join(tempDir, "c64.sqlite");
+    createMiniGameBaseExport(tempDir);
+
+    convertCsvToSqlite({ inputDir: tempDir, dbPath, platformId: "c64" });
+
+    const db = new Database(dbPath, { readonly: true });
+    try {
+      expect(db.prepare("SELECT cover_path FROM GameCoverIndex WHERE platform_id = ? AND GA_Id = ?").get("c64", "42")).toBeUndefined();
     } finally {
       db.close();
     }

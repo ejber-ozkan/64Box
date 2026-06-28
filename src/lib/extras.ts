@@ -1,4 +1,5 @@
 import { Extra } from '../types/game';
+import type { PlatformId } from '../types/platform';
 
 export interface ExtraGroup {
   category: 'visual' | 'docs' | 'media' | 'games';
@@ -100,5 +101,26 @@ export function getExtraLaunchLabel(extra: Extra) {
 export function isLaunchableExtra(extra: Extra) {
   const root = getExtraSourceLabel(extra).toLowerCase();
   return GAME_FOLDERS.some((candidate) => root.includes(candidate.toLowerCase()));
+}
+
+export function isAtariAdvertExtra(extra: Extra) {
+  return getExtraSourceLabel(extra).toLowerCase() === 'adverts';
+}
+
+export function isAtariCoverArtExtra(extra: Extra, platformId: PlatformId) {
+  if (platformId !== 'atari800') {
+    return false;
+  }
+
+  const root = getExtraSourceLabel(extra).toLowerCase();
+  return (root === 'cover' || root === 'covers') && isImageExtra(extra);
+}
+
+export function supportsAtariExtraCoverArt(platformId: PlatformId) {
+  return platformId === 'atari800';
+}
+
+export function getVisibleDetailExtraCategories(platformId: PlatformId): ExtraGroup['category'][] {
+  return platformId === 'atari800' ? ['visual', 'docs', 'media'] : ['visual', 'media'];
 }
 

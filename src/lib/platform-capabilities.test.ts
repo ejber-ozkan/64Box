@@ -29,8 +29,9 @@ describe('platform-capabilities', () => {
     expect(atari800.defaultEmulatorProfileId).toBe('retroarch-atari800');
     expect(atari800.supportedEmulatorProfileIds).toContain('altirra-atari800');
     expect(atari800.launchExtensions).toEqual(
-      expect.arrayContaining(['.atr', '.xex', '.m3u', '.zip']),
+      expect.arrayContaining(['.atr', '.cas', '.xex', '.bin', '.m3u', '.zip']),
     );
+    expect(PLATFORM_PROFILES.c64.launchExtensions).not.toEqual(expect.arrayContaining(['.cas', '.xex']));
     expect(ATARI800_REFERENCE_MDB_PATH).toContain('Atari 800 v12.mdb');
   });
 
