@@ -150,4 +150,39 @@ describe('SettingsView platform emulator settings', () => {
     expect(screen.getByText('RetroArch Atari800 Core')).toBeTruthy();
     expect(screen.getByText('Altirra Executable (Altirra64.exe)')).toBeTruthy();
   });
+
+  test('saves edited platform paths without overwriting another platform', () => {
+    currentSettings = makeSettings('c64', ['c64', 'atari800']);
+
+    renderSettings();
+
+    fireEvent.click(screen.getByText('C64 Platform Paths'));
+    fireEvent.change(screen.getByDisplayValue('D:/GB64/Games'), {
+      target: { value: 'D:/NewGB64/Games' },
+    });
+
+    fireEvent.click(screen.getByText('Atari 800 Platform Paths'));
+    fireEvent.change(screen.getByDisplayValue('E:/Atari/Games'), {
+      target: { value: 'E:/NewAtari/Games' },
+    });
+
+    fireEvent.click(screen.getByText('Save Configuration'));
+
+    expect(updateSettings).toHaveBeenCalledWith(expect.objectContaining({
+      platformSettings: expect.objectContaining({
+        c64: expect.objectContaining({
+          folders: expect.objectContaining({
+            gamesPath: 'D:/NewGB64/Games',
+            extrasPath: 'D:/GB64/Extras',
+          }),
+        }),
+        atari800: expect.objectContaining({
+          folders: expect.objectContaining({
+            gamesPath: 'E:/NewAtari/Games',
+            extrasPath: 'E:/Atari/Extras',
+          }),
+        }),
+      }),
+    }));
+  });
 });

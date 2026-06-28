@@ -129,16 +129,16 @@
 
 ### Implementation for User Story 3
 
-- [ ] T054 [US3] Extend `LaunchRequest` in `src-tauri/src/models.rs` with `platform_id`, `emulator_profile_id`, and platform-aware launch file fields
-- [ ] T055 [US3] Refactor C64-specific launch extension filtering into platform launch rules in `src-tauri/src/commands/emulator.rs`
-- [ ] T056 [US3] Add RetroArch Atari800 core argument handling in `src-tauri/src/commands/emulator.rs`
-- [ ] T057 [US3] Add Altirra executable detection and launch argument handling in `src-tauri/src/commands/emulator.rs`
-- [ ] T058 [US3] Implement `test_emulator_profile` in `src-tauri/src/commands/emulator.rs`
-- [ ] T059 [US3] Add `testEmulatorProfile` and platform-aware `launchGame` wrappers in `src/lib/tauri-bridge.ts`
+- [X] T054 [US3] Extend `LaunchRequest` in `src-tauri/src/models.rs` with `platform_id`, `emulator_profile_id`, and platform-aware launch file fields
+- [X] T055 [US3] Refactor C64-specific launch extension filtering into platform launch rules in `src-tauri/src/commands/emulator.rs`
+- [X] T056 [US3] Add RetroArch Atari800 core argument handling in `src-tauri/src/commands/emulator.rs`
+- [X] T057 [US3] Add Altirra executable detection and launch argument handling in `src-tauri/src/commands/emulator.rs`
+- [X] T058 [US3] Implement `test_emulator_profile` in `src-tauri/src/commands/emulator.rs`
+- [X] T059 [US3] Add `testEmulatorProfile` and platform-aware `launchGame` wrappers in `src/lib/tauri-bridge.ts`
 - [X] T060 [US3] Extend `src/components/SettingsModal.tsx` with Atari 800 RetroArch core and Altirra path controls
 - [X] T060a [US3] Preserve C64 platform path editing independently of active platform in `src/components/settings/PathsSettingsTab.tsx`
-- [ ] T061 [US3] Update game launch call sites to pass active platform and emulator profile in `src/components/DetailView.tsx`
-- [ ] T062 [US3] Preserve C64 VICE and RetroArch compatibility paths in `src-tauri/src/commands/emulator.rs`
+- [X] T061 [US3] Update game launch call sites to pass active platform and emulator profile in `src/components/DetailView.tsx`
+- [X] T062 [US3] Preserve C64 VICE and RetroArch compatibility paths in `src-tauri/src/commands/emulator.rs`
 
 **Checkpoint**: Atari 800 has configurable RetroArch and Altirra launch paths, and C64 launch behavior remains compatible.
 

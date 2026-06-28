@@ -1,4 +1,4 @@
-use crate::models::{LaunchRequest, LaunchResult};
+use crate::models::{EmulatorProfileTestRequest, LaunchRequest, LaunchResult};
 use std::io::Write;
 use std::path::{Path, PathBuf};
 use std::process::Command;
@@ -84,6 +84,101 @@ fn retroarch_core_not_file_message(platform_id: Option<&str>, core_path: &str) -
         Some("atari800") => format!("Atari 800 RetroArch core path is not a file: {}", core_path),
         _ => format!("RetroArch Core path is not a file: {}", core_path),
     }
+}
+
+fn is_supported_emulator_profile(platform_id: &str, profile_id: &str) -> bool {
+    matches!(
+        (platform_id, profile_id),
+        ("c64", "vice-c64")
+            | ("c64", "retroarch-c64")
+            | ("atari800", "retroarch-atari800")
+            | ("atari800", "altirra-atari800")
+            | ("atari2600", "retroarch-atari2600")
+    )
+}
+
+fn is_retroarch_profile(profile_id: &str) -> bool {
+    profile_id.starts_with("retroarch-")
+}
+
+#[tauri::command]
+pub async fn test_emulator_profile(
+    request: EmulatorProfileTestRequest,
+) -> Result<LaunchResult, String> {
+    let platform_id = request.platform_id.as_str();
+    let emulator_profile_id = request.emulator_profile_id.as_str();
+    let platform = Some(platform_id);
+    let profile = Some(emulator_profile_id);
+    let is_retroarch = is_retroarch_profile(emulator_profile_id);
+
+    if !is_supported_emulator_profile(platform_id, emulator_profile_id) {
+        return Ok(LaunchResult {
+            success: false,
+            message: format!(
+                "Unsupported {} emulator profile: {}",
+                platform_display_name(platform),
+                emulator_profile_id
+            ),
+        });
+    }
+
+    if let Err(message) = require_existing_file(
+        Path::new(&request.executable_path),
+        || {
+            format!(
+                "{} {} executable path not found: {}",
+                platform_display_name(platform),
+                emulator_profile_display_name(profile, is_retroarch),
+                request.executable_path
+            )
+        },
+        || {
+            format!(
+                "{} {} executable path is not a file: {}",
+                platform_display_name(platform),
+                emulator_profile_display_name(profile, is_retroarch),
+                request.executable_path
+            )
+        },
+    ) {
+        return Ok(LaunchResult {
+            success: false,
+            message,
+        });
+    }
+
+    if is_retroarch {
+        let Some(core_path) = request.core_path.as_deref().filter(|path| !path.is_empty()) else {
+            return Ok(LaunchResult {
+                success: false,
+                message: format!(
+                    "{} {} core path is required.",
+                    platform_display_name(platform),
+                    emulator_profile_display_name(profile, true)
+                ),
+            });
+        };
+
+        if let Err(message) = require_existing_file(
+            Path::new(core_path),
+            || retroarch_core_not_found_message(platform, core_path),
+            || retroarch_core_not_file_message(platform, core_path),
+        ) {
+            return Ok(LaunchResult {
+                success: false,
+                message,
+            });
+        }
+    }
+
+    Ok(LaunchResult {
+        success: true,
+        message: format!(
+            "{} {} profile is ready.",
+            platform_display_name(platform),
+            emulator_profile_display_name(profile, is_retroarch)
+        ),
+    })
 }
 
 #[tauri::command]
@@ -720,5 +815,71 @@ mod tests {
 
         let error = launch_emulator(request).await.unwrap_err();
         assert!(error.contains("Atari 800 Altirra"));
+    }
+
+    #[tokio::test]
+    async fn test_emulator_profile_atari800_retroarch_success() {
+        let dir = tempdir().unwrap();
+        let emulator_path = dir.path().join(if cfg!(windows) {
+            "retroarch.exe"
+        } else {
+            "retroarch"
+        });
+        copy_test_emulator(&emulator_path);
+        let core_path = dir.path().join("atari800_libretro.dll");
+        std::fs::write(&core_path, b"core").unwrap();
+
+        let request = EmulatorProfileTestRequest {
+            platform_id: "atari800".to_string(),
+            emulator_profile_id: "retroarch-atari800".to_string(),
+            executable_path: emulator_path.to_string_lossy().to_string(),
+            core_path: Some(core_path.to_string_lossy().to_string()),
+        };
+
+        let result = test_emulator_profile(request).await.unwrap();
+        assert!(result.success);
+        assert!(result.message.contains("Atari 800 RetroArch"));
+    }
+
+    #[tokio::test]
+    async fn test_emulator_profile_atari800_retroarch_requires_core() {
+        let dir = tempdir().unwrap();
+        let emulator_path = dir.path().join(if cfg!(windows) {
+            "retroarch.exe"
+        } else {
+            "retroarch"
+        });
+        copy_test_emulator(&emulator_path);
+
+        let request = EmulatorProfileTestRequest {
+            platform_id: "atari800".to_string(),
+            emulator_profile_id: "retroarch-atari800".to_string(),
+            executable_path: emulator_path.to_string_lossy().to_string(),
+            core_path: None,
+        };
+
+        let result = test_emulator_profile(request).await.unwrap();
+        assert!(!result.success);
+        assert!(result.message.contains("Atari 800 RetroArch core path is required"));
+    }
+
+    #[tokio::test]
+    async fn test_emulator_profile_c64_vice_preserves_legacy_success() {
+        let dir = tempdir().unwrap();
+        let emulator_path = dir
+            .path()
+            .join(if cfg!(windows) { "x64sc.exe" } else { "x64sc" });
+        copy_test_emulator(&emulator_path);
+
+        let request = EmulatorProfileTestRequest {
+            platform_id: "c64".to_string(),
+            emulator_profile_id: "vice-c64".to_string(),
+            executable_path: emulator_path.to_string_lossy().to_string(),
+            core_path: None,
+        };
+
+        let result = test_emulator_profile(request).await.unwrap();
+        assert!(result.success);
+        assert!(result.message.contains("C64 VICE"));
     }
 }

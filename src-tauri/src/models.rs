@@ -37,6 +37,15 @@ pub struct LaunchRequest {
     pub core_path: Option<String>,
 }
 
+#[derive(Debug, Serialize, Deserialize, Default)]
+#[serde(rename_all = "camelCase")]
+pub struct EmulatorProfileTestRequest {
+    pub platform_id: String,
+    pub emulator_profile_id: String,
+    pub executable_path: String,
+    pub core_path: Option<String>,
+}
+
 #[derive(Debug, Deserialize, Default, Clone)]
 #[serde(rename_all = "camelCase")]
 pub struct GameFilters {

@@ -2,10 +2,11 @@
 
 import React, { useRef, useState, useEffect } from 'react';
 import { Game, Extra } from '../types/game';
-import { groupExtras, ExtraGroup, buildExtraAssetPath } from '../lib/extras';
+import { groupExtras, ExtraGroup } from '../lib/extras';
 import { useSettings } from '../contexts/SettingsContext';
 import { openFile, launchEmulator } from '../lib/tauri-bridge';
 import type { DetailLayoutSpec } from '../lib/detail-layout';
+import { buildLaunchRequest, buildPlatformAssetPath, getPlatformLaunchSettings } from '../lib/platform-launch';
 import { VisualExtraCard } from './extras/VisualExtraCard';
 import { VisualExtrasBrowser } from './extras/VisualExtrasBrowser';
 import { isVideoExtra, isAudioExtra } from './extras/ResolvedExtraMedia';
@@ -53,36 +54,23 @@ export function ExtrasDetail({
   const videoMediaExtras = mediaGroupItems.filter(isVideoExtra);
   const nonVideoMediaExtras = mediaGroupItems.filter((item) => !isVideoExtra(item));
   const galleryExtras = [...visualGroupItems, ...videoMediaExtras];
+  const platformLaunchSettings = getPlatformLaunchSettings(settings);
 
   const handleLaunchExtra = async (extra: Extra) => {
-    const isRetroarch = settings.preferredEmulator === 'retroarch';
-    const emulatorPath = isRetroarch ? settings.retroarchPath : settings.emulatorPath;
-
-    if (!emulatorPath) {
+    if (!platformLaunchSettings.emulatorPath) {
       setLaunchStatus("Error: Emulator path not configured in Settings.");
       return;
     }
 
     setLaunchStatus(`Launching ${extra.name}...`);
     try {
-      // Path construction: normalize all slashes to forward slashes for internal logic
-      const fullRomPath = buildExtraAssetPath(settings.extrasPath, extra.path);
-
-      
-      const result = await launchEmulator({
-        emulator_path: emulatorPath,
-        rom_path: fullRomPath,
-        true_drive_emulation: game.trueDriveEmu ?? false,
-        is_pal: game.isPal ?? true,
-        game_id: game.id.toString(),
-        core_path: isRetroarch ? settings.retroarchCorePath : undefined,
-      });
+      const result = await launchEmulator(buildLaunchRequest(settings, 'extras', extra.path, game));
 
       if (!result.success) {
         setLaunchStatus(`Error: ${result.message}`);
       } else {
-          markAsPlayed(game.id.toString());
-          setLaunchStatus(null);
+        markAsPlayed(game.id.toString());
+        setLaunchStatus(null);
       }
     } catch (err) {
       setLaunchStatus(`Error: ${String(err)}`);
@@ -91,7 +79,7 @@ export function ExtrasDetail({
   };
 
   const handleOpenDoc = async (extra: Extra) => {
-    const fullPath = buildExtraAssetPath(settings.extrasPath, extra.path);
+    const fullPath = buildPlatformAssetPath(settings, 'extras', extra.path);
     await openFile(fullPath);
   };
 
@@ -140,7 +128,7 @@ export function ExtrasDetail({
           <div className="min-h-0">
             <VisualExtrasBrowser
               extras={galleryExtras}
-              extrasPath={settings.extrasPath}
+              extrasPath={settings.platformSettings[settings.activePlatformId].folders.extrasPath || settings.extrasPath}
               previewHeight={layoutSpec.extrasPreviewHeight}
               thumbColumns={layoutSpec.extrasThumbColumns}
               thumbnailLimit={layoutSpec.extrasThumbColumns}
@@ -229,7 +217,7 @@ export function ExtrasDetail({
             enableBigscreenGalleryUX ? (
               <VisualExtrasBrowser
                 extras={galleryExtras}
-                extrasPath={settings.extrasPath}
+                extrasPath={settings.platformSettings[settings.activePlatformId].folders.extrasPath || settings.extrasPath}
                 onRegisterNavigation={(navigation) => {
                   visualNavigationRef.current = navigation;
                 }}

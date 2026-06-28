@@ -51,6 +51,8 @@ export interface ScannedRom {
 }
 
 export interface LaunchRequest {
+  platform_id?: string;
+  emulator_profile_id?: string;
   emulator_path: string;
   rom_path: string;
   true_drive_emulation: boolean;
@@ -62,6 +64,13 @@ export interface LaunchRequest {
 export interface LaunchResult {
   success: boolean;
   message: string;
+}
+
+export interface EmulatorProfileTestRequest {
+  platformId: string;
+  emulatorProfileId: string;
+  executablePath: string;
+  corePath?: string;
 }
 
 export interface ResolvedPath {
@@ -226,6 +235,18 @@ export async function launchEmulator(request: LaunchRequest): Promise<LaunchResu
     return { success: false, message: 'Not running in desktop mode' };
   }
   return invoke<LaunchResult>('launch_emulator', { request });
+}
+
+export async function launchGame(request: LaunchRequest): Promise<LaunchResult> {
+  return launchEmulator(request);
+}
+
+export async function testEmulatorProfile(request: EmulatorProfileTestRequest): Promise<LaunchResult> {
+  if (!isTauri()) {
+    console.warn('[tauri-bridge] testEmulatorProfile: not in Tauri - would test:', request);
+    return { success: false, message: 'Not running in desktop mode' };
+  }
+  return invoke<LaunchResult>('test_emulator_profile', { request });
 }
 
 /**

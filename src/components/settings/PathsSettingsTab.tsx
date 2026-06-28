@@ -163,6 +163,20 @@ export function PathsSettingsTab({
     });
   };
 
+  const setPreferredC64Emulator = (emulator: 'vice' | 'retroarch') => {
+    setField('preferredEmulator', emulator);
+    setField('platformSettings', {
+      ...draft.platformSettings,
+      c64: {
+        ...draft.platformSettings.c64,
+        emulator: {
+          ...draft.platformSettings.c64.emulator,
+          preferredEmulatorProfileId: emulator === 'retroarch' ? 'retroarch-c64' : 'vice-c64',
+        },
+      },
+    });
+  };
+
   return (
     <>
       <div className="flex flex-col gap-4">
@@ -244,7 +258,7 @@ export function PathsSettingsTab({
                 {(['vice', 'retroarch'] as const).map((emu, idx) => (
                   <button
                     key={emu}
-                    onClick={() => setField('preferredEmulator', emu)}
+                    onClick={() => setPreferredC64Emulator(emu)}
                     onMouseEnter={() => isMouseMode && onMouseFocus(idx + 10)}
                     className={`focus-idx-${idx + 10} rounded-md px-4 py-1.5 text-[10px] font-black uppercase tracking-widest transition-all ${
                       (draft.preferredEmulator === emu && ![10, 11].some(isFocused)) || isFocused(idx + 10)

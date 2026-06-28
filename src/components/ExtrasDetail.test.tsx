@@ -3,21 +3,38 @@ import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { ExtrasDetail, type ExtrasBigscreenNavigation } from './ExtrasDetail';
 import { mockGames } from '../data/mockGames';
 import type { Extra } from '../types/game';
+import { createDefaultPlatformSettingsMap } from '../lib/platform-capabilities';
+import type { Settings } from '../contexts/SettingsContext';
 
 const mockGetAssetUrl = vi.fn();
 const mockLaunchEmulator = vi.fn();
 const mockOpenFile = vi.fn();
 const mockMarkAsPlayed = vi.fn();
 
-const baseSettings = {
-  emulatorPath: '/usr/bin/x64sc',
-  extrasPath: 'E:\\Extras\\',
-  preferredEmulator: 'vice' as const,
-  retroarchCorePath: '',
-  retroarchPath: '',
-};
+function makeSettings(activePlatformId: Settings['activePlatformId'] = 'c64'): Settings {
+  const platformSettings = createDefaultPlatformSettingsMap();
+  platformSettings.c64.library.importStatus = 'imported';
+  platformSettings.c64.folders.gamesPath = 'D:/GB64/Games';
+  platformSettings.c64.folders.extrasPath = 'E:\\Extras\\';
+  platformSettings.c64.emulator.executablePaths['vice-c64'] = '/usr/bin/x64sc';
+  platformSettings.atari800.library.importStatus = 'imported';
+  platformSettings.atari800.folders.gamesPath = 'F:/Atari/Games';
+  platformSettings.atari800.folders.extrasPath = 'F:\\Atari\\Extras\\';
+  platformSettings.atari800.emulator.executablePaths['retroarch-atari800'] = 'C:/RetroArch/retroarch.exe';
+  platformSettings.atari800.emulator.corePaths['retroarch-atari800'] = 'C:/RetroArch/cores/atari800_libretro.dll';
 
-let currentSettings = { ...baseSettings };
+  return {
+    emulatorPath: '/usr/bin/x64sc',
+    extrasPath: activePlatformId === 'atari800' ? 'F:\\Atari\\Extras\\' : 'E:\\Extras\\',
+    preferredEmulator: 'vice',
+    retroarchCorePath: '',
+    retroarchPath: '',
+    activePlatformId,
+    platformSettings,
+  } as Settings;
+}
+
+let currentSettings = makeSettings();
 
 vi.mock('../contexts/SettingsContext', () => ({
   useSettings: () => ({
@@ -60,7 +77,7 @@ const launchableExtra: Extra = {
 describe('ExtrasDetail', () => {
   beforeEach(() => {
     vi.clearAllMocks();
-    currentSettings = { ...baseSettings };
+    currentSettings = makeSettings();
     mockGetAssetUrl.mockImplementation(async (path: string) => `asset://${path.replace(/\\/g, '/')}`);
     mockLaunchEmulator.mockResolvedValue({ success: true, message: '' });
     mockOpenFile.mockResolvedValue(undefined);
@@ -73,6 +90,8 @@ describe('ExtrasDetail', () => {
 
     await waitFor(() => {
       expect(mockLaunchEmulator).toHaveBeenCalledWith({
+        platform_id: 'c64',
+        emulator_profile_id: 'vice-c64',
         emulator_path: '/usr/bin/x64sc',
         rom_path: 'E:/Extras/Tapes/original.tap',
         true_drive_emulation: false,
@@ -83,6 +102,27 @@ describe('ExtrasDetail', () => {
     });
 
     expect(mockMarkAsPlayed).toHaveBeenCalledWith(mockGames[0].id.toString());
+  });
+
+  it('launches Atari 800 extras with Atari paths and profile metadata', async () => {
+    currentSettings = makeSettings('atari800');
+
+    render(<ExtrasDetail game={mockGames[0]} extras={[{ ...launchableExtra, path: '\\Disks\\original.atr' }]} />);
+
+    fireEvent.click(screen.getByRole('button', { name: /original tape/i }));
+
+    await waitFor(() => {
+      expect(mockLaunchEmulator).toHaveBeenCalledWith({
+        platform_id: 'atari800',
+        emulator_profile_id: 'retroarch-atari800',
+        emulator_path: 'C:/RetroArch/retroarch.exe',
+        rom_path: 'F:/Atari/Extras/Disks/original.atr',
+        true_drive_emulation: false,
+        is_pal: true,
+        game_id: mockGames[0].id.toString(),
+        core_path: 'C:/RetroArch/cores/atari800_libretro.dll',
+      });
+    });
   });
 
   it('opens docs and media extras with normalized file paths', async () => {

@@ -19,6 +19,7 @@ pub fn run() {
         .invoke_handler(tauri::generate_handler![
             commands::files::scan_rom_directory,
             commands::emulator::launch_emulator,
+            commands::emulator::test_emulator_profile,
             commands::files::download_media_asset,
             commands::files::read_file_bytes,
             commands::files::resolve_media_path,
