@@ -240,8 +240,8 @@
     "semantic_hash": ""
   },
   "src-tauri/src/commands/emulator.rs": {
-    "mtime": 1782655787.7447872,
-    "ast_hash": "532f40ce16f64ef9e7c1a6676ef48685",
+    "mtime": 1782660729.1478722,
+    "ast_hash": "f8dc5c55c6ee54740bcf61b5f0641ad4",
     "semantic_hash": ""
   },
   "src-tauri/src/commands/files.rs": {

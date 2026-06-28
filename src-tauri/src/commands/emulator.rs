@@ -466,6 +466,11 @@ pub async fn launch_emulator(request: LaunchRequest) -> Result<LaunchResult, Str
         }
     }
 
+    if std::env::var("VIC40_DEBUG_LAUNCH").is_ok() {
+        println!("[DEBUG LAUNCH] Emulator: {}", emulator.to_string_lossy());
+        println!("[DEBUG LAUNCH] Switches: {:?}", args);
+    }
+
     let mut cmd = Command::new(&emulator);
 
     if let Some(parent) = emulator.parent() {

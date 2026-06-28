@@ -1,6 +1,9 @@
 @echo off
 setlocal enabledelayedexpansion
 
+:: Enable launch logging to console during development
+set VIC40_DEBUG_LAUNCH=1
+
 :: Ensure Cargo/Rust binaries added by Rustup are available in this shell session
 set PATH=%USERPROFILE%\.cargo\bin;%PATH%
 
