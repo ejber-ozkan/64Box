@@ -1,16 +1,16 @@
 # Graph Report - VIC40GameBase64  (2026-06-28)
 
 ## Corpus Check
-- 158 files · ~94,334 words
+- 158 files · ~94,396 words
 - Verdict: corpus is large enough that graph structure adds value.
 
 ## Summary
-- 1479 nodes · 2857 edges · 94 communities (83 shown, 11 thin omitted)
+- 1479 nodes · 2858 edges · 94 communities (83 shown, 11 thin omitted)
 - Extraction: 98% EXTRACTED · 2% INFERRED · 0% AMBIGUOUS · INFERRED: 47 edges (avg confidence: 0.81)
 - Token cost: 0 input · 0 output
 
 ## Graph Freshness
-- Built from commit: `03afaa63`
+- Built from commit: `0751cc95`
 - Run `git rev-parse HEAD` and compare to check if the graph is stale.
 - Run `graphify update .` after code changes (no API cost).
 

@@ -8820,7 +8820,7 @@
       "label": "platformFoldersToFlatSettings()",
       "file_type": "code",
       "source_file": "src/contexts/SettingsContext.tsx",
-      "source_location": "L194",
+      "source_location": "L199",
       "_origin": "ast",
       "id": "contexts_settingscontext_platformfolderstoflatsettings",
       "community": 54,
@@ -8830,7 +8830,7 @@
       "label": "PlatformImportStatusSnapshot",
       "file_type": "code",
       "source_file": "src/contexts/SettingsContext.tsx",
-      "source_location": "L206",
+      "source_location": "L211",
       "_origin": "ast",
       "id": "contexts_settingscontext_platformimportstatussnapshot",
       "community": 54,
@@ -8840,7 +8840,7 @@
       "label": "isPlatformImportStatus()",
       "file_type": "code",
       "source_file": "src/contexts/SettingsContext.tsx",
-      "source_location": "L214",
+      "source_location": "L219",
       "_origin": "ast",
       "id": "contexts_settingscontext_isplatformimportstatus",
       "community": 54,
@@ -8850,7 +8850,7 @@
       "label": "applyPlatformImportStatuses()",
       "file_type": "code",
       "source_file": "src/contexts/SettingsContext.tsx",
-      "source_location": "L218",
+      "source_location": "L223",
       "_origin": "ast",
       "id": "contexts_settingscontext_applyplatformimportstatuses",
       "community": 54,
@@ -8860,7 +8860,7 @@
       "label": "resolveStartupPlatformId()",
       "file_type": "code",
       "source_file": "src/contexts/SettingsContext.tsx",
-      "source_location": "L247",
+      "source_location": "L252",
       "_origin": "ast",
       "id": "contexts_settingscontext_resolvestartupplatformid",
       "community": 54,
@@ -8870,7 +8870,7 @@
       "label": "SettingsProvider()",
       "file_type": "code",
       "source_file": "src/contexts/SettingsContext.tsx",
-      "source_location": "L259",
+      "source_location": "L264",
       "_origin": "ast",
       "id": "contexts_settingscontext_settingsprovider",
       "community": 9,
@@ -8880,7 +8880,7 @@
       "label": "useSettings()",
       "file_type": "code",
       "source_file": "src/contexts/SettingsContext.tsx",
-      "source_location": "L493",
+      "source_location": "L498",
       "_origin": "ast",
       "id": "contexts_settingscontext_usesettings",
       "community": 24,
@@ -32034,9 +32034,9 @@
       "source_file": "src/components/MusicPlayer.tsx",
       "source_location": "L16",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "components_musicplayer",
-      "target": "components_musicplayer_musicplayer",
-      "confidence_score": 1.0
+      "target": "components_musicplayer_musicplayer"
     },
     {
       "relation": "contains",
@@ -32044,9 +32044,9 @@
       "source_file": "src/components/MusicPlayer.tsx",
       "source_location": "L9",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "components_musicplayer",
-      "target": "components_musicplayer_musicplayerprops",
-      "confidence_score": 1.0
+      "target": "components_musicplayer_musicplayerprops"
     },
     {
       "relation": "imports_from",
@@ -32055,9 +32055,9 @@
       "source_file": "src/components/MusicPlayer.tsx",
       "source_location": "L6",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "components_musicplayer",
-      "target": "components_sapplayer",
-      "confidence_score": 1.0
+      "target": "components_sapplayer"
     },
     {
       "relation": "imports",
@@ -32066,9 +32066,9 @@
       "source_file": "src/components/MusicPlayer.tsx",
       "source_location": "L6",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "components_musicplayer",
-      "target": "components_sapplayer_sapplayer",
-      "confidence_score": 1.0
+      "target": "components_sapplayer_sapplayer"
     },
     {
       "relation": "imports_from",
@@ -32077,9 +32077,9 @@
       "source_file": "src/components/MusicPlayer.tsx",
       "source_location": "L7",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "components_musicplayer",
-      "target": "components_sidplayer",
-      "confidence_score": 1.0
+      "target": "components_sidplayer"
     },
     {
       "relation": "imports",
@@ -32088,9 +32088,9 @@
       "source_file": "src/components/MusicPlayer.tsx",
       "source_location": "L7",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "components_musicplayer",
-      "target": "components_sidplayer_sidplayer",
-      "confidence_score": 1.0
+      "target": "components_sidplayer_sidplayer"
     },
     {
       "relation": "imports_from",
@@ -32099,9 +32099,9 @@
       "source_file": "src/components/MusicPlayer.tsx",
       "source_location": "L3",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "components_musicplayer",
-      "target": "contexts_settingscontext",
-      "confidence_score": 1.0
+      "target": "contexts_settingscontext"
     },
     {
       "relation": "imports",
@@ -32110,9 +32110,9 @@
       "source_file": "src/components/MusicPlayer.tsx",
       "source_location": "L3",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "components_musicplayer",
-      "target": "contexts_settingscontext_usesettings",
-      "confidence_score": 1.0
+      "target": "contexts_settingscontext_usesettings"
     },
     {
       "relation": "imports_from",
@@ -32121,9 +32121,9 @@
       "source_file": "src/components/MusicPlayer.tsx",
       "source_location": "L4",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "components_musicplayer",
-      "target": "lib_platform_capabilities",
-      "confidence_score": 1.0
+      "target": "lib_platform_capabilities"
     },
     {
       "relation": "imports",
@@ -32132,9 +32132,9 @@
       "source_file": "src/components/MusicPlayer.tsx",
       "source_location": "L4",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "components_musicplayer",
-      "target": "lib_platform_capabilities_platform_profiles",
-      "confidence_score": 1.0
+      "target": "lib_platform_capabilities_platform_profiles"
     },
     {
       "relation": "imports_from",
@@ -32143,9 +32143,9 @@
       "source_file": "src/components/MusicPlayer.tsx",
       "source_location": "L5",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "components_musicplayer",
-      "target": "types_platform",
-      "confidence_score": 1.0
+      "target": "types_platform"
     },
     {
       "relation": "imports",
@@ -32154,9 +32154,9 @@
       "source_file": "src/components/MusicPlayer.tsx",
       "source_location": "L5",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "components_musicplayer",
-      "target": "types_platform_platformid",
-      "confidence_score": 1.0
+      "target": "types_platform_platformid"
     },
     {
       "relation": "imports_from",
@@ -32165,9 +32165,9 @@
       "source_file": "src/components/themes/neon-archive/NeonArchiveDetailLayout.tsx",
       "source_location": "L14",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "neon_archive_neonarchivedetaillayout",
-      "target": "components_musicplayer",
-      "confidence_score": 1.0
+      "target": "components_musicplayer"
     },
     {
       "relation": "imports_from",
@@ -32176,9 +32176,9 @@
       "source_file": "src/components/themes/window/WindowedDetailLayout.tsx",
       "source_location": "L13",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "window_windoweddetaillayout",
-      "target": "components_musicplayer",
-      "confidence_score": 1.0
+      "target": "components_musicplayer"
     },
     {
       "relation": "references",
@@ -32187,9 +32187,9 @@
       "source_file": "src/components/MusicPlayer.tsx",
       "source_location": "L10",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "components_musicplayer_musicplayerprops",
-      "target": "types_platform_platformid",
-      "confidence_score": 1.0
+      "target": "types_platform_platformid"
     },
     {
       "relation": "calls",
@@ -32220,9 +32220,9 @@
       "source_file": "src/components/themes/neon-archive/NeonArchiveDetailLayout.tsx",
       "source_location": "L14",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "neon_archive_neonarchivedetaillayout",
-      "target": "components_musicplayer_musicplayer",
-      "confidence_score": 1.0
+      "target": "components_musicplayer_musicplayer"
     },
     {
       "relation": "imports",
@@ -32231,9 +32231,9 @@
       "source_file": "src/components/themes/window/WindowedDetailLayout.tsx",
       "source_location": "L13",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "window_windoweddetaillayout",
-      "target": "components_musicplayer_musicplayer",
-      "confidence_score": 1.0
+      "target": "components_musicplayer_musicplayer"
     },
     {
       "relation": "contains",
@@ -32468,9 +32468,9 @@
       "source_file": "src/components/SapPlayer.tsx",
       "source_location": "L33",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "components_sapplayer",
-      "target": "components_sapplayer_isnativepath",
-      "confidence_score": 1.0
+      "target": "components_sapplayer_isnativepath"
     },
     {
       "relation": "contains",
@@ -32478,9 +32478,9 @@
       "source_file": "src/components/SapPlayer.tsx",
       "source_location": "L37",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "components_sapplayer",
-      "target": "components_sapplayer_resolveplayablesapurl",
-      "confidence_score": 1.0
+      "target": "components_sapplayer_resolveplayablesapurl"
     },
     {
       "relation": "contains",
@@ -32488,9 +32488,9 @@
       "source_file": "src/components/SapPlayer.tsx",
       "source_location": "L50",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "components_sapplayer",
-      "target": "components_sapplayer_sapplayer",
-      "confidence_score": 1.0
+      "target": "components_sapplayer_sapplayer"
     },
     {
       "relation": "contains",
@@ -32498,9 +32498,9 @@
       "source_file": "src/components/SapPlayer.tsx",
       "source_location": "L27",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "components_sapplayer",
-      "target": "components_sapplayer_sapplayerprops",
-      "confidence_score": 1.0
+      "target": "components_sapplayer_sapplayerprops"
     },
     {
       "relation": "contains",
@@ -32508,9 +32508,9 @@
       "source_file": "src/components/SapPlayer.tsx",
       "source_location": "L6",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "components_sapplayer",
-      "target": "components_sapplayer_sapplayerruntime",
-      "confidence_score": 1.0
+      "target": "components_sapplayer_sapplayerruntime"
     },
     {
       "relation": "contains",
@@ -32518,9 +32518,9 @@
       "source_file": "src/components/SapPlayer.tsx",
       "source_location": "L16",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "components_sapplayer",
-      "target": "components_sapplayer_sapruntimeconstructor",
-      "confidence_score": 1.0
+      "target": "components_sapplayer_sapruntimeconstructor"
     },
     {
       "relation": "contains",
@@ -32528,9 +32528,9 @@
       "source_file": "src/components/SapPlayer.tsx",
       "source_location": "L21",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "components_sapplayer",
-      "target": "components_sapplayer_window",
-      "confidence_score": 1.0
+      "target": "components_sapplayer_window"
     },
     {
       "relation": "imports_from",
@@ -32539,9 +32539,9 @@
       "source_file": "src/components/SapPlayer.tsx",
       "source_location": "L4",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "components_sapplayer",
-      "target": "lib_tauri_bridge",
-      "confidence_score": 1.0
+      "target": "lib_tauri_bridge"
     },
     {
       "relation": "imports",
@@ -32550,9 +32550,9 @@
       "source_file": "src/components/SapPlayer.tsx",
       "source_location": "L4",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "components_sapplayer",
-      "target": "lib_tauri_bridge_getmediaurl",
-      "confidence_score": 1.0
+      "target": "lib_tauri_bridge_getmediaurl"
     },
     {
       "relation": "calls",
@@ -32561,9 +32561,9 @@
       "source_file": "src/components/SapPlayer.tsx",
       "source_location": "L38",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "components_sapplayer_resolveplayablesapurl",
-      "target": "components_sapplayer_isnativepath",
-      "confidence_score": 1.0
+      "target": "components_sapplayer_isnativepath"
     },
     {
       "relation": "calls",
@@ -32572,9 +32572,9 @@
       "source_file": "src/components/SapPlayer.tsx",
       "source_location": "L47",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "components_sapplayer_resolveplayablesapurl",
-      "target": "lib_tauri_bridge_getmediaurl",
-      "confidence_score": 1.0
+      "target": "lib_tauri_bridge_getmediaurl"
     },
     {
       "relation": "contains",
@@ -34895,6 +34895,17 @@
       "source_file": "src/components/settings/PathsSettingsTab.tsx",
       "source_location": "L2",
       "weight": 1.0,
+      "source": "settings_pathssettingstab",
+      "target": "lib_platform_capabilities_platform_emulator_profiles",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "imports",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "src/components/settings/PathsSettingsTab.tsx",
+      "source_location": "L2",
+      "weight": 1.0,
       "confidence_score": 1.0,
       "source": "settings_pathssettingstab",
       "target": "lib_platform_capabilities_platform_profiles"
@@ -35920,9 +35931,9 @@
       "source_file": "src/components/themes/neon-archive/NeonArchiveDetailLayout.tsx",
       "source_location": "L86",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "neon_archive_neonarchivedetaillayout",
-      "target": "neon_archive_neonarchivedetaillayout_getmusicglyph",
-      "confidence_score": 1.0
+      "target": "neon_archive_neonarchivedetaillayout_getmusicglyph"
     },
     {
       "relation": "contains",
@@ -36134,9 +36145,9 @@
       "source_file": "src/components/themes/neon-archive/NeonArchiveDetailLayout.tsx",
       "source_location": "L8",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "neon_archive_neonarchivedetaillayout",
-      "target": "types_platform",
-      "confidence_score": 1.0
+      "target": "types_platform"
     },
     {
       "relation": "imports",
@@ -36145,9 +36156,9 @@
       "source_file": "src/components/themes/neon-archive/NeonArchiveDetailLayout.tsx",
       "source_location": "L8",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "neon_archive_neonarchivedetaillayout",
-      "target": "types_platform_platformid",
-      "confidence_score": 1.0
+      "target": "types_platform_platformid"
     },
     {
       "relation": "calls",
@@ -36211,9 +36222,9 @@
       "source_file": "src/components/themes/neon-archive/NeonArchiveDetailLayout.tsx",
       "source_location": "L98",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "neon_archive_neonarchivedetaillayout_buildpersonnel",
-      "target": "neon_archive_neonarchivedetaillayout_getmusicglyph",
-      "confidence_score": 1.0
+      "target": "neon_archive_neonarchivedetaillayout_getmusicglyph"
     },
     {
       "relation": "calls",
@@ -45109,5 +45120,5 @@
       "source_file": "GB64_Modern_Frontend_Requirements.md"
     }
   ],
-  "built_at_commit": "03afaa63535ca27f3ce71dc37500cbdb6ce8125f"
+  "built_at_commit": "0751cc9536c4ce62b7059f25f948e68a15419d01"
 }

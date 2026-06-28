@@ -113,7 +113,10 @@ const SettingsContext = createContext<SettingsContextType | undefined>(undefined
 
 const SECURE_FIELDS = ['emuMoviesPassword', 'screenScraperPassword', 'screenScraperDevPassword', 'theGamesDbApiKey'] as const;
 
-function migratePlatformSettings(values: Partial<Settings>): Record<PlatformId, PlatformSettings> {
+function migratePlatformSettings(
+  values: Partial<Settings>,
+  hasStoredPlatformSettings = Boolean(values.platformSettings),
+): Record<PlatformId, PlatformSettings> {
   const platformSettings = createDefaultPlatformSettingsMap();
   const existing = values.platformSettings;
 
@@ -157,36 +160,38 @@ function migratePlatformSettings(values: Partial<Settings>): Record<PlatformId, 
     importStatus: 'imported',
     active: true,
   };
-  c64.folders = {
-    ...c64.folders,
-    gamesPath: values.romsPath ?? c64.folders.gamesPath,
-    musicPath: values.soundsPath ?? c64.folders.musicPath,
-    photosPath: values.musicianPhotosPath ?? c64.folders.photosPath,
-    screenshotsPath: values.screenshotsPath ?? c64.folders.screenshotsPath,
-    extrasPath: values.extrasPath ?? c64.folders.extrasPath,
-  };
-  c64.emulator = {
-    ...c64.emulator,
-    preferredEmulatorProfileId: values.preferredEmulator === 'retroarch' ? 'retroarch-c64' : 'vice-c64',
-    executablePaths: {
-      ...c64.emulator.executablePaths,
-      'vice-c64': values.emulatorPath ?? c64.emulator.executablePaths['vice-c64'] ?? '',
-      'retroarch-c64': values.retroarchPath ?? c64.emulator.executablePaths['retroarch-c64'] ?? '',
-    },
-    corePaths: {
-      ...c64.emulator.corePaths,
-      'retroarch-c64': values.retroarchCorePath ?? c64.emulator.corePaths['retroarch-c64'] ?? '',
-    },
-  };
-  c64.navigation = {
-    ...c64.navigation,
-    recentlyPlayedIds: values.recentlyPlayedIds ?? c64.navigation.recentlyPlayedIds,
-    lastSelectedGameId: values.lastSelectedGameId ?? c64.navigation.lastSelectedGameId,
-    lastFocusedIndex: values.lastFocusedIndex ?? c64.navigation.lastFocusedIndex,
-    lastViewMode: values.lastViewMode ?? c64.navigation.lastViewMode,
-    lastBigBoxRailId: values.lastBigBoxRailId ?? c64.navigation.lastBigBoxRailId,
-    lastBigBoxGameId: values.lastBigBoxGameId ?? c64.navigation.lastBigBoxGameId,
-  };
+  if (!hasStoredPlatformSettings) {
+    c64.folders = {
+      ...c64.folders,
+      gamesPath: values.romsPath ?? c64.folders.gamesPath,
+      musicPath: values.soundsPath ?? c64.folders.musicPath,
+      photosPath: values.musicianPhotosPath ?? c64.folders.photosPath,
+      screenshotsPath: values.screenshotsPath ?? c64.folders.screenshotsPath,
+      extrasPath: values.extrasPath ?? c64.folders.extrasPath,
+    };
+    c64.emulator = {
+      ...c64.emulator,
+      preferredEmulatorProfileId: values.preferredEmulator === 'retroarch' ? 'retroarch-c64' : 'vice-c64',
+      executablePaths: {
+        ...c64.emulator.executablePaths,
+        'vice-c64': values.emulatorPath ?? c64.emulator.executablePaths['vice-c64'] ?? '',
+        'retroarch-c64': values.retroarchPath ?? c64.emulator.executablePaths['retroarch-c64'] ?? '',
+      },
+      corePaths: {
+        ...c64.emulator.corePaths,
+        'retroarch-c64': values.retroarchCorePath ?? c64.emulator.corePaths['retroarch-c64'] ?? '',
+      },
+    };
+    c64.navigation = {
+      ...c64.navigation,
+      recentlyPlayedIds: values.recentlyPlayedIds ?? c64.navigation.recentlyPlayedIds,
+      lastSelectedGameId: values.lastSelectedGameId ?? c64.navigation.lastSelectedGameId,
+      lastFocusedIndex: values.lastFocusedIndex ?? c64.navigation.lastFocusedIndex,
+      lastViewMode: values.lastViewMode ?? c64.navigation.lastViewMode,
+      lastBigBoxRailId: values.lastBigBoxRailId ?? c64.navigation.lastBigBoxRailId,
+      lastBigBoxGameId: values.lastBigBoxGameId ?? c64.navigation.lastBigBoxGameId,
+    };
+  }
 
   return platformSettings;
 }
@@ -314,7 +319,7 @@ export function SettingsProvider({ children }: { children: ReactNode }) {
         ? combinedSettings.activePlatformId
         : 'c64';
 
-      let platformSettings = migratePlatformSettings(combinedSettings);
+      let platformSettings = migratePlatformSettings(combinedSettings, Boolean(sanitizedLocal.platformSettings));
       const platformStatuses = await Promise.all(
         SUPPORTED_PLATFORMS.map((platform) => getPlatformImportStatus(platform.id)),
       );

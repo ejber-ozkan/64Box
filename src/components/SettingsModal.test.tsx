@@ -147,8 +147,20 @@ describe('SettingsView platform emulator settings', () => {
     openSettingsTab('Atari 800 Platform Paths');
 
     expect(screen.getByDisplayValue('E:/Atari/Games')).toBeTruthy();
+    expect(screen.getByText('Default Desktop Emulator')).toBeTruthy();
+    expect(screen.getByText('RetroArch')).toBeTruthy();
+    expect(screen.getByText('Altirra')).toBeTruthy();
     expect(screen.getByText('RetroArch Atari800 Core')).toBeTruthy();
     expect(screen.getByText('Altirra Executable (Altirra64.exe)')).toBeTruthy();
+  });
+
+  test('does not show scraped media in platform paths', () => {
+    currentSettings = makeSettings('c64', ['c64', 'atari800']);
+
+    openSettingsTab('C64 Platform Paths');
+
+    expect(screen.queryByText('Scraped Media Folder')).toBeNull();
+    expect(screen.queryByDisplayValue('/media/scraped')).toBeNull();
   });
 
   test('saves edited platform paths without overwriting another platform', () => {

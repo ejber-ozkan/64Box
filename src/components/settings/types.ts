@@ -54,7 +54,7 @@ export function getSettingsTabs(settings: Pick<Settings, 'platformSettings'>): S
 
 export function getSettingsItemCount(tabId: SettingsTabId): number {
   if (getPlatformIdFromSettingsTab(tabId)) {
-    return 20;
+    return 18;
   }
 
   switch (tabId) {

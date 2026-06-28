@@ -1,5 +1,5 @@
 import type { EditableSettings, ContentNavProps } from './types';
-import { PLATFORM_PROFILES } from '../../lib/platform-capabilities';
+import { PLATFORM_EMULATOR_PROFILES, PLATFORM_PROFILES } from '../../lib/platform-capabilities';
 import type { PlatformFolderSettings, PlatformId } from '../../types/platform';
 
 interface PathsSettingsTabProps extends ContentNavProps {
@@ -81,6 +81,10 @@ export function PathsSettingsTab({
   const platformEmulatorSettings = platformSettings.emulator;
   const isC64 = platformId === 'c64';
   const isAtari800 = platformId === 'atari800';
+  const supportedEmulatorProfileIds = platformProfile.supportedEmulatorProfileIds;
+  const preferredEmulatorProfileId =
+    platformEmulatorSettings.preferredEmulatorProfileId || platformProfile.defaultEmulatorProfileId;
+  const preferredC64Emulator = preferredEmulatorProfileId === 'retroarch-c64' ? 'retroarch' : 'vice';
 
   const setPlatformFolders = (folders: PlatformFolderSettings) => {
     setField('platformSettings', {
@@ -163,18 +167,61 @@ export function PathsSettingsTab({
     });
   };
 
-  const setPreferredC64Emulator = (emulator: 'vice' | 'retroarch') => {
-    setField('preferredEmulator', emulator);
+  const setPreferredPlatformEmulator = (profileId: string) => {
+    if (platformId === 'c64') {
+      setField('preferredEmulator', profileId === 'retroarch-c64' ? 'retroarch' : 'vice');
+    }
+
     setField('platformSettings', {
       ...draft.platformSettings,
-      c64: {
-        ...draft.platformSettings.c64,
+      [platformId]: {
+        ...platformSettings,
         emulator: {
-          ...draft.platformSettings.c64.emulator,
-          preferredEmulatorProfileId: emulator === 'retroarch' ? 'retroarch-c64' : 'vice-c64',
+          ...platformEmulatorSettings,
+          preferredEmulatorProfileId: profileId,
         },
       },
     });
+  };
+
+  const getEmulatorButtonLabel = (profileId: string) => {
+    const emulatorType = PLATFORM_EMULATOR_PROFILES[profileId]?.emulatorType;
+    if (emulatorType === 'retroarch') return 'RetroArch';
+    if (emulatorType === 'altirra') return 'Altirra';
+    if (emulatorType === 'vice') return 'VICE';
+    return PLATFORM_EMULATOR_PROFILES[profileId]?.displayName ?? profileId;
+  };
+
+  const renderEmulatorSelector = (startIndex: number) => {
+    if (supportedEmulatorProfileIds.length < 2) {
+      return null;
+    }
+
+    return (
+      <div className="mb-4 flex items-center justify-between border-b border-gray-700 pb-4">
+        <div>
+          <span className="block text-sm font-bold uppercase tracking-wider text-white">Default Desktop Emulator</span>
+          <span className="mt-1 block text-[10px] text-gray-500">Which engine to use when clicking &quot;Desktop&quot;</span>
+        </div>
+        <div className="flex rounded-lg border border-gray-700 bg-gray-950 p-1">
+          {supportedEmulatorProfileIds.map((profileId, idx) => (
+            <button
+              key={profileId}
+              onClick={() => setPreferredPlatformEmulator(profileId)}
+              onMouseEnter={() => isMouseMode && onMouseFocus(idx + startIndex)}
+              className={`focus-idx-${idx + startIndex} rounded-md px-4 py-1.5 text-[10px] font-black uppercase tracking-widest transition-all ${
+                (preferredEmulatorProfileId === profileId && ![startIndex, startIndex + 1].some(isFocused)) ||
+                isFocused(idx + startIndex)
+                  ? 'bg-blue-600 text-white shadow-lg'
+                  : 'text-gray-500 hover:text-gray-300'
+              }`}
+            >
+              {getEmulatorButtonLabel(profileId)}
+            </button>
+          ))}
+        </div>
+      </div>
+    );
   };
 
   return (
@@ -247,32 +294,11 @@ export function PathsSettingsTab({
           -------- Emulator Paths --------
         </div>
 
-        {!isAtari800 && (
+        {isC64 && (
           <div className="space-y-6 rounded-xl border border-gray-700 bg-gray-800/50 p-4">
-            <div className="mb-4 flex items-center justify-between border-b border-gray-700 pb-4">
-              <div>
-                <span className="block text-sm font-bold uppercase tracking-wider text-white">Default Desktop Emulator</span>
-                <span className="mt-1 block text-[10px] text-gray-500">Which engine to use when clicking &quot;▶ Desktop&quot;</span>
-              </div>
-              <div className="flex rounded-lg border border-gray-700 bg-gray-950 p-1">
-                {(['vice', 'retroarch'] as const).map((emu, idx) => (
-                  <button
-                    key={emu}
-                    onClick={() => setPreferredC64Emulator(emu)}
-                    onMouseEnter={() => isMouseMode && onMouseFocus(idx + 10)}
-                    className={`focus-idx-${idx + 10} rounded-md px-4 py-1.5 text-[10px] font-black uppercase tracking-widest transition-all ${
-                      (draft.preferredEmulator === emu && ![10, 11].some(isFocused)) || isFocused(idx + 10)
-                        ? 'bg-blue-600 text-white shadow-lg'
-                        : 'text-gray-500 hover:text-gray-300'
-                    }`}
-                  >
-                    {emu}
-                  </button>
-                ))}
-              </div>
-            </div>
+            {renderEmulatorSelector(10)}
 
-            <div className={`space-y-3 transition-opacity ${draft.preferredEmulator !== 'vice' ? 'opacity-50' : ''}`}>
+            <div className={`space-y-3 transition-opacity ${preferredC64Emulator !== 'vice' ? 'opacity-50' : ''}`}>
               <PathRow
                 label="VICE Executable (x64sc.exe)"
                 value={platformEmulatorSettings.executablePaths['vice-c64'] ?? draft.emulatorPath}
@@ -299,7 +325,7 @@ export function PathsSettingsTab({
               </button>
             </div>
 
-            <div className={`space-y-3 transition-opacity ${draft.preferredEmulator !== 'retroarch' ? 'opacity-50' : ''}`}>
+            <div className={`space-y-3 transition-opacity ${preferredC64Emulator !== 'retroarch' ? 'opacity-50' : ''}`}>
               <PathRow
                 label="RetroArch Executable (retroarch.exe)"
                 value={platformEmulatorSettings.executablePaths['retroarch-c64'] ?? draft.retroarchPath}
@@ -355,10 +381,12 @@ export function PathsSettingsTab({
 
         {isAtari800 && (
           <div className="space-y-6 rounded-xl border border-gray-700 bg-gray-800/50 p-4">
-            <div className="mb-4 border-b border-gray-700 pb-4">
-              <span className="block text-sm font-bold uppercase tracking-wider text-white">Atari 800 Emulators</span>
-            </div>
-            <div className="space-y-3">
+            {renderEmulatorSelector(10)}
+            <div
+              className={`space-y-3 transition-opacity ${
+                preferredEmulatorProfileId !== 'retroarch-atari800' ? 'opacity-50' : ''
+              }`}
+            >
               <PathRow
                 label="RetroArch Executable (retroarch.exe)"
                 value={platformEmulatorSettings.executablePaths['retroarch-atari800'] ?? ''}
@@ -383,6 +411,12 @@ export function PathsSettingsTab({
                 onMouseFocus={onMouseFocus}
                 isFocused={isFocused}
               />
+            </div>
+            <div
+              className={`space-y-3 transition-opacity ${
+                preferredEmulatorProfileId !== 'altirra-atari800' ? 'opacity-50' : ''
+              }`}
+            >
               <PathRow
                 label="Altirra Executable (Altirra64.exe)"
                 value={platformEmulatorSettings.executablePaths['altirra-atari800'] ?? ''}
@@ -398,23 +432,6 @@ export function PathsSettingsTab({
             </div>
           </div>
         )}
-
-        <hr className="mb-1 mt-2 border-gray-700" />
-        <PathRow
-          label="Scraped Media Folder"
-          value={draft.scrapedMediaPath}
-          onChange={(value) => setField('scrapedMediaPath', value)}
-          placeholder="e.g. D:/MYSOURCE/VIC40GameBase64/64BoxMedia"
-          inputIndex={18}
-          browseIndex={19}
-          onBrowse={async () => {
-            const chosen = await onBrowseDirectory();
-            if (chosen) setField('scrapedMediaPath', chosen);
-          }}
-          isMouseMode={isMouseMode}
-          onMouseFocus={onMouseFocus}
-          isFocused={isFocused}
-        />
       </div>
       <p className="text-[10px] text-emerald-600">✅ &quot;Browse…&quot; opens the native OS folder picker in Tauri desktop mode.</p>
     </>

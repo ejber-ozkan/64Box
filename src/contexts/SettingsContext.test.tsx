@@ -174,6 +174,47 @@ describe('SettingsContext', () => {
     expect(screen.getByTestId('extras-path').textContent).toBe('E:/Atari/Extras/Cover/arkanoid.png');
   });
 
+  test('does not overwrite C64 platform folders from flat Atari paths on restart', async () => {
+    const platformSettings = createDefaultPlatformSettingsMap();
+    platformSettings.c64.folders = {
+      ...platformSettings.c64.folders,
+      gamesPath: 'D:/GB64/Games',
+      musicPath: 'D:/GB64/C64Music',
+      photosPath: 'D:/GB64/Photos',
+      screenshotsPath: 'D:/GB64/Screenshots',
+      extrasPath: 'D:/GB64/Extras',
+    };
+    platformSettings.atari800.folders = {
+      ...platformSettings.atari800.folders,
+      gamesPath: 'E:/Atari/Games',
+      musicPath: 'E:/Atari/Music',
+      photosPath: 'E:/Atari/Photos',
+      screenshotsPath: 'E:/Atari/Screenshots',
+      extrasPath: 'E:/Atari/Extras',
+    };
+
+    window.localStorage.setItem('gb64_settings', JSON.stringify({
+      activePlatformId: 'atari800',
+      lastUsedPlatformId: 'atari800',
+      romsPath: 'E:/Atari/Games',
+      soundsPath: 'E:/Atari/Music',
+      musicianPhotosPath: 'E:/Atari/Photos',
+      screenshotsPath: 'E:/Atari/Screenshots',
+      extrasPath: 'E:/Atari/Extras',
+      platformSettings,
+    }));
+
+    render(
+      <SettingsProvider>
+        <SettingsTestComponent />
+      </SettingsProvider>
+    );
+
+    await waitFor(() => {
+      expect(screen.getByTestId('c64-roms-path').textContent).toBe('D:/GB64/Games');
+    });
+  });
+
   test('falls back to an imported platform on startup when the saved platform is unimported', async () => {
     window.localStorage.setItem('gb64_settings', JSON.stringify({
       activePlatformId: 'atari2600',
