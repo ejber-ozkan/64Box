@@ -7,7 +7,12 @@ import {
   isPlatformId,
   SUPPORTED_PLATFORMS,
 } from '../lib/platform-capabilities';
-import type { PlatformId, PlatformImportStatus, PlatformSettings } from '../types/platform';
+import type {
+  PlatformFolderSettings,
+  PlatformId,
+  PlatformImportStatus,
+  PlatformSettings,
+} from '../types/platform';
 
 export interface Settings {
   screenshotsPath: string;
@@ -186,6 +191,18 @@ function migratePlatformSettings(values: Partial<Settings>): Record<PlatformId, 
   return platformSettings;
 }
 
+function platformFoldersToFlatSettings(
+  folders: PlatformFolderSettings,
+): Pick<Settings, 'romsPath' | 'soundsPath' | 'musicianPhotosPath' | 'screenshotsPath' | 'extrasPath'> {
+  return {
+    romsPath: folders.gamesPath,
+    soundsPath: folders.musicPath,
+    musicianPhotosPath: folders.photosPath,
+    screenshotsPath: folders.screenshotsPath,
+    extrasPath: folders.extrasPath,
+  };
+}
+
 type PlatformImportStatusSnapshot = {
   platformId: string;
   importStatus: string;
@@ -317,6 +334,7 @@ export function SettingsProvider({ children }: { children: ReactNode }) {
       // 5. Set final combined state
       setSettings({
         ...combinedSettings,
+        ...platformFoldersToFlatSettings(platformSettings[startupPlatformId].folders),
         activePlatformId: startupPlatformId,
         lastUsedPlatformId: startupPlatformId,
         platformSettings,
@@ -381,7 +399,10 @@ export function SettingsProvider({ children }: { children: ReactNode }) {
   }, []);
 
   const setActivePlatform = useCallback((platformId: PlatformId) => {
+    const targetFolders = settings.platformSettings[platformId].folders;
+
     updateSettings({
+      ...platformFoldersToFlatSettings(targetFolders),
       activePlatformId: platformId,
       lastUsedPlatformId: platformId,
       platformSettings: {
@@ -435,6 +456,7 @@ export function SettingsProvider({ children }: { children: ReactNode }) {
       let baseDir = settings.screenshotsPath;
       if (type === 'sound') baseDir = settings.soundsPath;
       if (type === 'musician') baseDir = settings.musicianPhotosPath;
+      if (type === 'extras') baseDir = settings.extrasPath;
 
       const variants = await findAllMediaVariants(baseDir, filename);
       
@@ -443,7 +465,7 @@ export function SettingsProvider({ children }: { children: ReactNode }) {
     } catch {
       return [resolveMediaPath(type, filename)];
     }
-  }, [settings.screenshotsPath, settings.soundsPath, settings.musicianPhotosPath, resolveMediaPath]);
+  }, [settings.screenshotsPath, settings.soundsPath, settings.musicianPhotosPath, settings.extrasPath, resolveMediaPath]);
   
   const markAsPlayed = useCallback((gameId: string) => {
     setSettings(prev => {

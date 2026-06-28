@@ -212,6 +212,7 @@ pub struct PlatformFolderSettings {
     pub music_path: String,
     pub photos_path: String,
     pub screenshots_path: String,
+    pub extras_path: String,
 }
 
 #[derive(Debug, Serialize, Deserialize, Clone)]

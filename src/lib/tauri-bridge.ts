@@ -86,6 +86,7 @@ export interface PlatformFolderImportSettings {
   musicPath: string;
   photosPath: string;
   screenshotsPath: string;
+  extrasPath: string;
 }
 
 export interface PlatformImportRequest {

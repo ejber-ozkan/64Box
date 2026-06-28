@@ -2,6 +2,11 @@
 
 import type { PlatformFolderSettings } from '@/types/platform';
 
+type RequiredPlatformFolderKey = keyof Pick<
+  PlatformFolderSettings,
+  'gamesPath' | 'musicPath' | 'photosPath' | 'screenshotsPath' | 'extrasPath'
+>;
+
 interface DatabaseSetupViewProps {
   dbPath: string;
   error: string | null;
@@ -16,23 +21,11 @@ interface DatabaseSetupViewProps {
     importStatus: string;
   }>;
   folderSettings?: PlatformFolderSettings;
-  requiredFolderKeys?: Array<keyof Pick<
-    PlatformFolderSettings,
-    'gamesPath' | 'musicPath' | 'photosPath' | 'screenshotsPath'
-  >>;
+  requiredFolderKeys?: RequiredPlatformFolderKey[];
   onBrowse: () => void;
   onPlatformSelect?: (platformId: string) => void;
-  onBrowseFolder?: (folderKey: keyof Pick<
-    PlatformFolderSettings,
-    'gamesPath' | 'musicPath' | 'photosPath' | 'screenshotsPath'
-  >) => void;
-  onFolderChange?: (
-    folderKey: keyof Pick<
-      PlatformFolderSettings,
-      'gamesPath' | 'musicPath' | 'photosPath' | 'screenshotsPath'
-    >,
-    value: string,
-  ) => void;
+  onBrowseFolder?: (folderKey: RequiredPlatformFolderKey) => void;
+  onFolderChange?: (folderKey: RequiredPlatformFolderKey, value: string) => void;
   onImport: () => void;
 }
 
@@ -41,6 +34,7 @@ const folderLabels = {
   musicPath: 'Music',
   photosPath: 'Photos',
   screenshotsPath: 'Screenshots',
+  extrasPath: 'Extras',
 } as const;
 
 export function DatabaseSetupView({

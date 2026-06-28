@@ -12,6 +12,7 @@ function SettingsTestComponent() {
     <div>
       <div data-testid="screenshot-path">{resolveMediaPath('screenshot', 'commando_1.png')}</div>
       <div data-testid="sound-path">{resolveMediaPath('sound', 'commando.sid')}</div>
+      <div data-testid="extras-path">{resolveMediaPath('extras', 'Cover/arkanoid.png')}</div>
       <div data-testid="recently-played">{settings.recentlyPlayedIds.join(',')}</div>
       <div data-testid="active-platform">{settings.activePlatformId}</div>
       <div data-testid="c64-roms-path">{settings.platformSettings.c64.folders.gamesPath}</div>
@@ -124,17 +125,53 @@ describe('SettingsContext', () => {
     expect(screen.getByTestId('atari800-import-status').textContent).toBe('notImported');
   });
 
-  test('sets the active platform while preserving platform import state', () => {
+  test('sets the active platform while preserving platform import state', async () => {
     render(
       <SettingsProvider>
         <SettingsTestComponent />
       </SettingsProvider>
     );
 
+    await waitFor(() => {
+      expect(screen.getByTestId('atari800-import-status').textContent).toBe('notImported');
+    });
+
     fireEvent.click(screen.getByTestId('select-atari800-btn'));
 
     expect(screen.getByTestId('active-platform').textContent).toBe('atari800');
     expect(screen.getByTestId('atari800-import-status').textContent).toBe('notImported');
+  });
+
+  test('switches flat media paths to the active platform folder settings', async () => {
+    const platformSettings = createDefaultPlatformSettingsMap();
+    platformSettings.atari800.folders = {
+      ...platformSettings.atari800.folders,
+      gamesPath: 'E:/Atari/Games',
+      musicPath: 'E:/Atari/Music',
+      photosPath: 'E:/Atari/Photos',
+      screenshotsPath: 'E:/Atari/Screenshots',
+      extrasPath: 'E:/Atari/Extras',
+    };
+    window.localStorage.setItem('gb64_settings', JSON.stringify({ platformSettings }));
+
+    render(
+      <SettingsProvider>
+        <SettingsTestComponent />
+      </SettingsProvider>
+    );
+
+    await waitFor(() => {
+      expect(screen.getByTestId('atari800-import-status').textContent).toBe('notImported');
+    });
+
+    fireEvent.click(screen.getByTestId('select-atari800-btn'));
+
+    await waitFor(() => {
+      expect(screen.getByTestId('active-platform').textContent).toBe('atari800');
+    });
+    expect(screen.getByTestId('screenshot-path').textContent).toBe('E:/Atari/Screenshots/commando_1.png');
+    expect(screen.getByTestId('sound-path').textContent).toBe('E:/Atari/Music/commando.sid');
+    expect(screen.getByTestId('extras-path').textContent).toBe('E:/Atari/Extras/Cover/arkanoid.png');
   });
 
   test('falls back to an imported platform on startup when the saved platform is unimported', async () => {

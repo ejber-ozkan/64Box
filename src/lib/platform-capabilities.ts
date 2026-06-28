@@ -78,7 +78,7 @@ export const PLATFORM_PROFILES: Record<PlatformId, PlatformProfile> = {
     importStatus: 'notImported',
     defaultEmulatorProfileId: 'retroarch-atari800',
     supportedEmulatorProfileIds: ['retroarch-atari800', 'altirra-atari800'],
-    folderTypes: ['games', 'music', 'photos', 'screenshots'],
+    folderTypes: ['games', 'music', 'photos', 'screenshots', 'extras'],
     mediaCapabilities: {
       screenshots: true,
       photos: true,

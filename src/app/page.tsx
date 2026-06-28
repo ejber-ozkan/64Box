@@ -38,6 +38,19 @@ import {
   playUiSoundEffectAndWait,
 } from '@/lib/ui-sound-effects';
 
+type SetupFolderKey = keyof Pick<
+  PlatformFolderSettings,
+  'gamesPath' | 'musicPath' | 'photosPath' | 'screenshotsPath' | 'extrasPath'
+>;
+
+const ATARI800_REQUIRED_FOLDER_KEYS: SetupFolderKey[] = [
+  'gamesPath',
+  'musicPath',
+  'photosPath',
+  'screenshotsPath',
+  'extrasPath',
+];
+
 function LibraryApp() {
   const { settings, updateSettings, setActivePlatform } = useSettings();
   const { favorites, isFavorite } = useFavorites();
@@ -169,7 +182,7 @@ function LibraryApp() {
   ]);
 
   const handlePlatformFolderChange = useCallback((
-    folderKey: keyof Pick<PlatformFolderSettings, 'gamesPath' | 'musicPath' | 'photosPath' | 'screenshotsPath'>,
+    folderKey: SetupFolderKey,
     value: string,
   ) => {
     updateSettings({
@@ -192,7 +205,7 @@ function LibraryApp() {
   ]);
 
   const handleBrowsePlatformFolder = useCallback(async (
-    folderKey: keyof Pick<PlatformFolderSettings, 'gamesPath' | 'musicPath' | 'photosPath' | 'screenshotsPath'>,
+    folderKey: SetupFolderKey,
   ) => {
     const selected = await openDirectoryDialog();
     if (!selected) {
@@ -211,7 +224,7 @@ function LibraryApp() {
     }
 
     if (settings.activePlatformId === 'atari800') {
-      const missingFolder = (['gamesPath', 'musicPath', 'photosPath', 'screenshotsPath'] as const)
+      const missingFolder = ATARI800_REQUIRED_FOLDER_KEYS
         .find((folderKey) => !activePlatformSettings.folders[folderKey]?.trim());
       if (missingFolder) {
         setPlatformSetupError(`Select the ${missingFolder.replace('Path', '')} folder first.`);
@@ -229,9 +242,15 @@ function LibraryApp() {
           musicPath: activePlatformSettings.folders.musicPath,
           photosPath: activePlatformSettings.folders.photosPath,
           screenshotsPath: activePlatformSettings.folders.screenshotsPath,
+          extrasPath: activePlatformSettings.folders.extrasPath,
         },
       });
       updateSettings({
+        romsPath: activePlatformSettings.folders.gamesPath,
+        soundsPath: activePlatformSettings.folders.musicPath,
+        musicianPhotosPath: activePlatformSettings.folders.photosPath,
+        screenshotsPath: activePlatformSettings.folders.screenshotsPath,
+        extrasPath: activePlatformSettings.folders.extrasPath,
         platformSettings: {
           ...settings.platformSettings,
           [settings.activePlatformId]: {
@@ -297,7 +316,7 @@ function LibraryApp() {
           }))}
           requiredFolderKeys={
             settings.activePlatformId === 'atari800'
-              ? ['gamesPath', 'musicPath', 'photosPath', 'screenshotsPath']
+              ? ATARI800_REQUIRED_FOLDER_KEYS
               : []
           }
           selectedPlatformId={settings.activePlatformId}

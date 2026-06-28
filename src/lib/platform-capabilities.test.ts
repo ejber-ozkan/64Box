@@ -22,7 +22,7 @@ describe('platform-capabilities', () => {
 
     expect(atari800.status).toBe('available');
     expect(atari800.importStatus).toBe('notImported');
-    expect(atari800.folderTypes).toEqual(['games', 'music', 'photos', 'screenshots']);
+    expect(atari800.folderTypes).toEqual(['games', 'music', 'photos', 'screenshots', 'extras']);
     expect(atari800.mediaCapabilities.music).toBe('sap');
     expect(atari800.defaultEmulatorProfileId).toBe('retroarch-atari800');
     expect(atari800.supportedEmulatorProfileIds).toContain('altirra-atari800');
