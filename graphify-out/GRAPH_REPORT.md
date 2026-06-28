@@ -1,7 +1,7 @@
 # Graph Report - VIC40GameBase64  (2026-06-28)
 
 ## Corpus Check
-- 165 files · ~97,250 words
+- 165 files · ~97,278 words
 - Verdict: corpus is large enough that graph structure adds value.
 
 ## Summary
@@ -10,7 +10,7 @@
 - Token cost: 0 input · 0 output
 
 ## Graph Freshness
-- Built from commit: `c64e80ce`
+- Built from commit: `e1cdafb3`
 - Run `git rev-parse HEAD` and compare to check if the graph is stale.
 - Run `graphify update .` after code changes (no API cost).
 

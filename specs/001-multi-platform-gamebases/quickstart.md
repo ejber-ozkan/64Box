@@ -123,3 +123,18 @@ npm run build
 ```
 
 Run Playwright coverage for platform selection, import routing, settings, and workflow parity once implementation exists.
+
+## Phase 8 Validation Record
+
+Recorded on 2026-06-28 for branch `codex/spec-kit-constitution`.
+
+| Check | Command | Result |
+|-------|---------|--------|
+| Frontend unit tests | `npm run test:frontend` | PASS: 32 files, 168 tests |
+| Backend Rust tests | `npm run test:backend` | PASS: 91 tests, serial backend run |
+| Lint | `npm run lint` | PASS |
+| Production build | `npm run build` | PASS |
+| Playwright platform validation | `npx playwright test --project=chromium` | PASS: 7 Chromium tests |
+| Full configured Playwright suite | `npm run test:e2e` | BLOCKED locally: Chromium launch required unsandboxed execution, and the configured `mobile-safari` project could not run because WebKit was not installed at `C:\Users\ejber\AppData\Local\ms-playwright\webkit-2248\Playwright.exe` |
+
+The Chromium Playwright validation covers platform selection, Atari 800 import routing, C64 platform path settings persistence, and Atari 800 launch-settings visibility for RetroArch Atari800 and Altirra.

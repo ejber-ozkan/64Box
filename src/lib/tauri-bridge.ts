@@ -384,12 +384,22 @@ export async function getPlatformImportStatus(platformId: string): Promise<Platf
     if (!platform) {
       throw new Error(`Unsupported platform: ${platformId}`);
     }
+    const storedSettings = (() => {
+      if (typeof window === 'undefined') return null;
+      try {
+        const raw = window.localStorage.getItem('gb64_settings');
+        return raw ? JSON.parse(raw) : null;
+      } catch {
+        return null;
+      }
+    })();
+    const storedLibrary = storedSettings?.platformSettings?.[platformId]?.library;
     return {
       platformId,
-      importStatus: platform.importStatus,
-      sourceMdbPath: null,
-      gameCount: 0,
-      lastImportError: null,
+      importStatus: storedLibrary?.importStatus ?? platform.importStatus,
+      sourceMdbPath: storedLibrary?.sourceMdbPath ?? null,
+      gameCount: storedLibrary?.gameCount ?? 0,
+      lastImportError: storedLibrary?.lastImportError ?? null,
     };
   }
   return invoke<PlatformImportStatusResponse>('get_platform_import_status', { platformId });

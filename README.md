@@ -1,6 +1,6 @@
 # 64Box
 
-A cross-platform (Windows, Mac, Linux) modern frontend for the **GameBase64** Commodore 64 game database. 
+A cross-platform (Windows, Mac, Linux) modern frontend for **GameBase-style retro game libraries**, with Commodore 64 as the compatibility baseline and platform-scoped support now extending toward Atari 800.
 
 > This project is a frontend for the GB64 Collection, the long-running Commodore 64 database project maintained by the GB64 Team. To learn more about the original project, visit [gb64.com](https://gb64.com/).  
 > `gb64.com ©1997-2022 The GB64 Team`
@@ -38,7 +38,9 @@ Download the latest build from the platform links below, or browse the full [Git
 - **Smart Multi-Disk Handling**: Automatically unzips games on-the-fly and generates `.vfl` (VICE) or `.m3u` (RetroArch) playlists for multi-disk games to ensure seamless booting.
 - **Categorized Extras Gallery**: Integrated support for the **GameBase64 Extras** collection. Automatically groups Adverts, Books, Maps, and Manuals into a premium gallery view, while allowing alternate game versions (Disks/Tapes/Carts) to be launched directly.
 - **SID Support**: Native `.sid` chiptune playback directly within the game galleries.
-- **Initial Import wizard**: To help import the GambeBase Database for use.
+- **Platform-scoped libraries**: Switch between imported platforms from the top menu while keeping catalog data, media folders, launch settings, favorites, and navigation state separate.
+- **Atari 800 setup path**: Atari 800 imports use an Atari 800 v12-compatible MDB plus Games, Music, Photos, Screenshots, and Extras folder settings. Atari 800 launch settings include RetroArch with the Atari800 core and Altirra.
+- **Initial Import wizard**: To help import the GameBase database for use.
 
 ## Screenshots
 
@@ -93,13 +95,22 @@ You'll need the following installed to build and run this project:
   ```
 - [Tauri CLI Requirements](https://tauri.app/2/guides/getting-started/prerequisites/linux/)
 
-## 2. Setting up the Database and Assets
+## 2. Setting up Platform Databases and Assets
 
-Because of copyright and sheer size, the GameBase64 database (`.mdb`) and its media files (`.zip`s containing screenshots, box art, game files) are **not** included with this repository.
+Because of copyright and sheer size, GameBase database (`.mdb`) files and media/game files are **not** included with this repository.
+
+### Commodore 64
 
 1. **Download GameBase 64**: Go to the [GameBase64 website](http://www.gamebase64.com/) and download the core `GBC_v19.mdb` file. Place it in the root of this project.
 2. **Download Media and Games**: You will need to obtain the GameBase64 collections (Games, Screenshots, BoxArt, Sid, Video) which are easily searchable online.
 3. Extract the collections to your preferred location on your PC (you configure their paths later inside the app).
+
+### Atari 800
+
+1. Obtain `Atari 800 v12.mdb` or an equivalent Atari 800 v12-compatible GameBase MDB.
+2. Prepare Atari 800 folder roots for Games, Music, Photos, Screenshots, and Extras.
+3. Select Atari 800 from the top platform switcher. If it has not been imported, 64Box opens the Atari 800 import flow.
+4. After import, configure Atari 800 launch paths under **Atari 800 Platform Paths** in Settings. RetroArch requires both `retroarch.exe` and an Atari800 libretro core; Altirra uses its own executable path and does not require a RetroArch core.
 
 ## 3. Building the SQLite Database
 
@@ -170,10 +181,11 @@ You can find the compiled installers and executables in `src-tauri/target/releas
 ## Post-Setup Configuration
 Once the app boots successfully, open the **Settings** menu via the top header bar:
 1. Ensure the paths to your extracted GameBase64 `Screenshots`, `Games`, `BoxArt`, `Video` and `Sid` folders are set correctly.
-2. Under **Local Paths**, select your preferred emulator (VICE or RetroArch).
+2. Under **C64 Platform Paths**, select your preferred C64 emulator (VICE or RetroArch).
 3. If using **VICE**, point to your `x64sc.exe` executable. 
 4. If using **RetroArch**, point to your `retroarch.exe` **and** select a C64 core (e.g., `vice_x64sc_libretro.dll`) from your cores directory.
 5. **Extras Collection**: Point this to your unzipped GameBase64 Extras folder. The app will automatically scan and categorize items like "Adverts", "Maps", "Tips", and "Carts" (alternate game versions).
+6. For additional imported platforms, use their platform-specific settings page, such as **Atari 800 Platform Paths**, so emulator and media folders do not overwrite C64 configuration.
 
 Note: The application handles temporary extraction of zipped games and creates the necessary playlist files (`.vfl` or `.m3u`) automatically before launching. Images in the Extras folder are displayed in a high-resolution lightbox, while PDFs and docs are opened via your system's default viewer.
 

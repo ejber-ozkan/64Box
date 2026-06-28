@@ -125,7 +125,7 @@
 - [X] T051 [P] [US3] Add backend tests for RetroArch Atari800 core validation and Altirra executable validation in `src-tauri/src/commands/emulator.rs`
 - [X] T052 [P] [US3] Add frontend settings tests for Atari 800 emulator profile visibility in `src/components/SettingsModal.test.tsx`
 - [X] T052a [US3] Replace generic Local Paths settings navigation with imported-platform path pages in `src/components/SettingsModal.tsx`
-- [ ] T053 [P] [US3] Add Playwright Atari 800 emulator settings test in `e2e/platform-launch-settings.spec.ts`
+- [X] T053 [P] [US3] Add Playwright Atari 800 emulator settings test in `e2e/platform-launch-settings.spec.ts`
 
 ### Implementation for User Story 3
 
@@ -201,14 +201,16 @@
 
 **Purpose**: Final validation, documentation, and cleanup across all stories.
 
-- [ ] T084 [P] Update README platform setup notes for Atari 800 in `README.md`
-- [ ] T085 [P] Update architecture review notes for platform-scoped libraries in `docs/architecture-review.md`
-- [ ] T086 [P] Update Graphify after implementation using `graphify-out/GRAPH_REPORT.md`
-- [ ] T087 Run frontend test suite and record result in `specs/001-multi-platform-gamebases/quickstart.md`
-- [ ] T088 Run backend test suite and record result in `specs/001-multi-platform-gamebases/quickstart.md`
-- [ ] T089 Run lint and build validation and record result in `specs/001-multi-platform-gamebases/quickstart.md`
-- [ ] T090 Run Playwright platform validation and record result in `specs/001-multi-platform-gamebases/quickstart.md`
-- [ ] T091 Review `specs/001-multi-platform-gamebases/checklists/platform-readiness.md` and either resolve or explicitly defer every open checklist concern in `specs/001-multi-platform-gamebases/tasks.md`
+- [X] T084 [P] Update README platform setup notes for Atari 800 in `README.md`
+- [X] T085 [P] Update architecture review notes for platform-scoped libraries in `docs/architecture-review.md`
+- [X] T086 [P] Update Graphify after implementation using `graphify-out/GRAPH_REPORT.md`
+- [X] T087 Run frontend test suite and record result in `specs/001-multi-platform-gamebases/quickstart.md`
+- [X] T088 Run backend test suite and record result in `specs/001-multi-platform-gamebases/quickstart.md`
+- [X] T089 Run lint and build validation and record result in `specs/001-multi-platform-gamebases/quickstart.md`
+- [X] T090 Run Playwright platform validation and record result in `specs/001-multi-platform-gamebases/quickstart.md`
+- [X] T091 Review `specs/001-multi-platform-gamebases/checklists/platform-readiness.md` and either resolve or explicitly defer every open checklist concern in `specs/001-multi-platform-gamebases/tasks.md`
+
+**Phase 8 notes**: `platform-readiness.md` has 38/38 checklist items complete, so there are no open readiness concerns to resolve or defer. Chromium Playwright validation passed; the full configured Playwright run remains locally blocked until WebKit is installed for the `mobile-safari` project.
 
 ---
 

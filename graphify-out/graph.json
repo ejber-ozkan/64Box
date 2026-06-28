@@ -2960,7 +2960,7 @@
       "label": "get_db_game_count()",
       "file_type": "code",
       "source_file": "src-tauri/src/commands/db/games.rs",
-      "source_location": "L268",
+      "source_location": "L265",
       "_origin": "ast",
       "id": "db_games_get_db_game_count",
       "community": 3,
@@ -2970,7 +2970,7 @@
       "label": "get_game_extras()",
       "file_type": "code",
       "source_file": "src-tauri/src/commands/db/games.rs",
-      "source_location": "L277",
+      "source_location": "L274",
       "_origin": "ast",
       "id": "db_games_get_game_extras",
       "community": 3,
@@ -2980,7 +2980,7 @@
       "label": "ExtraRow",
       "file_type": "code",
       "source_file": "src-tauri/src/commands/db/games.rs",
-      "source_location": "L277",
+      "source_location": "L274",
       "_origin": "ast",
       "id": "src_tauri_src_commands_db_games_rs_extrarow",
       "community": 3,
@@ -4260,7 +4260,7 @@
       "label": "scan_rom_directory()",
       "file_type": "code",
       "source_file": "src-tauri/src/commands/files.rs",
-      "source_location": "L43",
+      "source_location": "L39",
       "_origin": "ast",
       "id": "commands_files_scan_rom_directory",
       "community": 8,
@@ -4270,7 +4270,7 @@
       "label": "String",
       "file_type": "code",
       "source_file": "src-tauri/src/commands/files.rs",
-      "source_location": "L43",
+      "source_location": "L39",
       "_origin": "ast",
       "id": "src_tauri_src_commands_files_rs_string",
       "community": 8,
@@ -4280,7 +4280,7 @@
       "label": "Result",
       "file_type": "code",
       "source_file": "src-tauri/src/commands/files.rs",
-      "source_location": "L43",
+      "source_location": "L39",
       "_origin": "ast",
       "id": "src_tauri_src_commands_files_rs_result",
       "community": 8,
@@ -4290,7 +4290,7 @@
       "label": "Vec",
       "file_type": "code",
       "source_file": "src-tauri/src/commands/files.rs",
-      "source_location": "L43",
+      "source_location": "L39",
       "_origin": "ast",
       "id": "src_tauri_src_commands_files_rs_vec",
       "community": 8,
@@ -4300,7 +4300,7 @@
       "label": "ScannedRom",
       "file_type": "code",
       "source_file": "src-tauri/src/commands/files.rs",
-      "source_location": "L43",
+      "source_location": "L39",
       "_origin": "ast",
       "id": "scannedrom",
       "community": 8,
@@ -4310,7 +4310,7 @@
       "label": "download_media_asset()",
       "file_type": "code",
       "source_file": "src-tauri/src/commands/files.rs",
-      "source_location": "L112",
+      "source_location": "L108",
       "_origin": "ast",
       "id": "commands_files_download_media_asset",
       "community": 8,
@@ -4320,7 +4320,7 @@
       "label": "ResolvedPath",
       "file_type": "code",
       "source_file": "src-tauri/src/commands/files.rs",
-      "source_location": "L112",
+      "source_location": "L108",
       "_origin": "ast",
       "id": "resolvedpath",
       "community": 8,
@@ -4330,7 +4330,7 @@
       "label": "read_file_bytes()",
       "file_type": "code",
       "source_file": "src-tauri/src/commands/files.rs",
-      "source_location": "L154",
+      "source_location": "L150",
       "_origin": "ast",
       "id": "commands_files_read_file_bytes",
       "community": 8,
@@ -4340,7 +4340,7 @@
       "label": "resolve_media_path()",
       "file_type": "code",
       "source_file": "src-tauri/src/commands/files.rs",
-      "source_location": "L171",
+      "source_location": "L167",
       "_origin": "ast",
       "id": "commands_files_resolve_media_path",
       "community": 8,
@@ -4350,7 +4350,7 @@
       "label": "find_all_media_variants()",
       "file_type": "code",
       "source_file": "src-tauri/src/commands/files.rs",
-      "source_location": "L186",
+      "source_location": "L182",
       "_origin": "ast",
       "id": "commands_files_find_all_media_variants",
       "community": 8,
@@ -4360,7 +4360,7 @@
       "label": "test_resolve_media_path()",
       "file_type": "code",
       "source_file": "src-tauri/src/commands/files.rs",
-      "source_location": "L256",
+      "source_location": "L252",
       "_origin": "ast",
       "id": "commands_files_test_resolve_media_path",
       "community": 8,
@@ -4370,7 +4370,7 @@
       "label": "test_find_all_media_variants()",
       "file_type": "code",
       "source_file": "src-tauri/src/commands/files.rs",
-      "source_location": "L272",
+      "source_location": "L268",
       "_origin": "ast",
       "id": "commands_files_test_find_all_media_variants",
       "community": 8,
@@ -4380,7 +4380,7 @@
       "label": "test_find_all_media_variants_from_already_suffixed_filename()",
       "file_type": "code",
       "source_file": "src-tauri/src/commands/files.rs",
-      "source_location": "L289",
+      "source_location": "L285",
       "_origin": "ast",
       "id": "commands_files_test_find_all_media_variants_from_already_suffixed_filename",
       "community": 8,
@@ -4390,7 +4390,7 @@
       "label": "test_scan_rom_directory()",
       "file_type": "code",
       "source_file": "src-tauri/src/commands/files.rs",
-      "source_location": "L306",
+      "source_location": "L302",
       "_origin": "ast",
       "id": "commands_files_test_scan_rom_directory",
       "community": 8,
@@ -4400,7 +4400,7 @@
       "label": "test_scan_non_existent_directory()",
       "file_type": "code",
       "source_file": "src-tauri/src/commands/files.rs",
-      "source_location": "L331",
+      "source_location": "L327",
       "_origin": "ast",
       "id": "commands_files_test_scan_non_existent_directory",
       "community": 8,
@@ -4410,7 +4410,7 @@
       "label": "test_scan_rom_directory_empty()",
       "file_type": "code",
       "source_file": "src-tauri/src/commands/files.rs",
-      "source_location": "L337",
+      "source_location": "L333",
       "_origin": "ast",
       "id": "commands_files_test_scan_rom_directory_empty",
       "community": 8,
@@ -4420,7 +4420,7 @@
       "label": "test_read_file_bytes()",
       "file_type": "code",
       "source_file": "src-tauri/src/commands/files.rs",
-      "source_location": "L346",
+      "source_location": "L342",
       "_origin": "ast",
       "id": "commands_files_test_read_file_bytes",
       "community": 8,
@@ -4430,7 +4430,7 @@
       "label": "test_read_file_bytes_empty_file()",
       "file_type": "code",
       "source_file": "src-tauri/src/commands/files.rs",
-      "source_location": "L358",
+      "source_location": "L354",
       "_origin": "ast",
       "id": "commands_files_test_read_file_bytes_empty_file",
       "community": 8,
@@ -4440,7 +4440,7 @@
       "label": "test_read_file_bytes_rejects_non_existent_path()",
       "file_type": "code",
       "source_file": "src-tauri/src/commands/files.rs",
-      "source_location": "L370",
+      "source_location": "L366",
       "_origin": "ast",
       "id": "commands_files_test_read_file_bytes_rejects_non_existent_path",
       "community": 8,
@@ -4450,7 +4450,7 @@
       "label": "test_read_file_bytes_rejects_directory()",
       "file_type": "code",
       "source_file": "src-tauri/src/commands/files.rs",
-      "source_location": "L382",
+      "source_location": "L374",
       "_origin": "ast",
       "id": "commands_files_test_read_file_bytes_rejects_directory",
       "community": 8,
@@ -4460,7 +4460,7 @@
       "label": "test_resolve_media_path_rejects_parent_traversal()",
       "file_type": "code",
       "source_file": "src-tauri/src/commands/files.rs",
-      "source_location": "L397",
+      "source_location": "L385",
       "_origin": "ast",
       "id": "commands_files_test_resolve_media_path_rejects_parent_traversal",
       "community": 8,
@@ -4470,7 +4470,7 @@
       "label": "test_find_all_media_variants_rejects_parent_traversal()",
       "file_type": "code",
       "source_file": "src-tauri/src/commands/files.rs",
-      "source_location": "L416",
+      "source_location": "L404",
       "_origin": "ast",
       "id": "commands_files_test_find_all_media_variants_rejects_parent_traversal",
       "community": 8,
@@ -4480,7 +4480,7 @@
       "label": "test_download_media_asset_rejects_parent_traversal_filename()",
       "file_type": "code",
       "source_file": "src-tauri/src/commands/files.rs",
-      "source_location": "L434",
+      "source_location": "L422",
       "_origin": "ast",
       "id": "commands_files_test_download_media_asset_rejects_parent_traversal_filename",
       "community": 8,
@@ -4660,7 +4660,7 @@
       "label": "get_platform_import_status_sync()",
       "file_type": "code",
       "source_file": "src-tauri/src/commands/platforms.rs",
-      "source_location": "L152",
+      "source_location": "L149",
       "_origin": "ast",
       "id": "commands_platforms_get_platform_import_status_sync",
       "community": 53,
@@ -4670,7 +4670,7 @@
       "label": "PlatformImportStatus",
       "file_type": "code",
       "source_file": "src-tauri/src/commands/platforms.rs",
-      "source_location": "L152",
+      "source_location": "L149",
       "_origin": "ast",
       "id": "src_tauri_src_commands_platforms_rs_platformimportstatus",
       "community": 53,
@@ -4900,7 +4900,7 @@
       "label": "validate_platform_import_request()",
       "file_type": "code",
       "source_file": "src-tauri/src/commands/setup.rs",
-      "source_location": "L97",
+      "source_location": "L93",
       "_origin": "ast",
       "id": "commands_setup_validate_platform_import_request",
       "community": 6,
@@ -4910,7 +4910,7 @@
       "label": "validate_existing_folder()",
       "file_type": "code",
       "source_file": "src-tauri/src/commands/setup.rs",
-      "source_location": "L131",
+      "source_location": "L127",
       "_origin": "ast",
       "id": "commands_setup_validate_existing_folder",
       "community": 6,
@@ -4920,7 +4920,7 @@
       "label": "reject_obvious_wrong_platform_mdb()",
       "file_type": "code",
       "source_file": "src-tauri/src/commands/setup.rs",
-      "source_location": "L144",
+      "source_location": "L140",
       "_origin": "ast",
       "id": "commands_setup_reject_obvious_wrong_platform_mdb",
       "community": 6,
@@ -4930,7 +4930,7 @@
       "label": "Path",
       "file_type": "code",
       "source_file": "src-tauri/src/commands/setup.rs",
-      "source_location": "L144",
+      "source_location": "L140",
       "_origin": "ast",
       "id": "src_tauri_src_commands_setup_rs_path",
       "community": 6,
@@ -5210,7 +5210,7 @@
       "label": "test_validate_open_path_rejects_http_url()",
       "file_type": "code",
       "source_file": "src-tauri/src/commands/system.rs",
-      "source_location": "L195",
+      "source_location": "L191",
       "_origin": "ast",
       "id": "commands_system_test_validate_open_path_rejects_http_url",
       "community": 12,
@@ -5220,7 +5220,7 @@
       "label": "test_validate_open_path_rejects_https_url()",
       "file_type": "code",
       "source_file": "src-tauri/src/commands/system.rs",
-      "source_location": "L202",
+      "source_location": "L198",
       "_origin": "ast",
       "id": "commands_system_test_validate_open_path_rejects_https_url",
       "community": 12,
@@ -5230,7 +5230,7 @@
       "label": "test_validate_open_path_rejects_ftp_url()",
       "file_type": "code",
       "source_file": "src-tauri/src/commands/system.rs",
-      "source_location": "L209",
+      "source_location": "L205",
       "_origin": "ast",
       "id": "commands_system_test_validate_open_path_rejects_ftp_url",
       "community": 12,
@@ -5240,7 +5240,7 @@
       "label": "test_validate_open_path_rejects_javascript_url()",
       "file_type": "code",
       "source_file": "src-tauri/src/commands/system.rs",
-      "source_location": "L216",
+      "source_location": "L212",
       "_origin": "ast",
       "id": "commands_system_test_validate_open_path_rejects_javascript_url",
       "community": 12,
@@ -5250,7 +5250,7 @@
       "label": "test_validate_open_path_rejects_data_url()",
       "file_type": "code",
       "source_file": "src-tauri/src/commands/system.rs",
-      "source_location": "L223",
+      "source_location": "L219",
       "_origin": "ast",
       "id": "commands_system_test_validate_open_path_rejects_data_url",
       "community": 12,
@@ -5260,7 +5260,7 @@
       "label": "test_validate_open_path_scheme_check_is_case_insensitive()",
       "file_type": "code",
       "source_file": "src-tauri/src/commands/system.rs",
-      "source_location": "L230",
+      "source_location": "L226",
       "_origin": "ast",
       "id": "commands_system_test_validate_open_path_scheme_check_is_case_insensitive",
       "community": 12,
@@ -6500,7 +6500,7 @@
       "label": "encrypt_value_with_legacy_fixed_iv()",
       "file_type": "code",
       "source_file": "src-tauri/src/security.rs",
-      "source_location": "L94",
+      "source_location": "L91",
       "_origin": "ast",
       "id": "src_security_encrypt_value_with_legacy_fixed_iv",
       "community": 15,
@@ -6510,7 +6510,7 @@
       "label": "test_encryption_roundtrip()",
       "file_type": "code",
       "source_file": "src-tauri/src/security.rs",
-      "source_location": "L103",
+      "source_location": "L100",
       "_origin": "ast",
       "id": "src_security_test_encryption_roundtrip",
       "community": 15,
@@ -6520,7 +6520,7 @@
       "label": "test_encryption_empty_string()",
       "file_type": "code",
       "source_file": "src-tauri/src/security.rs",
-      "source_location": "L111",
+      "source_location": "L108",
       "_origin": "ast",
       "id": "src_security_test_encryption_empty_string",
       "community": 15,
@@ -6530,7 +6530,7 @@
       "label": "test_encryption_long_string()",
       "file_type": "code",
       "source_file": "src-tauri/src/security.rs",
-      "source_location": "L119",
+      "source_location": "L116",
       "_origin": "ast",
       "id": "src_security_test_encryption_long_string",
       "community": 15,
@@ -6540,7 +6540,7 @@
       "label": "test_encryption_uses_unique_nonce_per_value()",
       "file_type": "code",
       "source_file": "src-tauri/src/security.rs",
-      "source_location": "L127",
+      "source_location": "L124",
       "_origin": "ast",
       "id": "src_security_test_encryption_uses_unique_nonce_per_value",
       "community": 15,
@@ -6550,7 +6550,7 @@
       "label": "test_decrypt_supports_legacy_fixed_iv_ciphertext()",
       "file_type": "code",
       "source_file": "src-tauri/src/security.rs",
-      "source_location": "L138",
+      "source_location": "L135",
       "_origin": "ast",
       "id": "src_security_test_decrypt_supports_legacy_fixed_iv_ciphertext",
       "community": 15,
@@ -6560,7 +6560,7 @@
       "label": "test_invalid_decrypt()",
       "file_type": "code",
       "source_file": "src-tauri/src/security.rs",
-      "source_location": "L147",
+      "source_location": "L144",
       "_origin": "ast",
       "id": "src_security_test_invalid_decrypt",
       "community": 15,
@@ -6570,7 +6570,7 @@
       "label": "test_tamper_detection()",
       "file_type": "code",
       "source_file": "src-tauri/src/security.rs",
-      "source_location": "L161",
+      "source_location": "L158",
       "_origin": "ast",
       "id": "src_security_test_tamper_detection",
       "community": 15,
@@ -11220,7 +11220,7 @@
       "label": "importPlatformDatabaseFromMdb()",
       "file_type": "code",
       "source_file": "src/lib/tauri-bridge.ts",
-      "source_location": "L398",
+      "source_location": "L408",
       "_origin": "ast",
       "id": "lib_tauri_bridge_importplatformdatabasefrommdb",
       "community": 96,
@@ -11230,7 +11230,7 @@
       "label": "getSupportedPlatforms()",
       "file_type": "code",
       "source_file": "src/lib/tauri-bridge.ts",
-      "source_location": "L407",
+      "source_location": "L417",
       "_origin": "ast",
       "id": "lib_tauri_bridge_getsupportedplatforms",
       "community": 96,
@@ -11240,7 +11240,7 @@
       "label": "getActivePlatform()",
       "file_type": "code",
       "source_file": "src/lib/tauri-bridge.ts",
-      "source_location": "L428",
+      "source_location": "L438",
       "_origin": "ast",
       "id": "lib_tauri_bridge_getactiveplatform",
       "community": 96,
@@ -11250,7 +11250,7 @@
       "label": "setActivePlatform()",
       "file_type": "code",
       "source_file": "src/lib/tauri-bridge.ts",
-      "source_location": "L439",
+      "source_location": "L449",
       "_origin": "ast",
       "id": "lib_tauri_bridge_setactiveplatform",
       "community": 96,
@@ -11260,7 +11260,7 @@
       "label": "exitApp()",
       "file_type": "code",
       "source_file": "src/lib/tauri-bridge.ts",
-      "source_location": "L461",
+      "source_location": "L471",
       "_origin": "ast",
       "id": "lib_tauri_bridge_exitapp",
       "community": 96,
@@ -11270,7 +11270,7 @@
       "label": "setWindowMode()",
       "file_type": "code",
       "source_file": "src/lib/tauri-bridge.ts",
-      "source_location": "L472",
+      "source_location": "L482",
       "_origin": "ast",
       "id": "lib_tauri_bridge_setwindowmode",
       "community": 96,
@@ -11280,7 +11280,7 @@
       "label": "getWindowSize()",
       "file_type": "code",
       "source_file": "src/lib/tauri-bridge.ts",
-      "source_location": "L483",
+      "source_location": "L493",
       "_origin": "ast",
       "id": "lib_tauri_bridge_getwindowsize",
       "community": 96,
@@ -11290,7 +11290,7 @@
       "label": "openFile()",
       "file_type": "code",
       "source_file": "src/lib/tauri-bridge.ts",
-      "source_location": "L491",
+      "source_location": "L501",
       "_origin": "ast",
       "id": "lib_tauri_bridge_openfile",
       "community": 96,
@@ -11300,7 +11300,7 @@
       "label": "GameFilters",
       "file_type": "code",
       "source_file": "src/lib/tauri-bridge.ts",
-      "source_location": "L500",
+      "source_location": "L510",
       "_origin": "ast",
       "id": "lib_tauri_bridge_gamefilters",
       "community": 95,
@@ -11310,7 +11310,7 @@
       "label": "getGenres()",
       "file_type": "code",
       "source_file": "src/lib/tauri-bridge.ts",
-      "source_location": "L510",
+      "source_location": "L520",
       "_origin": "ast",
       "id": "lib_tauri_bridge_getgenres",
       "community": 95,
@@ -11320,7 +11320,7 @@
       "label": "getSubGenres()",
       "file_type": "code",
       "source_file": "src/lib/tauri-bridge.ts",
-      "source_location": "L520",
+      "source_location": "L530",
       "_origin": "ast",
       "id": "lib_tauri_bridge_getsubgenres",
       "community": 96,
@@ -11330,7 +11330,7 @@
       "label": "getDbGameCount()",
       "file_type": "code",
       "source_file": "src/lib/tauri-bridge.ts",
-      "source_location": "L544",
+      "source_location": "L554",
       "_origin": "ast",
       "id": "lib_tauri_bridge_getdbgamecount",
       "community": 96,
@@ -11340,7 +11340,7 @@
       "label": "getGameExtras()",
       "file_type": "code",
       "source_file": "src/lib/tauri-bridge.ts",
-      "source_location": "L561",
+      "source_location": "L571",
       "_origin": "ast",
       "id": "lib_tauri_bridge_getgameextras",
       "community": 35,
@@ -11350,7 +11350,7 @@
       "label": "getDbGames()",
       "file_type": "code",
       "source_file": "src/lib/tauri-bridge.ts",
-      "source_location": "L587",
+      "source_location": "L597",
       "_origin": "ast",
       "id": "lib_tauri_bridge_getdbgames",
       "community": 96,
@@ -11360,7 +11360,7 @@
       "label": "getDbGameDetail()",
       "file_type": "code",
       "source_file": "src/lib/tauri-bridge.ts",
-      "source_location": "L707",
+      "source_location": "L717",
       "_origin": "ast",
       "id": "lib_tauri_bridge_getdbgamedetail",
       "community": 35,
@@ -11370,7 +11370,7 @@
       "label": "saveSecureSetting()",
       "file_type": "code",
       "source_file": "src/lib/tauri-bridge.ts",
-      "source_location": "L804",
+      "source_location": "L814",
       "_origin": "ast",
       "id": "lib_tauri_bridge_savesecuresetting",
       "community": 96,
@@ -11380,7 +11380,7 @@
       "label": "getSecureSetting()",
       "file_type": "code",
       "source_file": "src/lib/tauri-bridge.ts",
-      "source_location": "L815",
+      "source_location": "L825",
       "_origin": "ast",
       "id": "lib_tauri_bridge_getsecuresetting",
       "community": 96,
@@ -16589,9 +16589,9 @@
       "source_file": "scratch/fix_all_tests.py",
       "source_location": "L39",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "scratch_fix_all_tests",
-      "target": "scratch_fix_all_tests_refactor_file",
-      "confidence_score": 1.0
+      "target": "scratch_fix_all_tests_refactor_file"
     },
     {
       "relation": "rationale_for",
@@ -16599,9 +16599,9 @@
       "source_file": "scratch/fix_all_tests.py",
       "source_location": "L1",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "scratch_fix_all_tests_rationale_1",
-      "target": "scratch_fix_all_tests",
-      "confidence_score": 1.0
+      "target": "scratch_fix_all_tests"
     },
     {
       "relation": "rationale_for",
@@ -16609,9 +16609,9 @@
       "source_file": "scratch/fix_all_tests.py",
       "source_location": "L40",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "scratch_fix_all_tests_rationale_40",
-      "target": "scratch_fix_all_tests_refactor_file",
-      "confidence_score": 1.0
+      "target": "scratch_fix_all_tests_refactor_file"
     },
     {
       "relation": "contains",
@@ -16619,9 +16619,9 @@
       "source_file": "scratch/fix_db_tests.py",
       "source_location": "L33",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "scratch_fix_db_tests",
-      "target": "scratch_fix_db_tests_replace1",
-      "confidence_score": 1.0
+      "target": "scratch_fix_db_tests_replace1"
     },
     {
       "relation": "rationale_for",
@@ -16629,9 +16629,9 @@
       "source_file": "scratch/fix_db_tests.py",
       "source_location": "L1",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "scratch_fix_db_tests_rationale_1",
-      "target": "scratch_fix_db_tests",
-      "confidence_score": 1.0
+      "target": "scratch_fix_db_tests"
     },
     {
       "relation": "rationale_for",
@@ -16639,9 +16639,9 @@
       "source_file": "scratch/unify_test_guards.py",
       "source_location": "L1",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "scratch_unify_test_guards_rationale_1",
-      "target": "scratch_unify_test_guards",
-      "confidence_score": 1.0
+      "target": "scratch_unify_test_guards"
     },
     {
       "relation": "contains",
@@ -20048,9 +20048,9 @@
       "source_location": "L58",
       "weight": 1.0,
       "context": "return_type",
+      "confidence_score": 1.0,
       "source": "db_querying_gamequerybuilder_new",
-      "target": "src_tauri_src_commands_db_querying_rs_self",
-      "confidence_score": 1.0
+      "target": "src_tauri_src_commands_db_querying_rs_self"
     },
     {
       "relation": "calls",
@@ -28072,9 +28072,9 @@
       "source_file": "src-tauri/src/lib.rs",
       "source_location": "L18",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "src_lib",
-      "target": "src_lib_dbenvguard",
-      "confidence_score": 1.0
+      "target": "src_lib_dbenvguard"
     },
     {
       "relation": "contains",
@@ -28092,9 +28092,9 @@
       "source_file": "src-tauri/src/lib.rs",
       "source_location": "L35",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "src_lib_dbenvguard",
-      "target": "drop",
-      "confidence_score": 1.0
+      "target": "drop"
     },
     {
       "relation": "references",
@@ -28103,9 +28103,9 @@
       "source_location": "L19",
       "weight": 1.0,
       "context": "field",
+      "confidence_score": 1.0,
       "source": "src_lib_dbenvguard",
-      "target": "mutexguard",
-      "confidence_score": 1.0
+      "target": "mutexguard"
     },
     {
       "relation": "references",
@@ -28114,9 +28114,9 @@
       "source_location": "L20",
       "weight": 1.0,
       "context": "generic_arg",
+      "confidence_score": 1.0,
       "source": "src_lib_dbenvguard",
-      "target": "osstring",
-      "confidence_score": 1.0
+      "target": "osstring"
     },
     {
       "relation": "method",
@@ -28124,9 +28124,9 @@
       "source_file": "src-tauri/src/lib.rs",
       "source_location": "L36",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "src_lib_dbenvguard",
-      "target": "src_lib_dbenvguard_drop",
-      "confidence_score": 1.0
+      "target": "src_lib_dbenvguard_drop"
     },
     {
       "relation": "method",
@@ -28134,9 +28134,9 @@
       "source_file": "src-tauri/src/lib.rs",
       "source_location": "L24",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "src_lib_dbenvguard",
-      "target": "src_lib_dbenvguard_set",
-      "confidence_score": 1.0
+      "target": "src_lib_dbenvguard_set"
     },
     {
       "relation": "references",
@@ -28145,9 +28145,9 @@
       "source_location": "L20",
       "weight": 1.0,
       "context": "field",
+      "confidence_score": 1.0,
       "source": "src_lib_dbenvguard",
-      "target": "src_tauri_src_lib_rs_option",
-      "confidence_score": 1.0
+      "target": "src_tauri_src_lib_rs_option"
     },
     {
       "relation": "references",
@@ -28156,9 +28156,9 @@
       "source_location": "L24",
       "weight": 1.0,
       "context": "return_type",
+      "confidence_score": 1.0,
       "source": "src_lib_dbenvguard_set",
-      "target": "src_tauri_src_lib_rs_self",
-      "confidence_score": 1.0
+      "target": "src_tauri_src_lib_rs_self"
     },
     {
       "relation": "contains",
@@ -31381,9 +31381,9 @@
       "source_file": "src/components/DetailView.tsx",
       "source_location": "L7",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "components_detailview",
-      "target": "lib_platform_capabilities",
-      "confidence_score": 1.0
+      "target": "lib_platform_capabilities"
     },
     {
       "relation": "imports",
@@ -31392,9 +31392,9 @@
       "source_file": "src/components/DetailView.tsx",
       "source_location": "L7",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "components_detailview",
-      "target": "lib_platform_capabilities_platform_profiles",
-      "confidence_score": 1.0
+      "target": "lib_platform_capabilities_platform_profiles"
     },
     {
       "relation": "imports_from",
@@ -32469,9 +32469,9 @@
       "source_file": "src/components/ImageWithFallback.tsx",
       "source_location": "L4",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "components_imagewithfallback",
-      "target": "lib_tauri_bridge",
-      "confidence_score": 1.0
+      "target": "lib_tauri_bridge"
     },
     {
       "relation": "imports",
@@ -32480,9 +32480,9 @@
       "source_file": "src/components/ImageWithFallback.tsx",
       "source_location": "L4",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "components_imagewithfallback",
-      "target": "lib_tauri_bridge_getmediaurl",
-      "confidence_score": 1.0
+      "target": "lib_tauri_bridge_getmediaurl"
     },
     {
       "relation": "imports_from",
@@ -33665,9 +33665,9 @@
       "source_file": "src/components/SidPlayer.tsx",
       "source_location": "L6",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "components_sidplayer",
-      "target": "lib_platform_capabilities",
-      "confidence_score": 1.0
+      "target": "lib_platform_capabilities"
     },
     {
       "relation": "imports",
@@ -33676,9 +33676,9 @@
       "source_file": "src/components/SidPlayer.tsx",
       "source_location": "L6",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "components_sidplayer",
-      "target": "lib_platform_capabilities_platform_profiles",
-      "confidence_score": 1.0
+      "target": "lib_platform_capabilities_platform_profiles"
     },
     {
       "relation": "imports_from",
@@ -36413,9 +36413,9 @@
       "source_file": "src/components/themes/neon-archive/NeonArchiveDetailLayout.tsx",
       "source_location": "L11",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "neon_archive_neonarchivedetaillayout",
-      "target": "lib_platform_capabilities",
-      "confidence_score": 1.0
+      "target": "lib_platform_capabilities"
     },
     {
       "relation": "imports",
@@ -36424,9 +36424,9 @@
       "source_file": "src/components/themes/neon-archive/NeonArchiveDetailLayout.tsx",
       "source_location": "L11",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "neon_archive_neonarchivedetaillayout",
-      "target": "lib_platform_capabilities_platform_profiles",
-      "confidence_score": 1.0
+      "target": "lib_platform_capabilities_platform_profiles"
     },
     {
       "relation": "imports_from",
@@ -37675,9 +37675,9 @@
       "source_file": "src/hooks/useFavorites.ts",
       "source_location": "L4",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "hooks_usefavorites",
-      "target": "contexts_settingscontext",
-      "confidence_score": 1.0
+      "target": "contexts_settingscontext"
     },
     {
       "relation": "imports_from",
@@ -37895,9 +37895,9 @@
       "source_file": "src/hooks/useFavorites.ts",
       "source_location": "L4",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "hooks_usefavorites",
-      "target": "contexts_settingscontext_usesettings",
-      "confidence_score": 1.0
+      "target": "contexts_settingscontext_usesettings"
     },
     {
       "relation": "calls",
@@ -38746,9 +38746,9 @@
       "source_file": "src/hooks/useFavorites.ts",
       "source_location": "L43",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "hooks_usefavorites_usefavorites",
-      "target": "hooks_usefavorites_loadfavorites",
-      "confidence_score": 1.0
+      "target": "hooks_usefavorites_loadfavorites"
     },
     {
       "relation": "imports",
@@ -39507,9 +39507,9 @@
       "source_file": "src/hooks/useResolvedBoxArtUrl.ts",
       "source_location": "L5",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "hooks_useresolvedboxarturl",
-      "target": "lib_tauri_bridge_istauri",
-      "confidence_score": 1.0
+      "target": "lib_tauri_bridge_istauri"
     },
     {
       "relation": "imports",
@@ -39562,9 +39562,9 @@
       "source_file": "src/hooks/useResolvedBoxArtUrl.ts",
       "source_location": "L22",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "hooks_useresolvedboxarturl_getresolvedcoverarturl",
-      "target": "lib_tauri_bridge_istauri",
-      "confidence_score": 1.0
+      "target": "lib_tauri_bridge_istauri"
     },
     {
       "relation": "calls",
@@ -40544,9 +40544,9 @@
       "source_file": "src/lib/platform-capabilities.ts",
       "source_location": "L200",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "lib_platform_capabilities",
-      "target": "lib_platform_capabilities_hasextrascapability",
-      "confidence_score": 1.0
+      "target": "lib_platform_capabilities_hasextrascapability"
     },
     {
       "relation": "contains",
@@ -40554,9 +40554,9 @@
       "source_file": "src/lib/platform-capabilities.ts",
       "source_location": "L188",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "lib_platform_capabilities",
-      "target": "lib_platform_capabilities_hasmusiccapability",
-      "confidence_score": 1.0
+      "target": "lib_platform_capabilities_hasmusiccapability"
     },
     {
       "relation": "contains",
@@ -40564,9 +40564,9 @@
       "source_file": "src/lib/platform-capabilities.ts",
       "source_location": "L192",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "lib_platform_capabilities",
-      "target": "lib_platform_capabilities_hasphotoscapability",
-      "confidence_score": 1.0
+      "target": "lib_platform_capabilities_hasphotoscapability"
     },
     {
       "relation": "contains",
@@ -40574,9 +40574,9 @@
       "source_file": "src/lib/platform-capabilities.ts",
       "source_location": "L196",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "lib_platform_capabilities",
-      "target": "lib_platform_capabilities_hasscreenshotscapability",
-      "confidence_score": 1.0
+      "target": "lib_platform_capabilities_hasscreenshotscapability"
     },
     {
       "relation": "contains",
@@ -40584,9 +40584,9 @@
       "source_file": "src/lib/platform-capabilities.ts",
       "source_location": "L204",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "lib_platform_capabilities",
-      "target": "lib_platform_capabilities_hasvideoscapability",
-      "confidence_score": 1.0
+      "target": "lib_platform_capabilities_hasvideoscapability"
     },
     {
       "relation": "contains",
@@ -45833,5 +45833,5 @@
       "source_file": "GB64_Modern_Frontend_Requirements.md"
     }
   ],
-  "built_at_commit": "c64e80ceb803954630a7a3447018e2c2933fb7de"
+  "built_at_commit": "e1cdafb356dd82603d851df8c62a77bf89a5d35d"
 }
