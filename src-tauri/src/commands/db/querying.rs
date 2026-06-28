@@ -5,15 +5,18 @@ use rusqlite::{params_from_iter, Connection};
 const FILTERED_IDS_QUERY_PREFIX: &str = "
         SELECT
             g.GA_Id as id,
-            g.Name as sort_name
+            MIN(g.Name) as sort_name
         FROM Games g
         JOIN GameView gv ON gv.id = g.GA_Id AND gv.platformId = g.platform_id
         LEFT JOIN Programmers pr ON g.PR_Id = pr.PR_Id
         LEFT JOIN Artists ar ON g.AR_Id = ar.AR_Id
         WHERE 1=1";
 
+const FILTERED_IDS_GROUP_BY: &str = "
+            GROUP BY g.platform_id, g.GA_Id";
+
 const FILTERED_IDS_QUERY_SUFFIX: &str = "
-            ORDER BY g.Name COLLATE NOCASE ASC
+            ORDER BY sort_name COLLATE NOCASE ASC
             LIMIT ? OFFSET ?";
 
 const LEGACY_SEARCH_FILTER_COLUMNS: [&str; 6] = [
@@ -159,13 +162,15 @@ impl GameQueryBuilder {
     }
 
     fn finish(mut self, limit: usize, offset: usize) -> (String, Vec<String>) {
+        self.filter_query.push_str(FILTERED_IDS_GROUP_BY);
         self.filter_query.push_str(FILTERED_IDS_QUERY_SUFFIX);
         self.params.push(limit.to_string());
         self.params.push(offset.to_string());
         (self.filter_query, self.params)
     }
 
-    fn finish_count(self) -> (String, Vec<String>) {
+    fn finish_count(mut self) -> (String, Vec<String>) {
+        self.filter_query.push_str(FILTERED_IDS_GROUP_BY);
         (
             format!("SELECT COUNT(*) FROM ({})", self.filter_query),
             self.params,

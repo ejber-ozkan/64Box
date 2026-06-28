@@ -984,6 +984,55 @@ fn test_load_game_count_falls_back_to_like_when_search_index_missing() {
     assert_eq!(count, 1);
 }
 
+#[test]
+fn test_load_ordered_game_ids_deduplicates_repeated_game_view_rows() {
+    let conn = Connection::open_in_memory().unwrap();
+    create_search_fallback_fixture(&conn);
+
+    conn.execute(
+        "INSERT INTO GameView (id, name, filename, parentGenre, subGenre, isPal, isNtsc, trueDriveEmu, isClassic, developer_name, publisher_name, musician_name, languages) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
+        rusqlite::params!["1", "Alpha Mission", "alpha-alt.d64", "Shoot'em Up", "Vertical", 1, 0, 0, 0, "Studio A", "Pub A", "Musician A", "EN"],
+    )
+    .unwrap();
+
+    let ids = load_ordered_game_ids_with_fallback(&conn, "c64", 10, 0, None)
+        .expect("ids should load");
+
+    assert_eq!(ids, vec!["1".to_string(), "2".to_string()]);
+}
+
+#[tokio::test]
+async fn test_get_db_games_deduplicates_repeated_game_view_rows() {
+    let temp_db = NamedTempFile::new().unwrap();
+    let db_path = temp_db.path().to_string_lossy().to_string();
+    std::env::set_var("VIC40_DB_PATH", &db_path);
+
+    {
+        let conn = Connection::open(&db_path).unwrap();
+        create_search_fallback_fixture(&conn);
+        conn.execute(
+            "INSERT INTO GameView (id, name, filename, parentGenre, subGenre, isPal, isNtsc, trueDriveEmu, isClassic, developer_name, publisher_name, musician_name, languages) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
+            rusqlite::params!["1", "Alpha Mission", "alpha-duplicate.d64", "Shoot'em Up", "Vertical", 1, 0, 0, 0, "Studio A", "Pub A", "Musician A", "EN"],
+        )
+        .unwrap();
+    }
+
+    let games = get_db_games(Some(10), Some(0), None, None)
+        .await
+        .expect("games should load");
+    assert_eq!(
+        games.iter().map(|game| game.id.clone()).collect::<Vec<_>>(),
+        vec!["1".to_string(), "2".to_string()]
+    );
+
+    let total = get_db_game_count(None, None)
+        .await
+        .expect("game count should load");
+    assert_eq!(total, 2);
+
+    std::env::remove_var("VIC40_DB_PATH");
+}
+
 #[tokio::test]
 async fn test_get_db_games_preserves_filtered_id_order_after_detail_hydration() {
     let temp_db = NamedTempFile::new().unwrap();

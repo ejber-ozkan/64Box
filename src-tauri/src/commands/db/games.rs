@@ -43,6 +43,7 @@ pub(crate) fn build_game_summary_query(
         JOIN GameView gv ON gv.id = requested_ids.id AND gv.platformId = ?
         JOIN Games g ON gv.id = g.GA_Id AND g.platform_id = gv.platformId
         {cover_join}
+        GROUP BY requested_ids.order_index, gv.platformId, gv.id
         ORDER BY requested_ids.order_index"
     );
     let mut params = Vec::with_capacity(ids.len() + 1);

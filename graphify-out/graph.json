@@ -2700,7 +2700,7 @@
       "label": "build_game_detail_query()",
       "file_type": "code",
       "source_file": "src-tauri/src/commands/db/games.rs",
-      "source_location": "L54",
+      "source_location": "L55",
       "_origin": "ast",
       "id": "db_games_build_game_detail_query",
       "community": 3,
@@ -2710,7 +2710,7 @@
       "label": "map_game_row()",
       "file_type": "code",
       "source_file": "src-tauri/src/commands/db/games.rs",
-      "source_location": "L107",
+      "source_location": "L108",
       "_origin": "ast",
       "id": "db_games_map_game_row",
       "community": 3,
@@ -2720,7 +2720,7 @@
       "label": "Row",
       "file_type": "code",
       "source_file": "src-tauri/src/commands/db/games.rs",
-      "source_location": "L107",
+      "source_location": "L108",
       "_origin": "ast",
       "id": "row",
       "community": 3,
@@ -2730,7 +2730,7 @@
       "label": "Result",
       "file_type": "code",
       "source_file": "src-tauri/src/commands/db/games.rs",
-      "source_location": "L107",
+      "source_location": "L108",
       "_origin": "ast",
       "id": "src_tauri_src_commands_db_games_rs_result",
       "community": 3,
@@ -2740,7 +2740,7 @@
       "label": "GameRow",
       "file_type": "code",
       "source_file": "src-tauri/src/commands/db/games.rs",
-      "source_location": "L107",
+      "source_location": "L108",
       "_origin": "ast",
       "id": "src_tauri_src_commands_db_games_rs_gamerow",
       "community": 3,
@@ -2750,7 +2750,7 @@
       "label": "map_game_detail_row()",
       "file_type": "code",
       "source_file": "src-tauri/src/commands/db/games.rs",
-      "source_location": "L134",
+      "source_location": "L135",
       "_origin": "ast",
       "id": "db_games_map_game_detail_row",
       "community": 3,
@@ -2760,7 +2760,7 @@
       "label": "GameDetailRow",
       "file_type": "code",
       "source_file": "src-tauri/src/commands/db/games.rs",
-      "source_location": "L134",
+      "source_location": "L135",
       "_origin": "ast",
       "id": "src_tauri_src_commands_db_games_rs_gamedetailrow",
       "community": 3,
@@ -2770,7 +2770,7 @@
       "label": "get_genres()",
       "file_type": "code",
       "source_file": "src-tauri/src/commands/db/games.rs",
-      "source_location": "L162",
+      "source_location": "L163",
       "_origin": "ast",
       "id": "db_games_get_genres",
       "community": 3,
@@ -2780,7 +2780,7 @@
       "label": "Option",
       "file_type": "code",
       "source_file": "src-tauri/src/commands/db/games.rs",
-      "source_location": "L162",
+      "source_location": "L163",
       "_origin": "ast",
       "id": "src_tauri_src_commands_db_games_rs_option",
       "community": 3,
@@ -2790,7 +2790,7 @@
       "label": "get_sub_genres()",
       "file_type": "code",
       "source_file": "src-tauri/src/commands/db/games.rs",
-      "source_location": "L176",
+      "source_location": "L177",
       "_origin": "ast",
       "id": "db_games_get_sub_genres",
       "community": 3,
@@ -2800,7 +2800,7 @@
       "label": "get_db_games()",
       "file_type": "code",
       "source_file": "src-tauri/src/commands/db/games.rs",
-      "source_location": "L205",
+      "source_location": "L206",
       "_origin": "ast",
       "id": "db_games_get_db_games",
       "community": 3,
@@ -2810,7 +2810,7 @@
       "label": "GameFilters",
       "file_type": "code",
       "source_file": "src-tauri/src/commands/db/games.rs",
-      "source_location": "L205",
+      "source_location": "L206",
       "_origin": "ast",
       "id": "src_tauri_src_commands_db_games_rs_gamefilters",
       "community": 3,
@@ -2820,7 +2820,7 @@
       "label": "get_game_detail()",
       "file_type": "code",
       "source_file": "src-tauri/src/commands/db/games.rs",
-      "source_location": "L243",
+      "source_location": "L244",
       "_origin": "ast",
       "id": "db_games_get_game_detail",
       "community": 3,
@@ -2830,7 +2830,7 @@
       "label": "get_db_game_count()",
       "file_type": "code",
       "source_file": "src-tauri/src/commands/db/games.rs",
-      "source_location": "L264",
+      "source_location": "L265",
       "_origin": "ast",
       "id": "db_games_get_db_game_count",
       "community": 3,
@@ -2840,7 +2840,7 @@
       "label": "get_game_extras()",
       "file_type": "code",
       "source_file": "src-tauri/src/commands/db/games.rs",
-      "source_location": "L273",
+      "source_location": "L274",
       "_origin": "ast",
       "id": "db_games_get_game_extras",
       "community": 3,
@@ -2850,7 +2850,7 @@
       "label": "ExtraRow",
       "file_type": "code",
       "source_file": "src-tauri/src/commands/db/games.rs",
-      "source_location": "L273",
+      "source_location": "L274",
       "_origin": "ast",
       "id": "src_tauri_src_commands_db_games_rs_extrarow",
       "community": 3,
@@ -3040,7 +3040,7 @@
       "label": "build_fts_match_query()",
       "file_type": "code",
       "source_file": "src-tauri/src/commands/db/querying.rs",
-      "source_location": "L28",
+      "source_location": "L31",
       "_origin": "ast",
       "id": "db_querying_build_fts_match_query",
       "community": 3,
@@ -3050,7 +3050,7 @@
       "label": "Option",
       "file_type": "code",
       "source_file": "src-tauri/src/commands/db/querying.rs",
-      "source_location": "L28",
+      "source_location": "L31",
       "_origin": "ast",
       "id": "src_tauri_src_commands_db_querying_rs_option",
       "community": 3,
@@ -3060,7 +3060,7 @@
       "label": "String",
       "file_type": "code",
       "source_file": "src-tauri/src/commands/db/querying.rs",
-      "source_location": "L28",
+      "source_location": "L31",
       "_origin": "ast",
       "id": "src_tauri_src_commands_db_querying_rs_string",
       "community": 3,
@@ -3070,7 +3070,7 @@
       "label": "SearchMode",
       "file_type": "code",
       "source_file": "src-tauri/src/commands/db/querying.rs",
-      "source_location": "L43",
+      "source_location": "L46",
       "_origin": "ast",
       "id": "db_querying_searchmode",
       "community": 3,
@@ -3080,7 +3080,7 @@
       "label": "GameQueryBuilder",
       "file_type": "code",
       "source_file": "src-tauri/src/commands/db/querying.rs",
-      "source_location": "L48",
+      "source_location": "L51",
       "_origin": "ast",
       "id": "db_querying_gamequerybuilder",
       "community": 3,
@@ -3090,7 +3090,7 @@
       "label": "Vec",
       "file_type": "code",
       "source_file": "src-tauri/src/commands/db/querying.rs",
-      "source_location": "L50",
+      "source_location": "L53",
       "_origin": "ast",
       "id": "src_tauri_src_commands_db_querying_rs_vec",
       "community": 3,
@@ -3100,7 +3100,7 @@
       "label": ".new()",
       "file_type": "code",
       "source_file": "src-tauri/src/commands/db/querying.rs",
-      "source_location": "L55",
+      "source_location": "L58",
       "_origin": "ast",
       "id": "db_querying_gamequerybuilder_new",
       "community": 3,
@@ -3110,7 +3110,7 @@
       "label": "Self",
       "file_type": "code",
       "source_file": "src-tauri/src/commands/db/querying.rs",
-      "source_location": "L55",
+      "source_location": "L58",
       "_origin": "ast",
       "id": "self",
       "community": 3,
@@ -3120,7 +3120,7 @@
       "label": ".push_platform_filter()",
       "file_type": "code",
       "source_file": "src-tauri/src/commands/db/querying.rs",
-      "source_location": "L63",
+      "source_location": "L66",
       "_origin": "ast",
       "id": "db_querying_gamequerybuilder_push_platform_filter",
       "community": 3,
@@ -3130,7 +3130,7 @@
       "label": ".push_search_filter()",
       "file_type": "code",
       "source_file": "src-tauri/src/commands/db/querying.rs",
-      "source_location": "L67",
+      "source_location": "L70",
       "_origin": "ast",
       "id": "db_querying_gamequerybuilder_push_search_filter",
       "community": 3,
@@ -3140,7 +3140,7 @@
       "label": ".push_letter_filter()",
       "file_type": "code",
       "source_file": "src-tauri/src/commands/db/querying.rs",
-      "source_location": "L104",
+      "source_location": "L107",
       "_origin": "ast",
       "id": "db_querying_gamequerybuilder_push_letter_filter",
       "community": 3,
@@ -3150,7 +3150,7 @@
       "label": ".push_exact_filter()",
       "file_type": "code",
       "source_file": "src-tauri/src/commands/db/querying.rs",
-      "source_location": "L118",
+      "source_location": "L121",
       "_origin": "ast",
       "id": "db_querying_gamequerybuilder_push_exact_filter",
       "community": 3,
@@ -3160,7 +3160,7 @@
       "label": ".push_hide_adult_filter()",
       "file_type": "code",
       "source_file": "src-tauri/src/commands/db/querying.rs",
-      "source_location": "L127",
+      "source_location": "L130",
       "_origin": "ast",
       "id": "db_querying_gamequerybuilder_push_hide_adult_filter",
       "community": 3,
@@ -3170,7 +3170,7 @@
       "label": ".push_classic_filter()",
       "file_type": "code",
       "source_file": "src-tauri/src/commands/db/querying.rs",
-      "source_location": "L133",
+      "source_location": "L136",
       "_origin": "ast",
       "id": "db_querying_gamequerybuilder_push_classic_filter",
       "community": 3,
@@ -3180,7 +3180,7 @@
       "label": ".push_favorite_filter()",
       "file_type": "code",
       "source_file": "src-tauri/src/commands/db/querying.rs",
-      "source_location": "L141",
+      "source_location": "L144",
       "_origin": "ast",
       "id": "db_querying_gamequerybuilder_push_favorite_filter",
       "community": 3,
@@ -3190,7 +3190,7 @@
       "label": ".finish()",
       "file_type": "code",
       "source_file": "src-tauri/src/commands/db/querying.rs",
-      "source_location": "L161",
+      "source_location": "L164",
       "_origin": "ast",
       "id": "db_querying_gamequerybuilder_finish",
       "community": 3,
@@ -3200,7 +3200,7 @@
       "label": ".finish_count()",
       "file_type": "code",
       "source_file": "src-tauri/src/commands/db/querying.rs",
-      "source_location": "L168",
+      "source_location": "L172",
       "_origin": "ast",
       "id": "db_querying_gamequerybuilder_finish_count",
       "community": 3,
@@ -3210,7 +3210,7 @@
       "label": "apply_game_filters()",
       "file_type": "code",
       "source_file": "src-tauri/src/commands/db/querying.rs",
-      "source_location": "L176",
+      "source_location": "L181",
       "_origin": "ast",
       "id": "db_querying_apply_game_filters",
       "community": 3,
@@ -3220,7 +3220,7 @@
       "label": "GameFilters",
       "file_type": "code",
       "source_file": "src-tauri/src/commands/db/querying.rs",
-      "source_location": "L176",
+      "source_location": "L181",
       "_origin": "ast",
       "id": "src_tauri_src_commands_db_querying_rs_gamefilters",
       "community": 3,
@@ -3230,7 +3230,7 @@
       "label": "build_game_query()",
       "file_type": "code",
       "source_file": "src-tauri/src/commands/db/querying.rs",
-      "source_location": "L186",
+      "source_location": "L191",
       "_origin": "ast",
       "id": "db_querying_build_game_query",
       "community": 3,
@@ -3240,7 +3240,7 @@
       "label": "build_game_count_query()",
       "file_type": "code",
       "source_file": "src-tauri/src/commands/db/querying.rs",
-      "source_location": "L205",
+      "source_location": "L210",
       "_origin": "ast",
       "id": "db_querying_build_game_count_query",
       "community": 3,
@@ -3250,7 +3250,7 @@
       "label": "load_ordered_game_ids_with_fallback()",
       "file_type": "code",
       "source_file": "src-tauri/src/commands/db/querying.rs",
-      "source_location": "L222",
+      "source_location": "L227",
       "_origin": "ast",
       "id": "db_querying_load_ordered_game_ids_with_fallback",
       "community": 3,
@@ -3260,7 +3260,7 @@
       "label": "Connection",
       "file_type": "code",
       "source_file": "src-tauri/src/commands/db/querying.rs",
-      "source_location": "L222",
+      "source_location": "L227",
       "_origin": "ast",
       "id": "src_tauri_src_commands_db_querying_rs_connection",
       "community": 3,
@@ -3270,7 +3270,7 @@
       "label": "Result",
       "file_type": "code",
       "source_file": "src-tauri/src/commands/db/querying.rs",
-      "source_location": "L222",
+      "source_location": "L227",
       "_origin": "ast",
       "id": "src_tauri_src_commands_db_querying_rs_result",
       "community": 3,
@@ -3280,7 +3280,7 @@
       "label": "load_game_count_with_fallback()",
       "file_type": "code",
       "source_file": "src-tauri/src/commands/db/querying.rs",
-      "source_location": "L259",
+      "source_location": "L264",
       "_origin": "ast",
       "id": "db_querying_load_game_count_with_fallback",
       "community": 3,
@@ -3290,7 +3290,7 @@
       "label": "open_db_connection()",
       "file_type": "code",
       "source_file": "src-tauri/src/commands/db/querying.rs",
-      "source_location": "L290",
+      "source_location": "L295",
       "_origin": "ast",
       "id": "db_querying_open_db_connection",
       "community": 3,
@@ -3300,7 +3300,7 @@
       "label": "sqlite_table_exists()",
       "file_type": "code",
       "source_file": "src-tauri/src/commands/db/querying.rs",
-      "source_location": "L294",
+      "source_location": "L299",
       "_origin": "ast",
       "id": "db_querying_sqlite_table_exists",
       "community": 3,
@@ -3587,10 +3587,30 @@
       "norm_label": "test_load_game_count_falls_back_to_like_when_search_index_missing()"
     },
     {
-      "label": "test_get_db_games_preserves_filtered_id_order_after_detail_hydration()",
+      "label": "test_load_ordered_game_ids_deduplicates_repeated_game_view_rows()",
       "file_type": "code",
       "source_file": "src-tauri/src/commands/db/tests.rs",
       "source_location": "L988",
+      "_origin": "ast",
+      "id": "db_tests_test_load_ordered_game_ids_deduplicates_repeated_game_view_rows",
+      "community": 3,
+      "norm_label": "test_load_ordered_game_ids_deduplicates_repeated_game_view_rows()"
+    },
+    {
+      "label": "test_get_db_games_deduplicates_repeated_game_view_rows()",
+      "file_type": "code",
+      "source_file": "src-tauri/src/commands/db/tests.rs",
+      "source_location": "L1005",
+      "_origin": "ast",
+      "id": "db_tests_test_get_db_games_deduplicates_repeated_game_view_rows",
+      "community": 3,
+      "norm_label": "test_get_db_games_deduplicates_repeated_game_view_rows()"
+    },
+    {
+      "label": "test_get_db_games_preserves_filtered_id_order_after_detail_hydration()",
+      "file_type": "code",
+      "source_file": "src-tauri/src/commands/db/tests.rs",
+      "source_location": "L1037",
       "_origin": "ast",
       "id": "db_tests_test_get_db_games_preserves_filtered_id_order_after_detail_hydration",
       "community": 3,
@@ -6343,7 +6363,7 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "app_layout",
-      "community": 54,
+      "community": 6,
       "norm_label": "layout.tsx"
     },
     {
@@ -6353,7 +6373,7 @@
       "source_location": "L4",
       "_origin": "ast",
       "id": "app_layout_metadata",
-      "community": 54,
+      "community": 6,
       "norm_label": "metadata"
     },
     {
@@ -6363,7 +6383,7 @@
       "source_location": "L12",
       "_origin": "ast",
       "id": "app_layout_rootlayout",
-      "community": 54,
+      "community": 6,
       "norm_label": "rootlayout()"
     },
     {
@@ -6373,7 +6393,7 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "app_page",
-      "community": 9,
+      "community": 0,
       "norm_label": "page.tsx"
     },
     {
@@ -6383,7 +6403,7 @@
       "source_location": "L41",
       "_origin": "ast",
       "id": "app_page_libraryapp",
-      "community": 9,
+      "community": 0,
       "norm_label": "libraryapp()"
     },
     {
@@ -6393,7 +6413,7 @@
       "source_location": "L502",
       "_origin": "ast",
       "id": "app_page_home",
-      "community": 9,
+      "community": 0,
       "norm_label": "home()"
     },
     {
@@ -6403,7 +6423,7 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "components_alphabetjumpbar",
-      "community": 9,
+      "community": 0,
       "norm_label": "alphabetjumpbar.tsx"
     },
     {
@@ -6413,7 +6433,7 @@
       "source_location": "L3",
       "_origin": "ast",
       "id": "components_alphabetjumpbar_alphabetjumpbarprops",
-      "community": 9,
+      "community": 0,
       "norm_label": "alphabetjumpbarprops"
     },
     {
@@ -6423,7 +6443,7 @@
       "source_location": "L8",
       "_origin": "ast",
       "id": "components_alphabetjumpbar_letters",
-      "community": 9,
+      "community": 0,
       "norm_label": "letters"
     },
     {
@@ -6433,7 +6453,7 @@
       "source_location": "L10",
       "_origin": "ast",
       "id": "components_alphabetjumpbar_alphabetjumpbar",
-      "community": 9,
+      "community": 0,
       "norm_label": "alphabetjumpbar()"
     },
     {
@@ -6443,7 +6463,7 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "components_applaunchsplash",
-      "community": 9,
+      "community": 0,
       "norm_label": "applaunchsplash.tsx"
     },
     {
@@ -6453,7 +6473,7 @@
       "source_location": "L3",
       "_origin": "ast",
       "id": "components_applaunchsplash_applaunchsplash",
-      "community": 9,
+      "community": 0,
       "norm_label": "applaunchsplash()"
     },
     {
@@ -6463,7 +6483,7 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "components_bigboxtilemedia",
-      "community": 109,
+      "community": 35,
       "norm_label": "bigboxtilemedia.tsx"
     },
     {
@@ -6473,7 +6493,7 @@
       "source_location": "L8",
       "_origin": "ast",
       "id": "components_bigboxtilemedia_bigboxtilemediaprops",
-      "community": 109,
+      "community": 35,
       "norm_label": "bigboxtilemediaprops"
     },
     {
@@ -6483,7 +6503,7 @@
       "source_location": "L14",
       "_origin": "ast",
       "id": "components_bigboxtilemedia_screenshot_cache",
-      "community": 109,
+      "community": 35,
       "norm_label": "screenshot_cache"
     },
     {
@@ -6493,7 +6513,7 @@
       "source_location": "L15",
       "_origin": "ast",
       "id": "components_bigboxtilemedia_cover_cache",
-      "community": 109,
+      "community": 35,
       "norm_label": "cover_cache"
     },
     {
@@ -6503,7 +6523,7 @@
       "source_location": "L17",
       "_origin": "ast",
       "id": "components_bigboxtilemedia_normalizepath",
-      "community": 109,
+      "community": 35,
       "norm_label": "normalizepath()"
     },
     {
@@ -6513,7 +6533,7 @@
       "source_location": "L21",
       "_origin": "ast",
       "id": "components_bigboxtilemedia_getscreenshoturls",
-      "community": 109,
+      "community": 35,
       "norm_label": "getscreenshoturls()"
     },
     {
@@ -6523,7 +6543,7 @@
       "source_location": "L35",
       "_origin": "ast",
       "id": "components_bigboxtilemedia_getcoverurl",
-      "community": 96,
+      "community": 35,
       "norm_label": "getcoverurl()"
     },
     {
@@ -6583,7 +6603,7 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "components_controllersearchkeyboard",
-      "community": 23,
+      "community": 17,
       "norm_label": "controllersearchkeyboard.tsx"
     },
     {
@@ -6593,7 +6613,7 @@
       "source_location": "L7",
       "_origin": "ast",
       "id": "components_controllersearchkeyboard_keyboardaction",
-      "community": 23,
+      "community": 17,
       "norm_label": "keyboardaction"
     },
     {
@@ -6603,7 +6623,7 @@
       "source_location": "L9",
       "_origin": "ast",
       "id": "components_controllersearchkeyboard_keyboardkey",
-      "community": 23,
+      "community": 17,
       "norm_label": "keyboardkey"
     },
     {
@@ -6613,7 +6633,7 @@
       "source_location": "L17",
       "_origin": "ast",
       "id": "components_controllersearchkeyboard_controllersearchkeyboardprops",
-      "community": 23,
+      "community": 17,
       "norm_label": "controllersearchkeyboardprops"
     },
     {
@@ -6623,7 +6643,7 @@
       "source_location": "L25",
       "_origin": "ast",
       "id": "components_controllersearchkeyboard_keyboard_rows",
-      "community": 23,
+      "community": 17,
       "norm_label": "keyboard_rows"
     },
     {
@@ -6633,7 +6653,7 @@
       "source_location": "L76",
       "_origin": "ast",
       "id": "components_controllersearchkeyboard_updatesearchvalue",
-      "community": 23,
+      "community": 17,
       "norm_label": "updatesearchvalue()"
     },
     {
@@ -6643,7 +6663,7 @@
       "source_location": "L94",
       "_origin": "ast",
       "id": "components_controllersearchkeyboard_controllersearchkeyboard",
-      "community": 23,
+      "community": 17,
       "norm_label": "controllersearchkeyboard()"
     },
     {
@@ -6653,7 +6673,7 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "components_detailview",
-      "community": 0,
+      "community": 25,
       "norm_label": "detailview.tsx"
     },
     {
@@ -6683,7 +6703,7 @@
       "source_location": "L32",
       "_origin": "ast",
       "id": "components_detailview_detailfullscreenmedia",
-      "community": 0,
+      "community": 25,
       "norm_label": "detailfullscreenmedia"
     },
     {
@@ -6703,7 +6723,7 @@
       "source_location": "L38",
       "_origin": "ast",
       "id": "components_detailview_detail_config",
-      "community": 0,
+      "community": 25,
       "norm_label": "detail_config"
     },
     {
@@ -6713,7 +6733,7 @@
       "source_location": "L52",
       "_origin": "ast",
       "id": "components_detailview_detailview",
-      "community": 9,
+      "community": 25,
       "norm_label": "detailview()"
     },
     {
@@ -6783,7 +6803,7 @@
       "source_location": "L13",
       "_origin": "ast",
       "id": "components_gridview_gridview",
-      "community": 9,
+      "community": 0,
       "norm_label": "gridview()"
     },
     {
@@ -6833,7 +6853,7 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "components_imageslider",
-      "community": 0,
+      "community": 25,
       "norm_label": "imageslider.tsx"
     },
     {
@@ -6843,7 +6863,7 @@
       "source_location": "L6",
       "_origin": "ast",
       "id": "components_imageslider_imagesliderprops",
-      "community": 0,
+      "community": 25,
       "norm_label": "imagesliderprops"
     },
     {
@@ -6853,7 +6873,7 @@
       "source_location": "L16",
       "_origin": "ast",
       "id": "components_imageslider_imageslider",
-      "community": 0,
+      "community": 25,
       "norm_label": "imageslider()"
     },
     {
@@ -6913,7 +6933,7 @@
       "source_location": "L13",
       "_origin": "ast",
       "id": "components_listview_listview",
-      "community": 9,
+      "community": 0,
       "norm_label": "listview()"
     },
     {
@@ -6923,7 +6943,7 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "components_musicianphoto",
-      "community": 96,
+      "community": 24,
       "norm_label": "musicianphoto.tsx"
     },
     {
@@ -6933,7 +6953,7 @@
       "source_location": "L8",
       "_origin": "ast",
       "id": "components_musicianphoto_musicianphotoprops",
-      "community": 96,
+      "community": 24,
       "norm_label": "musicianphotoprops"
     },
     {
@@ -7063,7 +7083,7 @@
       "source_location": "L38",
       "_origin": "ast",
       "id": "components_settingsmodal_settingsview",
-      "community": 9,
+      "community": 25,
       "norm_label": "settingsview()"
     },
     {
@@ -7163,7 +7183,7 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "components_subgenrepickermodal",
-      "community": 23,
+      "community": 93,
       "norm_label": "subgenrepickermodal.tsx"
     },
     {
@@ -7173,7 +7193,7 @@
       "source_location": "L6",
       "_origin": "ast",
       "id": "components_subgenrepickermodal_subgenrepickermodalprops",
-      "community": 23,
+      "community": 93,
       "norm_label": "subgenrepickermodalprops"
     },
     {
@@ -7183,7 +7203,7 @@
       "source_location": "L18",
       "_origin": "ast",
       "id": "components_subgenrepickermodal_subgenrepickermodal",
-      "community": 23,
+      "community": 93,
       "norm_label": "subgenrepickermodal()"
     },
     {
@@ -7193,7 +7213,7 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "components_uisoundruntime",
-      "community": 54,
+      "community": 6,
       "norm_label": "uisoundruntime.tsx"
     },
     {
@@ -7203,7 +7223,7 @@
       "source_location": "L6",
       "_origin": "ast",
       "id": "components_uisoundruntime_error_sounds",
-      "community": 54,
+      "community": 6,
       "norm_label": "error_sounds"
     },
     {
@@ -7213,7 +7233,7 @@
       "source_location": "L9",
       "_origin": "ast",
       "id": "components_uisoundruntime_uisoundruntime",
-      "community": 54,
+      "community": 6,
       "norm_label": "uisoundruntime()"
     },
     {
@@ -7223,7 +7243,7 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "components_wasmplayer",
-      "community": 9,
+      "community": 25,
       "norm_label": "wasmplayer.tsx"
     },
     {
@@ -7233,7 +7253,7 @@
       "source_location": "L8",
       "_origin": "ast",
       "id": "components_wasmplayer_wasmplayerprops",
-      "community": 9,
+      "community": 25,
       "norm_label": "wasmplayerprops"
     },
     {
@@ -7243,7 +7263,7 @@
       "source_location": "L14",
       "_origin": "ast",
       "id": "components_wasmplayer_wasmplayer",
-      "community": 9,
+      "community": 25,
       "norm_label": "wasmplayer()"
     },
     {
@@ -7283,7 +7303,7 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "bigbox_bigboxexitprompt",
-      "community": 23,
+      "community": 17,
       "norm_label": "bigboxexitprompt.tsx"
     },
     {
@@ -7293,7 +7313,7 @@
       "source_location": "L7",
       "_origin": "ast",
       "id": "bigbox_bigboxexitprompt_exitpromptfocus",
-      "community": 23,
+      "community": 17,
       "norm_label": "exitpromptfocus"
     },
     {
@@ -7303,7 +7323,7 @@
       "source_location": "L9",
       "_origin": "ast",
       "id": "bigbox_bigboxexitprompt_bigboxexitpromptprops",
-      "community": 23,
+      "community": 17,
       "norm_label": "bigboxexitpromptprops"
     },
     {
@@ -7313,7 +7333,7 @@
       "source_location": "L16",
       "_origin": "ast",
       "id": "bigbox_bigboxexitprompt_bigboxexitprompt",
-      "community": 23,
+      "community": 17,
       "norm_label": "bigboxexitprompt()"
     },
     {
@@ -7353,7 +7373,7 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "bigbox_bigboxheader",
-      "community": 93,
+      "community": 109,
       "norm_label": "bigboxheader.tsx"
     },
     {
@@ -7373,7 +7393,7 @@
       "source_location": "L31",
       "_origin": "ast",
       "id": "bigbox_bigboxheader_bigboxheader",
-      "community": 93,
+      "community": 109,
       "norm_label": "bigboxheader()"
     },
     {
@@ -7643,7 +7663,7 @@
       "source_location": "L18",
       "_origin": "ast",
       "id": "library_windowgameshelf_windowgameshelf",
-      "community": 9,
+      "community": 0,
       "norm_label": "windowgameshelf()"
     },
     {
@@ -8403,7 +8423,7 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "contexts_settingscontext",
-      "community": 54,
+      "community": 35,
       "norm_label": "settingscontext.tsx"
     },
     {
@@ -8423,7 +8443,7 @@
       "source_location": "L55",
       "_origin": "ast",
       "id": "contexts_settingscontext_settingscontexttype",
-      "community": 54,
+      "community": 5,
       "norm_label": "settingscontexttype"
     },
     {
@@ -8433,7 +8453,7 @@
       "source_location": "L64",
       "_origin": "ast",
       "id": "contexts_settingscontext_defaultsettings",
-      "community": 54,
+      "community": 35,
       "norm_label": "defaultsettings"
     },
     {
@@ -8443,7 +8463,7 @@
       "source_location": "L107",
       "_origin": "ast",
       "id": "contexts_settingscontext_settingscontext",
-      "community": 54,
+      "community": 35,
       "norm_label": "settingscontext"
     },
     {
@@ -8453,7 +8473,7 @@
       "source_location": "L109",
       "_origin": "ast",
       "id": "contexts_settingscontext_secure_fields",
-      "community": 54,
+      "community": 35,
       "norm_label": "secure_fields"
     },
     {
@@ -8473,7 +8493,7 @@
       "source_location": "L189",
       "_origin": "ast",
       "id": "contexts_settingscontext_platformimportstatussnapshot",
-      "community": 54,
+      "community": 35,
       "norm_label": "platformimportstatussnapshot"
     },
     {
@@ -8483,7 +8503,7 @@
       "source_location": "L197",
       "_origin": "ast",
       "id": "contexts_settingscontext_isplatformimportstatus",
-      "community": 54,
+      "community": 35,
       "norm_label": "isplatformimportstatus()"
     },
     {
@@ -8493,7 +8513,7 @@
       "source_location": "L201",
       "_origin": "ast",
       "id": "contexts_settingscontext_applyplatformimportstatuses",
-      "community": 54,
+      "community": 35,
       "norm_label": "applyplatformimportstatuses()"
     },
     {
@@ -8503,7 +8523,7 @@
       "source_location": "L230",
       "_origin": "ast",
       "id": "contexts_settingscontext_resolvestartupplatformid",
-      "community": 54,
+      "community": 35,
       "norm_label": "resolvestartupplatformid()"
     },
     {
@@ -8513,7 +8533,7 @@
       "source_location": "L242",
       "_origin": "ast",
       "id": "contexts_settingscontext_settingsprovider",
-      "community": 54,
+      "community": 6,
       "norm_label": "settingsprovider()"
     },
     {
@@ -8523,7 +8543,7 @@
       "source_location": "L471",
       "_origin": "ast",
       "id": "contexts_settingscontext_usesettings",
-      "community": 9,
+      "community": 25,
       "norm_label": "usesettings()"
     },
     {
@@ -8633,7 +8653,7 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "hooks_usebigboxlibrarydata",
-      "community": 5,
+      "community": 109,
       "norm_label": "usebigboxlibrarydata.ts"
     },
     {
@@ -8643,7 +8663,7 @@
       "source_location": "L8",
       "_origin": "ast",
       "id": "hooks_usebigboxlibrarydata_bigbox_letters",
-      "community": 93,
+      "community": 109,
       "norm_label": "bigbox_letters"
     },
     {
@@ -8673,7 +8693,7 @@
       "source_location": "L30",
       "_origin": "ast",
       "id": "hooks_usebigboxlibrarydata_letter_rail_cache",
-      "community": 5,
+      "community": 109,
       "norm_label": "letter_rail_cache"
     },
     {
@@ -8683,7 +8703,7 @@
       "source_location": "L33",
       "_origin": "ast",
       "id": "hooks_usebigboxlibrarydata_getalphabetrailcachekey",
-      "community": 5,
+      "community": 109,
       "norm_label": "getalphabetrailcachekey()"
     },
     {
@@ -8693,7 +8713,7 @@
       "source_location": "L54",
       "_origin": "ast",
       "id": "hooks_usebigboxlibrarydata_sortrecentgames",
-      "community": 5,
+      "community": 109,
       "norm_label": "sortrecentgames()"
     },
     {
@@ -8853,7 +8873,7 @@
       "source_location": "L46",
       "_origin": "ast",
       "id": "hooks_usedetailnavigation_usedetailnavigation",
-      "community": 9,
+      "community": 25,
       "norm_label": "usedetailnavigation()"
     },
     {
@@ -8863,7 +8883,7 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "hooks_usefavorites",
-      "community": 9,
+      "community": 0,
       "norm_label": "usefavorites.ts"
     },
     {
@@ -8873,7 +8893,7 @@
       "source_location": "L7",
       "_origin": "ast",
       "id": "hooks_usefavorites_loadfavorites",
-      "community": 9,
+      "community": 0,
       "norm_label": "loadfavorites()"
     },
     {
@@ -8883,7 +8903,7 @@
       "source_location": "L25",
       "_origin": "ast",
       "id": "hooks_usefavorites_usefavorites",
-      "community": 9,
+      "community": 0,
       "norm_label": "usefavorites()"
     },
     {
@@ -8993,7 +9013,7 @@
       "source_location": "L205",
       "_origin": "ast",
       "id": "hooks_usefullscreenlayoutmetrics_usefullscreenlayoutmetrics",
-      "community": 93,
+      "community": 25,
       "norm_label": "usefullscreenlayoutmetrics()"
     },
     {
@@ -9003,7 +9023,7 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "hooks_usegamepad",
-      "community": 23,
+      "community": 17,
       "norm_label": "usegamepad.ts"
     },
     {
@@ -9013,7 +9033,7 @@
       "source_location": "L5",
       "_origin": "ast",
       "id": "hooks_usegamepad_gamepadbuttonmap",
-      "community": 23,
+      "community": 17,
       "norm_label": "gamepadbuttonmap"
     },
     {
@@ -9023,7 +9043,7 @@
       "source_location": "L10",
       "_origin": "ast",
       "id": "hooks_usegamepad_standard_map",
-      "community": 23,
+      "community": 17,
       "norm_label": "standard_map"
     },
     {
@@ -9033,7 +9053,7 @@
       "source_location": "L25",
       "_origin": "ast",
       "id": "hooks_usegamepad_gamepadhandlers",
-      "community": 23,
+      "community": 17,
       "norm_label": "gamepadhandlers"
     },
     {
@@ -9043,7 +9063,7 @@
       "source_location": "L30",
       "_origin": "ast",
       "id": "hooks_usegamepad_subscribers",
-      "community": 23,
+      "community": 17,
       "norm_label": "subscribers"
     },
     {
@@ -9053,7 +9073,7 @@
       "source_location": "L31",
       "_origin": "ast",
       "id": "hooks_usegamepad_laststates",
-      "community": 23,
+      "community": 17,
       "norm_label": "laststates"
     },
     {
@@ -9063,7 +9083,7 @@
       "source_location": "L32",
       "_origin": "ast",
       "id": "hooks_usegamepad_lastaxes",
-      "community": 23,
+      "community": 17,
       "norm_label": "lastaxes"
     },
     {
@@ -9073,7 +9093,7 @@
       "source_location": "L38",
       "_origin": "ast",
       "id": "hooks_usegamepad_pollgamepads",
-      "community": 23,
+      "community": 17,
       "norm_label": "pollgamepads()"
     },
     {
@@ -9083,7 +9103,7 @@
       "source_location": "L95",
       "_origin": "ast",
       "id": "hooks_usegamepad_usegamepad",
-      "community": 23,
+      "community": 17,
       "norm_label": "usegamepad()"
     },
     {
@@ -9093,7 +9113,7 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "hooks_useinputmode",
-      "community": 9,
+      "community": 25,
       "norm_label": "useinputmode.ts"
     },
     {
@@ -9103,7 +9123,7 @@
       "source_location": "L9",
       "_origin": "ast",
       "id": "hooks_useinputmode_useinputmode",
-      "community": 9,
+      "community": 25,
       "norm_label": "useinputmode()"
     },
     {
@@ -9113,7 +9133,7 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "hooks_uselibrarybrowserstate",
-      "community": 9,
+      "community": 0,
       "norm_label": "uselibrarybrowserstate.ts"
     },
     {
@@ -9133,7 +9153,7 @@
       "source_location": "L12",
       "_origin": "ast",
       "id": "hooks_uselibrarybrowserstate_uselibrarybrowserstate",
-      "community": 9,
+      "community": 0,
       "norm_label": "uselibrarybrowserstate()"
     },
     {
@@ -9173,7 +9193,7 @@
       "source_location": "L33",
       "_origin": "ast",
       "id": "hooks_uselibraryshellinput_uselibraryshellinput",
-      "community": 9,
+      "community": 0,
       "norm_label": "uselibraryshellinput()"
     },
     {
@@ -9183,7 +9203,7 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "hooks_usepopupopensound",
-      "community": 6,
+      "community": 17,
       "norm_label": "usepopupopensound.ts"
     },
     {
@@ -9193,7 +9213,7 @@
       "source_location": "L6",
       "_origin": "ast",
       "id": "hooks_usepopupopensound_popup_sounds",
-      "community": 6,
+      "community": 17,
       "norm_label": "popup_sounds"
     },
     {
@@ -9203,7 +9223,7 @@
       "source_location": "L8",
       "_origin": "ast",
       "id": "hooks_usepopupopensound_usepopupopensound",
-      "community": 23,
+      "community": 17,
       "norm_label": "usepopupopensound()"
     },
     {
@@ -9213,7 +9233,7 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "hooks_useresolvedboxarturl",
-      "community": 96,
+      "community": 24,
       "norm_label": "useresolvedboxarturl.ts"
     },
     {
@@ -9223,7 +9243,7 @@
       "source_location": "L8",
       "_origin": "ast",
       "id": "hooks_useresolvedboxarturl_cover_art_url_cache",
-      "community": 96,
+      "community": 24,
       "norm_label": "cover_art_url_cache"
     },
     {
@@ -9233,7 +9253,7 @@
       "source_location": "L10",
       "_origin": "ast",
       "id": "hooks_useresolvedboxarturl_normalizepath",
-      "community": 96,
+      "community": 24,
       "norm_label": "normalizepath()"
     },
     {
@@ -9243,7 +9263,7 @@
       "source_location": "L14",
       "_origin": "ast",
       "id": "hooks_useresolvedboxarturl_getresolvedcoverarturl",
-      "community": 96,
+      "community": 24,
       "norm_label": "getresolvedcoverarturl()"
     },
     {
@@ -9253,7 +9273,7 @@
       "source_location": "L34",
       "_origin": "ast",
       "id": "hooks_useresolvedboxarturl_resolvedboxartgame",
-      "community": 96,
+      "community": 24,
       "norm_label": "resolvedboxartgame"
     },
     {
@@ -9273,7 +9293,7 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "hooks_usewindowlibraryshelves",
-      "community": 5,
+      "community": 0,
       "norm_label": "usewindowlibraryshelves.ts"
     },
     {
@@ -9293,7 +9313,7 @@
       "source_location": "L15",
       "_origin": "ast",
       "id": "hooks_usewindowlibraryshelves_usewindowlibraryshelves",
-      "community": 9,
+      "community": 0,
       "norm_label": "usewindowlibraryshelves()"
     },
     {
@@ -9513,7 +9533,7 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "lib_extras",
-      "community": 27,
+      "community": 17,
       "norm_label": "extras.ts"
     },
     {
@@ -9533,7 +9553,7 @@
       "source_location": "L9",
       "_origin": "ast",
       "id": "lib_extras_visual_folders",
-      "community": 27,
+      "community": 17,
       "norm_label": "visual_folders"
     },
     {
@@ -9543,7 +9563,7 @@
       "source_location": "L10",
       "_origin": "ast",
       "id": "lib_extras_doc_folders",
-      "community": 27,
+      "community": 17,
       "norm_label": "doc_folders"
     },
     {
@@ -9553,7 +9573,7 @@
       "source_location": "L11",
       "_origin": "ast",
       "id": "lib_extras_media_folders",
-      "community": 27,
+      "community": 17,
       "norm_label": "media_folders"
     },
     {
@@ -9563,7 +9583,7 @@
       "source_location": "L12",
       "_origin": "ast",
       "id": "lib_extras_game_folders",
-      "community": 27,
+      "community": 17,
       "norm_label": "game_folders"
     },
     {
@@ -9573,7 +9593,7 @@
       "source_location": "L14",
       "_origin": "ast",
       "id": "lib_extras_img_ext",
-      "community": 27,
+      "community": 17,
       "norm_label": "img_ext"
     },
     {
@@ -9583,7 +9603,7 @@
       "source_location": "L15",
       "_origin": "ast",
       "id": "lib_extras_game_ext",
-      "community": 27,
+      "community": 17,
       "norm_label": "game_ext"
     },
     {
@@ -9593,7 +9613,7 @@
       "source_location": "L16",
       "_origin": "ast",
       "id": "lib_extras_media_ext",
-      "community": 27,
+      "community": 17,
       "norm_label": "media_ext"
     },
     {
@@ -9603,7 +9623,7 @@
       "source_location": "L17",
       "_origin": "ast",
       "id": "lib_extras_doc_ext",
-      "community": 27,
+      "community": 17,
       "norm_label": "doc_ext"
     },
     {
@@ -9613,7 +9633,7 @@
       "source_location": "L19",
       "_origin": "ast",
       "id": "lib_extras_groupextras",
-      "community": 27,
+      "community": 17,
       "norm_label": "groupextras()"
     },
     {
@@ -9633,7 +9653,7 @@
       "source_location": "L76",
       "_origin": "ast",
       "id": "lib_extras_getextraextension",
-      "community": 27,
+      "community": 17,
       "norm_label": "getextraextension()"
     },
     {
@@ -9643,7 +9663,7 @@
       "source_location": "L80",
       "_origin": "ast",
       "id": "lib_extras_isimageextra",
-      "community": 27,
+      "community": 17,
       "norm_label": "isimageextra()"
     },
     {
@@ -9653,7 +9673,7 @@
       "source_location": "L84",
       "_origin": "ast",
       "id": "lib_extras_isvideoextra",
-      "community": 27,
+      "community": 17,
       "norm_label": "isvideoextra()"
     },
     {
@@ -9663,7 +9683,7 @@
       "source_location": "L88",
       "_origin": "ast",
       "id": "lib_extras_getextrasourcelabel",
-      "community": 27,
+      "community": 17,
       "norm_label": "getextrasourcelabel()"
     },
     {
@@ -9673,7 +9693,7 @@
       "source_location": "L92",
       "_origin": "ast",
       "id": "lib_extras_getextralaunchlabel",
-      "community": 27,
+      "community": 17,
       "norm_label": "getextralaunchlabel()"
     },
     {
@@ -9683,7 +9703,7 @@
       "source_location": "L100",
       "_origin": "ast",
       "id": "lib_extras_islaunchableextra",
-      "community": 27,
+      "community": 17,
       "norm_label": "islaunchableextra()"
     },
     {
@@ -9693,7 +9713,7 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "lib_game_display",
-      "community": 60,
+      "community": 80,
       "norm_label": "game-display.ts"
     },
     {
@@ -9703,7 +9723,7 @@
       "source_location": "L3",
       "_origin": "ast",
       "id": "lib_game_display_unknown_values",
-      "community": 60,
+      "community": 80,
       "norm_label": "unknown_values"
     },
     {
@@ -9723,7 +9743,7 @@
       "source_location": "L20",
       "_origin": "ast",
       "id": "lib_game_display_getgamestudios",
-      "community": 60,
+      "community": 80,
       "norm_label": "getgamestudios()"
     },
     {
@@ -9733,7 +9753,7 @@
       "source_location": "L27",
       "_origin": "ast",
       "id": "lib_game_display_getprimarystudiolabel",
-      "community": 60,
+      "community": 80,
       "norm_label": "getprimarystudiolabel()"
     },
     {
@@ -9873,7 +9893,7 @@
       "source_location": "L112",
       "_origin": "ast",
       "id": "lib_platform_capabilities_supported_platforms",
-      "community": 93,
+      "community": 5,
       "norm_label": "supported_platforms"
     },
     {
@@ -10043,7 +10063,7 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "lib_subgenre_display",
-      "community": 5,
+      "community": 93,
       "norm_label": "subgenre-display.ts"
     },
     {
@@ -10053,7 +10073,7 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "lib_subgenre_display_visiblesubgenresresult",
-      "community": 5,
+      "community": 93,
       "norm_label": "visiblesubgenresresult"
     },
     {
@@ -10063,7 +10083,7 @@
       "source_location": "L6",
       "_origin": "ast",
       "id": "lib_subgenre_display_getvisiblesubgenres",
-      "community": 5,
+      "community": 93,
       "norm_label": "getvisiblesubgenres()"
     },
     {
@@ -10293,7 +10313,7 @@
       "source_location": "L234",
       "_origin": "ast",
       "id": "lib_tauri_bridge_resolvemediapath",
-      "community": 96,
+      "community": 24,
       "norm_label": "resolvemediapath()"
     },
     {
@@ -10323,7 +10343,7 @@
       "source_location": "L272",
       "_origin": "ast",
       "id": "lib_tauri_bridge_getasseturl",
-      "community": 96,
+      "community": 24,
       "norm_label": "getasseturl()"
     },
     {
@@ -10333,7 +10353,7 @@
       "source_location": "L286",
       "_origin": "ast",
       "id": "lib_tauri_bridge_readfilebytes",
-      "community": 96,
+      "community": 35,
       "norm_label": "readfilebytes()"
     },
     {
@@ -10343,7 +10363,7 @@
       "source_location": "L302",
       "_origin": "ast",
       "id": "lib_tauri_bridge_getmediaurl",
-      "community": 96,
+      "community": 35,
       "norm_label": "getmediaurl()"
     },
     {
@@ -10503,7 +10523,7 @@
       "source_location": "L488",
       "_origin": "ast",
       "id": "lib_tauri_bridge_getgenres",
-      "community": 5,
+      "community": 96,
       "norm_label": "getgenres()"
     },
     {
@@ -10513,7 +10533,7 @@
       "source_location": "L498",
       "_origin": "ast",
       "id": "lib_tauri_bridge_getsubgenres",
-      "community": 5,
+      "community": 96,
       "norm_label": "getsubgenres()"
     },
     {
@@ -10523,7 +10543,7 @@
       "source_location": "L522",
       "_origin": "ast",
       "id": "lib_tauri_bridge_getdbgamecount",
-      "community": 5,
+      "community": 96,
       "norm_label": "getdbgamecount()"
     },
     {
@@ -10543,7 +10563,7 @@
       "source_location": "L565",
       "_origin": "ast",
       "id": "lib_tauri_bridge_getdbgames",
-      "community": 5,
+      "community": 96,
       "norm_label": "getdbgames()"
     },
     {
@@ -10983,7 +11003,7 @@
       "source_location": "L84",
       "_origin": "ast",
       "id": "types_platform_platformsettings",
-      "community": 54,
+      "community": 5,
       "norm_label": "platformsettings"
     },
     {
@@ -19463,6 +19483,17 @@
       "confidence": "INFERRED",
       "confidence_score": 0.8,
       "source_file": "src-tauri/src/commands/db/tests.rs",
+      "source_location": "L998",
+      "weight": 1.0,
+      "source": "db_tests_test_load_ordered_game_ids_deduplicates_repeated_game_view_rows",
+      "target": "db_querying_load_ordered_game_ids_with_fallback"
+    },
+    {
+      "relation": "calls",
+      "context": "call",
+      "confidence": "INFERRED",
+      "confidence_score": 0.8,
+      "source_file": "src-tauri/src/commands/db/tests.rs",
       "source_location": "L700",
       "weight": 1.0,
       "source": "db_tests_test_load_ordered_game_ids_falls_back_to_like_when_search_index_missing",
@@ -19801,6 +19832,16 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "src-tauri/src/commands/db/tests.rs",
+      "source_location": "L1005",
+      "weight": 1.0,
+      "source": "db_tests",
+      "target": "db_tests_test_get_db_games_deduplicates_repeated_game_view_rows",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src-tauri/src/commands/db/tests.rs",
       "source_location": "L578",
       "weight": 1.0,
       "confidence_score": 1.0,
@@ -19881,6 +19922,16 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "src-tauri/src/commands/db/tests.rs",
+      "source_location": "L988",
+      "weight": 1.0,
+      "source": "db_tests",
+      "target": "db_tests_test_load_ordered_game_ids_deduplicates_repeated_game_view_rows",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src-tauri/src/commands/db/tests.rs",
       "source_location": "L696",
       "weight": 1.0,
       "confidence_score": 1.0,
@@ -19934,11 +19985,33 @@
       "context": "call",
       "confidence": "EXTRACTED",
       "source_file": "src-tauri/src/commands/db/tests.rs",
+      "source_location": "L1012",
+      "weight": 1.0,
+      "source": "db_tests_test_get_db_games_deduplicates_repeated_game_view_rows",
+      "target": "db_tests_create_search_fallback_fixture",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "src-tauri/src/commands/db/tests.rs",
       "source_location": "L717",
       "weight": 1.0,
       "confidence_score": 1.0,
       "source": "db_tests_test_load_game_count_falls_back_to_like_when_search_index_missing",
       "target": "db_tests_create_search_fallback_fixture"
+    },
+    {
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "src-tauri/src/commands/db/tests.rs",
+      "source_location": "L990",
+      "weight": 1.0,
+      "source": "db_tests_test_load_ordered_game_ids_deduplicates_repeated_game_view_rows",
+      "target": "db_tests_create_search_fallback_fixture",
+      "confidence_score": 1.0
     },
     {
       "relation": "calls",
@@ -34861,9 +34934,9 @@
       "source_file": "src/contexts/SettingsContext.tsx",
       "source_location": "L197",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "contexts_settingscontext",
-      "target": "contexts_settingscontext_isplatformimportstatus",
-      "confidence_score": 1.0
+      "target": "contexts_settingscontext_isplatformimportstatus"
     },
     {
       "relation": "contains",
@@ -35072,9 +35145,9 @@
       "source_file": "src/contexts/SettingsContext.tsx",
       "source_location": "L10",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "contexts_settingscontext",
-      "target": "types_platform_platformimportstatus",
-      "confidence_score": 1.0
+      "target": "types_platform_platformimportstatus"
     },
     {
       "relation": "imports",
@@ -42788,5 +42861,5 @@
       "source_file": "GB64_Modern_Frontend_Requirements.md"
     }
   ],
-  "built_at_commit": "0646e96f5af1687258b9292c60cbdbcfb7071d84"
+  "built_at_commit": "18616d5979cdcf23deaeb6e33b10401e127957d1"
 }
