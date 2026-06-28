@@ -177,21 +177,21 @@
 
 ### Tests for User Story 5
 
-- [ ] T072 [P] [US5] Add platform-scoped favorites tests in `src/contexts/SettingsContext.test.tsx`
-- [ ] T073 [P] [US5] Add platform-aware library browser state tests in `src/hooks/useLibraryBrowserState.test.tsx`
-- [ ] T074 [P] [US5] Add platform-aware BigBox data tests in `src/hooks/useBigBoxLibraryData.test.ts`
-- [ ] T075 [P] [US5] Add Playwright workflow parity test in `e2e/platform-workflow-parity.spec.ts`
+- [x] T072 [P] [US5] Add platform-scoped favorites tests in `src/contexts/SettingsContext.test.tsx`
+- [x] T073 [P] [US5] Add platform-aware library browser state tests in `src/hooks/useLibraryBrowserState.test.tsx`
+- [x] T074 [P] [US5] Add platform-aware BigBox data tests in `src/hooks/useBigBoxLibraryData.test.ts`
+- [x] T075 [P] [US5] Add Playwright workflow parity test in `e2e/platform-workflow-parity.spec.ts`
 
 ### Implementation for User Story 5
 
-- [ ] T076 [US5] Scope favorites, recently played, last selected game, last focused index, and last view mode by platform in `src/contexts/SettingsContext.tsx`
-- [ ] T077 [US5] Pass active platform through library browser data loading in `src/hooks/useLibraryBrowserState.ts`
-- [ ] T078 [US5] Pass active platform through BigBox library data loading in `src/hooks/useBigBoxLibraryData.ts`
-- [ ] T079 [US5] Preserve platform-scoped scroll and alphabet navigation in `src/hooks/useBigBoxScrollSync.ts`
-- [ ] T080 [US5] Ensure grid/list rendering remains platform-agnostic in `src/components/GridView.tsx`
-- [ ] T081 [US5] Ensure list rendering remains platform-agnostic in `src/components/ListView.tsx`
-- [ ] T082 [US5] Ensure extras and version selection receive platform-scoped game detail data in `src/components/ExtrasDetail.tsx`
-- [ ] T083 [US5] Update mock data and browser-mode fallbacks for C64 and Atari 800 in `src/data/mockGames.ts`
+- [x] T076 [US5] Scope favorites, recently played, last selected game, last focused index, and last view mode by platform in `src/contexts/SettingsContext.tsx`
+- [x] T077 [US5] Pass active platform through library browser data loading in `src/hooks/useLibraryBrowserState.ts`
+- [x] T078 [US5] Pass active platform through BigBox library data loading in `src/hooks/useBigBoxLibraryData.ts`
+- [x] T079 [US5] Preserve platform-scoped scroll and alphabet navigation in `src/hooks/useBigBoxScrollSync.ts`
+- [x] T080 [US5] Ensure grid/list rendering remains platform-agnostic in `src/components/GridView.tsx`
+- [x] T081 [US5] Ensure list rendering remains platform-agnostic in `src/components/ListView.tsx`
+- [x] T082 [US5] Ensure extras and version selection receive platform-scoped game detail data in `src/components/ExtrasDetail.tsx`
+- [x] T083 [US5] Update mock data and browser-mode fallbacks for C64 and Atari 800 in `src/data/mockGames.ts`
 
 **Checkpoint**: Platform context changes data source and capabilities, not the core library workflows.
 

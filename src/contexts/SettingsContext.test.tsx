@@ -1,5 +1,5 @@
 import { expect, test, describe, beforeEach } from 'vitest';
-import { render, screen, fireEvent, waitFor } from '@testing-library/react';
+import { render, screen, fireEvent, waitFor, renderHook, act } from '@testing-library/react';
 import { applyPlatformImportStatuses, SettingsProvider, useSettings } from './SettingsContext';
 import React from 'react';
 import { createDefaultPlatformSettingsMap } from '../lib/platform-capabilities';
@@ -271,5 +271,48 @@ describe('SettingsContext', () => {
 
     expect(synced.atari800.library.importStatus).toBe('notImported');
     expect(synced.atari800.library.gameCount).toBe(0);
+  });
+
+  test('scopes and restores navigation settings per active platform', async () => {
+    const { result } = renderHook(() => useSettings(), {
+      wrapper: ({ children }) => <SettingsProvider>{children}</SettingsProvider>
+    });
+
+    await waitFor(() => {
+      expect(result.current.settings.activePlatformId).toBe('c64');
+    });
+
+    // Update C64 navigation settings
+    act(() => {
+      result.current.updateSettings({
+        lastFocusedIndex: 12,
+        lastSelectedGameId: '100',
+      });
+    });
+
+    expect(result.current.settings.lastFocusedIndex).toBe(12);
+    expect(result.current.settings.lastSelectedGameId).toBe('100');
+    expect(result.current.settings.platformSettings.c64.navigation.lastFocusedIndex).toBe(12);
+    expect(result.current.settings.platformSettings.c64.navigation.lastSelectedGameId).toBe('100');
+
+    // Switch to Atari 800
+    act(() => {
+      result.current.setActivePlatform('atari800');
+    });
+
+    // Confirms it restored Atari 800 navigation defaults
+    expect(result.current.settings.activePlatformId).toBe('atari800');
+    expect(result.current.settings.lastFocusedIndex).toBe(0);
+    expect(result.current.settings.lastSelectedGameId).toBeNull();
+
+    // Switch back to C64
+    act(() => {
+      result.current.setActivePlatform('c64');
+    });
+
+    // Confirms C64 navigation settings were restored
+    expect(result.current.settings.activePlatformId).toBe('c64');
+    expect(result.current.settings.lastFocusedIndex).toBe(12);
+    expect(result.current.settings.lastSelectedGameId).toBe('100');
   });
 });

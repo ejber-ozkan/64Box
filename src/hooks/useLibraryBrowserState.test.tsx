@@ -210,4 +210,34 @@ describe('useLibraryBrowserState', () => {
 
     expect(mockUpdateSettings).not.toHaveBeenCalled();
   });
+
+  it('resets restoration and browser state when active platform changes', async () => {
+    currentSettings = {
+      ...baseSettings,
+      activePlatformId: 'c64',
+      lastSelectedGameId: '2',
+      lastFocusedIndex: 3,
+    };
+
+    const { result, rerender } = renderHook(() => useLibraryBrowserState());
+
+    await waitFor(() => {
+      expect(result.current.selectedGame?.id).toBe(2);
+    });
+
+    // Mock active platform change to atari800 with its own settings
+    currentSettings = {
+      ...baseSettings,
+      activePlatformId: 'atari800',
+      lastSelectedGameId: '5',
+      lastFocusedIndex: 0,
+    };
+
+    rerender();
+
+    // Verify it loads Atari 800 games and restores Atari 800 game ID 5
+    await waitFor(() => {
+      expect(result.current.selectedGame?.id).toBe(5);
+    });
+  });
 });

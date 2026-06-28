@@ -564,7 +564,7 @@ export async function getGameExtras(
 ): Promise<import('../types/game').Extra[]> {
   if (!isTauri()) {
     const { mockGames } = await import('../data/mockGames');
-    return (mockGames as unknown as import('../types/game').GameDetail[]).find((game) => game.id === gameId)?.extras ?? [];
+    return (mockGames as unknown as import('../types/game').GameDetail[]).find((game) => game.id === gameId && (game.platformId || 'c64') === platformId)?.extras ?? [];
   }
   try {
     const rawExtras = await invoke<RawExtraRow[]>('get_game_extras', { gameId: gameId.toString(), platformId });
@@ -597,6 +597,11 @@ export async function getDbGames(
     const searchQuery = filters?.searchQuery?.trim().toLowerCase();
     const favoriteIds = filters?.favoriteIds ?? null;
     const filteredGames = results.filter((game) => {
+      const gamePlatform = game.platformId || 'c64';
+      if (gamePlatform !== platformId) {
+        return false;
+      }
+
       if (favoriteIds && favoriteIds.length > 0 && !favoriteIds.includes(game.id.toString())) {
         return false;
       }
@@ -705,7 +710,7 @@ export async function getDbGameDetail(
 ): Promise<import('../types/game').GameDetail | null> {
   if (!isTauri()) {
     const { mockGames } = await import('../data/mockGames');
-    const game = mockGames.find((g) => g.id.toString() === gameId);
+    const game = mockGames.find((g) => g.id.toString() === gameId && (g.platformId || 'c64') === platformId);
     return (game as unknown as import('../types/game').GameDetail) || null;
   }
 

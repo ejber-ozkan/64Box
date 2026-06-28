@@ -337,11 +337,18 @@ export function SettingsProvider({ children }: { children: ReactNode }) {
       });
 
       // 5. Set final combined state
+      const startupNav = platformSettings[startupPlatformId].navigation;
       setSettings({
         ...combinedSettings,
         ...platformFoldersToFlatSettings(platformSettings[startupPlatformId].folders),
         activePlatformId: startupPlatformId,
         lastUsedPlatformId: startupPlatformId,
+        lastSelectedGameId: startupNav.lastSelectedGameId,
+        lastFocusedIndex: startupNav.lastFocusedIndex,
+        lastViewMode: startupNav.lastViewMode,
+        recentlyPlayedIds: startupNav.recentlyPlayedIds,
+        lastBigBoxRailId: startupNav.lastBigBoxRailId,
+        lastBigBoxGameId: startupNav.lastBigBoxGameId,
         platformSettings,
       });
       setIsLoaded(true);
@@ -381,6 +388,37 @@ export function SettingsProvider({ children }: { children: ReactNode }) {
 
       const updated = { ...prev, ...newSettings };
       
+      // Sync flat navigation properties into platform-scoped settings
+      const activePlatformId = updated.activePlatformId;
+      if (activePlatformId && updated.platformSettings[activePlatformId]) {
+        const currentNav = updated.platformSettings[activePlatformId].navigation;
+        const newNav = {
+          lastSelectedGameId: updated.lastSelectedGameId,
+          lastFocusedIndex: updated.lastFocusedIndex,
+          lastViewMode: updated.lastViewMode,
+          recentlyPlayedIds: updated.recentlyPlayedIds,
+          lastBigBoxRailId: updated.lastBigBoxRailId,
+          lastBigBoxGameId: updated.lastBigBoxGameId,
+        };
+        
+        if (
+          currentNav.lastSelectedGameId !== newNav.lastSelectedGameId ||
+          currentNav.lastFocusedIndex !== newNav.lastFocusedIndex ||
+          currentNav.lastViewMode !== newNav.lastViewMode ||
+          currentNav.recentlyPlayedIds !== newNav.recentlyPlayedIds ||
+          currentNav.lastBigBoxRailId !== newNav.lastBigBoxRailId ||
+          currentNav.lastBigBoxGameId !== newNav.lastBigBoxGameId
+        ) {
+          updated.platformSettings = {
+            ...updated.platformSettings,
+            [activePlatformId]: {
+              ...updated.platformSettings[activePlatformId],
+              navigation: newNav,
+            },
+          };
+        }
+      }
+      
       // 1. Persist sensitive fields to Secure storage (Rust/SQLite)
       SECURE_FIELDS.forEach(field => {
         if (newSettings[field] !== undefined) {
@@ -405,11 +443,18 @@ export function SettingsProvider({ children }: { children: ReactNode }) {
 
   const setActivePlatform = useCallback((platformId: PlatformId) => {
     const targetFolders = settings.platformSettings[platformId].folders;
+    const targetNav = settings.platformSettings[platformId].navigation;
 
     updateSettings({
       ...platformFoldersToFlatSettings(targetFolders),
       activePlatformId: platformId,
       lastUsedPlatformId: platformId,
+      lastSelectedGameId: targetNav.lastSelectedGameId,
+      lastFocusedIndex: targetNav.lastFocusedIndex,
+      lastViewMode: targetNav.lastViewMode,
+      recentlyPlayedIds: targetNav.recentlyPlayedIds,
+      lastBigBoxRailId: targetNav.lastBigBoxRailId,
+      lastBigBoxGameId: targetNav.lastBigBoxGameId,
       platformSettings: {
         ...settings.platformSettings,
         c64: {
@@ -497,7 +542,19 @@ export function SettingsProvider({ children }: { children: ReactNode }) {
          return prev;
       }
       
-      const updated = { ...prev, recentlyPlayedIds: newList };
+      const activePlatformId = prev.activePlatformId;
+      const platformSettings = { ...prev.platformSettings };
+      if (activePlatformId && platformSettings[activePlatformId]) {
+        platformSettings[activePlatformId] = {
+          ...platformSettings[activePlatformId],
+          navigation: {
+            ...platformSettings[activePlatformId].navigation,
+            recentlyPlayedIds: newList,
+          },
+        };
+      }
+      
+      const updated = { ...prev, recentlyPlayedIds: newList, platformSettings };
       if (typeof window !== 'undefined') {
         localStorage.setItem('gb64_settings', JSON.stringify(updated));
       }

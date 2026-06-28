@@ -21,7 +21,16 @@ export function useLibraryBrowserState() {
   const [sortDir, setSortDir] = useState<'asc' | 'desc'>('asc');
   const [searchInput, setSearchInput] = useState('');
   const [isRestored, setIsRestored] = useState(false);
+  const [prevPlatformId, setPrevPlatformId] = useState(settings.activePlatformId);
   const shelfRef = useRef<HTMLDivElement>(null);
+
+  if (settings.activePlatformId !== prevPlatformId) {
+    setPrevPlatformId(settings.activePlatformId);
+    setIsRestored(false);
+    setSelectedGame(null);
+    setFocusedIndex(-1);
+    setViewMode(settings.lastViewMode || 'grid');
+  }
 
   const mounted = true;
   const effectiveFilters = useMemo(() => ({

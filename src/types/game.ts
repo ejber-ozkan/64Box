@@ -24,6 +24,7 @@ export interface Extra {
 }
 export interface Game {
   id: number;
+  platformId?: string | null;
   name: string;
   filename: string;
   gameFilename: string | null;   // ROM file (.d64, .t64 etc) for launch via VICE
