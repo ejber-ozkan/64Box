@@ -5060,7 +5060,7 @@
       "label": "table_has_columns()",
       "file_type": "code",
       "source_file": "src-tauri/src/database.rs",
-      "source_location": "L363",
+      "source_location": "L362",
       "_origin": "ast",
       "id": "src_database_table_has_columns",
       "community": 4,
@@ -5070,7 +5070,7 @@
       "label": "table_columns()",
       "file_type": "code",
       "source_file": "src-tauri/src/database.rs",
-      "source_location": "L375",
+      "source_location": "L374",
       "_origin": "ast",
       "id": "src_database_table_columns",
       "community": 4,
@@ -5080,7 +5080,7 @@
       "label": "Vec",
       "file_type": "code",
       "source_file": "src-tauri/src/database.rs",
-      "source_location": "L375",
+      "source_location": "L374",
       "_origin": "ast",
       "id": "src_tauri_src_database_rs_vec",
       "community": 4,
@@ -5090,7 +5090,7 @@
       "label": "table_columns_in_schema()",
       "file_type": "code",
       "source_file": "src-tauri/src/database.rs",
-      "source_location": "L379",
+      "source_location": "L378",
       "_origin": "ast",
       "id": "src_database_table_columns_in_schema",
       "community": 4,
@@ -5100,7 +5100,7 @@
       "label": "ensure_secure_table_on_connection()",
       "file_type": "code",
       "source_file": "src-tauri/src/database.rs",
-      "source_location": "L396",
+      "source_location": "L395",
       "_origin": "ast",
       "id": "src_database_ensure_secure_table_on_connection",
       "community": 4,
@@ -5110,7 +5110,7 @@
       "label": "ensure_table_platform_columns()",
       "file_type": "code",
       "source_file": "src-tauri/src/database.rs",
-      "source_location": "L408",
+      "source_location": "L407",
       "_origin": "ast",
       "id": "src_database_ensure_table_platform_columns",
       "community": 4,
@@ -5120,7 +5120,7 @@
       "label": "infer_legacy_platform_id()",
       "file_type": "code",
       "source_file": "src-tauri/src/database.rs",
-      "source_location": "L445",
+      "source_location": "L444",
       "_origin": "ast",
       "id": "src_database_infer_legacy_platform_id",
       "community": 4,
@@ -5130,7 +5130,7 @@
       "label": "ensure_import_platform_columns()",
       "file_type": "code",
       "source_file": "src-tauri/src/database.rs",
-      "source_location": "L460",
+      "source_location": "L462",
       "_origin": "ast",
       "id": "src_database_ensure_import_platform_columns",
       "community": 4,
@@ -5140,7 +5140,7 @@
       "label": "recreate_game_view()",
       "file_type": "code",
       "source_file": "src-tauri/src/database.rs",
-      "source_location": "L468",
+      "source_location": "L470",
       "_origin": "ast",
       "id": "src_database_recreate_game_view",
       "community": 4,
@@ -5150,7 +5150,7 @@
       "label": "ensure_game_view()",
       "file_type": "code",
       "source_file": "src-tauri/src/database.rs",
-      "source_location": "L475",
+      "source_location": "L478",
       "_origin": "ast",
       "id": "src_database_ensure_game_view",
       "community": 4,
@@ -5160,7 +5160,7 @@
       "label": "ensure_query_indexes()",
       "file_type": "code",
       "source_file": "src-tauri/src/database.rs",
-      "source_location": "L526",
+      "source_location": "L532",
       "_origin": "ast",
       "id": "src_database_ensure_query_indexes",
       "community": 4,
@@ -5170,7 +5170,7 @@
       "label": "ensure_cover_index()",
       "file_type": "code",
       "source_file": "src-tauri/src/database.rs",
-      "source_location": "L537",
+      "source_location": "L543",
       "_origin": "ast",
       "id": "src_database_ensure_cover_index",
       "community": 4,
@@ -5180,7 +5180,7 @@
       "label": "rebuild_cover_index()",
       "file_type": "code",
       "source_file": "src-tauri/src/database.rs",
-      "source_location": "L574",
+      "source_location": "L580",
       "_origin": "ast",
       "id": "src_database_rebuild_cover_index",
       "community": 4,
@@ -5190,7 +5190,7 @@
       "label": "ensure_search_index()",
       "file_type": "code",
       "source_file": "src-tauri/src/database.rs",
-      "source_location": "L580",
+      "source_location": "L586",
       "_origin": "ast",
       "id": "src_database_ensure_search_index",
       "community": 4,
@@ -5200,7 +5200,7 @@
       "label": "rebuild_search_index()",
       "file_type": "code",
       "source_file": "src-tauri/src/database.rs",
-      "source_location": "L641",
+      "source_location": "L647",
       "_origin": "ast",
       "id": "src_database_rebuild_search_index",
       "community": 4,
@@ -5210,7 +5210,7 @@
       "label": "ensure_query_support_objects()",
       "file_type": "code",
       "source_file": "src-tauri/src/database.rs",
-      "source_location": "L647",
+      "source_location": "L653",
       "_origin": "ast",
       "id": "src_database_ensure_query_support_objects",
       "community": 4,
@@ -5220,7 +5220,7 @@
       "label": "init_database()",
       "file_type": "code",
       "source_file": "src-tauri/src/database.rs",
-      "source_location": "L657",
+      "source_location": "L663",
       "_origin": "ast",
       "id": "src_database_init_database",
       "community": 4,
@@ -5230,7 +5230,7 @@
       "label": "is_database_ready()",
       "file_type": "code",
       "source_file": "src-tauri/src/database.rs",
-      "source_location": "L664",
+      "source_location": "L670",
       "_origin": "ast",
       "id": "src_database_is_database_ready",
       "community": 4,
@@ -5240,7 +5240,7 @@
       "label": "validate_identifier()",
       "file_type": "code",
       "source_file": "src-tauri/src/database.rs",
-      "source_location": "L683",
+      "source_location": "L689",
       "_origin": "ast",
       "id": "src_database_validate_identifier",
       "community": 4,
@@ -5250,7 +5250,7 @@
       "label": "quote_identifier()",
       "file_type": "code",
       "source_file": "src-tauri/src/database.rs",
-      "source_location": "L695",
+      "source_location": "L701",
       "_origin": "ast",
       "id": "src_database_quote_identifier",
       "community": 4,
@@ -5260,7 +5260,7 @@
       "label": "list_csv_files()",
       "file_type": "code",
       "source_file": "src-tauri/src/database.rs",
-      "source_location": "L700",
+      "source_location": "L706",
       "_origin": "ast",
       "id": "src_database_list_csv_files",
       "community": 4,
@@ -5270,7 +5270,7 @@
       "label": "Path",
       "file_type": "code",
       "source_file": "src-tauri/src/database.rs",
-      "source_location": "L700",
+      "source_location": "L706",
       "_origin": "ast",
       "id": "src_tauri_src_database_rs_path",
       "community": 4,
@@ -5280,7 +5280,7 @@
       "label": "import_single_csv_table()",
       "file_type": "code",
       "source_file": "src-tauri/src/database.rs",
-      "source_location": "L710",
+      "source_location": "L716",
       "_origin": "ast",
       "id": "src_database_import_single_csv_table",
       "community": 4,
@@ -5290,7 +5290,7 @@
       "label": "normalize_record_values()",
       "file_type": "code",
       "source_file": "src-tauri/src/database.rs",
-      "source_location": "L786",
+      "source_location": "L792",
       "_origin": "ast",
       "id": "src_database_normalize_record_values",
       "community": 4,
@@ -5300,7 +5300,7 @@
       "label": "read_csv_record()",
       "file_type": "code",
       "source_file": "src-tauri/src/database.rs",
-      "source_location": "L792",
+      "source_location": "L798",
       "_origin": "ast",
       "id": "src_database_read_csv_record",
       "community": 4,
@@ -5310,7 +5310,7 @@
       "label": "R",
       "file_type": "code",
       "source_file": "src-tauri/src/database.rs",
-      "source_location": "L792",
+      "source_location": "L798",
       "_origin": "ast",
       "id": "r",
       "community": 4,
@@ -5320,7 +5320,7 @@
       "label": "csv_record_has_unclosed_quotes()",
       "file_type": "code",
       "source_file": "src-tauri/src/database.rs",
-      "source_location": "L817",
+      "source_location": "L826",
       "_origin": "ast",
       "id": "src_database_csv_record_has_unclosed_quotes",
       "community": 4,
@@ -5330,7 +5330,7 @@
       "label": "parse_csv_line()",
       "file_type": "code",
       "source_file": "src-tauri/src/database.rs",
-      "source_location": "L837",
+      "source_location": "L846",
       "_origin": "ast",
       "id": "src_database_parse_csv_line",
       "community": 4,
@@ -5340,7 +5340,7 @@
       "label": "create_export_directory()",
       "file_type": "code",
       "source_file": "src-tauri/src/database.rs",
-      "source_location": "L874",
+      "source_location": "L883",
       "_origin": "ast",
       "id": "src_database_create_export_directory",
       "community": 4,
@@ -5350,7 +5350,7 @@
       "label": "write_embedded_export_script()",
       "file_type": "code",
       "source_file": "src-tauri/src/database.rs",
-      "source_location": "L889",
+      "source_location": "L898",
       "_origin": "ast",
       "id": "src_database_write_embedded_export_script",
       "community": 4,
@@ -5360,7 +5360,7 @@
       "label": "powershell_32_path()",
       "file_type": "code",
       "source_file": "src-tauri/src/database.rs",
-      "source_location": "L895",
+      "source_location": "L904",
       "_origin": "ast",
       "id": "src_database_powershell_32_path",
       "community": 4,
@@ -5370,7 +5370,7 @@
       "label": "export_mdb_to_csv()",
       "file_type": "code",
       "source_file": "src-tauri/src/database.rs",
-      "source_location": "L905",
+      "source_location": "L914",
       "_origin": "ast",
       "id": "src_database_export_mdb_to_csv",
       "community": 4,
@@ -5380,7 +5380,7 @@
       "label": "sqlite_sidecar_paths()",
       "file_type": "code",
       "source_file": "src-tauri/src/database.rs",
-      "source_location": "L945",
+      "source_location": "L954",
       "_origin": "ast",
       "id": "src_database_sqlite_sidecar_paths",
       "community": 4,
@@ -5390,7 +5390,7 @@
       "label": "remove_sqlite_artifacts()",
       "file_type": "code",
       "source_file": "src-tauri/src/database.rs",
-      "source_location": "L954",
+      "source_location": "L963",
       "_origin": "ast",
       "id": "src_database_remove_sqlite_artifacts",
       "community": 4,
@@ -5400,7 +5400,7 @@
       "label": "create_import_temp_db_path()",
       "file_type": "code",
       "source_file": "src-tauri/src/database.rs",
-      "source_location": "L964",
+      "source_location": "L973",
       "_origin": "ast",
       "id": "src_database_create_import_temp_db_path",
       "community": 4,
@@ -5410,7 +5410,7 @@
       "label": "table_exists_in_schema()",
       "file_type": "code",
       "source_file": "src-tauri/src/database.rs",
-      "source_location": "L976",
+      "source_location": "L985",
       "_origin": "ast",
       "id": "src_database_table_exists_in_schema",
       "community": 4,
@@ -5420,7 +5420,7 @@
       "label": "importable_table_names()",
       "file_type": "code",
       "source_file": "src-tauri/src/database.rs",
-      "source_location": "L994",
+      "source_location": "L1003",
       "_origin": "ast",
       "id": "src_database_importable_table_names",
       "community": 4,
@@ -5430,7 +5430,7 @@
       "label": "ensure_schema_table_platform_column()",
       "file_type": "code",
       "source_file": "src-tauri/src/database.rs",
-      "source_location": "L1019",
+      "source_location": "L1028",
       "_origin": "ast",
       "id": "src_database_ensure_schema_table_platform_column",
       "community": 4,
@@ -5440,7 +5440,7 @@
       "label": "ensure_imported_table_columns()",
       "file_type": "code",
       "source_file": "src-tauri/src/database.rs",
-      "source_location": "L1049",
+      "source_location": "L1058",
       "_origin": "ast",
       "id": "src_database_ensure_imported_table_columns",
       "community": 4,
@@ -5450,7 +5450,7 @@
       "label": "ensure_live_table_matches_import()",
       "file_type": "code",
       "source_file": "src-tauri/src/database.rs",
-      "source_location": "L1094",
+      "source_location": "L1103",
       "_origin": "ast",
       "id": "src_database_ensure_live_table_matches_import",
       "community": 4,
@@ -5460,7 +5460,7 @@
       "label": "merge_imported_table()",
       "file_type": "code",
       "source_file": "src-tauri/src/database.rs",
-      "source_location": "L1128",
+      "source_location": "L1140",
       "_origin": "ast",
       "id": "src_database_merge_imported_table",
       "community": 4,
@@ -5470,7 +5470,7 @@
       "label": "platform_display_name()",
       "file_type": "code",
       "source_file": "src-tauri/src/database.rs",
-      "source_location": "L1172",
+      "source_location": "L1184",
       "_origin": "ast",
       "id": "src_database_platform_display_name",
       "community": 4,
@@ -5480,7 +5480,7 @@
       "label": "refresh_platform_libraries()",
       "file_type": "code",
       "source_file": "src-tauri/src/database.rs",
-      "source_location": "L1181",
+      "source_location": "L1193",
       "_origin": "ast",
       "id": "src_database_refresh_platform_libraries",
       "community": 4,
@@ -5490,7 +5490,7 @@
       "label": "merge_imported_database()",
       "file_type": "code",
       "source_file": "src-tauri/src/database.rs",
-      "source_location": "L1238",
+      "source_location": "L1252",
       "_origin": "ast",
       "id": "src_database_merge_imported_database",
       "community": 4,
@@ -5500,7 +5500,7 @@
       "label": "import_csv_directory_to_sqlite()",
       "file_type": "code",
       "source_file": "src-tauri/src/database.rs",
-      "source_location": "L1281",
+      "source_location": "L1298",
       "_origin": "ast",
       "id": "src_database_import_csv_directory_to_sqlite",
       "community": 4,
@@ -5510,7 +5510,7 @@
       "label": "cleanup_export_directory()",
       "file_type": "code",
       "source_file": "src-tauri/src/database.rs",
-      "source_location": "L1329",
+      "source_location": "L1346",
       "_origin": "ast",
       "id": "src_database_cleanup_export_directory",
       "community": 4,
@@ -5520,7 +5520,7 @@
       "label": "import_mdb_to_sqlite()",
       "file_type": "code",
       "source_file": "src-tauri/src/database.rs",
-      "source_location": "L1333",
+      "source_location": "L1350",
       "_origin": "ast",
       "id": "src_database_import_mdb_to_sqlite",
       "community": 4,
@@ -5530,7 +5530,7 @@
       "label": "DatabaseImportResult",
       "file_type": "code",
       "source_file": "src-tauri/src/database.rs",
-      "source_location": "L1333",
+      "source_location": "L1350",
       "_origin": "ast",
       "id": "src_tauri_src_database_rs_databaseimportresult",
       "community": 4,
@@ -5540,7 +5540,7 @@
       "label": "import_mdb_to_sqlite_for_platform()",
       "file_type": "code",
       "source_file": "src-tauri/src/database.rs",
-      "source_location": "L1337",
+      "source_location": "L1354",
       "_origin": "ast",
       "id": "src_database_import_mdb_to_sqlite_for_platform",
       "community": 4,
@@ -5550,7 +5550,7 @@
       "label": "init_secure_table()",
       "file_type": "code",
       "source_file": "src-tauri/src/database.rs",
-      "source_location": "L1372",
+      "source_location": "L1389",
       "_origin": "ast",
       "id": "src_database_init_secure_table",
       "community": 4,
@@ -5560,7 +5560,7 @@
       "label": "test_init_secure_table()",
       "file_type": "code",
       "source_file": "src-tauri/src/database.rs",
-      "source_location": "L1383",
+      "source_location": "L1400",
       "_origin": "ast",
       "id": "src_database_test_init_secure_table",
       "community": 4,
@@ -5570,7 +5570,7 @@
       "label": "test_get_db_path_prefers_environment_variable()",
       "file_type": "code",
       "source_file": "src-tauri/src/database.rs",
-      "source_location": "L1401",
+      "source_location": "L1418",
       "_origin": "ast",
       "id": "src_database_test_get_db_path_prefers_environment_variable",
       "community": 4,
@@ -5580,7 +5580,7 @@
       "label": "test_platform_db_helpers_default_to_c64_and_validate_platforms()",
       "file_type": "code",
       "source_file": "src-tauri/src/database.rs",
-      "source_location": "L1408",
+      "source_location": "L1425",
       "_origin": "ast",
       "id": "src_database_test_platform_db_helpers_default_to_c64_and_validate_platforms",
       "community": 4,
@@ -5590,7 +5590,7 @@
       "label": "test_get_db_path_falls_back_to_local_files()",
       "file_type": "code",
       "source_file": "src-tauri/src/database.rs",
-      "source_location": "L1420",
+      "source_location": "L1437",
       "_origin": "ast",
       "id": "src_database_test_get_db_path_falls_back_to_local_files",
       "community": 4,
@@ -5600,7 +5600,7 @@
       "label": "test_init_database_creates_cover_index_and_query_indexes()",
       "file_type": "code",
       "source_file": "src-tauri/src/database.rs",
-      "source_location": "L1438",
+      "source_location": "L1455",
       "_origin": "ast",
       "id": "src_database_test_init_database_creates_cover_index_and_query_indexes",
       "community": 4,
@@ -5610,7 +5610,7 @@
       "label": "test_init_database_refreshes_stale_support_indexes()",
       "file_type": "code",
       "source_file": "src-tauri/src/database.rs",
-      "source_location": "L1521",
+      "source_location": "L1538",
       "_origin": "ast",
       "id": "src_database_test_init_database_refreshes_stale_support_indexes",
       "community": 4,
@@ -5620,7 +5620,7 @@
       "label": "test_is_database_ready_returns_false_without_base_tables()",
       "file_type": "code",
       "source_file": "src-tauri/src/database.rs",
-      "source_location": "L1628",
+      "source_location": "L1645",
       "_origin": "ast",
       "id": "src_database_test_is_database_ready_returns_false_without_base_tables",
       "community": 4,
@@ -5630,7 +5630,7 @@
       "label": "test_import_csv_directory_to_sqlite_builds_ready_database()",
       "file_type": "code",
       "source_file": "src-tauri/src/database.rs",
-      "source_location": "L1639",
+      "source_location": "L1656",
       "_origin": "ast",
       "id": "src_database_test_import_csv_directory_to_sqlite_builds_ready_database",
       "community": 4,
@@ -5640,7 +5640,7 @@
       "label": "test_import_csv_directory_to_sqlite_preserves_requested_platform_scope()",
       "file_type": "code",
       "source_file": "src-tauri/src/database.rs",
-      "source_location": "L1681",
+      "source_location": "L1698",
       "_origin": "ast",
       "id": "src_database_test_import_csv_directory_to_sqlite_preserves_requested_platform_scope",
       "community": 4,
@@ -5650,7 +5650,7 @@
       "label": "test_import_csv_directory_to_sqlite_merges_platforms_without_replacing_existing_library()",
       "file_type": "code",
       "source_file": "src-tauri/src/database.rs",
-      "source_location": "L1737",
+      "source_location": "L1758",
       "_origin": "ast",
       "id": "src_database_test_import_csv_directory_to_sqlite_merges_platforms_without_replacing_existing_library",
       "community": 4,
@@ -5660,7 +5660,7 @@
       "label": "test_parse_csv_line_handles_quotes_and_commas()",
       "file_type": "code",
       "source_file": "src-tauri/src/database.rs",
-      "source_location": "L1851",
+      "source_location": "L1872",
       "_origin": "ast",
       "id": "src_database_test_parse_csv_line_handles_quotes_and_commas",
       "community": 4,
@@ -5670,7 +5670,7 @@
       "label": "test_import_single_csv_table_preserves_multiline_quoted_fields()",
       "file_type": "code",
       "source_file": "src-tauri/src/database.rs",
-      "source_location": "L1864",
+      "source_location": "L1885",
       "_origin": "ast",
       "id": "src_database_test_import_single_csv_table_preserves_multiline_quoted_fields",
       "community": 4,
@@ -5680,7 +5680,7 @@
       "label": "test_import_csv_directory_to_sqlite_is_atomic_on_failure()",
       "file_type": "code",
       "source_file": "src-tauri/src/database.rs",
-      "source_location": "L1901",
+      "source_location": "L1922",
       "_origin": "ast",
       "id": "src_database_test_import_csv_directory_to_sqlite_is_atomic_on_failure",
       "community": 4,
@@ -6343,7 +6343,7 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "app_layout",
-      "community": 61,
+      "community": 54,
       "norm_label": "layout.tsx"
     },
     {
@@ -6353,7 +6353,7 @@
       "source_location": "L4",
       "_origin": "ast",
       "id": "app_layout_metadata",
-      "community": 61,
+      "community": 54,
       "norm_label": "metadata"
     },
     {
@@ -6363,7 +6363,7 @@
       "source_location": "L12",
       "_origin": "ast",
       "id": "app_layout_rootlayout",
-      "community": 61,
+      "community": 54,
       "norm_label": "rootlayout()"
     },
     {
@@ -6553,7 +6553,7 @@
       "source_location": "L25",
       "_origin": "ast",
       "id": "components_bigboxview_bigboxviewprops",
-      "community": 83,
+      "community": 5,
       "norm_label": "bigboxviewprops"
     },
     {
@@ -6583,7 +6583,7 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "components_controllersearchkeyboard",
-      "community": 17,
+      "community": 23,
       "norm_label": "controllersearchkeyboard.tsx"
     },
     {
@@ -6593,7 +6593,7 @@
       "source_location": "L7",
       "_origin": "ast",
       "id": "components_controllersearchkeyboard_keyboardaction",
-      "community": 17,
+      "community": 23,
       "norm_label": "keyboardaction"
     },
     {
@@ -6603,7 +6603,7 @@
       "source_location": "L9",
       "_origin": "ast",
       "id": "components_controllersearchkeyboard_keyboardkey",
-      "community": 17,
+      "community": 23,
       "norm_label": "keyboardkey"
     },
     {
@@ -6613,7 +6613,7 @@
       "source_location": "L17",
       "_origin": "ast",
       "id": "components_controllersearchkeyboard_controllersearchkeyboardprops",
-      "community": 17,
+      "community": 23,
       "norm_label": "controllersearchkeyboardprops"
     },
     {
@@ -6623,7 +6623,7 @@
       "source_location": "L25",
       "_origin": "ast",
       "id": "components_controllersearchkeyboard_keyboard_rows",
-      "community": 17,
+      "community": 23,
       "norm_label": "keyboard_rows"
     },
     {
@@ -6633,7 +6633,7 @@
       "source_location": "L76",
       "_origin": "ast",
       "id": "components_controllersearchkeyboard_updatesearchvalue",
-      "community": 17,
+      "community": 23,
       "norm_label": "updatesearchvalue()"
     },
     {
@@ -6643,7 +6643,7 @@
       "source_location": "L94",
       "_origin": "ast",
       "id": "components_controllersearchkeyboard_controllersearchkeyboard",
-      "community": 17,
+      "community": 23,
       "norm_label": "controllersearchkeyboard()"
     },
     {
@@ -6653,7 +6653,7 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "components_detailview",
-      "community": 25,
+      "community": 0,
       "norm_label": "detailview.tsx"
     },
     {
@@ -6683,7 +6683,7 @@
       "source_location": "L32",
       "_origin": "ast",
       "id": "components_detailview_detailfullscreenmedia",
-      "community": 25,
+      "community": 0,
       "norm_label": "detailfullscreenmedia"
     },
     {
@@ -6703,7 +6703,7 @@
       "source_location": "L38",
       "_origin": "ast",
       "id": "components_detailview_detail_config",
-      "community": 25,
+      "community": 0,
       "norm_label": "detail_config"
     },
     {
@@ -6713,7 +6713,7 @@
       "source_location": "L52",
       "_origin": "ast",
       "id": "components_detailview_detailview",
-      "community": 25,
+      "community": 9,
       "norm_label": "detailview()"
     },
     {
@@ -6763,7 +6763,7 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "components_gridview",
-      "community": 9,
+      "community": 0,
       "norm_label": "gridview.tsx"
     },
     {
@@ -6833,7 +6833,7 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "components_imageslider",
-      "community": 25,
+      "community": 0,
       "norm_label": "imageslider.tsx"
     },
     {
@@ -6843,7 +6843,7 @@
       "source_location": "L6",
       "_origin": "ast",
       "id": "components_imageslider_imagesliderprops",
-      "community": 25,
+      "community": 0,
       "norm_label": "imagesliderprops"
     },
     {
@@ -6853,7 +6853,7 @@
       "source_location": "L16",
       "_origin": "ast",
       "id": "components_imageslider_imageslider",
-      "community": 25,
+      "community": 0,
       "norm_label": "imageslider()"
     },
     {
@@ -6913,7 +6913,7 @@
       "source_location": "L13",
       "_origin": "ast",
       "id": "components_listview_listview",
-      "community": 0,
+      "community": 9,
       "norm_label": "listview()"
     },
     {
@@ -6953,7 +6953,7 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "components_platformswitcher",
-      "community": 60,
+      "community": 5,
       "norm_label": "platformswitcher.tsx"
     },
     {
@@ -6963,7 +6963,7 @@
       "source_location": "L6",
       "_origin": "ast",
       "id": "components_platformswitcher_platformswitcherprops",
-      "community": 60,
+      "community": 5,
       "norm_label": "platformswitcherprops"
     },
     {
@@ -6973,7 +6973,7 @@
       "source_location": "L11",
       "_origin": "ast",
       "id": "components_platformswitcher_platformswitcher",
-      "community": 60,
+      "community": 5,
       "norm_label": "platformswitcher()"
     },
     {
@@ -7063,7 +7063,7 @@
       "source_location": "L38",
       "_origin": "ast",
       "id": "components_settingsmodal_settingsview",
-      "community": 25,
+      "community": 9,
       "norm_label": "settingsview()"
     },
     {
@@ -7073,7 +7073,7 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "components_sidplayer",
-      "community": 24,
+      "community": 35,
       "norm_label": "sidplayer.tsx"
     },
     {
@@ -7083,7 +7083,7 @@
       "source_location": "L7",
       "_origin": "ast",
       "id": "components_sidplayer_sidplayerruntime",
-      "community": 24,
+      "community": 35,
       "norm_label": "sidplayerruntime"
     },
     {
@@ -7093,7 +7093,7 @@
       "source_location": "L13",
       "_origin": "ast",
       "id": "components_sidplayer_sidruntimeconstructor",
-      "community": 24,
+      "community": 35,
       "norm_label": "sidruntimeconstructor"
     },
     {
@@ -7103,7 +7103,7 @@
       "source_location": "L18",
       "_origin": "ast",
       "id": "components_sidplayer_window",
-      "community": 24,
+      "community": 35,
       "norm_label": "window"
     },
     {
@@ -7113,7 +7113,7 @@
       "source_location": "L25",
       "_origin": "ast",
       "id": "components_sidplayer_sidplayerprops",
-      "community": 24,
+      "community": 35,
       "norm_label": "sidplayerprops"
     },
     {
@@ -7123,7 +7123,7 @@
       "source_location": "L31",
       "_origin": "ast",
       "id": "components_sidplayer_sidplayer",
-      "community": 24,
+      "community": 35,
       "norm_label": "sidplayer()"
     },
     {
@@ -7163,7 +7163,7 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "components_subgenrepickermodal",
-      "community": 93,
+      "community": 23,
       "norm_label": "subgenrepickermodal.tsx"
     },
     {
@@ -7173,7 +7173,7 @@
       "source_location": "L6",
       "_origin": "ast",
       "id": "components_subgenrepickermodal_subgenrepickermodalprops",
-      "community": 93,
+      "community": 23,
       "norm_label": "subgenrepickermodalprops"
     },
     {
@@ -7183,7 +7183,7 @@
       "source_location": "L18",
       "_origin": "ast",
       "id": "components_subgenrepickermodal_subgenrepickermodal",
-      "community": 93,
+      "community": 23,
       "norm_label": "subgenrepickermodal()"
     },
     {
@@ -7193,7 +7193,7 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "components_uisoundruntime",
-      "community": 61,
+      "community": 54,
       "norm_label": "uisoundruntime.tsx"
     },
     {
@@ -7203,7 +7203,7 @@
       "source_location": "L6",
       "_origin": "ast",
       "id": "components_uisoundruntime_error_sounds",
-      "community": 61,
+      "community": 54,
       "norm_label": "error_sounds"
     },
     {
@@ -7213,7 +7213,7 @@
       "source_location": "L9",
       "_origin": "ast",
       "id": "components_uisoundruntime_uisoundruntime",
-      "community": 61,
+      "community": 54,
       "norm_label": "uisoundruntime()"
     },
     {
@@ -7223,7 +7223,7 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "components_wasmplayer",
-      "community": 25,
+      "community": 9,
       "norm_label": "wasmplayer.tsx"
     },
     {
@@ -7233,7 +7233,7 @@
       "source_location": "L8",
       "_origin": "ast",
       "id": "components_wasmplayer_wasmplayerprops",
-      "community": 25,
+      "community": 9,
       "norm_label": "wasmplayerprops"
     },
     {
@@ -7243,7 +7243,7 @@
       "source_location": "L14",
       "_origin": "ast",
       "id": "components_wasmplayer_wasmplayer",
-      "community": 25,
+      "community": 9,
       "norm_label": "wasmplayer()"
     },
     {
@@ -7283,7 +7283,7 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "bigbox_bigboxexitprompt",
-      "community": 17,
+      "community": 23,
       "norm_label": "bigboxexitprompt.tsx"
     },
     {
@@ -7293,7 +7293,7 @@
       "source_location": "L7",
       "_origin": "ast",
       "id": "bigbox_bigboxexitprompt_exitpromptfocus",
-      "community": 17,
+      "community": 23,
       "norm_label": "exitpromptfocus"
     },
     {
@@ -7303,7 +7303,7 @@
       "source_location": "L9",
       "_origin": "ast",
       "id": "bigbox_bigboxexitprompt_bigboxexitpromptprops",
-      "community": 17,
+      "community": 23,
       "norm_label": "bigboxexitpromptprops"
     },
     {
@@ -7313,7 +7313,7 @@
       "source_location": "L16",
       "_origin": "ast",
       "id": "bigbox_bigboxexitprompt_bigboxexitprompt",
-      "community": 17,
+      "community": 23,
       "norm_label": "bigboxexitprompt()"
     },
     {
@@ -7353,7 +7353,7 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "bigbox_bigboxheader",
-      "community": 60,
+      "community": 93,
       "norm_label": "bigboxheader.tsx"
     },
     {
@@ -7363,7 +7363,7 @@
       "source_location": "L9",
       "_origin": "ast",
       "id": "bigbox_bigboxheader_bigboxheaderprops",
-      "community": 60,
+      "community": 109,
       "norm_label": "bigboxheaderprops"
     },
     {
@@ -7373,7 +7373,7 @@
       "source_location": "L31",
       "_origin": "ast",
       "id": "bigbox_bigboxheader_bigboxheader",
-      "community": 60,
+      "community": 93,
       "norm_label": "bigboxheader()"
     },
     {
@@ -7563,7 +7563,7 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "library_libraryheader",
-      "community": 60,
+      "community": 5,
       "norm_label": "libraryheader.tsx"
     },
     {
@@ -7573,7 +7573,7 @@
       "source_location": "L11",
       "_origin": "ast",
       "id": "library_libraryheader_libraryheaderprops",
-      "community": 60,
+      "community": 5,
       "norm_label": "libraryheaderprops"
     },
     {
@@ -7583,7 +7583,7 @@
       "source_location": "L26",
       "_origin": "ast",
       "id": "library_libraryheader_libraryheader",
-      "community": 60,
+      "community": 5,
       "norm_label": "libraryheader()"
     },
     {
@@ -7643,7 +7643,7 @@
       "source_location": "L18",
       "_origin": "ast",
       "id": "library_windowgameshelf_windowgameshelf",
-      "community": 0,
+      "community": 9,
       "norm_label": "windowgameshelf()"
     },
     {
@@ -8403,7 +8403,7 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "contexts_settingscontext",
-      "community": 61,
+      "community": 54,
       "norm_label": "settingscontext.tsx"
     },
     {
@@ -8413,7 +8413,7 @@
       "source_location": "L12",
       "_origin": "ast",
       "id": "contexts_settingscontext_settings",
-      "community": 83,
+      "community": 5,
       "norm_label": "settings"
     },
     {
@@ -8423,7 +8423,7 @@
       "source_location": "L55",
       "_origin": "ast",
       "id": "contexts_settingscontext_settingscontexttype",
-      "community": 61,
+      "community": 54,
       "norm_label": "settingscontexttype"
     },
     {
@@ -8433,7 +8433,7 @@
       "source_location": "L64",
       "_origin": "ast",
       "id": "contexts_settingscontext_defaultsettings",
-      "community": 61,
+      "community": 54,
       "norm_label": "defaultsettings"
     },
     {
@@ -8443,7 +8443,7 @@
       "source_location": "L107",
       "_origin": "ast",
       "id": "contexts_settingscontext_settingscontext",
-      "community": 61,
+      "community": 54,
       "norm_label": "settingscontext"
     },
     {
@@ -8453,7 +8453,7 @@
       "source_location": "L109",
       "_origin": "ast",
       "id": "contexts_settingscontext_secure_fields",
-      "community": 61,
+      "community": 54,
       "norm_label": "secure_fields"
     },
     {
@@ -8463,7 +8463,7 @@
       "source_location": "L111",
       "_origin": "ast",
       "id": "contexts_settingscontext_migrateplatformsettings",
-      "community": 61,
+      "community": 54,
       "norm_label": "migrateplatformsettings()"
     },
     {
@@ -8473,47 +8473,57 @@
       "source_location": "L189",
       "_origin": "ast",
       "id": "contexts_settingscontext_platformimportstatussnapshot",
-      "community": 61,
+      "community": 54,
       "norm_label": "platformimportstatussnapshot"
+    },
+    {
+      "label": "isPlatformImportStatus()",
+      "file_type": "code",
+      "source_file": "src/contexts/SettingsContext.tsx",
+      "source_location": "L197",
+      "_origin": "ast",
+      "id": "contexts_settingscontext_isplatformimportstatus",
+      "community": 54,
+      "norm_label": "isplatformimportstatus()"
     },
     {
       "label": "applyPlatformImportStatuses()",
       "file_type": "code",
       "source_file": "src/contexts/SettingsContext.tsx",
-      "source_location": "L197",
+      "source_location": "L201",
       "_origin": "ast",
       "id": "contexts_settingscontext_applyplatformimportstatuses",
-      "community": 61,
+      "community": 54,
       "norm_label": "applyplatformimportstatuses()"
     },
     {
       "label": "resolveStartupPlatformId()",
       "file_type": "code",
       "source_file": "src/contexts/SettingsContext.tsx",
-      "source_location": "L223",
+      "source_location": "L230",
       "_origin": "ast",
       "id": "contexts_settingscontext_resolvestartupplatformid",
-      "community": 61,
+      "community": 54,
       "norm_label": "resolvestartupplatformid()"
     },
     {
       "label": "SettingsProvider()",
       "file_type": "code",
       "source_file": "src/contexts/SettingsContext.tsx",
-      "source_location": "L235",
+      "source_location": "L242",
       "_origin": "ast",
       "id": "contexts_settingscontext_settingsprovider",
-      "community": 61,
+      "community": 54,
       "norm_label": "settingsprovider()"
     },
     {
       "label": "useSettings()",
       "file_type": "code",
       "source_file": "src/contexts/SettingsContext.tsx",
-      "source_location": "L464",
+      "source_location": "L471",
       "_origin": "ast",
       "id": "contexts_settingscontext_usesettings",
-      "community": 25,
+      "community": 9,
       "norm_label": "usesettings()"
     },
     {
@@ -8633,7 +8643,7 @@
       "source_location": "L8",
       "_origin": "ast",
       "id": "hooks_usebigboxlibrarydata_bigbox_letters",
-      "community": 5,
+      "community": 93,
       "norm_label": "bigbox_letters"
     },
     {
@@ -8653,7 +8663,7 @@
       "source_location": "L19",
       "_origin": "ast",
       "id": "hooks_usebigboxlibrarydata_usebigboxlibrarydataprops",
-      "community": 83,
+      "community": 5,
       "norm_label": "usebigboxlibrarydataprops"
     },
     {
@@ -8753,7 +8763,7 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "hooks_usebigboxscrollsync",
-      "community": 96,
+      "community": 93,
       "norm_label": "usebigboxscrollsync.ts"
     },
     {
@@ -8763,7 +8773,7 @@
       "source_location": "L6",
       "_origin": "ast",
       "id": "hooks_usebigboxscrollsync_usebigboxscrollsyncprops",
-      "community": 96,
+      "community": 93,
       "norm_label": "usebigboxscrollsyncprops"
     },
     {
@@ -8843,7 +8853,7 @@
       "source_location": "L46",
       "_origin": "ast",
       "id": "hooks_usedetailnavigation_usedetailnavigation",
-      "community": 25,
+      "community": 9,
       "norm_label": "usedetailnavigation()"
     },
     {
@@ -8883,7 +8893,7 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "hooks_usefullscreenlayoutmetrics",
-      "community": 23,
+      "community": 68,
       "norm_label": "usefullscreenlayoutmetrics.ts"
     },
     {
@@ -8893,7 +8903,7 @@
       "source_location": "L10",
       "_origin": "ast",
       "id": "hooks_usefullscreenlayoutmetrics_resolvedfullscreendensity",
-      "community": 23,
+      "community": 68,
       "norm_label": "resolvedfullscreendensity"
     },
     {
@@ -8903,7 +8913,7 @@
       "source_location": "L12",
       "_origin": "ast",
       "id": "hooks_usefullscreenlayoutmetrics_viewportsnapshot",
-      "community": 23,
+      "community": 68,
       "norm_label": "viewportsnapshot"
     },
     {
@@ -8923,7 +8933,7 @@
       "source_location": "L74",
       "_origin": "ast",
       "id": "hooks_usefullscreenlayoutmetrics_default_viewport",
-      "community": 23,
+      "community": 68,
       "norm_label": "default_viewport"
     },
     {
@@ -8933,7 +8943,7 @@
       "source_location": "L82",
       "_origin": "ast",
       "id": "hooks_usefullscreenlayoutmetrics_clamp",
-      "community": 23,
+      "community": 68,
       "norm_label": "clamp()"
     },
     {
@@ -8943,7 +8953,7 @@
       "source_location": "L86",
       "_origin": "ast",
       "id": "hooks_usefullscreenlayoutmetrics_round",
-      "community": 23,
+      "community": 68,
       "norm_label": "round()"
     },
     {
@@ -8953,7 +8963,7 @@
       "source_location": "L90",
       "_origin": "ast",
       "id": "hooks_usefullscreenlayoutmetrics_getviewportsnapshot",
-      "community": 23,
+      "community": 68,
       "norm_label": "getviewportsnapshot()"
     },
     {
@@ -8963,7 +8973,7 @@
       "source_location": "L104",
       "_origin": "ast",
       "id": "hooks_usefullscreenlayoutmetrics_resolvedensitymode",
-      "community": 23,
+      "community": 68,
       "norm_label": "resolvedensitymode()"
     },
     {
@@ -8973,7 +8983,7 @@
       "source_location": "L126",
       "_origin": "ast",
       "id": "hooks_usefullscreenlayoutmetrics_buildfullscreenlayoutmetrics",
-      "community": 23,
+      "community": 68,
       "norm_label": "buildfullscreenlayoutmetrics()"
     },
     {
@@ -8983,7 +8993,7 @@
       "source_location": "L205",
       "_origin": "ast",
       "id": "hooks_usefullscreenlayoutmetrics_usefullscreenlayoutmetrics",
-      "community": 25,
+      "community": 93,
       "norm_label": "usefullscreenlayoutmetrics()"
     },
     {
@@ -8993,7 +9003,7 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "hooks_usegamepad",
-      "community": 17,
+      "community": 23,
       "norm_label": "usegamepad.ts"
     },
     {
@@ -9003,7 +9013,7 @@
       "source_location": "L5",
       "_origin": "ast",
       "id": "hooks_usegamepad_gamepadbuttonmap",
-      "community": 17,
+      "community": 23,
       "norm_label": "gamepadbuttonmap"
     },
     {
@@ -9013,7 +9023,7 @@
       "source_location": "L10",
       "_origin": "ast",
       "id": "hooks_usegamepad_standard_map",
-      "community": 17,
+      "community": 23,
       "norm_label": "standard_map"
     },
     {
@@ -9023,7 +9033,7 @@
       "source_location": "L25",
       "_origin": "ast",
       "id": "hooks_usegamepad_gamepadhandlers",
-      "community": 17,
+      "community": 23,
       "norm_label": "gamepadhandlers"
     },
     {
@@ -9033,7 +9043,7 @@
       "source_location": "L30",
       "_origin": "ast",
       "id": "hooks_usegamepad_subscribers",
-      "community": 17,
+      "community": 23,
       "norm_label": "subscribers"
     },
     {
@@ -9043,7 +9053,7 @@
       "source_location": "L31",
       "_origin": "ast",
       "id": "hooks_usegamepad_laststates",
-      "community": 17,
+      "community": 23,
       "norm_label": "laststates"
     },
     {
@@ -9053,7 +9063,7 @@
       "source_location": "L32",
       "_origin": "ast",
       "id": "hooks_usegamepad_lastaxes",
-      "community": 17,
+      "community": 23,
       "norm_label": "lastaxes"
     },
     {
@@ -9063,7 +9073,7 @@
       "source_location": "L38",
       "_origin": "ast",
       "id": "hooks_usegamepad_pollgamepads",
-      "community": 17,
+      "community": 23,
       "norm_label": "pollgamepads()"
     },
     {
@@ -9073,7 +9083,7 @@
       "source_location": "L95",
       "_origin": "ast",
       "id": "hooks_usegamepad_usegamepad",
-      "community": 17,
+      "community": 23,
       "norm_label": "usegamepad()"
     },
     {
@@ -9083,7 +9093,7 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "hooks_useinputmode",
-      "community": 25,
+      "community": 9,
       "norm_label": "useinputmode.ts"
     },
     {
@@ -9093,7 +9103,7 @@
       "source_location": "L9",
       "_origin": "ast",
       "id": "hooks_useinputmode_useinputmode",
-      "community": 25,
+      "community": 9,
       "norm_label": "useinputmode()"
     },
     {
@@ -9113,7 +9123,7 @@
       "source_location": "L10",
       "_origin": "ast",
       "id": "hooks_uselibrarybrowserstate_libraryviewmode",
-      "community": 60,
+      "community": 5,
       "norm_label": "libraryviewmode"
     },
     {
@@ -9153,7 +9163,7 @@
       "source_location": "L14",
       "_origin": "ast",
       "id": "hooks_uselibraryshellinput_uselibraryshellinputprops",
-      "community": 83,
+      "community": 5,
       "norm_label": "uselibraryshellinputprops"
     },
     {
@@ -9173,7 +9183,7 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "hooks_usepopupopensound",
-      "community": 17,
+      "community": 6,
       "norm_label": "usepopupopensound.ts"
     },
     {
@@ -9183,7 +9193,7 @@
       "source_location": "L6",
       "_origin": "ast",
       "id": "hooks_usepopupopensound_popup_sounds",
-      "community": 17,
+      "community": 6,
       "norm_label": "popup_sounds"
     },
     {
@@ -9193,7 +9203,7 @@
       "source_location": "L8",
       "_origin": "ast",
       "id": "hooks_usepopupopensound_usepopupopensound",
-      "community": 17,
+      "community": 23,
       "norm_label": "usepopupopensound()"
     },
     {
@@ -9263,7 +9273,7 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "hooks_usewindowlibraryshelves",
-      "community": 83,
+      "community": 5,
       "norm_label": "usewindowlibraryshelves.ts"
     },
     {
@@ -9273,7 +9283,7 @@
       "source_location": "L7",
       "_origin": "ast",
       "id": "hooks_usewindowlibraryshelves_usewindowlibraryshelvesprops",
-      "community": 83,
+      "community": 5,
       "norm_label": "usewindowlibraryshelvesprops"
     },
     {
@@ -9503,7 +9513,7 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "lib_extras",
-      "community": 17,
+      "community": 27,
       "norm_label": "extras.ts"
     },
     {
@@ -9523,7 +9533,7 @@
       "source_location": "L9",
       "_origin": "ast",
       "id": "lib_extras_visual_folders",
-      "community": 17,
+      "community": 27,
       "norm_label": "visual_folders"
     },
     {
@@ -9533,7 +9543,7 @@
       "source_location": "L10",
       "_origin": "ast",
       "id": "lib_extras_doc_folders",
-      "community": 17,
+      "community": 27,
       "norm_label": "doc_folders"
     },
     {
@@ -9543,7 +9553,7 @@
       "source_location": "L11",
       "_origin": "ast",
       "id": "lib_extras_media_folders",
-      "community": 17,
+      "community": 27,
       "norm_label": "media_folders"
     },
     {
@@ -9553,7 +9563,7 @@
       "source_location": "L12",
       "_origin": "ast",
       "id": "lib_extras_game_folders",
-      "community": 17,
+      "community": 27,
       "norm_label": "game_folders"
     },
     {
@@ -9563,7 +9573,7 @@
       "source_location": "L14",
       "_origin": "ast",
       "id": "lib_extras_img_ext",
-      "community": 17,
+      "community": 27,
       "norm_label": "img_ext"
     },
     {
@@ -9573,7 +9583,7 @@
       "source_location": "L15",
       "_origin": "ast",
       "id": "lib_extras_game_ext",
-      "community": 17,
+      "community": 27,
       "norm_label": "game_ext"
     },
     {
@@ -9583,7 +9593,7 @@
       "source_location": "L16",
       "_origin": "ast",
       "id": "lib_extras_media_ext",
-      "community": 17,
+      "community": 27,
       "norm_label": "media_ext"
     },
     {
@@ -9593,7 +9603,7 @@
       "source_location": "L17",
       "_origin": "ast",
       "id": "lib_extras_doc_ext",
-      "community": 17,
+      "community": 27,
       "norm_label": "doc_ext"
     },
     {
@@ -9603,7 +9613,7 @@
       "source_location": "L19",
       "_origin": "ast",
       "id": "lib_extras_groupextras",
-      "community": 17,
+      "community": 27,
       "norm_label": "groupextras()"
     },
     {
@@ -9623,7 +9633,7 @@
       "source_location": "L76",
       "_origin": "ast",
       "id": "lib_extras_getextraextension",
-      "community": 17,
+      "community": 27,
       "norm_label": "getextraextension()"
     },
     {
@@ -9633,7 +9643,7 @@
       "source_location": "L80",
       "_origin": "ast",
       "id": "lib_extras_isimageextra",
-      "community": 17,
+      "community": 27,
       "norm_label": "isimageextra()"
     },
     {
@@ -9643,7 +9653,7 @@
       "source_location": "L84",
       "_origin": "ast",
       "id": "lib_extras_isvideoextra",
-      "community": 17,
+      "community": 27,
       "norm_label": "isvideoextra()"
     },
     {
@@ -9653,7 +9663,7 @@
       "source_location": "L88",
       "_origin": "ast",
       "id": "lib_extras_getextrasourcelabel",
-      "community": 17,
+      "community": 27,
       "norm_label": "getextrasourcelabel()"
     },
     {
@@ -9663,7 +9673,7 @@
       "source_location": "L92",
       "_origin": "ast",
       "id": "lib_extras_getextralaunchlabel",
-      "community": 17,
+      "community": 27,
       "norm_label": "getextralaunchlabel()"
     },
     {
@@ -9673,7 +9683,7 @@
       "source_location": "L100",
       "_origin": "ast",
       "id": "lib_extras_islaunchableextra",
-      "community": 17,
+      "community": 27,
       "norm_label": "islaunchableextra()"
     },
     {
@@ -9683,7 +9693,7 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "lib_game_display",
-      "community": 109,
+      "community": 60,
       "norm_label": "game-display.ts"
     },
     {
@@ -9693,7 +9703,7 @@
       "source_location": "L3",
       "_origin": "ast",
       "id": "lib_game_display_unknown_values",
-      "community": 109,
+      "community": 60,
       "norm_label": "unknown_values"
     },
     {
@@ -9713,7 +9723,7 @@
       "source_location": "L20",
       "_origin": "ast",
       "id": "lib_game_display_getgamestudios",
-      "community": 109,
+      "community": 60,
       "norm_label": "getgamestudios()"
     },
     {
@@ -9723,7 +9733,7 @@
       "source_location": "L27",
       "_origin": "ast",
       "id": "lib_game_display_getprimarystudiolabel",
-      "community": 109,
+      "community": 60,
       "norm_label": "getprimarystudiolabel()"
     },
     {
@@ -9863,7 +9873,7 @@
       "source_location": "L112",
       "_origin": "ast",
       "id": "lib_platform_capabilities_supported_platforms",
-      "community": 60,
+      "community": 93,
       "norm_label": "supported_platforms"
     },
     {
@@ -9883,7 +9893,7 @@
       "source_location": "L118",
       "_origin": "ast",
       "id": "lib_platform_capabilities_isplatformid",
-      "community": 61,
+      "community": 54,
       "norm_label": "isplatformid()"
     },
     {
@@ -10033,7 +10043,7 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "lib_subgenre_display",
-      "community": 93,
+      "community": 5,
       "norm_label": "subgenre-display.ts"
     },
     {
@@ -10043,7 +10053,7 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "lib_subgenre_display_visiblesubgenresresult",
-      "community": 93,
+      "community": 5,
       "norm_label": "visiblesubgenresresult"
     },
     {
@@ -10053,7 +10063,7 @@
       "source_location": "L6",
       "_origin": "ast",
       "id": "lib_subgenre_display_getvisiblesubgenres",
-      "community": 93,
+      "community": 5,
       "norm_label": "getvisiblesubgenres()"
     },
     {
@@ -10483,7 +10493,7 @@
       "source_location": "L478",
       "_origin": "ast",
       "id": "lib_tauri_bridge_gamefilters",
-      "community": 83,
+      "community": 5,
       "norm_label": "gamefilters"
     },
     {
@@ -10843,7 +10853,7 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "types_platform_platformid",
-      "community": 60,
+      "community": 5,
       "norm_label": "platformid"
     },
     {
@@ -10973,7 +10983,7 @@
       "source_location": "L84",
       "_origin": "ast",
       "id": "types_platform_platformsettings",
-      "community": 83,
+      "community": 54,
       "norm_label": "platformsettings"
     },
     {
@@ -15819,9 +15829,9 @@
       "source_file": "scripts/convert_csv_to_sqlite.js",
       "source_location": "L101",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "scripts_convert_csv_to_sqlite",
-      "target": "scripts_convert_csv_to_sqlite_ensureimportplatformcolumns",
-      "confidence_score": 1.0
+      "target": "scripts_convert_csv_to_sqlite_ensureimportplatformcolumns"
     },
     {
       "relation": "contains",
@@ -15919,9 +15929,9 @@
       "source_file": "scripts/convert_csv_to_sqlite.js",
       "source_location": "L13",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "scripts_convert_csv_to_sqlite",
-      "target": "scripts_convert_csv_to_sqlite_platformscopedtables",
-      "confidence_score": 1.0
+      "target": "scripts_convert_csv_to_sqlite_platformscopedtables"
     },
     {
       "relation": "contains",
@@ -16262,9 +16272,9 @@
       "source_file": "scripts/convert_csv_to_sqlite.js",
       "source_location": "L103",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "scripts_convert_csv_to_sqlite_ensureimportplatformcolumns",
-      "target": "scripts_convert_csv_to_sqlite_ensuretableplatformcolumns",
-      "confidence_score": 1.0
+      "target": "scripts_convert_csv_to_sqlite_ensuretableplatformcolumns"
     },
     {
       "relation": "calls",
@@ -16295,9 +16305,9 @@
       "source_file": "scripts/convert_csv_to_sqlite.js",
       "source_location": "L374",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "scripts_convert_csv_to_sqlite_convertcsvtosqlite",
-      "target": "scripts_convert_csv_to_sqlite_ensureimportplatformcolumns",
-      "confidence_score": 1.0
+      "target": "scripts_convert_csv_to_sqlite_ensureimportplatformcolumns"
     },
     {
       "relation": "calls",
@@ -22904,9 +22914,9 @@
       "source_file": "src-tauri/src/database.rs",
       "source_location": "L460",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "src_database",
-      "target": "src_database_ensure_import_platform_columns",
-      "confidence_score": 1.0
+      "target": "src_database_ensure_import_platform_columns"
     },
     {
       "relation": "contains",
@@ -22914,9 +22924,9 @@
       "source_file": "src-tauri/src/database.rs",
       "source_location": "L1049",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "src_database",
-      "target": "src_database_ensure_imported_table_columns",
-      "confidence_score": 1.0
+      "target": "src_database_ensure_imported_table_columns"
     },
     {
       "relation": "contains",
@@ -22924,9 +22934,9 @@
       "source_file": "src-tauri/src/database.rs",
       "source_location": "L1094",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "src_database",
-      "target": "src_database_ensure_live_table_matches_import",
-      "confidence_score": 1.0
+      "target": "src_database_ensure_live_table_matches_import"
     },
     {
       "relation": "contains",
@@ -22954,9 +22964,9 @@
       "source_file": "src-tauri/src/database.rs",
       "source_location": "L1019",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "src_database",
-      "target": "src_database_ensure_schema_table_platform_column",
-      "confidence_score": 1.0
+      "target": "src_database_ensure_schema_table_platform_column"
     },
     {
       "relation": "contains",
@@ -23074,9 +23084,9 @@
       "source_file": "src-tauri/src/database.rs",
       "source_location": "L994",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "src_database",
-      "target": "src_database_importable_table_names",
-      "confidence_score": 1.0
+      "target": "src_database_importable_table_names"
     },
     {
       "relation": "contains",
@@ -23084,9 +23094,9 @@
       "source_file": "src-tauri/src/database.rs",
       "source_location": "L445",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "src_database",
-      "target": "src_database_infer_legacy_platform_id",
-      "confidence_score": 1.0
+      "target": "src_database_infer_legacy_platform_id"
     },
     {
       "relation": "contains",
@@ -23134,9 +23144,9 @@
       "source_file": "src-tauri/src/database.rs",
       "source_location": "L1238",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "src_database",
-      "target": "src_database_merge_imported_database",
-      "confidence_score": 1.0
+      "target": "src_database_merge_imported_database"
     },
     {
       "relation": "contains",
@@ -23144,9 +23154,9 @@
       "source_file": "src-tauri/src/database.rs",
       "source_location": "L1128",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "src_database",
-      "target": "src_database_merge_imported_table",
-      "confidence_score": 1.0
+      "target": "src_database_merge_imported_table"
     },
     {
       "relation": "contains",
@@ -23184,9 +23194,9 @@
       "source_file": "src-tauri/src/database.rs",
       "source_location": "L1172",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "src_database",
-      "target": "src_database_platform_display_name",
-      "confidence_score": 1.0
+      "target": "src_database_platform_display_name"
     },
     {
       "relation": "contains",
@@ -23254,9 +23264,9 @@
       "source_file": "src-tauri/src/database.rs",
       "source_location": "L1181",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "src_database",
-      "target": "src_database_refresh_platform_libraries",
-      "confidence_score": 1.0
+      "target": "src_database_refresh_platform_libraries"
     },
     {
       "relation": "contains",
@@ -23304,9 +23314,9 @@
       "source_file": "src-tauri/src/database.rs",
       "source_location": "L379",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "src_database",
-      "target": "src_database_table_columns_in_schema",
-      "confidence_score": 1.0
+      "target": "src_database_table_columns_in_schema"
     },
     {
       "relation": "contains",
@@ -23324,9 +23334,9 @@
       "source_file": "src-tauri/src/database.rs",
       "source_location": "L976",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "src_database",
-      "target": "src_database_table_exists_in_schema",
-      "confidence_score": 1.0
+      "target": "src_database_table_exists_in_schema"
     },
     {
       "relation": "contains",
@@ -23384,9 +23394,9 @@
       "source_file": "src-tauri/src/database.rs",
       "source_location": "L1737",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "src_database",
-      "target": "src_database_test_import_csv_directory_to_sqlite_merges_platforms_without_replacing_existing_library",
-      "confidence_score": 1.0
+      "target": "src_database_test_import_csv_directory_to_sqlite_merges_platforms_without_replacing_existing_library"
     },
     {
       "relation": "contains",
@@ -23693,9 +23703,9 @@
       "source_location": "L460",
       "weight": 1.0,
       "context": "generic_arg",
+      "confidence_score": 1.0,
       "source": "src_database_ensure_import_platform_columns",
-      "target": "src_tauri_src_database_rs_string",
-      "confidence_score": 1.0
+      "target": "src_tauri_src_database_rs_string"
     },
     {
       "relation": "references",
@@ -23704,9 +23714,9 @@
       "source_location": "L1049",
       "weight": 1.0,
       "context": "generic_arg",
+      "confidence_score": 1.0,
       "source": "src_database_ensure_imported_table_columns",
-      "target": "src_tauri_src_database_rs_string",
-      "confidence_score": 1.0
+      "target": "src_tauri_src_database_rs_string"
     },
     {
       "relation": "references",
@@ -23715,9 +23725,9 @@
       "source_location": "L1094",
       "weight": 1.0,
       "context": "generic_arg",
+      "confidence_score": 1.0,
       "source": "src_database_ensure_live_table_matches_import",
-      "target": "src_tauri_src_database_rs_string",
-      "confidence_score": 1.0
+      "target": "src_tauri_src_database_rs_string"
     },
     {
       "relation": "references",
@@ -23748,9 +23758,9 @@
       "source_location": "L1019",
       "weight": 1.0,
       "context": "generic_arg",
+      "confidence_score": 1.0,
       "source": "src_database_ensure_schema_table_platform_column",
-      "target": "src_tauri_src_database_rs_string",
-      "confidence_score": 1.0
+      "target": "src_tauri_src_database_rs_string"
     },
     {
       "relation": "references",
@@ -23869,9 +23879,9 @@
       "source_location": "L994",
       "weight": 1.0,
       "context": "generic_arg",
+      "confidence_score": 1.0,
       "source": "src_database_importable_table_names",
-      "target": "src_tauri_src_database_rs_string",
-      "confidence_score": 1.0
+      "target": "src_tauri_src_database_rs_string"
     },
     {
       "relation": "references",
@@ -23880,9 +23890,9 @@
       "source_location": "L445",
       "weight": 1.0,
       "context": "generic_arg",
+      "confidence_score": 1.0,
       "source": "src_database_infer_legacy_platform_id",
-      "target": "src_tauri_src_database_rs_string",
-      "confidence_score": 1.0
+      "target": "src_tauri_src_database_rs_string"
     },
     {
       "relation": "references",
@@ -23935,9 +23945,9 @@
       "source_location": "L1238",
       "weight": 1.0,
       "context": "generic_arg",
+      "confidence_score": 1.0,
       "source": "src_database_merge_imported_database",
-      "target": "src_tauri_src_database_rs_string",
-      "confidence_score": 1.0
+      "target": "src_tauri_src_database_rs_string"
     },
     {
       "relation": "references",
@@ -23946,9 +23956,9 @@
       "source_location": "L1128",
       "weight": 1.0,
       "context": "generic_arg",
+      "confidence_score": 1.0,
       "source": "src_database_merge_imported_table",
-      "target": "src_tauri_src_database_rs_string",
-      "confidence_score": 1.0
+      "target": "src_tauri_src_database_rs_string"
     },
     {
       "relation": "references",
@@ -24045,9 +24055,9 @@
       "source_location": "L1181",
       "weight": 1.0,
       "context": "generic_arg",
+      "confidence_score": 1.0,
       "source": "src_database_refresh_platform_libraries",
-      "target": "src_tauri_src_database_rs_string",
-      "confidence_score": 1.0
+      "target": "src_tauri_src_database_rs_string"
     },
     {
       "relation": "references",
@@ -24089,9 +24099,9 @@
       "source_location": "L379",
       "weight": 1.0,
       "context": "generic_arg",
+      "confidence_score": 1.0,
       "source": "src_database_table_columns_in_schema",
-      "target": "src_tauri_src_database_rs_string",
-      "confidence_score": 1.0
+      "target": "src_tauri_src_database_rs_string"
     },
     {
       "relation": "references",
@@ -24111,9 +24121,9 @@
       "source_location": "L976",
       "weight": 1.0,
       "context": "generic_arg",
+      "confidence_score": 1.0,
       "source": "src_database_table_exists_in_schema",
-      "target": "src_tauri_src_database_rs_string",
-      "confidence_score": 1.0
+      "target": "src_tauri_src_database_rs_string"
     },
     {
       "relation": "references",
@@ -24320,9 +24330,9 @@
       "source_location": "L460",
       "weight": 1.0,
       "context": "return_type",
+      "confidence_score": 1.0,
       "source": "src_database_ensure_import_platform_columns",
-      "target": "src_tauri_src_database_rs_result",
-      "confidence_score": 1.0
+      "target": "src_tauri_src_database_rs_result"
     },
     {
       "relation": "references",
@@ -24331,9 +24341,9 @@
       "source_location": "L1049",
       "weight": 1.0,
       "context": "return_type",
+      "confidence_score": 1.0,
       "source": "src_database_ensure_imported_table_columns",
-      "target": "src_tauri_src_database_rs_result",
-      "confidence_score": 1.0
+      "target": "src_tauri_src_database_rs_result"
     },
     {
       "relation": "references",
@@ -24342,9 +24352,9 @@
       "source_location": "L1094",
       "weight": 1.0,
       "context": "return_type",
+      "confidence_score": 1.0,
       "source": "src_database_ensure_live_table_matches_import",
-      "target": "src_tauri_src_database_rs_result",
-      "confidence_score": 1.0
+      "target": "src_tauri_src_database_rs_result"
     },
     {
       "relation": "references",
@@ -24375,9 +24385,9 @@
       "source_location": "L1019",
       "weight": 1.0,
       "context": "return_type",
+      "confidence_score": 1.0,
       "source": "src_database_ensure_schema_table_platform_column",
-      "target": "src_tauri_src_database_rs_result",
-      "confidence_score": 1.0
+      "target": "src_tauri_src_database_rs_result"
     },
     {
       "relation": "references",
@@ -24496,9 +24506,9 @@
       "source_location": "L994",
       "weight": 1.0,
       "context": "return_type",
+      "confidence_score": 1.0,
       "source": "src_database_importable_table_names",
-      "target": "src_tauri_src_database_rs_result",
-      "confidence_score": 1.0
+      "target": "src_tauri_src_database_rs_result"
     },
     {
       "relation": "references",
@@ -24507,9 +24517,9 @@
       "source_location": "L445",
       "weight": 1.0,
       "context": "return_type",
+      "confidence_score": 1.0,
       "source": "src_database_infer_legacy_platform_id",
-      "target": "src_tauri_src_database_rs_result",
-      "confidence_score": 1.0
+      "target": "src_tauri_src_database_rs_result"
     },
     {
       "relation": "references",
@@ -24562,9 +24572,9 @@
       "source_location": "L1238",
       "weight": 1.0,
       "context": "return_type",
+      "confidence_score": 1.0,
       "source": "src_database_merge_imported_database",
-      "target": "src_tauri_src_database_rs_result",
-      "confidence_score": 1.0
+      "target": "src_tauri_src_database_rs_result"
     },
     {
       "relation": "references",
@@ -24573,9 +24583,9 @@
       "source_location": "L1128",
       "weight": 1.0,
       "context": "return_type",
+      "confidence_score": 1.0,
       "source": "src_database_merge_imported_table",
-      "target": "src_tauri_src_database_rs_result",
-      "confidence_score": 1.0
+      "target": "src_tauri_src_database_rs_result"
     },
     {
       "relation": "references",
@@ -24639,9 +24649,9 @@
       "source_location": "L1181",
       "weight": 1.0,
       "context": "return_type",
+      "confidence_score": 1.0,
       "source": "src_database_refresh_platform_libraries",
-      "target": "src_tauri_src_database_rs_result",
-      "confidence_score": 1.0
+      "target": "src_tauri_src_database_rs_result"
     },
     {
       "relation": "references",
@@ -24683,9 +24693,9 @@
       "source_location": "L379",
       "weight": 1.0,
       "context": "return_type",
+      "confidence_score": 1.0,
       "source": "src_database_table_columns_in_schema",
-      "target": "src_tauri_src_database_rs_result",
-      "confidence_score": 1.0
+      "target": "src_tauri_src_database_rs_result"
     },
     {
       "relation": "references",
@@ -24705,9 +24715,9 @@
       "source_location": "L976",
       "weight": 1.0,
       "context": "return_type",
+      "confidence_score": 1.0,
       "source": "src_database_table_exists_in_schema",
-      "target": "src_tauri_src_database_rs_result",
-      "confidence_score": 1.0
+      "target": "src_tauri_src_database_rs_result"
     },
     {
       "relation": "references",
@@ -24903,9 +24913,9 @@
       "source_file": "src-tauri/src/database.rs",
       "source_location": "L446",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "src_database_infer_legacy_platform_id",
-      "target": "src_database_table_exists",
-      "confidence_score": 1.0
+      "target": "src_database_table_exists"
     },
     {
       "relation": "calls",
@@ -24925,9 +24935,9 @@
       "source_file": "src-tauri/src/database.rs",
       "source_location": "L1196",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "src_database_refresh_platform_libraries",
-      "target": "src_database_table_exists",
-      "confidence_score": 1.0
+      "target": "src_database_table_exists"
     },
     {
       "relation": "references",
@@ -24969,9 +24979,9 @@
       "source_location": "L460",
       "weight": 1.0,
       "context": "parameter_type",
+      "confidence_score": 1.0,
       "source": "src_database_ensure_import_platform_columns",
-      "target": "src_tauri_src_database_rs_connection",
-      "confidence_score": 1.0
+      "target": "src_tauri_src_database_rs_connection"
     },
     {
       "relation": "references",
@@ -24980,9 +24990,9 @@
       "source_location": "L1049",
       "weight": 1.0,
       "context": "parameter_type",
+      "confidence_score": 1.0,
       "source": "src_database_ensure_imported_table_columns",
-      "target": "src_tauri_src_database_rs_connection",
-      "confidence_score": 1.0
+      "target": "src_tauri_src_database_rs_connection"
     },
     {
       "relation": "references",
@@ -24991,9 +25001,9 @@
       "source_location": "L1094",
       "weight": 1.0,
       "context": "parameter_type",
+      "confidence_score": 1.0,
       "source": "src_database_ensure_live_table_matches_import",
-      "target": "src_tauri_src_database_rs_connection",
-      "confidence_score": 1.0
+      "target": "src_tauri_src_database_rs_connection"
     },
     {
       "relation": "references",
@@ -25024,9 +25034,9 @@
       "source_location": "L1019",
       "weight": 1.0,
       "context": "parameter_type",
+      "confidence_score": 1.0,
       "source": "src_database_ensure_schema_table_platform_column",
-      "target": "src_tauri_src_database_rs_connection",
-      "confidence_score": 1.0
+      "target": "src_tauri_src_database_rs_connection"
     },
     {
       "relation": "references",
@@ -25079,9 +25089,9 @@
       "source_location": "L994",
       "weight": 1.0,
       "context": "parameter_type",
+      "confidence_score": 1.0,
       "source": "src_database_importable_table_names",
-      "target": "src_tauri_src_database_rs_connection",
-      "confidence_score": 1.0
+      "target": "src_tauri_src_database_rs_connection"
     },
     {
       "relation": "references",
@@ -25090,9 +25100,9 @@
       "source_location": "L445",
       "weight": 1.0,
       "context": "parameter_type",
+      "confidence_score": 1.0,
       "source": "src_database_infer_legacy_platform_id",
-      "target": "src_tauri_src_database_rs_connection",
-      "confidence_score": 1.0
+      "target": "src_tauri_src_database_rs_connection"
     },
     {
       "relation": "references",
@@ -25101,9 +25111,9 @@
       "source_location": "L1128",
       "weight": 1.0,
       "context": "parameter_type",
+      "confidence_score": 1.0,
       "source": "src_database_merge_imported_table",
-      "target": "src_tauri_src_database_rs_connection",
-      "confidence_score": 1.0
+      "target": "src_tauri_src_database_rs_connection"
     },
     {
       "relation": "references",
@@ -25145,9 +25155,9 @@
       "source_location": "L1181",
       "weight": 1.0,
       "context": "parameter_type",
+      "confidence_score": 1.0,
       "source": "src_database_refresh_platform_libraries",
-      "target": "src_tauri_src_database_rs_connection",
-      "confidence_score": 1.0
+      "target": "src_tauri_src_database_rs_connection"
     },
     {
       "relation": "references",
@@ -25178,9 +25188,9 @@
       "source_location": "L379",
       "weight": 1.0,
       "context": "parameter_type",
+      "confidence_score": 1.0,
       "source": "src_database_table_columns_in_schema",
-      "target": "src_tauri_src_database_rs_connection",
-      "confidence_score": 1.0
+      "target": "src_tauri_src_database_rs_connection"
     },
     {
       "relation": "references",
@@ -25189,9 +25199,9 @@
       "source_location": "L976",
       "weight": 1.0,
       "context": "parameter_type",
+      "confidence_score": 1.0,
       "source": "src_database_table_exists_in_schema",
-      "target": "src_tauri_src_database_rs_connection",
-      "confidence_score": 1.0
+      "target": "src_tauri_src_database_rs_connection"
     },
     {
       "relation": "references",
@@ -25299,9 +25309,9 @@
       "source_file": "src-tauri/src/database.rs",
       "source_location": "L446",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "src_database_infer_legacy_platform_id",
-      "target": "src_database_table_has_columns",
-      "confidence_score": 1.0
+      "target": "src_database_table_has_columns"
     },
     {
       "relation": "calls",
@@ -25310,9 +25320,9 @@
       "source_file": "src-tauri/src/database.rs",
       "source_location": "L1196",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "src_database_refresh_platform_libraries",
-      "target": "src_database_table_has_columns",
-      "confidence_score": 1.0
+      "target": "src_database_table_has_columns"
     },
     {
       "relation": "calls",
@@ -25332,9 +25342,9 @@
       "source_file": "src-tauri/src/database.rs",
       "source_location": "L376",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "src_database_table_columns",
-      "target": "src_database_table_columns_in_schema",
-      "confidence_score": 1.0
+      "target": "src_database_table_columns_in_schema"
     },
     {
       "relation": "references",
@@ -25354,9 +25364,9 @@
       "source_location": "L994",
       "weight": 1.0,
       "context": "generic_arg",
+      "confidence_score": 1.0,
       "source": "src_database_importable_table_names",
-      "target": "src_tauri_src_database_rs_vec",
-      "confidence_score": 1.0
+      "target": "src_tauri_src_database_rs_vec"
     },
     {
       "relation": "references",
@@ -25409,9 +25419,9 @@
       "source_location": "L379",
       "weight": 1.0,
       "context": "generic_arg",
+      "confidence_score": 1.0,
       "source": "src_database_table_columns_in_schema",
-      "target": "src_tauri_src_database_rs_vec",
-      "confidence_score": 1.0
+      "target": "src_tauri_src_database_rs_vec"
     },
     {
       "relation": "calls",
@@ -25420,9 +25430,9 @@
       "source_file": "src-tauri/src/database.rs",
       "source_location": "L1063",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "src_database_ensure_imported_table_columns",
-      "target": "src_database_table_columns_in_schema",
-      "confidence_score": 1.0
+      "target": "src_database_table_columns_in_schema"
     },
     {
       "relation": "calls",
@@ -25431,9 +25441,9 @@
       "source_file": "src-tauri/src/database.rs",
       "source_location": "L1112",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "src_database_ensure_live_table_matches_import",
-      "target": "src_database_table_columns_in_schema",
-      "confidence_score": 1.0
+      "target": "src_database_table_columns_in_schema"
     },
     {
       "relation": "calls",
@@ -25442,9 +25452,9 @@
       "source_file": "src-tauri/src/database.rs",
       "source_location": "L1025",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "src_database_ensure_schema_table_platform_column",
-      "target": "src_database_table_columns_in_schema",
-      "confidence_score": 1.0
+      "target": "src_database_table_columns_in_schema"
     },
     {
       "relation": "calls",
@@ -25453,9 +25463,9 @@
       "source_file": "src-tauri/src/database.rs",
       "source_location": "L1134",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "src_database_merge_imported_table",
-      "target": "src_database_table_columns_in_schema",
-      "confidence_score": 1.0
+      "target": "src_database_table_columns_in_schema"
     },
     {
       "relation": "calls",
@@ -25464,9 +25474,9 @@
       "source_file": "src-tauri/src/database.rs",
       "source_location": "L384",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "src_database_table_columns_in_schema",
-      "target": "src_database_quote_identifier",
-      "confidence_score": 1.0
+      "target": "src_database_quote_identifier"
     },
     {
       "relation": "calls",
@@ -25519,9 +25529,9 @@
       "source_file": "src-tauri/src/database.rs",
       "source_location": "L1265",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "src_database_merge_imported_database",
-      "target": "src_database_ensure_secure_table_on_connection",
-      "confidence_score": 1.0
+      "target": "src_database_ensure_secure_table_on_connection"
     },
     {
       "relation": "calls",
@@ -25530,9 +25540,9 @@
       "source_file": "src-tauri/src/database.rs",
       "source_location": "L462",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "src_database_ensure_import_platform_columns",
-      "target": "src_database_ensure_table_platform_columns",
-      "confidence_score": 1.0
+      "target": "src_database_ensure_table_platform_columns"
     },
     {
       "relation": "calls",
@@ -25541,9 +25551,9 @@
       "source_file": "src-tauri/src/database.rs",
       "source_location": "L1060",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "src_database_ensure_imported_table_columns",
-      "target": "src_database_ensure_table_platform_columns",
-      "confidence_score": 1.0
+      "target": "src_database_ensure_table_platform_columns"
     },
     {
       "relation": "calls",
@@ -25563,9 +25573,9 @@
       "source_file": "src-tauri/src/database.rs",
       "source_location": "L418",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "src_database_ensure_table_platform_columns",
-      "target": "src_database_quote_identifier",
-      "confidence_score": 1.0
+      "target": "src_database_quote_identifier"
     },
     {
       "relation": "calls",
@@ -25585,9 +25595,9 @@
       "source_file": "src-tauri/src/database.rs",
       "source_location": "L648",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "src_database_ensure_query_support_objects",
-      "target": "src_database_infer_legacy_platform_id",
-      "confidence_score": 1.0
+      "target": "src_database_infer_legacy_platform_id"
     },
     {
       "relation": "calls",
@@ -25596,9 +25606,9 @@
       "source_file": "src-tauri/src/database.rs",
       "source_location": "L1250",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "src_database_merge_imported_database",
-      "target": "src_database_infer_legacy_platform_id",
-      "confidence_score": 1.0
+      "target": "src_database_infer_legacy_platform_id"
     },
     {
       "relation": "calls",
@@ -25607,9 +25617,9 @@
       "source_file": "src-tauri/src/database.rs",
       "source_location": "L649",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "src_database_ensure_query_support_objects",
-      "target": "src_database_ensure_import_platform_columns",
-      "confidence_score": 1.0
+      "target": "src_database_ensure_import_platform_columns"
     },
     {
       "relation": "calls",
@@ -25618,9 +25628,9 @@
       "source_file": "src-tauri/src/database.rs",
       "source_location": "L1304",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "src_database_import_csv_directory_to_sqlite",
-      "target": "src_database_ensure_import_platform_columns",
-      "confidence_score": 1.0
+      "target": "src_database_ensure_import_platform_columns"
     },
     {
       "relation": "calls",
@@ -25651,9 +25661,9 @@
       "source_file": "src-tauri/src/database.rs",
       "source_location": "L1261",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "src_database_merge_imported_database",
-      "target": "src_database_recreate_game_view",
-      "confidence_score": 1.0
+      "target": "src_database_recreate_game_view"
     },
     {
       "relation": "calls",
@@ -25695,9 +25705,9 @@
       "source_file": "src-tauri/src/database.rs",
       "source_location": "L1262",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "src_database_merge_imported_database",
-      "target": "src_database_ensure_query_indexes",
-      "confidence_score": 1.0
+      "target": "src_database_ensure_query_indexes"
     },
     {
       "relation": "calls",
@@ -25739,9 +25749,9 @@
       "source_file": "src-tauri/src/database.rs",
       "source_location": "L1263",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "src_database_merge_imported_database",
-      "target": "src_database_rebuild_cover_index",
-      "confidence_score": 1.0
+      "target": "src_database_rebuild_cover_index"
     },
     {
       "relation": "calls",
@@ -25783,9 +25793,9 @@
       "source_file": "src-tauri/src/database.rs",
       "source_location": "L1264",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "src_database_merge_imported_database",
-      "target": "src_database_rebuild_search_index",
-      "confidence_score": 1.0
+      "target": "src_database_rebuild_search_index"
     },
     {
       "relation": "calls",
@@ -25849,9 +25859,9 @@
       "source_file": "src-tauri/src/database.rs",
       "source_location": "L995",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "src_database_importable_table_names",
-      "target": "src_database_validate_identifier",
-      "confidence_score": 1.0
+      "target": "src_database_validate_identifier"
     },
     {
       "relation": "calls",
@@ -25871,9 +25881,9 @@
       "source_file": "src-tauri/src/database.rs",
       "source_location": "L981",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "src_database_table_exists_in_schema",
-      "target": "src_database_validate_identifier",
-      "confidence_score": 1.0
+      "target": "src_database_validate_identifier"
     },
     {
       "relation": "calls",
@@ -25882,9 +25892,9 @@
       "source_file": "src-tauri/src/database.rs",
       "source_location": "L1064",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "src_database_ensure_imported_table_columns",
-      "target": "src_database_quote_identifier",
-      "confidence_score": 1.0
+      "target": "src_database_quote_identifier"
     },
     {
       "relation": "calls",
@@ -25893,9 +25903,9 @@
       "source_file": "src-tauri/src/database.rs",
       "source_location": "L1099",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "src_database_ensure_live_table_matches_import",
-      "target": "src_database_quote_identifier",
-      "confidence_score": 1.0
+      "target": "src_database_quote_identifier"
     },
     {
       "relation": "calls",
@@ -25904,9 +25914,9 @@
       "source_file": "src-tauri/src/database.rs",
       "source_location": "L1026",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "src_database_ensure_schema_table_platform_column",
-      "target": "src_database_quote_identifier",
-      "confidence_score": 1.0
+      "target": "src_database_quote_identifier"
     },
     {
       "relation": "calls",
@@ -25926,9 +25936,9 @@
       "source_file": "src-tauri/src/database.rs",
       "source_location": "L1133",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "src_database_merge_imported_table",
-      "target": "src_database_quote_identifier",
-      "confidence_score": 1.0
+      "target": "src_database_quote_identifier"
     },
     {
       "relation": "calls",
@@ -26025,9 +26035,9 @@
       "source_location": "L1238",
       "weight": 1.0,
       "context": "parameter_type",
+      "confidence_score": 1.0,
       "source": "src_database_merge_imported_database",
-      "target": "src_tauri_src_database_rs_path",
-      "confidence_score": 1.0
+      "target": "src_tauri_src_database_rs_path"
     },
     {
       "relation": "references",
@@ -26267,9 +26277,9 @@
       "source_file": "src-tauri/src/database.rs",
       "source_location": "L1100",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "src_database_ensure_live_table_matches_import",
-      "target": "src_database_table_exists_in_schema",
-      "confidence_score": 1.0
+      "target": "src_database_table_exists_in_schema"
     },
     {
       "relation": "calls",
@@ -26278,9 +26288,9 @@
       "source_file": "src-tauri/src/database.rs",
       "source_location": "L1251",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "src_database_merge_imported_database",
-      "target": "src_database_importable_table_names",
-      "confidence_score": 1.0
+      "target": "src_database_importable_table_names"
     },
     {
       "relation": "calls",
@@ -26289,9 +26299,9 @@
       "source_file": "src-tauri/src/database.rs",
       "source_location": "L1062",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "src_database_ensure_imported_table_columns",
-      "target": "src_database_ensure_schema_table_platform_column",
-      "confidence_score": 1.0
+      "target": "src_database_ensure_schema_table_platform_column"
     },
     {
       "relation": "calls",
@@ -26300,9 +26310,9 @@
       "source_file": "src-tauri/src/database.rs",
       "source_location": "L1110",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "src_database_ensure_live_table_matches_import",
-      "target": "src_database_ensure_imported_table_columns",
-      "confidence_score": 1.0
+      "target": "src_database_ensure_imported_table_columns"
     },
     {
       "relation": "calls",
@@ -26311,9 +26321,9 @@
       "source_file": "src-tauri/src/database.rs",
       "source_location": "L1256",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "src_database_merge_imported_database",
-      "target": "src_database_ensure_imported_table_columns",
-      "confidence_score": 1.0
+      "target": "src_database_ensure_imported_table_columns"
     },
     {
       "relation": "calls",
@@ -26322,9 +26332,9 @@
       "source_file": "src-tauri/src/database.rs",
       "source_location": "L1257",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "src_database_merge_imported_database",
-      "target": "src_database_ensure_live_table_matches_import",
-      "confidence_score": 1.0
+      "target": "src_database_ensure_live_table_matches_import"
     },
     {
       "relation": "calls",
@@ -26333,9 +26343,9 @@
       "source_file": "src-tauri/src/database.rs",
       "source_location": "L1258",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "src_database_merge_imported_database",
-      "target": "src_database_merge_imported_table",
-      "confidence_score": 1.0
+      "target": "src_database_merge_imported_table"
     },
     {
       "relation": "calls",
@@ -26344,9 +26354,9 @@
       "source_file": "src-tauri/src/database.rs",
       "source_location": "L1266",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "src_database_merge_imported_database",
-      "target": "src_database_refresh_platform_libraries",
-      "confidence_score": 1.0
+      "target": "src_database_refresh_platform_libraries"
     },
     {
       "relation": "calls",
@@ -26355,9 +26365,9 @@
       "source_file": "src-tauri/src/database.rs",
       "source_location": "L1323",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "src_database_import_csv_directory_to_sqlite",
-      "target": "src_database_merge_imported_database",
-      "confidence_score": 1.0
+      "target": "src_database_merge_imported_database"
     },
     {
       "relation": "calls",
@@ -26410,9 +26420,9 @@
       "source_file": "src-tauri/src/database.rs",
       "source_location": "L1778",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "src_database_test_import_csv_directory_to_sqlite_merges_platforms_without_replacing_existing_library",
-      "target": "src_database_import_csv_directory_to_sqlite",
-      "confidence_score": 1.0
+      "target": "src_database_import_csv_directory_to_sqlite"
     },
     {
       "relation": "calls",
@@ -34849,6 +34859,16 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "src/contexts/SettingsContext.tsx",
+      "source_location": "L197",
+      "weight": 1.0,
+      "source": "contexts_settingscontext",
+      "target": "contexts_settingscontext_isplatformimportstatus",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src/contexts/SettingsContext.tsx",
       "source_location": "L110",
       "weight": 1.0,
       "confidence_score": 1.0,
@@ -35044,6 +35064,17 @@
       "confidence_score": 1.0,
       "source": "contexts_settingscontext",
       "target": "types_platform_platformid"
+    },
+    {
+      "relation": "imports",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "src/contexts/SettingsContext.tsx",
+      "source_location": "L10",
+      "weight": 1.0,
+      "source": "contexts_settingscontext",
+      "target": "types_platform_platformimportstatus",
+      "confidence_score": 1.0
     },
     {
       "relation": "imports",
@@ -42757,5 +42788,5 @@
       "source_file": "GB64_Modern_Frontend_Requirements.md"
     }
   ],
-  "built_at_commit": "91ecf78b72004d3b0e886b2933586088c84b7324"
+  "built_at_commit": "0646e96f5af1687258b9292c60cbdbcfb7071d84"
 }

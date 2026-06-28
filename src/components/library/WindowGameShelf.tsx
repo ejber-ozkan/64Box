@@ -151,7 +151,7 @@ export function WindowGameShelf({
         >
           {games.map((game, index) => (
             <article
-              key={`${title}-${game.id}`}
+              key={`${title}-${game.id}-${index}`}
               onClick={() => onSelectGame(game)}
               onMouseEnter={() => {
                 if (isMouseMode) {
