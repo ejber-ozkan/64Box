@@ -133,6 +133,7 @@ A user can import and browse multiple platforms without one platform's games, me
 - **FR-023**: Atari 800 platform switcher, import, and settings interactions MUST follow the same keyboard/gamepad interaction conventions as the existing Commodore 64 settings flows.
 - **FR-024**: Existing flat Commodore 64 settings MUST migrate into C64 platform-scoped settings without losing user paths, emulator choices, or browsing state.
 - **FR-025**: Altirra support for Atari 800 MUST include executable validation and real primary game-file launching in the first implementation slice.
+- **FR-026**: The settings menu MUST show platform path pages only for imported platforms, label them by platform (for example, "C64 Platform Paths" and "Atari 800 Platform Paths"), and MUST NOT use a single generic "Local Paths" page for platform-scoped paths.
 
 ### Key Entities *(include if feature involves data)*
 

@@ -69,7 +69,7 @@ export function PlayButton({ game, launchTarget, nav, compact = false }: PlayBut
 
     if (isRetroarch && !settings.retroarchCorePath) {
       setStatus('error');
-      setMessage('RetroArch requires a Core (DLL/SO). Please select one in Settings → Local Paths.');
+      setMessage('RetroArch requires a Core (DLL/SO). Please select one in the platform paths settings.');
       setTimeout(() => setStatus('idle'), 6000);
       return;
     }

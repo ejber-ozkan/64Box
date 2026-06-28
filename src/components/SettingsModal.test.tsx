@@ -28,11 +28,30 @@ vi.mock('../lib/ui-sound-effects', () => ({
   playUiSoundEffect: vi.fn(),
 }));
 
-function makeSettings(activePlatformId: Settings['activePlatformId']): Settings {
+function makeSettings(
+  activePlatformId: Settings['activePlatformId'],
+  importedPlatformIds: Settings['activePlatformId'][] = ['c64'],
+): Settings {
   const platformSettings = createDefaultPlatformSettingsMap();
+  platformSettings.c64.folders.gamesPath = 'D:/GB64/Games';
+  platformSettings.c64.folders.screenshotsPath = 'D:/GB64/Screenshots';
+  platformSettings.c64.folders.musicPath = 'D:/GB64/C64Music';
+  platformSettings.c64.folders.photosPath = 'D:/GB64/Photos';
+  platformSettings.c64.folders.extrasPath = 'D:/GB64/Extras';
+  platformSettings.c64.emulator.executablePaths['vice-c64'] = 'C:/VICE/x64sc.exe';
+  platformSettings.c64.emulator.executablePaths['retroarch-c64'] = 'C:/RetroArch/retroarch.exe';
+  platformSettings.c64.emulator.corePaths['retroarch-c64'] = 'C:/RetroArch/cores/vice_x64sc_libretro.dll';
+  platformSettings.atari800.folders.gamesPath = 'E:/Atari/Games';
+  platformSettings.atari800.folders.screenshotsPath = 'E:/Atari/Screenshots';
+  platformSettings.atari800.folders.musicPath = 'E:/Atari/Music';
+  platformSettings.atari800.folders.photosPath = 'E:/Atari/Photos';
+  platformSettings.atari800.folders.extrasPath = 'E:/Atari/Extras';
   platformSettings.atari800.emulator.executablePaths['retroarch-atari800'] = 'C:/RetroArch/retroarch.exe';
   platformSettings.atari800.emulator.corePaths['retroarch-atari800'] = 'C:/RetroArch/cores/atari800_libretro.dll';
   platformSettings.atari800.emulator.executablePaths['altirra-atari800'] = 'C:/Altirra/Altirra64.exe';
+  importedPlatformIds.forEach((platformId) => {
+    platformSettings[platformId].library.importStatus = 'imported';
+  });
 
   return {
     screenshotsPath: '',
@@ -80,9 +99,13 @@ function makeSettings(activePlatformId: Settings['activePlatformId']): Settings 
 
 let currentSettings = makeSettings('c64');
 
-function openLocalPaths() {
+function renderSettings() {
   render(<SettingsView onBack={vi.fn()} />);
-  fireEvent.click(screen.getByText('📁 Local Paths'));
+}
+
+function openSettingsTab(label: string) {
+  renderSettings();
+  fireEvent.click(screen.getByText(label));
 }
 
 describe('SettingsView platform emulator settings', () => {
@@ -90,19 +113,40 @@ describe('SettingsView platform emulator settings', () => {
     updateSettings.mockClear();
   });
 
-  test('hides Atari 800-only Altirra settings while C64 is active', () => {
-    currentSettings = makeSettings('c64');
+  test('shows one platform paths tab for each imported platform', () => {
+    currentSettings = makeSettings('c64', ['c64', 'atari800']);
 
-    openLocalPaths();
+    renderSettings();
 
+    expect(screen.queryByText('📁 Local Paths')).toBeNull();
+    expect(screen.getByText('C64 Platform Paths')).toBeTruthy();
+    expect(screen.getByText('Atari 800 Platform Paths')).toBeTruthy();
+  });
+
+  test('hides platform paths tabs for unimported platforms', () => {
+    currentSettings = makeSettings('c64', ['c64']);
+
+    renderSettings();
+
+    expect(screen.getByText('C64 Platform Paths')).toBeTruthy();
+    expect(screen.queryByText('Atari 800 Platform Paths')).toBeNull();
+  });
+
+  test('keeps C64 paths editable while Atari 800 is active', () => {
+    currentSettings = makeSettings('atari800', ['c64', 'atari800']);
+
+    openSettingsTab('C64 Platform Paths');
+
+    expect(screen.getByDisplayValue('D:/GB64/Games')).toBeTruthy();
     expect(screen.queryByText('Altirra Executable (Altirra64.exe)')).toBeNull();
   });
 
-  test('shows Atari 800 RetroArch and Altirra settings while Atari 800 is active', () => {
-    currentSettings = makeSettings('atari800');
+  test('shows Atari 800 path controls only from the imported Atari 800 tab', () => {
+    currentSettings = makeSettings('c64', ['c64', 'atari800']);
 
-    openLocalPaths();
+    openSettingsTab('Atari 800 Platform Paths');
 
+    expect(screen.getByDisplayValue('E:/Atari/Games')).toBeTruthy();
     expect(screen.getByText('RetroArch Atari800 Core')).toBeTruthy();
     expect(screen.getByText('Altirra Executable (Altirra64.exe)')).toBeTruthy();
   });

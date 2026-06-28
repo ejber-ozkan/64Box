@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback, useEffect, useState } from 'react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 import { useSettings } from '../contexts/SettingsContext';
 import { useGamepad } from '../hooks/useGamepad';
 import { useInputMode } from '../hooks/useInputMode';
@@ -14,8 +14,9 @@ import { PathsSettingsTab } from './settings/PathsSettingsTab';
 import { ScrapersSettingsTab } from './settings/ScrapersSettingsTab';
 import {
   getEditableSettings,
-  SETTINGS_ITEM_COUNTS,
-  SETTINGS_TABS,
+  getPlatformIdFromSettingsTab,
+  getSettingsItemCount,
+  getSettingsTabs,
   type EditableSettings,
   type SettingsTabId,
 } from './settings/types';
@@ -26,14 +27,6 @@ interface SettingsViewProps {
 }
 
 type HeaderZone = 'tabs' | 'content' | 'header';
-type DirectoryField =
-  | 'romsPath'
-  | 'screenshotsPath'
-  | 'soundsPath'
-  | 'musicianPhotosPath'
-  | 'extrasPath'
-  | 'scrapedMediaPath';
-type FileField = 'emulatorPath' | 'retroarchPath' | 'retroarchCorePath';
 
 export function SettingsView({ onBack, onOpenTigerHeli }: SettingsViewProps) {
   const { settings, updateSettings } = useSettings();
@@ -43,10 +36,20 @@ export function SettingsView({ onBack, onOpenTigerHeli }: SettingsViewProps) {
   const [activeTab, setActiveTab] = useState<SettingsTabId>('appearance');
   const [navZone, setNavZone] = useState<HeaderZone>('tabs');
   const [focusedIdx, setFocusedIdx] = useState(0);
+  const settingsTabs = useMemo(() => getSettingsTabs(settings), [settings]);
+  const activePlatformPathsId = getPlatformIdFromSettingsTab(activeTab);
 
   useEffect(() => {
     setDraft(getEditableSettings(settings));
   }, [settings]);
+
+  useEffect(() => {
+    if (!settingsTabs.some((tab) => tab.id === activeTab)) {
+      setActiveTab('appearance');
+      setFocusedIdx(0);
+      setNavZone('tabs');
+    }
+  }, [activeTab, settingsTabs]);
 
   const setField = useCallback(<K extends keyof EditableSettings>(key: K, value: EditableSettings[K]) => {
     setDraft((prev) => ({ ...prev, [key]: value }));
@@ -72,25 +75,9 @@ export function SettingsView({ onBack, onOpenTigerHeli }: SettingsViewProps) {
     [navZone, focusedIdx],
   );
 
-  const browseDirectory = useCallback(
-    async (field: DirectoryField) => {
-      const chosen = await openDirectoryDialog();
-      if (chosen) {
-        setField(field, chosen);
-      }
-    },
-    [setField],
-  );
+  const browseDirectory = useCallback(async () => openDirectoryDialog(), []);
 
-  const browseFile = useCallback(
-    async (field: FileField) => {
-      const chosen = await openFileDialog();
-      if (chosen) {
-        setField(field, chosen);
-      }
-    },
-    [setField],
-  );
+  const browseFile = useCallback(async () => openFileDialog(), []);
 
   const moveFocus = useCallback(
     (dir: 'UP' | 'DOWN' | 'LEFT' | 'RIGHT') => {
@@ -126,21 +113,21 @@ export function SettingsView({ onBack, onOpenTigerHeli }: SettingsViewProps) {
       }
       if (dir === 'LEFT' && navZone === 'content') {
         setNavZone('tabs');
-        setFocusedIdx(SETTINGS_TABS.findIndex((tab) => tab.id === activeTab));
+        setFocusedIdx(settingsTabs.findIndex((tab) => tab.id === activeTab));
         return;
       }
 
       if (navZone === 'tabs') {
-        const max = SETTINGS_TABS.length - 1;
+        const max = settingsTabs.length - 1;
         if (dir === 'UP') setFocusedIdx((prev) => (prev > 0 ? prev - 1 : max));
         if (dir === 'DOWN') setFocusedIdx((prev) => (prev < max ? prev + 1 : 0));
       } else {
-        const max = SETTINGS_ITEM_COUNTS[activeTab] - 1;
+        const max = getSettingsItemCount(activeTab) - 1;
         if (dir === 'UP') setFocusedIdx((prev) => (prev > 0 ? prev - 1 : max));
         if (dir === 'DOWN') setFocusedIdx((prev) => (prev < max ? prev + 1 : 0));
       }
     },
-    [activeTab, focusedIdx, navZone],
+    [activeTab, focusedIdx, navZone, settingsTabs],
   );
 
   const handleSelect = useCallback(() => {
@@ -154,7 +141,7 @@ export function SettingsView({ onBack, onOpenTigerHeli }: SettingsViewProps) {
     }
 
     if (navZone === 'tabs') {
-      setActiveTab(SETTINGS_TABS[focusedIdx].id);
+      setActiveTab(settingsTabs[focusedIdx].id);
       setNavZone('content');
       setFocusedIdx(0);
       return;
@@ -165,7 +152,7 @@ export function SettingsView({ onBack, onOpenTigerHeli }: SettingsViewProps) {
       element.focus();
       element.click();
     }
-  }, [focusedIdx, handleSave, navZone, onBack]);
+  }, [focusedIdx, handleSave, navZone, onBack, settingsTabs]);
 
   useEffect(() => {
     const handleKeyDown = (event: KeyboardEvent) => {
@@ -208,7 +195,7 @@ export function SettingsView({ onBack, onOpenTigerHeli }: SettingsViewProps) {
       if (button === 'A') handleSelect();
 
       if (button === 'RB' || button === 'LB') {
-        const tabIds = SETTINGS_TABS.map((tab) => tab.id);
+        const tabIds = settingsTabs.map((tab) => tab.id);
         const currentIndex = tabIds.indexOf(activeTab);
         const nextIndex =
           button === 'RB'
@@ -279,7 +266,7 @@ export function SettingsView({ onBack, onOpenTigerHeli }: SettingsViewProps) {
             Configuration Categories
           </div>
 
-          {SETTINGS_TABS.map((tab, idx) => (
+          {settingsTabs.map((tab, idx) => (
             <button
               key={tab.id}
               onClick={() => setActiveTab(tab.id)}
@@ -309,10 +296,11 @@ export function SettingsView({ onBack, onOpenTigerHeli }: SettingsViewProps) {
             {activeTab === 'content' && (
               <ContentSettingsTab draft={draft} setField={setField} {...contentNavProps} />
             )}
-            {activeTab === 'paths' && (
+            {activePlatformPathsId && (
               <PathsSettingsTab
                 draft={draft}
                 setField={setField}
+                platformId={activePlatformPathsId}
                 onBrowseDirectory={browseDirectory}
                 onBrowseFile={browseFile}
                 {...contentNavProps}

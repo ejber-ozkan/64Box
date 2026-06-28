@@ -1,9 +1,11 @@
 import type { Settings } from '../../contexts/SettingsContext';
+import { PLATFORM_PROFILES, SUPPORTED_PLATFORMS } from '../../lib/platform-capabilities';
+import type { PlatformId } from '../../types/platform';
 
 export type SettingsTabId =
   | 'appearance'
   | 'content'
-  | 'paths'
+  | `platform-paths:${PlatformId}`
   | 'scrapers'
   | 'maintenance'
   | 'about';
@@ -13,23 +15,63 @@ export interface SettingsTabOption {
   label: string;
 }
 
-export const SETTINGS_TABS: SettingsTabOption[] = [
+const STATIC_SETTINGS_TABS: SettingsTabOption[] = [
   { id: 'appearance', label: '🎨 Appearance' },
   { id: 'content', label: '🔞 Content' },
-  { id: 'paths', label: '📁 Local Paths' },
   { id: 'scrapers', label: '🖼️ Scrapers (Coming Soon)' },
   { id: 'maintenance', label: '🛠️ Maintenance' },
   { id: 'about', label: 'ℹ️ About & Credits' },
 ];
 
-export const SETTINGS_ITEM_COUNTS: Record<SettingsTabId, number> = {
-  appearance: 17,
-  content: 1,
-  paths: 20,
-  scrapers: 10,
-  maintenance: 1,
-  about: 3,
-};
+export function getPlatformPathsTabId(platformId: PlatformId): SettingsTabId {
+  return `platform-paths:${platformId}`;
+}
+
+export function getPlatformIdFromSettingsTab(tabId: SettingsTabId): PlatformId | null {
+  if (!tabId.startsWith('platform-paths:')) {
+    return null;
+  }
+
+  const platformId = tabId.slice('platform-paths:'.length);
+  return platformId in PLATFORM_PROFILES ? (platformId as PlatformId) : null;
+}
+
+export function getSettingsTabs(settings: Pick<Settings, 'platformSettings'>): SettingsTabOption[] {
+  const platformTabs = SUPPORTED_PLATFORMS
+    .filter((platform) => settings.platformSettings[platform.id]?.library.importStatus === 'imported')
+    .map((platform) => ({
+      id: getPlatformPathsTabId(platform.id),
+      label: `${platform.displayName === 'Commodore 64' ? 'C64' : platform.displayName} Platform Paths`,
+    }));
+
+  return [
+    STATIC_SETTINGS_TABS[0],
+    STATIC_SETTINGS_TABS[1],
+    ...platformTabs,
+    ...STATIC_SETTINGS_TABS.slice(2),
+  ];
+}
+
+export function getSettingsItemCount(tabId: SettingsTabId): number {
+  if (getPlatformIdFromSettingsTab(tabId)) {
+    return 20;
+  }
+
+  switch (tabId) {
+    case 'appearance':
+      return 17;
+    case 'content':
+      return 1;
+    case 'scrapers':
+      return 10;
+    case 'maintenance':
+      return 1;
+    case 'about':
+      return 3;
+  }
+
+  return 1;
+}
 
 export type EditableSettings = Pick<
   Settings,

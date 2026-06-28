@@ -39,6 +39,8 @@ The following workflows must remain functionally consistent for every imported p
 
 - C64 SID controls appear only for C64 or other platforms that explicitly support SID.
 - Atari 800 must not show SID-specific controls by default.
+- Settings must show platform path pages only for imported platforms, using labels such as "C64 Platform Paths" and "Atari 800 Platform Paths".
+- Settings must not expose a single generic "Local Paths" page for platform-scoped folder and emulator paths.
 - Atari 800 settings expose Games, Music, Photos, and Screenshots folders.
 - Atari 800 recognizes `.sap` music files as the platform music type for future playback support.
 - Atari 800 Photos means photo/media artwork distinct from gameplay/title screenshots.

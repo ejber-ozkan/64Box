@@ -1,20 +1,13 @@
 import type { EditableSettings, ContentNavProps } from './types';
-
-type DirectoryField =
-  | 'romsPath'
-  | 'screenshotsPath'
-  | 'soundsPath'
-  | 'musicianPhotosPath'
-  | 'extrasPath'
-  | 'scrapedMediaPath';
-
-type FileField = 'emulatorPath' | 'retroarchPath' | 'retroarchCorePath';
+import { PLATFORM_PROFILES } from '../../lib/platform-capabilities';
+import type { PlatformFolderSettings, PlatformId } from '../../types/platform';
 
 interface PathsSettingsTabProps extends ContentNavProps {
   draft: EditableSettings;
   setField: <K extends keyof EditableSettings>(key: K, value: EditableSettings[K]) => void;
-  onBrowseDirectory: (field: DirectoryField) => Promise<void>;
-  onBrowseFile: (field: FileField) => Promise<void>;
+  platformId: PlatformId;
+  onBrowseDirectory: () => Promise<string | null>;
+  onBrowseFile: () => Promise<string | null>;
 }
 
 interface PathRowProps extends ContentNavProps {
@@ -75,25 +68,78 @@ function PathRow({
 export function PathsSettingsTab({
   draft,
   setField,
+  platformId,
   onBrowseDirectory,
   onBrowseFile,
   isMouseMode,
   onMouseFocus,
   isFocused,
 }: PathsSettingsTabProps) {
-  const activePlatformSettings = draft.platformSettings[draft.activePlatformId];
-  const activeEmulatorSettings = activePlatformSettings.emulator;
-  const isAtari800 = draft.activePlatformId === 'atari800';
+  const platformProfile = PLATFORM_PROFILES[platformId];
+  const platformSettings = draft.platformSettings[platformId];
+  const platformFolders = platformSettings.folders;
+  const platformEmulatorSettings = platformSettings.emulator;
+  const isC64 = platformId === 'c64';
+  const isAtari800 = platformId === 'atari800';
+
+  const setPlatformFolders = (folders: PlatformFolderSettings) => {
+    setField('platformSettings', {
+      ...draft.platformSettings,
+      [platformId]: {
+        ...platformSettings,
+        folders,
+      },
+    });
+
+    if (platformId === draft.activePlatformId) {
+      setField('romsPath', folders.gamesPath);
+      setField('soundsPath', folders.musicPath);
+      setField('musicianPhotosPath', folders.photosPath);
+      setField('screenshotsPath', folders.screenshotsPath);
+      setField('extrasPath', folders.extrasPath);
+    }
+  };
+
+  const setPlatformFolder = (field: keyof PlatformFolderSettings, value: string) => {
+    setPlatformFolders({
+      ...platformFolders,
+      [field]: value,
+    });
+  };
+
+  const browsePlatformFolder = async (field: keyof PlatformFolderSettings) => {
+    const chosen = await onBrowseDirectory();
+    if (chosen) {
+      setPlatformFolder(field, chosen);
+    }
+  };
+
+  const browsePlatformExecutable = async (profileId: string) => {
+    const chosen = await onBrowseFile();
+    if (chosen) {
+      setPlatformExecutablePath(profileId, chosen);
+      if (profileId === 'vice-c64' && platformId === draft.activePlatformId) setField('emulatorPath', chosen);
+      if (profileId === 'retroarch-c64' && platformId === draft.activePlatformId) setField('retroarchPath', chosen);
+    }
+  };
+
+  const browsePlatformCore = async (profileId: string) => {
+    const chosen = await onBrowseFile();
+    if (chosen) {
+      setPlatformCorePath(profileId, chosen);
+      if (profileId === 'retroarch-c64' && platformId === draft.activePlatformId) setField('retroarchCorePath', chosen);
+    }
+  };
 
   const setPlatformExecutablePath = (profileId: string, value: string) => {
     setField('platformSettings', {
       ...draft.platformSettings,
-      [draft.activePlatformId]: {
-        ...activePlatformSettings,
+      [platformId]: {
+        ...platformSettings,
         emulator: {
-          ...activeEmulatorSettings,
+          ...platformEmulatorSettings,
           executablePaths: {
-            ...activeEmulatorSettings.executablePaths,
+            ...platformEmulatorSettings.executablePaths,
             [profileId]: value,
           },
         },
@@ -104,12 +150,12 @@ export function PathsSettingsTab({
   const setPlatformCorePath = (profileId: string, value: string) => {
     setField('platformSettings', {
       ...draft.platformSettings,
-      [draft.activePlatformId]: {
-        ...activePlatformSettings,
+      [platformId]: {
+        ...platformSettings,
         emulator: {
-          ...activeEmulatorSettings,
+          ...platformEmulatorSettings,
           corePaths: {
-            ...activeEmulatorSettings.corePaths,
+            ...platformEmulatorSettings.corePaths,
             [profileId]: value,
           },
         },
@@ -121,64 +167,64 @@ export function PathsSettingsTab({
     <>
       <div className="flex flex-col gap-4">
         <div className="mt-2 border-b border-[#2a475e] pb-1.5 text-xs font-bold uppercase tracking-widest text-[#66c0f4]">
-          -------- Gamebase64 Folders --------
+          -------- {platformProfile.displayName} Folders --------
         </div>
         <PathRow
           label="Games folder"
-          value={draft.romsPath}
-          onChange={(value) => setField('romsPath', value)}
-          placeholder="e.g. D:/GB64/Games"
+          value={platformFolders.gamesPath}
+          onChange={(value) => setPlatformFolder('gamesPath', value)}
+          placeholder={isC64 ? 'e.g. D:/GB64/Games' : `Select ${platformProfile.displayName} games folder`}
           inputIndex={0}
           browseIndex={1}
-          onBrowse={() => void onBrowseDirectory('romsPath')}
+          onBrowse={() => void browsePlatformFolder('gamesPath')}
           isMouseMode={isMouseMode}
           onMouseFocus={onMouseFocus}
           isFocused={isFocused}
         />
         <PathRow
           label="Screenshots folder"
-          value={draft.screenshotsPath}
-          onChange={(value) => setField('screenshotsPath', value)}
-          placeholder="e.g. D:/GB64/Screenshots"
+          value={platformFolders.screenshotsPath}
+          onChange={(value) => setPlatformFolder('screenshotsPath', value)}
+          placeholder={isC64 ? 'e.g. D:/GB64/Screenshots' : `Select ${platformProfile.displayName} screenshots folder`}
           inputIndex={2}
           browseIndex={3}
-          onBrowse={() => void onBrowseDirectory('screenshotsPath')}
+          onBrowse={() => void browsePlatformFolder('screenshotsPath')}
           isMouseMode={isMouseMode}
           onMouseFocus={onMouseFocus}
           isFocused={isFocused}
         />
         <PathRow
-          label="C64Music folder"
-          value={draft.soundsPath}
-          onChange={(value) => setField('soundsPath', value)}
-          placeholder="e.g. D:/GB64/C64Music"
+          label={isC64 ? 'C64Music folder' : 'Music folder'}
+          value={platformFolders.musicPath}
+          onChange={(value) => setPlatformFolder('musicPath', value)}
+          placeholder={isC64 ? 'e.g. D:/GB64/C64Music' : `Select ${platformProfile.displayName} music folder`}
           inputIndex={4}
           browseIndex={5}
-          onBrowse={() => void onBrowseDirectory('soundsPath')}
+          onBrowse={() => void browsePlatformFolder('musicPath')}
           isMouseMode={isMouseMode}
           onMouseFocus={onMouseFocus}
           isFocused={isFocused}
         />
         <PathRow
-          label="Photos (Musicians) folder"
-          value={draft.musicianPhotosPath}
-          onChange={(value) => setField('musicianPhotosPath', value)}
-          placeholder="e.g. D:/GB64/Photos"
+          label={isC64 ? 'Photos (Musicians) folder' : 'Photos folder'}
+          value={platformFolders.photosPath}
+          onChange={(value) => setPlatformFolder('photosPath', value)}
+          placeholder={isC64 ? 'e.g. D:/GB64/Photos' : `Select ${platformProfile.displayName} photos folder`}
           inputIndex={6}
           browseIndex={7}
-          onBrowse={() => void onBrowseDirectory('musicianPhotosPath')}
+          onBrowse={() => void browsePlatformFolder('photosPath')}
           isMouseMode={isMouseMode}
           onMouseFocus={onMouseFocus}
           isFocused={isFocused}
         />
         <PathRow
           label="Extras folder"
-          value={draft.extrasPath}
-          onChange={(value) => setField('extrasPath', value)}
-          placeholder="e.g. D:/GB64/Extras"
+          value={platformFolders.extrasPath}
+          onChange={(value) => setPlatformFolder('extrasPath', value)}
+          placeholder={isC64 ? 'e.g. D:/GB64/Extras' : `Select ${platformProfile.displayName} extras folder`}
           inputIndex={8}
           browseIndex={9}
-          onBrowse={() => void onBrowseDirectory('extrasPath')}
+          onBrowse={() => void browsePlatformFolder('extrasPath')}
           isMouseMode={isMouseMode}
           onMouseFocus={onMouseFocus}
           isFocused={isFocused}
@@ -215,8 +261,11 @@ export function PathsSettingsTab({
             <div className={`space-y-3 transition-opacity ${draft.preferredEmulator !== 'vice' ? 'opacity-50' : ''}`}>
               <PathRow
                 label="VICE Executable (x64sc.exe)"
-                value={draft.emulatorPath}
-                onChange={(value) => setField('emulatorPath', value)}
+                value={platformEmulatorSettings.executablePaths['vice-c64'] ?? draft.emulatorPath}
+                onChange={(value) => {
+                  setPlatformExecutablePath('vice-c64', value);
+                  if (platformId === draft.activePlatformId) setField('emulatorPath', value);
+                }}
                 placeholder="e.g. C:/VICE/x64sc.exe"
                 inputIndex={12}
                 isMouseMode={isMouseMode}
@@ -224,7 +273,7 @@ export function PathsSettingsTab({
                 isFocused={isFocused}
               />
               <button
-                onClick={() => void onBrowseFile('emulatorPath')}
+                onClick={() => void browsePlatformExecutable('vice-c64')}
                 onMouseEnter={() => isMouseMode && onMouseFocus(13)}
                 className={`focus-idx-13 rounded border px-3 py-2 text-xs transition ${
                   isFocused(13)
@@ -239,8 +288,11 @@ export function PathsSettingsTab({
             <div className={`space-y-3 transition-opacity ${draft.preferredEmulator !== 'retroarch' ? 'opacity-50' : ''}`}>
               <PathRow
                 label="RetroArch Executable (retroarch.exe)"
-                value={draft.retroarchPath}
-                onChange={(value) => setField('retroarchPath', value)}
+                value={platformEmulatorSettings.executablePaths['retroarch-c64'] ?? draft.retroarchPath}
+                onChange={(value) => {
+                  setPlatformExecutablePath('retroarch-c64', value);
+                  if (platformId === draft.activePlatformId) setField('retroarchPath', value);
+                }}
                 placeholder="e.g. C:/RetroArch/retroarch.exe"
                 inputIndex={14}
                 isMouseMode={isMouseMode}
@@ -248,7 +300,7 @@ export function PathsSettingsTab({
                 isFocused={isFocused}
               />
               <button
-                onClick={() => void onBrowseFile('retroarchPath')}
+                onClick={() => void browsePlatformExecutable('retroarch-c64')}
                 onMouseEnter={() => isMouseMode && onMouseFocus(15)}
                 className={`focus-idx-15 rounded border px-3 py-2 text-xs transition ${
                   isFocused(15)
@@ -261,8 +313,11 @@ export function PathsSettingsTab({
 
               <PathRow
                 label="RetroArch Core (e.g. vice_x64sc_libretro.dll)"
-                value={draft.retroarchCorePath}
-                onChange={(value) => setField('retroarchCorePath', value)}
+                value={platformEmulatorSettings.corePaths['retroarch-c64'] ?? draft.retroarchCorePath}
+                onChange={(value) => {
+                  setPlatformCorePath('retroarch-c64', value);
+                  if (platformId === draft.activePlatformId) setField('retroarchCorePath', value);
+                }}
                 placeholder="e.g. C:/RetroArch/cores/vice_x64sc_libretro.dll"
                 inputIndex={16}
                 isMouseMode={isMouseMode}
@@ -270,7 +325,7 @@ export function PathsSettingsTab({
                 isFocused={isFocused}
               />
               <button
-                onClick={() => void onBrowseFile('retroarchCorePath')}
+                onClick={() => void browsePlatformCore('retroarch-c64')}
                 onMouseEnter={() => isMouseMode && onMouseFocus(17)}
                 className={`focus-idx-17 rounded border px-3 py-2 text-xs transition ${
                   isFocused(17)
@@ -292,30 +347,36 @@ export function PathsSettingsTab({
             <div className="space-y-3">
               <PathRow
                 label="RetroArch Executable (retroarch.exe)"
-                value={activeEmulatorSettings.executablePaths['retroarch-atari800'] ?? ''}
+                value={platformEmulatorSettings.executablePaths['retroarch-atari800'] ?? ''}
                 onChange={(value) => setPlatformExecutablePath('retroarch-atari800', value)}
                 placeholder="e.g. C:/RetroArch/retroarch.exe"
                 inputIndex={12}
+                browseIndex={13}
+                onBrowse={() => void browsePlatformExecutable('retroarch-atari800')}
                 isMouseMode={isMouseMode}
                 onMouseFocus={onMouseFocus}
                 isFocused={isFocused}
               />
               <PathRow
                 label="RetroArch Atari800 Core"
-                value={activeEmulatorSettings.corePaths['retroarch-atari800'] ?? ''}
+                value={platformEmulatorSettings.corePaths['retroarch-atari800'] ?? ''}
                 onChange={(value) => setPlatformCorePath('retroarch-atari800', value)}
                 placeholder="e.g. C:/RetroArch/cores/atari800_libretro.dll"
-                inputIndex={13}
+                inputIndex={14}
+                browseIndex={15}
+                onBrowse={() => void browsePlatformCore('retroarch-atari800')}
                 isMouseMode={isMouseMode}
                 onMouseFocus={onMouseFocus}
                 isFocused={isFocused}
               />
               <PathRow
                 label="Altirra Executable (Altirra64.exe)"
-                value={activeEmulatorSettings.executablePaths['altirra-atari800'] ?? ''}
+                value={platformEmulatorSettings.executablePaths['altirra-atari800'] ?? ''}
                 onChange={(value) => setPlatformExecutablePath('altirra-atari800', value)}
                 placeholder="e.g. C:/Altirra/Altirra64.exe"
-                inputIndex={14}
+                inputIndex={16}
+                browseIndex={17}
+                onBrowse={() => void browsePlatformExecutable('altirra-atari800')}
                 isMouseMode={isMouseMode}
                 onMouseFocus={onMouseFocus}
                 isFocused={isFocused}
@@ -332,7 +393,10 @@ export function PathsSettingsTab({
           placeholder="e.g. D:/MYSOURCE/VIC40GameBase64/64BoxMedia"
           inputIndex={18}
           browseIndex={19}
-          onBrowse={() => void onBrowseDirectory('scrapedMediaPath')}
+          onBrowse={async () => {
+            const chosen = await onBrowseDirectory();
+            if (chosen) setField('scrapedMediaPath', chosen);
+          }}
           isMouseMode={isMouseMode}
           onMouseFocus={onMouseFocus}
           isFocused={isFocused}
