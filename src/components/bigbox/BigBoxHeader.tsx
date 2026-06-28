@@ -89,13 +89,13 @@ export function BigBoxHeader({
               className="font-black italic tracking-tighter text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-indigo-600 leading-none"
               style={{ fontSize: `${layout.headerTitleSize}px` }}
             >
-              64Box
+              GBBox
             </h1>
             <div
               className="ml-1 font-bold tracking-[0.3em] uppercase text-white/40"
               style={{ fontSize: `${layout.headerEyebrowSize}px` }}
             >
-              GB64 Frontend
+              GameBase Box
             </div>
           </div>
 

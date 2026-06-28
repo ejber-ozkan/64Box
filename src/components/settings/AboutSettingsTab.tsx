@@ -13,14 +13,17 @@ export function AboutSettingsTab({
   return (
     <div className="flex flex-col gap-6">
       <div className="rounded-xl border border-gray-700 bg-gray-800 p-6">
-        <h3 className="mb-4 flex items-center gap-2 text-lg font-black text-white">64Box</h3>
-        <p className="mb-4 text-sm text-gray-300">A modern Commodore 64 library and launcher.</p>
+        <h3 className="mb-4 flex items-center gap-2 text-lg font-black text-white">GBBox</h3>
+        <p className="mb-4 text-sm text-gray-300">
+          GameBase Box is a local-first launcher for GameBase-style libraries, with imports for Commodore 64,
+          Atari 800, and Atari 2600.
+        </p>
 
         <div className="mb-4 rounded-xl border border-blue-500/20 bg-blue-500/5 p-4">
           <h4 className="mb-2 text-xs font-bold uppercase tracking-widest text-blue-300">Acknowledgement</h4>
           <p className="text-sm leading-relaxed text-gray-300">
-            64Box is a frontend for the GB64 Collection. Massive thanks to the GameBase64 project and the GB64 Team
-            for decades of preservation, documentation, and community work around Commodore 64 history.
+            GBBox began as a frontend for the GB64 Collection. Massive thanks to the GameBase64 project and the GB64
+            Team for decades of preservation, documentation, and community work around Commodore 64 history.
           </p>
           <p className="mt-2 text-xs italic text-gray-400">gb64.com ©1997-2022 The GB64 Team</p>
         </div>
@@ -54,7 +57,7 @@ export function AboutSettingsTab({
               (at your option) any later version.
             </p>
             <a
-              href="https://github.com/ejber-ozkan/64Box"
+              href="https://github.com/ejber-ozkan/GameBaseBox"
               target="_blank"
               rel="noopener noreferrer"
               onMouseEnter={() => isMouseMode && onMouseFocus(0)}

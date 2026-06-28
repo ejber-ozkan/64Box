@@ -14,7 +14,7 @@ test.describe('Settings Management', () => {
     await extrasFolderInput.fill('/tmp/gb64-e2e-extras');
 
     await page.getByRole('button', { name: 'Save Configuration' }).click();
-    await expect(page.getByText('64Box')).toBeVisible();
+    await expect(page.getByText('GBBox')).toBeVisible();
 
     await page.reload();
     await waitForAppReady(page);

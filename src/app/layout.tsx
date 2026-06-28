@@ -2,8 +2,8 @@ import type { Metadata } from "next";
 import "./globals.css";
 
 export const metadata: Metadata = {
-  title: "64Box",
-  description: "GB64 frontend for browsing, filtering, and launching Commodore 64 games.",
+  title: "GBBox",
+  description: "GameBase Box frontend for browsing, importing, and launching GameBase-style libraries.",
 };
 
 import { SettingsProvider } from '@/contexts/SettingsContext';

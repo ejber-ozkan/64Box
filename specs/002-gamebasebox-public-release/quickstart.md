@@ -17,7 +17,18 @@ npm run test:backend
 npm run build
 ```
 
-Run the Tauri release build command used by the project and record the exact command and artifact paths here during implementation.
+Tauri release build command:
+
+```bash
+npm run tauri:build
+```
+
+Windows artifacts produced on 2026-06-28:
+
+- `src-tauri/target/release/bundle/msi/GBBox_0.1.0_x64_en-US.msi`
+- `src-tauri/target/release/bundle/nsis/GBBox_0.1.0_x64-setup.exe`
+
+The first sandboxed build produced `src-tauri/target/release/gamebasebox.exe` but could not bundle installers because WiX download was blocked. The elevated build completed both installer bundles.
 
 ## Branding Audit
 

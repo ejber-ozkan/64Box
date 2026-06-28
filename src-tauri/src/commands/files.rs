@@ -325,7 +325,7 @@ mod tests {
 
     #[tokio::test]
     async fn test_scan_non_existent_directory() {
-        let res = scan_rom_directory("/non/existent/path/64box".to_string()).await;
+        let res = scan_rom_directory("/non/existent/path/gbbox".to_string()).await;
         assert!(res.is_err());
     }
 
@@ -364,7 +364,7 @@ mod tests {
 
     #[tokio::test]
     async fn test_read_file_bytes_rejects_non_existent_path() {
-        let res = read_file_bytes("/non/existent/64box/rom.d64".to_string()).await;
+        let res = read_file_bytes("/non/existent/gbbox/rom.d64".to_string()).await;
         assert!(res.is_err());
         let msg = res.unwrap_err();
         assert!(msg.contains("not found") || msg.contains("no such file"), "unexpected error: {}", msg);

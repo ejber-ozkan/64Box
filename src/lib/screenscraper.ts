@@ -66,8 +66,8 @@ export async function searchScreenScraper(
   const finalDevPass = devPass || DEV_PASS;
   // If custom dev credentials are used, we should probably set softname to something else,
   // but if they are using skraper/recalbox, SOFT_NAME must match.
-  // For now, we'll use 'Skraper' if they use the default, or '64Box' if they provide their own.
-  const finalSoftName = (finalDevId === 'skraper' || finalDevId === 'recalbox') ? SOFT_NAME : '64Box';
+  // For now, we'll use 'Skraper' if they use the default, or 'GBBox' if they provide their own.
+  const finalSoftName = (finalDevId === 'skraper' || finalDevId === 'recalbox') ? SOFT_NAME : 'GBBox';
 
   const params = new URLSearchParams({
     devid: finalDevId,

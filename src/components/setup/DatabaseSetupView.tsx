@@ -69,7 +69,7 @@ export function DatabaseSetupView({
               Build Your {platformName} Database
             </h1>
             <p className="mt-4 max-w-3xl text-base leading-8 text-white/68">
-              64Box needs the original <span className="font-bold text-white">{platformName}</span>{' '}
+              GBBox needs the original <span className="font-bold text-white">{platformName}</span>{' '}
               MDB file to build the local SQLite database for search, filters, favorites, and BigBox browsing.
             </p>
             {showPlatformPicker ? (
@@ -176,7 +176,7 @@ export function DatabaseSetupView({
                 What Happens
               </div>
               <ol className="space-y-4 text-sm leading-7 text-white/72">
-                <li>1. 64Box exports the MDB tables to CSV on this machine.</li>
+                <li>1. GBBox exports the MDB tables to CSV on this machine.</li>
                 <li>2. The app imports those CSVs into a local optimized SQLite database.</li>
                 <li>3. Search indexes, cover lookup, and support tables are created automatically.</li>
                 <li>4. The normal library UI starts once the database is ready.</li>

@@ -50,10 +50,10 @@ export function LibraryHeader({
         <div className="flex items-center gap-6">
           <div className="flex flex-col">
             <h1 className="text-4xl font-black italic tracking-tighter text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-indigo-600 leading-none">
-              64Box
+              GBBox
             </h1>
             <div className="ml-1 text-[10px] font-bold uppercase tracking-[0.3em] text-white/40">
-              GB64 Frontend
+              GameBase Box
             </div>
           </div>
           <div className="mx-2 h-8 w-px bg-white/10" />

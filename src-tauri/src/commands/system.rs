@@ -181,7 +181,7 @@ mod tests {
 
     #[test]
     fn test_validate_open_path_rejects_nonexistent_path() {
-        let res = validate_open_path("/non/existent/64box/extras/manual.pdf");
+        let res = validate_open_path("/non/existent/gbbox/extras/manual.pdf");
         assert!(res.is_err());
         let msg = res.unwrap_err();
         assert!(msg.contains("does not exist"), "unexpected message: {}", msg);

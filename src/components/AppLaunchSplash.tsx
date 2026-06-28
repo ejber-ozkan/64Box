@@ -23,7 +23,7 @@ export function AppLaunchSplash() {
           `,
         }}
       >
-        64Box
+        GBBox
       </div>
     </div>
   );

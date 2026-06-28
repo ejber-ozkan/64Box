@@ -138,3 +138,7 @@ Recorded on 2026-06-28 for branch `codex/spec-kit-constitution`.
 | Full configured Playwright suite | `npm run test:e2e` | BLOCKED locally: Chromium launch required unsandboxed execution, and the configured `mobile-safari` project could not run because WebKit was not installed at `C:\Users\ejber\AppData\Local\ms-playwright\webkit-2248\Playwright.exe` |
 
 The Chromium Playwright validation covers platform selection, Atari 800 import routing, C64 platform path settings persistence, and Atari 800 launch-settings visibility for RetroArch Atari800 and Altirra.
+
+## Closure Note
+
+This spec is complete as of 2026-06-28. Atari 800 import support is complete, Atari 2600 import support has been enabled in the same platform-scoped flow, and public release/rebrand work continues in `specs/002-gamebasebox-public-release/`.

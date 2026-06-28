@@ -144,7 +144,7 @@ export function BigBoxExitPrompt({
           <div className="mb-3 text-[11px] font-black uppercase tracking-[0.32em] text-red-300/70">
             Exit Fullscreen Session
           </div>
-          <h2 className="text-4xl font-black tracking-tight text-white">Quit 64Box?</h2>
+          <h2 className="text-4xl font-black tracking-tight text-white">Quit GBBox?</h2>
           <p className="mt-3 max-w-[560px] text-base leading-7 text-white/58">
             Your current fullscreen session will be saved before the application closes, including your
             latest BigBox browsing position and saved settings.

@@ -1,8 +1,8 @@
 {
   "$schema": "../node_modules/@tauri-apps/cli/config.schema.json",
-  "productName": "64Box",
-  "version": "0.7.0",
-  "identifier": "com.vic40gamebox",
+  "productName": "GBBox",
+  "version": "0.1.0",
+  "identifier": "com.gamebasebox.desktop",
   "build": {
     "frontendDist": "../out",
     "devUrl": "http://localhost:3000",
@@ -12,7 +12,7 @@
   "app": {
     "windows": [
       {
-        "title": "64Box - Commodore 64 Game Library",
+        "title": "GBBox - GameBase Box",
         "width": 800,
         "height": 600,
         "resizable": true,

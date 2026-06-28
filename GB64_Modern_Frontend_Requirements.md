@@ -2,8 +2,8 @@ Product Requirements Document: Modern Gamebase64 Frontend
 
 1. Project Overview
 
-Name: Project 64Box (Working Title)
-Goal: Create a modern, fast, and visually rich cross-platform frontend for the Gamebase64 (GB64) database, inspired by LaunchBox. It must replicate all core features of the original Windows-only Gamebase frontend but utilize modern UI/UX paradigms and run across desktop and mobile platforms.
+Name: GBBox / GameBase Box
+Goal: Create a modern, fast, and visually rich cross-platform frontend for GameBase-style databases, with GameBase64 (GB64) as the compatibility baseline. It must replicate core features of the original Windows-only GameBase frontend while using modern UI/UX paradigms and running across desktop platforms.
 
 2. Target Platforms & Proposed Tech Stack
 

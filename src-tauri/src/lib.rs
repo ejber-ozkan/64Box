@@ -98,5 +98,5 @@ pub fn run() {
             Ok(())
         })
         .run(tauri::generate_context!())
-        .expect("error while running 64Box");
+        .expect("error while running GBBox");
 }

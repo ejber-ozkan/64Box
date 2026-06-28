@@ -12,7 +12,8 @@ pub fn get_encryption_key() -> [u8; 32] {
     let uid = machine_uid::get().unwrap_or_else(|_| "fixed-fallback-uid".to_string());
     let mut hasher = Sha256::new();
     hasher.update(uid.as_bytes());
-    hasher.update(b"64Box-Salt-2026"); // Application specific salt
+    // Keep the legacy salt stable so existing encrypted settings remain readable.
+    hasher.update(b"64Box-Salt-2026");
     let result = hasher.finalize();
     let mut key = [0u8; 32];
     key.copy_from_slice(&result);

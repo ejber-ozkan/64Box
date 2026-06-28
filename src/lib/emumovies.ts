@@ -38,7 +38,7 @@ export async function loginEmuMovies(user: string, api: string): Promise<string>
 
   
   // Example of the older but common EmuMovies API login
-  const url = `https://api.gamesdbase.com/login.aspx?user=${encodeURIComponent(user)}&api=${encodeURIComponent(api)}&product=64Box`;
+  const url = `https://api.gamesdbase.com/login.aspx?user=${encodeURIComponent(user)}&api=${encodeURIComponent(api)}&product=GBBox`;
   
   const response = await fetch(url);
   if (!response.ok) throw new Error(`Login failed: ${response.statusText}`);

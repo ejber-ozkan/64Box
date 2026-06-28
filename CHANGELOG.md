@@ -2,6 +2,17 @@
 
 All notable changes to this project will be documented in this file.
 
+## [0.1.0] - 2026-06-28
+
+### Added
+- Launched the GameBaseBox public release plan under the new **GBBox** short name and **GameBase Box** long name.
+- Documented first-release import support for Commodore 64, Atari 800, and Atari 2600, with more GameBase platforms coming soon.
+- Added `RELEASE_NOTES_0.1.0.md` for the first public GBBox release.
+
+### Changed
+- Rebranded public-facing app metadata, README copy, and app chrome from 64Box to GBBox.
+- Reset public release version metadata to `0.1.0` for the clean-history `GameBaseBox` repository.
+
 ## [0.7.0] - 2026-04-19
 
 ### Added

@@ -1,10 +1,10 @@
-# 64Box Constitution
+# GBBox Constitution
 
 ## Core Principles
 
 ### I. Multi-Platform GameBase Core
-64Box is a local-first frontend for GameBase-style game libraries. The current
-application centers on the GameBase64 Commodore 64 collection, but all new
+GBBox, short for GameBase Box, is a local-first frontend for GameBase-style game libraries. The current
+application supports the GameBase64 Commodore 64 collection plus Atari imports, but all new
 domain work MUST avoid hard-coding Commodore-only assumptions unless the feature
 is explicitly scoped as a C64 compatibility layer. Specs and plans that touch
 games, metadata, media, extras, launch paths, search, or import MUST identify
@@ -18,7 +18,7 @@ without duplicating the whole browsing, search, settings, or launch stack.
 
 ### II. Local-First Library Ownership
 The user owns their databases, ROMs, media, emulator paths, and generated launch
-files. 64Box MUST continue to work as a desktop app over local files with no
+files. GBBox MUST continue to work as a desktop app over local files with no
 required cloud service. Features MUST preserve explicit user-selected paths,
 avoid silently moving or deleting collection content, and make generated
 temporary files distinguishable from source library files.
@@ -111,7 +111,7 @@ state why and what risk remains.
 ## Governance
 
 This constitution governs future specs, plans, and implementation decisions for
-64Box. It supersedes informal preferences when they conflict with these
+GBBox. It supersedes informal preferences when they conflict with these
 principles. Amendments require an explicit update to this file, a short reason
 in the commit or beads issue, and a review of affected spec-kit templates or
 active specs.

@@ -14,7 +14,7 @@ fn create_launch_temp_dir() -> Result<PathBuf, String> {
             .map_err(|e| e.to_string())?
             .as_nanos();
         let candidate = base_dir.join(format!(
-            "64BoxTemp-{}-{}-{}",
+            "GBBoxTemp-{}-{}-{}",
             process_id, timestamp, attempt
         ));
 
@@ -779,7 +779,7 @@ mod tests {
 
     #[tokio::test]
     async fn test_launch_emulator_zip_does_not_delete_shared_temp_directory() {
-        let shared_temp_dir = std::env::temp_dir().join("64BoxTemp");
+        let shared_temp_dir = std::env::temp_dir().join("GBBoxTemp");
         let _ = std::fs::remove_dir_all(&shared_temp_dir);
         std::fs::create_dir_all(&shared_temp_dir).unwrap();
         let sentinel = shared_temp_dir.join("keep.txt");

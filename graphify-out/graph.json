@@ -1541,136 +1541,6 @@
       "norm_label": "config"
     },
     {
-      "label": "fix_all_tests.py",
-      "file_type": "code",
-      "source_file": "scratch/fix_all_tests.py",
-      "source_location": "L1",
-      "_origin": "ast",
-      "id": "scratch_fix_all_tests",
-      "community": 27,
-      "norm_label": "fix_all_tests.py"
-    },
-    {
-      "label": "refactor_file()",
-      "file_type": "code",
-      "source_file": "scratch/fix_all_tests.py",
-      "source_location": "L39",
-      "_origin": "ast",
-      "id": "scratch_fix_all_tests_refactor_file",
-      "community": 27,
-      "norm_label": "refactor_file()"
-    },
-    {
-      "label": "Fix all test files to use a per-process mutex guard for VIC40_DB_PATH env var.",
-      "file_type": "rationale",
-      "source_file": "scratch/fix_all_tests.py",
-      "source_location": "L1",
-      "_origin": "ast",
-      "id": "scratch_fix_all_tests_rationale_1",
-      "community": 27,
-      "norm_label": "fix all test files to use a per-process mutex guard for vic40_db_path env var."
-    },
-    {
-      "label": "insert_after: a string that marks where to insert the guard header.",
-      "file_type": "rationale",
-      "source_file": "scratch/fix_all_tests.py",
-      "source_location": "L40",
-      "_origin": "ast",
-      "id": "scratch_fix_all_tests_rationale_40",
-      "community": 27,
-      "norm_label": "insert_after: a string that marks where to insert the guard header."
-    },
-    {
-      "label": "fix_db_tests.py",
-      "file_type": "code",
-      "source_file": "scratch/fix_db_tests.py",
-      "source_location": "L1",
-      "_origin": "ast",
-      "id": "scratch_fix_db_tests",
-      "community": 68,
-      "norm_label": "fix_db_tests.py"
-    },
-    {
-      "label": "replace1()",
-      "file_type": "code",
-      "source_file": "scratch/fix_db_tests.py",
-      "source_location": "L33",
-      "_origin": "ast",
-      "id": "scratch_fix_db_tests_replace1",
-      "community": 68,
-      "norm_label": "replace1()"
-    },
-    {
-      "label": "Script to refactor all database.rs tests to use DbEnvGuard instead of manual set",
-      "file_type": "rationale",
-      "source_file": "scratch/fix_db_tests.py",
-      "source_location": "L1",
-      "_origin": "ast",
-      "id": "scratch_fix_db_tests_rationale_1",
-      "community": 68,
-      "norm_label": "script to refactor all database.rs tests to use dbenvguard instead of manual set"
-    },
-    {
-      "label": "inspect_db.py",
-      "file_type": "code",
-      "source_file": "scratch/inspect_db.py",
-      "source_location": "L1",
-      "_origin": "ast",
-      "id": "scratch_inspect_db",
-      "community": 97,
-      "norm_label": "inspect_db.py"
-    },
-    {
-      "label": "patch_tokio_tests.py",
-      "file_type": "code",
-      "source_file": "scratch/patch_tokio_tests.py",
-      "source_location": "L1",
-      "_origin": "ast",
-      "id": "scratch_patch_tokio_tests",
-      "community": 99,
-      "norm_label": "patch_tokio_tests.py"
-    },
-    {
-      "label": "patch_tokio_tests2.py",
-      "file_type": "code",
-      "source_file": "scratch/patch_tokio_tests2.py",
-      "source_location": "L1",
-      "_origin": "ast",
-      "id": "scratch_patch_tokio_tests2",
-      "community": 100,
-      "norm_label": "patch_tokio_tests2.py"
-    },
-    {
-      "label": "test_query.py",
-      "file_type": "code",
-      "source_file": "scratch/test_query.py",
-      "source_location": "L1",
-      "_origin": "ast",
-      "id": "scratch_test_query",
-      "community": 101,
-      "norm_label": "test_query.py"
-    },
-    {
-      "label": "unify_test_guards.py",
-      "file_type": "code",
-      "source_file": "scratch/unify_test_guards.py",
-      "source_location": "L1",
-      "_origin": "ast",
-      "id": "scratch_unify_test_guards",
-      "community": 83,
-      "norm_label": "unify_test_guards.py"
-    },
-    {
-      "label": "Replace local DB_ENV_MUTEX / DbEnvGuard definitions with imports from crate::tes",
-      "file_type": "rationale",
-      "source_file": "scratch/unify_test_guards.py",
-      "source_location": "L1",
-      "_origin": "ast",
-      "id": "scratch_unify_test_guards_rationale_1",
-      "community": 83,
-      "norm_label": "replace local db_env_mutex / dbenvguard definitions with imports from crate::tes"
-    },
-    {
       "label": "convert_csv_to_sqlite.js",
       "file_type": "code",
       "source_file": "scripts/convert_csv_to_sqlite.js",
@@ -2565,6 +2435,66 @@
       "id": "scripts_platform_import_config_test_platformimportconfigs_getplatformimportconfig_requiredplatformcolumns",
       "community": 14,
       "norm_label": "{\n  platformimportconfigs,\n  getplatformimportconfig,\n  requiredplatformcolumns,\n}"
+    },
+    {
+      "label": "release_branding.test.js",
+      "file_type": "code",
+      "source_file": "scripts/release_branding.test.js",
+      "source_location": "L1",
+      "_origin": "ast",
+      "id": "scripts_release_branding_test",
+      "community": 98,
+      "norm_label": "release_branding.test.js"
+    },
+    {
+      "label": "fs",
+      "file_type": "code",
+      "source_file": "scripts/release_branding.test.js",
+      "source_location": "L1",
+      "_origin": "ast",
+      "id": "scripts_release_branding_test_fs",
+      "community": 98,
+      "norm_label": "fs"
+    },
+    {
+      "label": "path",
+      "file_type": "code",
+      "source_file": "scripts/release_branding.test.js",
+      "source_location": "L2",
+      "_origin": "ast",
+      "id": "scripts_release_branding_test_path",
+      "community": 98,
+      "norm_label": "path"
+    },
+    {
+      "label": "root",
+      "file_type": "code",
+      "source_file": "scripts/release_branding.test.js",
+      "source_location": "L4",
+      "_origin": "ast",
+      "id": "scripts_release_branding_test_root",
+      "community": 98,
+      "norm_label": "root"
+    },
+    {
+      "label": "readJson()",
+      "file_type": "code",
+      "source_file": "scripts/release_branding.test.js",
+      "source_location": "L6",
+      "_origin": "ast",
+      "id": "scripts_release_branding_test_readjson",
+      "community": 98,
+      "norm_label": "readjson()"
+    },
+    {
+      "label": "readText()",
+      "file_type": "code",
+      "source_file": "scripts/release_branding.test.js",
+      "source_location": "L10",
+      "_origin": "ast",
+      "id": "scripts_release_branding_test_readtext",
+      "community": 98,
+      "norm_label": "readtext()"
     },
     {
       "label": "setup_emulator.js",
@@ -4893,7 +4823,7 @@
       "source_location": "L63",
       "_origin": "ast",
       "id": "src_tauri_src_commands_setup_rs_importplatformdatabaserequest",
-      "community": 6,
+      "community": 4,
       "norm_label": "importplatformdatabaserequest"
     },
     {
@@ -4913,7 +4843,7 @@
       "source_location": "L93",
       "_origin": "ast",
       "id": "commands_setup_validate_platform_import_request",
-      "community": 6,
+      "community": 4,
       "norm_label": "validate_platform_import_request()"
     },
     {
@@ -6490,7 +6420,7 @@
       "label": "encrypt_value()",
       "file_type": "code",
       "source_file": "src-tauri/src/security.rs",
-      "source_location": "L22",
+      "source_location": "L23",
       "_origin": "ast",
       "id": "src_security_encrypt_value",
       "community": 15,
@@ -6500,7 +6430,7 @@
       "label": "Result",
       "file_type": "code",
       "source_file": "src-tauri/src/security.rs",
-      "source_location": "L22",
+      "source_location": "L23",
       "_origin": "ast",
       "id": "src_tauri_src_security_rs_result",
       "community": 15,
@@ -6510,7 +6440,7 @@
       "label": "String",
       "file_type": "code",
       "source_file": "src-tauri/src/security.rs",
-      "source_location": "L22",
+      "source_location": "L23",
       "_origin": "ast",
       "id": "src_tauri_src_security_rs_string",
       "community": 15,
@@ -6520,7 +6450,7 @@
       "label": "decrypt_legacy_value()",
       "file_type": "code",
       "source_file": "src-tauri/src/security.rs",
-      "source_location": "L44",
+      "source_location": "L45",
       "_origin": "ast",
       "id": "src_security_decrypt_legacy_value",
       "community": 15,
@@ -6530,7 +6460,7 @@
       "label": "decrypt_value()",
       "file_type": "code",
       "source_file": "src-tauri/src/security.rs",
-      "source_location": "L62",
+      "source_location": "L63",
       "_origin": "ast",
       "id": "src_security_decrypt_value",
       "community": 15,
@@ -6540,7 +6470,7 @@
       "label": "encrypt_value_with_legacy_fixed_iv()",
       "file_type": "code",
       "source_file": "src-tauri/src/security.rs",
-      "source_location": "L91",
+      "source_location": "L92",
       "_origin": "ast",
       "id": "src_security_encrypt_value_with_legacy_fixed_iv",
       "community": 15,
@@ -6550,7 +6480,7 @@
       "label": "test_encryption_roundtrip()",
       "file_type": "code",
       "source_file": "src-tauri/src/security.rs",
-      "source_location": "L100",
+      "source_location": "L101",
       "_origin": "ast",
       "id": "src_security_test_encryption_roundtrip",
       "community": 15,
@@ -6560,7 +6490,7 @@
       "label": "test_encryption_empty_string()",
       "file_type": "code",
       "source_file": "src-tauri/src/security.rs",
-      "source_location": "L108",
+      "source_location": "L109",
       "_origin": "ast",
       "id": "src_security_test_encryption_empty_string",
       "community": 15,
@@ -6570,7 +6500,7 @@
       "label": "test_encryption_long_string()",
       "file_type": "code",
       "source_file": "src-tauri/src/security.rs",
-      "source_location": "L116",
+      "source_location": "L117",
       "_origin": "ast",
       "id": "src_security_test_encryption_long_string",
       "community": 15,
@@ -6580,7 +6510,7 @@
       "label": "test_encryption_uses_unique_nonce_per_value()",
       "file_type": "code",
       "source_file": "src-tauri/src/security.rs",
-      "source_location": "L124",
+      "source_location": "L125",
       "_origin": "ast",
       "id": "src_security_test_encryption_uses_unique_nonce_per_value",
       "community": 15,
@@ -6590,7 +6520,7 @@
       "label": "test_decrypt_supports_legacy_fixed_iv_ciphertext()",
       "file_type": "code",
       "source_file": "src-tauri/src/security.rs",
-      "source_location": "L135",
+      "source_location": "L136",
       "_origin": "ast",
       "id": "src_security_test_decrypt_supports_legacy_fixed_iv_ciphertext",
       "community": 15,
@@ -6600,7 +6530,7 @@
       "label": "test_invalid_decrypt()",
       "file_type": "code",
       "source_file": "src-tauri/src/security.rs",
-      "source_location": "L144",
+      "source_location": "L145",
       "_origin": "ast",
       "id": "src_security_test_invalid_decrypt",
       "community": 15,
@@ -6610,7 +6540,7 @@
       "label": "test_tamper_detection()",
       "file_type": "code",
       "source_file": "src-tauri/src/security.rs",
-      "source_location": "L158",
+      "source_location": "L159",
       "_origin": "ast",
       "id": "src_security_test_tamper_detection",
       "community": 15,
@@ -7043,7 +6973,7 @@
       "source_location": "L35",
       "_origin": "ast",
       "id": "components_bigboxtilemedia_getcoverurl",
-      "community": 98,
+      "community": 93,
       "norm_label": "getcoverurl()"
     },
     {
@@ -7073,7 +7003,7 @@
       "source_location": "L25",
       "_origin": "ast",
       "id": "components_bigboxview_bigboxviewprops",
-      "community": 94,
+      "community": 5,
       "norm_label": "bigboxviewprops"
     },
     {
@@ -7173,7 +7103,7 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "components_detailview",
-      "community": 9,
+      "community": 60,
       "norm_label": "detailview.tsx"
     },
     {
@@ -7203,7 +7133,7 @@
       "source_location": "L33",
       "_origin": "ast",
       "id": "components_detailview_detailfullscreenmedia",
-      "community": 9,
+      "community": 60,
       "norm_label": "detailfullscreenmedia"
     },
     {
@@ -7213,7 +7143,7 @@
       "source_location": "L37",
       "_origin": "ast",
       "id": "components_detailview_detailfullscreenrequest",
-      "community": 9,
+      "community": 0,
       "norm_label": "detailfullscreenrequest"
     },
     {
@@ -7223,7 +7153,7 @@
       "source_location": "L39",
       "_origin": "ast",
       "id": "components_detailview_detail_config",
-      "community": 9,
+      "community": 60,
       "norm_label": "detail_config"
     },
     {
@@ -7233,7 +7163,7 @@
       "source_location": "L53",
       "_origin": "ast",
       "id": "components_detailview_detailview",
-      "community": 9,
+      "community": 60,
       "norm_label": "detailview()"
     },
     {
@@ -7243,7 +7173,7 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "components_extrasdetail",
-      "community": 61,
+      "community": 23,
       "norm_label": "extrasdetail.tsx"
     },
     {
@@ -7253,7 +7183,7 @@
       "source_location": "L14",
       "_origin": "ast",
       "id": "components_extrasdetail_extrasdetailprops",
-      "community": 61,
+      "community": 23,
       "norm_label": "extrasdetailprops"
     },
     {
@@ -7283,7 +7213,7 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "components_gridview",
-      "community": 9,
+      "community": 60,
       "norm_label": "gridview.tsx"
     },
     {
@@ -7293,7 +7223,7 @@
       "source_location": "L6",
       "_origin": "ast",
       "id": "components_gridview_gridviewprops",
-      "community": 9,
+      "community": 35,
       "norm_label": "gridviewprops"
     },
     {
@@ -7303,7 +7233,7 @@
       "source_location": "L13",
       "_origin": "ast",
       "id": "components_gridview_gridview",
-      "community": 9,
+      "community": 60,
       "norm_label": "gridview()"
     },
     {
@@ -7353,7 +7283,7 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "components_imageslider",
-      "community": 9,
+      "community": 60,
       "norm_label": "imageslider.tsx"
     },
     {
@@ -7363,7 +7293,7 @@
       "source_location": "L6",
       "_origin": "ast",
       "id": "components_imageslider_imagesliderprops",
-      "community": 9,
+      "community": 60,
       "norm_label": "imagesliderprops"
     },
     {
@@ -7373,7 +7303,7 @@
       "source_location": "L16",
       "_origin": "ast",
       "id": "components_imageslider_imageslider",
-      "community": 9,
+      "community": 60,
       "norm_label": "imageslider()"
     },
     {
@@ -7443,7 +7373,7 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "components_musicplayer",
-      "community": 9,
+      "community": 54,
       "norm_label": "musicplayer.tsx"
     },
     {
@@ -7453,7 +7383,7 @@
       "source_location": "L9",
       "_origin": "ast",
       "id": "components_musicplayer_musicplayerprops",
-      "community": 9,
+      "community": 54,
       "norm_label": "musicplayerprops"
     },
     {
@@ -7463,7 +7393,7 @@
       "source_location": "L16",
       "_origin": "ast",
       "id": "components_musicplayer_musicplayer",
-      "community": 9,
+      "community": 54,
       "norm_label": "musicplayer()"
     },
     {
@@ -7473,7 +7403,7 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "components_musicianphoto",
-      "community": 98,
+      "community": 24,
       "norm_label": "musicianphoto.tsx"
     },
     {
@@ -7483,7 +7413,7 @@
       "source_location": "L8",
       "_origin": "ast",
       "id": "components_musicianphoto_musicianphotoprops",
-      "community": 98,
+      "community": 24,
       "norm_label": "musicianphotoprops"
     },
     {
@@ -7493,7 +7423,7 @@
       "source_location": "L15",
       "_origin": "ast",
       "id": "components_musicianphoto_musicianphoto",
-      "community": 9,
+      "community": 24,
       "norm_label": "musicianphoto()"
     },
     {
@@ -7503,7 +7433,7 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "components_platformswitcher",
-      "community": 102,
+      "community": 54,
       "norm_label": "platformswitcher.tsx"
     },
     {
@@ -7513,7 +7443,7 @@
       "source_location": "L6",
       "_origin": "ast",
       "id": "components_platformswitcher_platformswitcherprops",
-      "community": 102,
+      "community": 54,
       "norm_label": "platformswitcherprops"
     },
     {
@@ -7523,7 +7453,7 @@
       "source_location": "L11",
       "_origin": "ast",
       "id": "components_platformswitcher_platformswitcher",
-      "community": 102,
+      "community": 54,
       "norm_label": "platformswitcher()"
     },
     {
@@ -7683,7 +7613,7 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "components_sidplayer",
-      "community": 98,
+      "community": 103,
       "norm_label": "sidplayer.tsx"
     },
     {
@@ -7693,7 +7623,7 @@
       "source_location": "L8",
       "_origin": "ast",
       "id": "components_sidplayer_sidplayerruntime",
-      "community": 98,
+      "community": 103,
       "norm_label": "sidplayerruntime"
     },
     {
@@ -7703,7 +7633,7 @@
       "source_location": "L14",
       "_origin": "ast",
       "id": "components_sidplayer_sidruntimeconstructor",
-      "community": 98,
+      "community": 103,
       "norm_label": "sidruntimeconstructor"
     },
     {
@@ -7713,7 +7643,7 @@
       "source_location": "L19",
       "_origin": "ast",
       "id": "components_sidplayer_window",
-      "community": 98,
+      "community": 103,
       "norm_label": "window"
     },
     {
@@ -7723,7 +7653,7 @@
       "source_location": "L26",
       "_origin": "ast",
       "id": "components_sidplayer_sidplayerprops",
-      "community": 98,
+      "community": 103,
       "norm_label": "sidplayerprops"
     },
     {
@@ -7733,7 +7663,7 @@
       "source_location": "L32",
       "_origin": "ast",
       "id": "components_sidplayer_sidplayer",
-      "community": 9,
+      "community": 103,
       "norm_label": "sidplayer()"
     },
     {
@@ -7773,7 +7703,7 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "components_subgenrepickermodal",
-      "community": 102,
+      "community": 95,
       "norm_label": "subgenrepickermodal.tsx"
     },
     {
@@ -7783,7 +7713,7 @@
       "source_location": "L6",
       "_origin": "ast",
       "id": "components_subgenrepickermodal_subgenrepickermodalprops",
-      "community": 102,
+      "community": 95,
       "norm_label": "subgenrepickermodalprops"
     },
     {
@@ -7793,7 +7723,7 @@
       "source_location": "L18",
       "_origin": "ast",
       "id": "components_subgenrepickermodal_subgenrepickermodal",
-      "community": 102,
+      "community": 95,
       "norm_label": "subgenrepickermodal()"
     },
     {
@@ -7963,7 +7893,7 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "bigbox_bigboxheader",
-      "community": 95,
+      "community": 13,
       "norm_label": "bigboxheader.tsx"
     },
     {
@@ -7973,7 +7903,7 @@
       "source_location": "L9",
       "_origin": "ast",
       "id": "bigbox_bigboxheader_bigboxheaderprops",
-      "community": 93,
+      "community": 13,
       "norm_label": "bigboxheaderprops"
     },
     {
@@ -7983,7 +7913,7 @@
       "source_location": "L31",
       "_origin": "ast",
       "id": "bigbox_bigboxheader_bigboxheader",
-      "community": 95,
+      "community": 13,
       "norm_label": "bigboxheader()"
     },
     {
@@ -7993,7 +7923,7 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "detail_detailgametitle",
-      "community": 24,
+      "community": 0,
       "norm_label": "detailgametitle.tsx"
     },
     {
@@ -8003,7 +7933,7 @@
       "source_location": "L5",
       "_origin": "ast",
       "id": "detail_detailgametitle_detailgametitleprops",
-      "community": 24,
+      "community": 0,
       "norm_label": "detailgametitleprops"
     },
     {
@@ -8013,7 +7943,7 @@
       "source_location": "L13",
       "_origin": "ast",
       "id": "detail_detailgametitle_outlined_title_style",
-      "community": 24,
+      "community": 0,
       "norm_label": "outlined_title_style"
     },
     {
@@ -8023,7 +7953,7 @@
       "source_location": "L25",
       "_origin": "ast",
       "id": "detail_detailgametitle_detailgametitle",
-      "community": 24,
+      "community": 0,
       "norm_label": "detailgametitle()"
     },
     {
@@ -8173,7 +8103,7 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "library_libraryheader",
-      "community": 102,
+      "community": 95,
       "norm_label": "libraryheader.tsx"
     },
     {
@@ -8183,7 +8113,7 @@
       "source_location": "L11",
       "_origin": "ast",
       "id": "library_libraryheader_libraryheaderprops",
-      "community": 94,
+      "community": 5,
       "norm_label": "libraryheaderprops"
     },
     {
@@ -8193,7 +8123,7 @@
       "source_location": "L26",
       "_origin": "ast",
       "id": "library_libraryheader_libraryheader",
-      "community": 102,
+      "community": 95,
       "norm_label": "libraryheader()"
     },
     {
@@ -9043,7 +8973,7 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "contexts_settingscontext",
-      "community": 73,
+      "community": 54,
       "norm_label": "settingscontext.tsx"
     },
     {
@@ -9053,7 +8983,7 @@
       "source_location": "L17",
       "_origin": "ast",
       "id": "contexts_settingscontext_settings",
-      "community": 94,
+      "community": 5,
       "norm_label": "settings"
     },
     {
@@ -9063,7 +8993,7 @@
       "source_location": "L60",
       "_origin": "ast",
       "id": "contexts_settingscontext_settingscontexttype",
-      "community": 102,
+      "community": 54,
       "norm_label": "settingscontexttype"
     },
     {
@@ -9073,7 +9003,7 @@
       "source_location": "L69",
       "_origin": "ast",
       "id": "contexts_settingscontext_defaultsettings",
-      "community": 73,
+      "community": 54,
       "norm_label": "defaultsettings"
     },
     {
@@ -9083,7 +9013,7 @@
       "source_location": "L112",
       "_origin": "ast",
       "id": "contexts_settingscontext_settingscontext",
-      "community": 73,
+      "community": 54,
       "norm_label": "settingscontext"
     },
     {
@@ -9093,7 +9023,7 @@
       "source_location": "L114",
       "_origin": "ast",
       "id": "contexts_settingscontext_secure_fields",
-      "community": 73,
+      "community": 54,
       "norm_label": "secure_fields"
     },
     {
@@ -9103,7 +9033,7 @@
       "source_location": "L116",
       "_origin": "ast",
       "id": "contexts_settingscontext_migrateplatformsettings",
-      "community": 73,
+      "community": 54,
       "norm_label": "migrateplatformsettings()"
     },
     {
@@ -9113,7 +9043,7 @@
       "source_location": "L199",
       "_origin": "ast",
       "id": "contexts_settingscontext_platformfolderstoflatsettings",
-      "community": 73,
+      "community": 54,
       "norm_label": "platformfolderstoflatsettings()"
     },
     {
@@ -9123,7 +9053,7 @@
       "source_location": "L211",
       "_origin": "ast",
       "id": "contexts_settingscontext_platformimportstatussnapshot",
-      "community": 73,
+      "community": 54,
       "norm_label": "platformimportstatussnapshot"
     },
     {
@@ -9133,7 +9063,7 @@
       "source_location": "L219",
       "_origin": "ast",
       "id": "contexts_settingscontext_isplatformimportstatus",
-      "community": 73,
+      "community": 54,
       "norm_label": "isplatformimportstatus()"
     },
     {
@@ -9143,7 +9073,7 @@
       "source_location": "L223",
       "_origin": "ast",
       "id": "contexts_settingscontext_applyplatformimportstatuses",
-      "community": 73,
+      "community": 54,
       "norm_label": "applyplatformimportstatuses()"
     },
     {
@@ -9153,7 +9083,7 @@
       "source_location": "L252",
       "_origin": "ast",
       "id": "contexts_settingscontext_resolvestartupplatformid",
-      "community": 73,
+      "community": 54,
       "norm_label": "resolvestartupplatformid()"
     },
     {
@@ -9173,7 +9103,7 @@
       "source_location": "L572",
       "_origin": "ast",
       "id": "contexts_settingscontext_usesettings",
-      "community": 9,
+      "community": 60,
       "norm_label": "usesettings()"
     },
     {
@@ -9183,7 +9113,7 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "data_mockgames",
-      "community": 104,
+      "community": 35,
       "norm_label": "mockgames.ts"
     },
     {
@@ -9193,7 +9123,7 @@
       "source_location": "L3",
       "_origin": "ast",
       "id": "data_mockgames_mockgames",
-      "community": 104,
+      "community": 35,
       "norm_label": "mockgames"
     },
     {
@@ -9283,7 +9213,7 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "hooks_usebigboxlibrarydata",
-      "community": 95,
+      "community": 13,
       "norm_label": "usebigboxlibrarydata.ts"
     },
     {
@@ -9293,7 +9223,7 @@
       "source_location": "L8",
       "_origin": "ast",
       "id": "hooks_usebigboxlibrarydata_bigbox_letters",
-      "community": 95,
+      "community": 13,
       "norm_label": "bigbox_letters"
     },
     {
@@ -9313,7 +9243,7 @@
       "source_location": "L19",
       "_origin": "ast",
       "id": "hooks_usebigboxlibrarydata_usebigboxlibrarydataprops",
-      "community": 94,
+      "community": 5,
       "norm_label": "usebigboxlibrarydataprops"
     },
     {
@@ -9323,7 +9253,7 @@
       "source_location": "L30",
       "_origin": "ast",
       "id": "hooks_usebigboxlibrarydata_letter_rail_cache",
-      "community": 95,
+      "community": 13,
       "norm_label": "letter_rail_cache"
     },
     {
@@ -9333,7 +9263,7 @@
       "source_location": "L33",
       "_origin": "ast",
       "id": "hooks_usebigboxlibrarydata_getalphabetrailcachekey",
-      "community": 95,
+      "community": 13,
       "norm_label": "getalphabetrailcachekey()"
     },
     {
@@ -9343,7 +9273,7 @@
       "source_location": "L54",
       "_origin": "ast",
       "id": "hooks_usebigboxlibrarydata_sortrecentgames",
-      "community": 95,
+      "community": 13,
       "norm_label": "sortrecentgames()"
     },
     {
@@ -9393,7 +9323,7 @@
       "source_location": "L21",
       "_origin": "ast",
       "id": "hooks_usebigboxnavigation_usebigboxnavigationprops",
-      "community": 93,
+      "community": 5,
       "norm_label": "usebigboxnavigationprops"
     },
     {
@@ -9443,7 +9373,7 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "hooks_usedetailnavigation",
-      "community": 9,
+      "community": 25,
       "norm_label": "usedetailnavigation.ts"
     },
     {
@@ -9453,7 +9383,7 @@
       "source_location": "L9",
       "_origin": "ast",
       "id": "hooks_usedetailnavigation_detailzone",
-      "community": 9,
+      "community": 25,
       "norm_label": "detailzone"
     },
     {
@@ -9463,7 +9393,7 @@
       "source_location": "L22",
       "_origin": "ast",
       "id": "hooks_usedetailnavigation_direction",
-      "community": 9,
+      "community": 25,
       "norm_label": "direction"
     },
     {
@@ -9473,7 +9403,7 @@
       "source_location": "L24",
       "_origin": "ast",
       "id": "hooks_usedetailnavigation_navigationconfig",
-      "community": 9,
+      "community": 25,
       "norm_label": "navigationconfig"
     },
     {
@@ -9493,7 +9423,7 @@
       "source_location": "L39",
       "_origin": "ast",
       "id": "hooks_usedetailnavigation_detailnavprops",
-      "community": 9,
+      "community": 25,
       "norm_label": "detailnavprops"
     },
     {
@@ -9503,7 +9433,7 @@
       "source_location": "L46",
       "_origin": "ast",
       "id": "hooks_usedetailnavigation_usedetailnavigation",
-      "community": 9,
+      "community": 60,
       "norm_label": "usedetailnavigation()"
     },
     {
@@ -9513,7 +9443,7 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "hooks_usefavorites",
-      "community": 9,
+      "community": 60,
       "norm_label": "usefavorites.ts"
     },
     {
@@ -9523,7 +9453,7 @@
       "source_location": "L6",
       "_origin": "ast",
       "id": "hooks_usefavorites_loadfavorites",
-      "community": 9,
+      "community": 60,
       "norm_label": "loadfavorites()"
     },
     {
@@ -9533,7 +9463,7 @@
       "source_location": "L34",
       "_origin": "ast",
       "id": "hooks_usefavorites_usefavorites",
-      "community": 9,
+      "community": 60,
       "norm_label": "usefavorites()"
     },
     {
@@ -9643,7 +9573,7 @@
       "source_location": "L205",
       "_origin": "ast",
       "id": "hooks_usefullscreenlayoutmetrics_usefullscreenlayoutmetrics",
-      "community": 9,
+      "community": 60,
       "norm_label": "usefullscreenlayoutmetrics()"
     },
     {
@@ -9763,7 +9693,7 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "hooks_uselibrarybrowserstate",
-      "community": 94,
+      "community": 60,
       "norm_label": "uselibrarybrowserstate.ts"
     },
     {
@@ -9773,7 +9703,7 @@
       "source_location": "L10",
       "_origin": "ast",
       "id": "hooks_uselibrarybrowserstate_libraryviewmode",
-      "community": 94,
+      "community": 5,
       "norm_label": "libraryviewmode"
     },
     {
@@ -9813,7 +9743,7 @@
       "source_location": "L14",
       "_origin": "ast",
       "id": "hooks_uselibraryshellinput_uselibraryshellinputprops",
-      "community": 94,
+      "community": 5,
       "norm_label": "uselibraryshellinputprops"
     },
     {
@@ -9863,7 +9793,7 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "hooks_useresolvedboxarturl",
-      "community": 105,
+      "community": 24,
       "norm_label": "useresolvedboxarturl.ts"
     },
     {
@@ -9873,7 +9803,7 @@
       "source_location": "L8",
       "_origin": "ast",
       "id": "hooks_useresolvedboxarturl_cover_art_url_cache",
-      "community": 105,
+      "community": 24,
       "norm_label": "cover_art_url_cache"
     },
     {
@@ -9883,7 +9813,7 @@
       "source_location": "L10",
       "_origin": "ast",
       "id": "hooks_useresolvedboxarturl_normalizepath",
-      "community": 105,
+      "community": 24,
       "norm_label": "normalizepath()"
     },
     {
@@ -9893,7 +9823,7 @@
       "source_location": "L14",
       "_origin": "ast",
       "id": "hooks_useresolvedboxarturl_getresolvedcoverarturl",
-      "community": 105,
+      "community": 24,
       "norm_label": "getresolvedcoverarturl()"
     },
     {
@@ -9903,7 +9833,7 @@
       "source_location": "L39",
       "_origin": "ast",
       "id": "hooks_useresolvedboxarturl_resolvedboxartgame",
-      "community": 105,
+      "community": 24,
       "norm_label": "resolvedboxartgame"
     },
     {
@@ -9923,7 +9853,7 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "hooks_usewindowlibraryshelves",
-      "community": 60,
+      "community": 5,
       "norm_label": "usewindowlibraryshelves.ts"
     },
     {
@@ -9933,7 +9863,7 @@
       "source_location": "L7",
       "_origin": "ast",
       "id": "hooks_usewindowlibraryshelves_usewindowlibraryshelvesprops",
-      "community": 94,
+      "community": 5,
       "norm_label": "usewindowlibraryshelvesprops"
     },
     {
@@ -9983,7 +9913,7 @@
       "source_location": "L17",
       "_origin": "ast",
       "id": "lib_detail_layout_detaillayoutspec",
-      "community": 61,
+      "community": 23,
       "norm_label": "detaillayoutspec"
     },
     {
@@ -10163,7 +10093,7 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "lib_extras",
-      "community": 80,
+      "community": 23,
       "norm_label": "extras.ts"
     },
     {
@@ -10173,7 +10103,7 @@
       "source_location": "L4",
       "_origin": "ast",
       "id": "lib_extras_extragroup",
-      "community": 61,
+      "community": 23,
       "norm_label": "extragroup"
     },
     {
@@ -10183,7 +10113,7 @@
       "source_location": "L10",
       "_origin": "ast",
       "id": "lib_extras_visual_folders",
-      "community": 80,
+      "community": 23,
       "norm_label": "visual_folders"
     },
     {
@@ -10193,7 +10123,7 @@
       "source_location": "L11",
       "_origin": "ast",
       "id": "lib_extras_doc_folders",
-      "community": 80,
+      "community": 23,
       "norm_label": "doc_folders"
     },
     {
@@ -10203,7 +10133,7 @@
       "source_location": "L12",
       "_origin": "ast",
       "id": "lib_extras_media_folders",
-      "community": 80,
+      "community": 23,
       "norm_label": "media_folders"
     },
     {
@@ -10213,7 +10143,7 @@
       "source_location": "L13",
       "_origin": "ast",
       "id": "lib_extras_game_folders",
-      "community": 80,
+      "community": 23,
       "norm_label": "game_folders"
     },
     {
@@ -10223,7 +10153,7 @@
       "source_location": "L15",
       "_origin": "ast",
       "id": "lib_extras_img_ext",
-      "community": 80,
+      "community": 23,
       "norm_label": "img_ext"
     },
     {
@@ -10233,7 +10163,7 @@
       "source_location": "L16",
       "_origin": "ast",
       "id": "lib_extras_game_ext",
-      "community": 80,
+      "community": 23,
       "norm_label": "game_ext"
     },
     {
@@ -10243,7 +10173,7 @@
       "source_location": "L17",
       "_origin": "ast",
       "id": "lib_extras_media_ext",
-      "community": 80,
+      "community": 23,
       "norm_label": "media_ext"
     },
     {
@@ -10253,7 +10183,7 @@
       "source_location": "L18",
       "_origin": "ast",
       "id": "lib_extras_doc_ext",
-      "community": 80,
+      "community": 23,
       "norm_label": "doc_ext"
     },
     {
@@ -10263,7 +10193,7 @@
       "source_location": "L20",
       "_origin": "ast",
       "id": "lib_extras_groupextras",
-      "community": 80,
+      "community": 23,
       "norm_label": "groupextras()"
     },
     {
@@ -10283,7 +10213,7 @@
       "source_location": "L77",
       "_origin": "ast",
       "id": "lib_extras_getextraextension",
-      "community": 80,
+      "community": 23,
       "norm_label": "getextraextension()"
     },
     {
@@ -10293,7 +10223,7 @@
       "source_location": "L81",
       "_origin": "ast",
       "id": "lib_extras_isimageextra",
-      "community": 80,
+      "community": 23,
       "norm_label": "isimageextra()"
     },
     {
@@ -10303,7 +10233,7 @@
       "source_location": "L85",
       "_origin": "ast",
       "id": "lib_extras_isvideoextra",
-      "community": 80,
+      "community": 23,
       "norm_label": "isvideoextra()"
     },
     {
@@ -10313,7 +10243,7 @@
       "source_location": "L89",
       "_origin": "ast",
       "id": "lib_extras_getextrasourcelabel",
-      "community": 80,
+      "community": 23,
       "norm_label": "getextrasourcelabel()"
     },
     {
@@ -10323,7 +10253,7 @@
       "source_location": "L93",
       "_origin": "ast",
       "id": "lib_extras_getextralaunchlabel",
-      "community": 80,
+      "community": 23,
       "norm_label": "getextralaunchlabel()"
     },
     {
@@ -10333,7 +10263,7 @@
       "source_location": "L101",
       "_origin": "ast",
       "id": "lib_extras_islaunchableextra",
-      "community": 80,
+      "community": 23,
       "norm_label": "islaunchableextra()"
     },
     {
@@ -10343,7 +10273,7 @@
       "source_location": "L106",
       "_origin": "ast",
       "id": "lib_extras_isatariadvertextra",
-      "community": 80,
+      "community": 23,
       "norm_label": "isatariadvertextra()"
     },
     {
@@ -10353,7 +10283,7 @@
       "source_location": "L110",
       "_origin": "ast",
       "id": "lib_extras_isataricoverartextra",
-      "community": 80,
+      "community": 23,
       "norm_label": "isataricoverartextra()"
     },
     {
@@ -10383,7 +10313,7 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "lib_game_display",
-      "community": 0,
+      "community": 93,
       "norm_label": "game-display.ts"
     },
     {
@@ -10393,7 +10323,7 @@
       "source_location": "L3",
       "_origin": "ast",
       "id": "lib_game_display_unknown_values",
-      "community": 0,
+      "community": 93,
       "norm_label": "unknown_values"
     },
     {
@@ -10413,7 +10343,7 @@
       "source_location": "L20",
       "_origin": "ast",
       "id": "lib_game_display_getgamestudios",
-      "community": 0,
+      "community": 93,
       "norm_label": "getgamestudios()"
     },
     {
@@ -10423,7 +10353,7 @@
       "source_location": "L27",
       "_origin": "ast",
       "id": "lib_game_display_getprimarystudiolabel",
-      "community": 0,
+      "community": 93,
       "norm_label": "getprimarystudiolabel()"
     },
     {
@@ -10543,7 +10473,7 @@
       "source_location": "L14",
       "_origin": "ast",
       "id": "lib_platform_capabilities_platform_emulator_profiles",
-      "community": 142,
+      "community": 61,
       "norm_label": "platform_emulator_profiles"
     },
     {
@@ -10553,7 +10483,7 @@
       "source_location": "L55",
       "_origin": "ast",
       "id": "lib_platform_capabilities_platform_profiles",
-      "community": 98,
+      "community": 142,
       "norm_label": "platform_profiles"
     },
     {
@@ -10563,7 +10493,7 @@
       "source_location": "L112",
       "_origin": "ast",
       "id": "lib_platform_capabilities_supported_platforms",
-      "community": 95,
+      "community": 54,
       "norm_label": "supported_platforms"
     },
     {
@@ -10603,7 +10533,7 @@
       "source_location": "L123",
       "_origin": "ast",
       "id": "lib_platform_capabilities_isplatformid",
-      "community": 73,
+      "community": 54,
       "norm_label": "isplatformid()"
     },
     {
@@ -10653,7 +10583,7 @@
       "source_location": "L180",
       "_origin": "ast",
       "id": "lib_platform_capabilities_createdefaultplatformsettingsmap",
-      "community": 73,
+      "community": 54,
       "norm_label": "createdefaultplatformsettingsmap()"
     },
     {
@@ -10733,7 +10663,7 @@
       "source_location": "L7",
       "_origin": "ast",
       "id": "lib_platform_launch_platformlaunchsettings",
-      "community": 94,
+      "community": 61,
       "norm_label": "platformlaunchsettings"
     },
     {
@@ -10873,7 +10803,7 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "lib_subgenre_display",
-      "community": 102,
+      "community": 95,
       "norm_label": "subgenre-display.ts"
     },
     {
@@ -10883,7 +10813,7 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "lib_subgenre_display_visiblesubgenresresult",
-      "community": 102,
+      "community": 95,
       "norm_label": "visiblesubgenresresult"
     },
     {
@@ -10893,7 +10823,7 @@
       "source_location": "L6",
       "_origin": "ast",
       "id": "lib_subgenre_display_getvisiblesubgenres",
-      "community": 102,
+      "community": 95,
       "norm_label": "getvisiblesubgenres()"
     },
     {
@@ -10903,7 +10833,7 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "lib_tauri_bridge",
-      "community": 17,
+      "community": 96,
       "norm_label": "tauri-bridge.ts"
     },
     {
@@ -10913,7 +10843,7 @@
       "source_location": "L21",
       "_origin": "ast",
       "id": "lib_tauri_bridge_tauriawarewindow",
-      "community": 17,
+      "community": 96,
       "norm_label": "tauriawarewindow"
     },
     {
@@ -10943,7 +10873,7 @@
       "source_location": "L45",
       "_origin": "ast",
       "id": "lib_tauri_bridge_scannedrom",
-      "community": 17,
+      "community": 96,
       "norm_label": "scannedrom"
     },
     {
@@ -10963,7 +10893,7 @@
       "source_location": "L64",
       "_origin": "ast",
       "id": "lib_tauri_bridge_launchresult",
-      "community": 17,
+      "community": 96,
       "norm_label": "launchresult"
     },
     {
@@ -10973,7 +10903,7 @@
       "source_location": "L69",
       "_origin": "ast",
       "id": "lib_tauri_bridge_emulatorprofiletestrequest",
-      "community": 17,
+      "community": 96,
       "norm_label": "emulatorprofiletestrequest"
     },
     {
@@ -10983,7 +10913,7 @@
       "source_location": "L76",
       "_origin": "ast",
       "id": "lib_tauri_bridge_resolvedpath",
-      "community": 17,
+      "community": 96,
       "norm_label": "resolvedpath"
     },
     {
@@ -10993,7 +10923,7 @@
       "source_location": "L81",
       "_origin": "ast",
       "id": "lib_tauri_bridge_databasebootstrapstatus",
-      "community": 17,
+      "community": 96,
       "norm_label": "databasebootstrapstatus"
     },
     {
@@ -11003,7 +10933,7 @@
       "source_location": "L87",
       "_origin": "ast",
       "id": "lib_tauri_bridge_databaseimportresult",
-      "community": 17,
+      "community": 96,
       "norm_label": "databaseimportresult"
     },
     {
@@ -11013,7 +10943,7 @@
       "source_location": "L93",
       "_origin": "ast",
       "id": "lib_tauri_bridge_platformfolderimportsettings",
-      "community": 17,
+      "community": 96,
       "norm_label": "platformfolderimportsettings"
     },
     {
@@ -11023,7 +10953,7 @@
       "source_location": "L101",
       "_origin": "ast",
       "id": "lib_tauri_bridge_platformimportrequest",
-      "community": 17,
+      "community": 96,
       "norm_label": "platformimportrequest"
     },
     {
@@ -11033,7 +10963,7 @@
       "source_location": "L107",
       "_origin": "ast",
       "id": "lib_tauri_bridge_platformimportstatusresponse",
-      "community": 17,
+      "community": 96,
       "norm_label": "platformimportstatusresponse"
     },
     {
@@ -11043,7 +10973,7 @@
       "source_location": "L115",
       "_origin": "ast",
       "id": "lib_tauri_bridge_platformdatabaseimportresult",
-      "community": 17,
+      "community": 96,
       "norm_label": "platformdatabaseimportresult"
     },
     {
@@ -11053,7 +10983,7 @@
       "source_location": "L123",
       "_origin": "ast",
       "id": "lib_tauri_bridge_supportedplatformprofile",
-      "community": 17,
+      "community": 96,
       "norm_label": "supportedplatformprofile"
     },
     {
@@ -11063,7 +10993,7 @@
       "source_location": "L142",
       "_origin": "ast",
       "id": "lib_tauri_bridge_activeplatformstateresponse",
-      "community": 17,
+      "community": 96,
       "norm_label": "activeplatformstateresponse"
     },
     {
@@ -11073,7 +11003,7 @@
       "source_location": "L148",
       "_origin": "ast",
       "id": "lib_tauri_bridge_setactiveplatformresponse",
-      "community": 17,
+      "community": 96,
       "norm_label": "setactiveplatformresponse"
     },
     {
@@ -11083,7 +11013,7 @@
       "source_location": "L154",
       "_origin": "ast",
       "id": "lib_tauri_bridge_rawextrarow",
-      "community": 17,
+      "community": 96,
       "norm_label": "rawextrarow"
     },
     {
@@ -11093,7 +11023,7 @@
       "source_location": "L161",
       "_origin": "ast",
       "id": "lib_tauri_bridge_rawgamerow",
-      "community": 17,
+      "community": 96,
       "norm_label": "rawgamerow"
     },
     {
@@ -11103,7 +11033,7 @@
       "source_location": "L184",
       "_origin": "ast",
       "id": "lib_tauri_bridge_rawgamedetailrow",
-      "community": 17,
+      "community": 96,
       "norm_label": "rawgamedetailrow"
     },
     {
@@ -11123,7 +11053,7 @@
       "source_location": "L232",
       "_origin": "ast",
       "id": "lib_tauri_bridge_launchemulator",
-      "community": 17,
+      "community": 96,
       "norm_label": "launchemulator()"
     },
     {
@@ -11133,7 +11063,7 @@
       "source_location": "L240",
       "_origin": "ast",
       "id": "lib_tauri_bridge_launchgame",
-      "community": 17,
+      "community": 96,
       "norm_label": "launchgame()"
     },
     {
@@ -11153,7 +11083,7 @@
       "source_location": "L256",
       "_origin": "ast",
       "id": "lib_tauri_bridge_resolvemediapath",
-      "community": 98,
+      "community": 24,
       "norm_label": "resolvemediapath()"
     },
     {
@@ -11173,7 +11103,7 @@
       "source_location": "L282",
       "_origin": "ast",
       "id": "lib_tauri_bridge_downloadmediaasset",
-      "community": 98,
+      "community": 96,
       "norm_label": "downloadmediaasset()"
     },
     {
@@ -11183,7 +11113,7 @@
       "source_location": "L294",
       "_origin": "ast",
       "id": "lib_tauri_bridge_getasseturl",
-      "community": 105,
+      "community": 24,
       "norm_label": "getasseturl()"
     },
     {
@@ -11193,7 +11123,7 @@
       "source_location": "L308",
       "_origin": "ast",
       "id": "lib_tauri_bridge_readfilebytes",
-      "community": 98,
+      "community": 103,
       "norm_label": "readfilebytes()"
     },
     {
@@ -11203,7 +11133,7 @@
       "source_location": "L324",
       "_origin": "ast",
       "id": "lib_tauri_bridge_getmediaurl",
-      "community": 98,
+      "community": 103,
       "norm_label": "getmediaurl()"
     },
     {
@@ -11353,7 +11283,7 @@
       "source_location": "L510",
       "_origin": "ast",
       "id": "lib_tauri_bridge_gamefilters",
-      "community": 94,
+      "community": 5,
       "norm_label": "gamefilters"
     },
     {
@@ -11363,7 +11293,7 @@
       "source_location": "L520",
       "_origin": "ast",
       "id": "lib_tauri_bridge_getgenres",
-      "community": 60,
+      "community": 13,
       "norm_label": "getgenres()"
     },
     {
@@ -11373,7 +11303,7 @@
       "source_location": "L530",
       "_origin": "ast",
       "id": "lib_tauri_bridge_getsubgenres",
-      "community": 104,
+      "community": 96,
       "norm_label": "getsubgenres()"
     },
     {
@@ -11383,7 +11313,7 @@
       "source_location": "L554",
       "_origin": "ast",
       "id": "lib_tauri_bridge_getdbgamecount",
-      "community": 104,
+      "community": 96,
       "norm_label": "getdbgamecount()"
     },
     {
@@ -11393,7 +11323,7 @@
       "source_location": "L571",
       "_origin": "ast",
       "id": "lib_tauri_bridge_getgameextras",
-      "community": 104,
+      "community": 35,
       "norm_label": "getgameextras()"
     },
     {
@@ -11403,7 +11333,7 @@
       "source_location": "L597",
       "_origin": "ast",
       "id": "lib_tauri_bridge_getdbgames",
-      "community": 104,
+      "community": 96,
       "norm_label": "getdbgames()"
     },
     {
@@ -11413,7 +11343,7 @@
       "source_location": "L717",
       "_origin": "ast",
       "id": "lib_tauri_bridge_getdbgamedetail",
-      "community": 104,
+      "community": 35,
       "norm_label": "getdbgamedetail()"
     },
     {
@@ -11673,7 +11603,7 @@
       "source_location": "L19",
       "_origin": "ast",
       "id": "types_game_extra",
-      "community": 61,
+      "community": 23,
       "norm_label": "extra"
     },
     {
@@ -11713,7 +11643,7 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "types_platform_platformid",
-      "community": 102,
+      "community": 54,
       "norm_label": "platformid"
     },
     {
@@ -11733,7 +11663,7 @@
       "source_location": "L4",
       "_origin": "ast",
       "id": "types_platform_platformimportstatus",
-      "community": 73,
+      "community": 54,
       "norm_label": "platformimportstatus"
     },
     {
@@ -11843,7 +11773,7 @@
       "source_location": "L84",
       "_origin": "ast",
       "id": "types_platform_platformsettings",
-      "community": 94,
+      "community": 5,
       "norm_label": "platformsettings"
     },
     {
@@ -11863,7 +11793,7 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "utils_sorting",
-      "community": 94,
+      "community": 35,
       "norm_label": "sorting.ts"
     },
     {
@@ -11873,7 +11803,7 @@
       "source_location": "L3",
       "_origin": "ast",
       "id": "utils_sorting_sortdirection",
-      "community": 94,
+      "community": 35,
       "norm_label": "sortdirection"
     },
     {
@@ -11883,7 +11813,7 @@
       "source_location": "L5",
       "_origin": "ast",
       "id": "utils_sorting_sortgames",
-      "community": 94,
+      "community": 35,
       "norm_label": "sortgames()"
     },
     {
@@ -12237,14 +12167,14 @@
       "norm_label": "constitution.md"
     },
     {
-      "label": "64Box Constitution",
+      "label": "GBBox Constitution",
       "file_type": "document",
       "source_file": ".specify/memory/constitution.md",
       "source_location": "L1",
       "_origin": "ast",
-      "id": "memory_constitution_64box_constitution",
+      "id": "memory_constitution_gbbox_constitution",
       "community": 69,
-      "norm_label": "64box constitution"
+      "norm_label": "gbbox constitution"
     },
     {
       "label": "Core Principles",
@@ -13207,20 +13137,40 @@
       "norm_label": "readme.md"
     },
     {
-      "label": "64Box",
+      "label": "GBBox",
       "file_type": "document",
       "source_file": "README.md",
       "source_location": "L1",
       "_origin": "ast",
-      "id": "readme_64box",
+      "id": "readme_gbbox",
       "community": 11,
-      "norm_label": "64box"
+      "norm_label": "gbbox"
+    },
+    {
+      "label": "Download",
+      "file_type": "document",
+      "source_file": "README.md",
+      "source_location": "L7",
+      "_origin": "ast",
+      "id": "readme_download",
+      "community": 11,
+      "norm_label": "download"
+    },
+    {
+      "label": "Supported Imports",
+      "file_type": "document",
+      "source_file": "README.md",
+      "source_location": "L34",
+      "_origin": "ast",
+      "id": "readme_supported_imports",
+      "community": 11,
+      "norm_label": "supported imports"
     },
     {
       "label": "Features",
       "file_type": "document",
       "source_file": "README.md",
-      "source_location": "L33",
+      "source_location": "L45",
       "_origin": "ast",
       "id": "readme_features",
       "community": 11,
@@ -13230,7 +13180,7 @@
       "label": "Screenshots",
       "file_type": "document",
       "source_file": "README.md",
-      "source_location": "L45",
+      "source_location": "L55",
       "_origin": "ast",
       "id": "readme_screenshots",
       "community": 11,
@@ -13240,7 +13190,7 @@
       "label": "BigBox Search",
       "file_type": "document",
       "source_file": "README.md",
-      "source_location": "L47",
+      "source_location": "L57",
       "_origin": "ast",
       "id": "readme_bigbox_search",
       "community": 11,
@@ -13250,7 +13200,7 @@
       "label": "BigBox Rails",
       "file_type": "document",
       "source_file": "README.md",
-      "source_location": "L50",
+      "source_location": "L61",
       "_origin": "ast",
       "id": "readme_bigbox_rails",
       "community": 11,
@@ -13260,7 +13210,7 @@
       "label": "BigBox Letter Jump",
       "file_type": "document",
       "source_file": "README.md",
-      "source_location": "L53",
+      "source_location": "L65",
       "_origin": "ast",
       "id": "readme_bigbox_letter_jump",
       "community": 11,
@@ -13270,7 +13220,7 @@
       "label": "Detail View: Gallery",
       "file_type": "document",
       "source_file": "README.md",
-      "source_location": "L56",
+      "source_location": "L69",
       "_origin": "ast",
       "id": "readme_detail_view_gallery",
       "community": 11,
@@ -13280,7 +13230,7 @@
       "label": "Detail View: Extras Gallery",
       "file_type": "document",
       "source_file": "README.md",
-      "source_location": "L59",
+      "source_location": "L73",
       "_origin": "ast",
       "id": "readme_detail_view_extras_gallery",
       "community": 11,
@@ -13290,7 +13240,7 @@
       "label": "Window Mode: Grid View",
       "file_type": "document",
       "source_file": "README.md",
-      "source_location": "L62",
+      "source_location": "L77",
       "_origin": "ast",
       "id": "readme_window_mode_grid_view",
       "community": 11,
@@ -13300,7 +13250,7 @@
       "label": "Window Mode: List View",
       "file_type": "document",
       "source_file": "README.md",
-      "source_location": "L65",
+      "source_location": "L81",
       "_origin": "ast",
       "id": "readme_window_mode_list_view",
       "community": 11,
@@ -13310,7 +13260,7 @@
       "label": "Controls and Shortcuts",
       "file_type": "document",
       "source_file": "README.md",
-      "source_location": "L68",
+      "source_location": "L85",
       "_origin": "ast",
       "id": "readme_controls_and_shortcuts",
       "community": 11,
@@ -13320,7 +13270,7 @@
       "label": "Controller",
       "file_type": "document",
       "source_file": "README.md",
-      "source_location": "L70",
+      "source_location": "L87",
       "_origin": "ast",
       "id": "readme_controller",
       "community": 11,
@@ -13330,47 +13280,37 @@
       "label": "Keyboard",
       "file_type": "document",
       "source_file": "README.md",
-      "source_location": "L76",
+      "source_location": "L94",
       "_origin": "ast",
       "id": "readme_keyboard",
       "community": 11,
       "norm_label": "keyboard"
     },
     {
-      "label": "Notes",
+      "label": "Prerequisites",
       "file_type": "document",
       "source_file": "README.md",
-      "source_location": "L82",
+      "source_location": "L101",
       "_origin": "ast",
-      "id": "readme_notes",
+      "id": "readme_prerequisites",
       "community": 11,
-      "norm_label": "notes"
+      "norm_label": "prerequisites"
     },
     {
-      "label": "1. Prerequisites",
+      "label": "Setting up Platform Databases and Assets",
       "file_type": "document",
       "source_file": "README.md",
-      "source_location": "L86",
+      "source_location": "L113",
       "_origin": "ast",
-      "id": "readme_1_prerequisites",
+      "id": "readme_setting_up_platform_databases_and_assets",
       "community": 11,
-      "norm_label": "1. prerequisites"
-    },
-    {
-      "label": "2. Setting up Platform Databases and Assets",
-      "file_type": "document",
-      "source_file": "README.md",
-      "source_location": "L98",
-      "_origin": "ast",
-      "id": "readme_2_setting_up_platform_databases_and_assets",
-      "community": 11,
-      "norm_label": "2. setting up platform databases and assets"
+      "norm_label": "setting up platform databases and assets"
     },
     {
       "label": "Commodore 64",
       "file_type": "document",
       "source_file": "README.md",
-      "source_location": "L102",
+      "source_location": "L115",
       "_origin": "ast",
       "id": "readme_commodore_64",
       "community": 11,
@@ -13380,201 +13320,181 @@
       "label": "Atari 800",
       "file_type": "document",
       "source_file": "README.md",
-      "source_location": "L108",
+      "source_location": "L123",
       "_origin": "ast",
       "id": "readme_atari_800",
       "community": 11,
       "norm_label": "atari 800"
     },
     {
-      "label": "3. Building the SQLite Database",
-      "file_type": "document",
-      "source_file": "README.md",
-      "source_location": "L115",
-      "_origin": "ast",
-      "id": "readme_3_building_the_sqlite_database",
-      "community": 11,
-      "norm_label": "3. building the sqlite database"
-    },
-    {
-      "label": "For Windows:",
-      "file_type": "document",
-      "source_file": "README.md",
-      "source_location": "L119",
-      "_origin": "ast",
-      "id": "readme_for_windows",
-      "community": 11,
-      "norm_label": "for windows:"
-    },
-    {
-      "label": "For Linux/Mac:",
+      "label": "Atari 2600",
       "file_type": "document",
       "source_file": "README.md",
       "source_location": "L130",
       "_origin": "ast",
-      "id": "readme_for_linux_mac",
+      "id": "readme_atari_2600",
       "community": 11,
-      "norm_label": "for linux/mac:"
+      "norm_label": "atari 2600"
     },
     {
-      "label": "4. Running the Application in Development",
+      "label": "Building the SQLite Database",
       "file_type": "document",
       "source_file": "README.md",
-      "source_location": "L154",
+      "source_location": "L137",
       "_origin": "ast",
-      "id": "readme_4_running_the_application_in_development",
+      "id": "readme_building_the_sqlite_database",
       "community": 11,
-      "norm_label": "4. running the application in development"
+      "norm_label": "building the sqlite database"
     },
     {
-      "label": "5. Building for Production",
+      "label": "Windows",
       "file_type": "document",
       "source_file": "README.md",
-      "source_location": "L168",
+      "source_location": "L141",
       "_origin": "ast",
-      "id": "readme_5_building_for_production",
+      "id": "readme_windows",
       "community": 11,
-      "norm_label": "5. building for production"
+      "norm_label": "windows"
+    },
+    {
+      "label": "Linux and macOS",
+      "file_type": "document",
+      "source_file": "README.md",
+      "source_location": "L153",
+      "_origin": "ast",
+      "id": "readme_linux_and_macos",
+      "community": 11,
+      "norm_label": "linux and macos"
+    },
+    {
+      "label": "Development",
+      "file_type": "document",
+      "source_file": "README.md",
+      "source_location": "L170",
+      "_origin": "ast",
+      "id": "readme_development",
+      "community": 11,
+      "norm_label": "development"
+    },
+    {
+      "label": "Production Build",
+      "file_type": "document",
+      "source_file": "README.md",
+      "source_location": "L182",
+      "_origin": "ast",
+      "id": "readme_production_build",
+      "community": 11,
+      "norm_label": "production build"
     },
     {
       "label": "Post-Setup Configuration",
       "file_type": "document",
       "source_file": "README.md",
-      "source_location": "L181",
+      "source_location": "L194",
       "_origin": "ast",
       "id": "readme_post_setup_configuration",
       "community": 11,
       "norm_label": "post-setup configuration"
     },
     {
-      "label": "6. Skills used to build this",
+      "label": "Release Notes",
       "file_type": "document",
       "source_file": "README.md",
-      "source_location": "L192",
+      "source_location": "L206",
       "_origin": "ast",
-      "id": "readme_6_skills_used_to_build_this",
+      "id": "readme_release_notes",
       "community": 11,
-      "norm_label": "6. skills used to build this"
+      "norm_label": "release notes"
     },
     {
-      "label": "architecture-review.md",
+      "label": "Skills used to build this",
       "file_type": "document",
-      "source_file": "docs/architecture-review.md",
+      "source_file": "README.md",
+      "source_location": "L210",
+      "_origin": "ast",
+      "id": "readme_skills_used_to_build_this",
+      "community": 11,
+      "norm_label": "skills used to build this"
+    },
+    {
+      "label": "RELEASE_NOTES_0.1.0.md",
+      "file_type": "document",
+      "source_file": "RELEASE_NOTES_0.1.0.md",
       "source_location": "L1",
       "_origin": "ast",
-      "id": "docs_architecture_review",
-      "community": 32,
-      "norm_label": "architecture-review.md"
+      "id": "release_notes_0_1_0",
+      "community": 68,
+      "norm_label": "release_notes_0.1.0.md"
     },
     {
-      "label": "64Box Architecture Review",
+      "label": "GBBox 0.1.0 Release Notes",
       "file_type": "document",
-      "source_file": "docs/architecture-review.md",
+      "source_file": "RELEASE_NOTES_0.1.0.md",
       "source_location": "L1",
       "_origin": "ast",
-      "id": "docs_architecture_review_64box_architecture_review",
-      "community": 32,
-      "norm_label": "64box architecture review"
+      "id": "release_notes_0_1_0_gbbox_0_1_0_release_notes",
+      "community": 68,
+      "norm_label": "gbbox 0.1.0 release notes"
     },
     {
-      "label": "Frontend UI Architecture",
+      "label": "Highlights",
       "file_type": "document",
-      "source_file": "docs/architecture-review.md",
-      "source_location": "L5",
+      "source_file": "RELEASE_NOTES_0.1.0.md",
+      "source_location": "L3",
       "_origin": "ast",
-      "id": "docs_architecture_review_frontend_ui_architecture",
-      "community": 32,
-      "norm_label": "frontend ui architecture"
+      "id": "release_notes_0_1_0_highlights",
+      "community": 68,
+      "norm_label": "highlights"
     },
     {
-      "label": "Overview",
+      "label": "Supported Imports",
       "file_type": "document",
-      "source_file": "docs/architecture-review.md",
-      "source_location": "L7",
-      "_origin": "ast",
-      "id": "docs_architecture_review_overview",
-      "community": 32,
-      "norm_label": "overview"
-    },
-    {
-      "label": "Platform-Scoped Library Context",
-      "file_type": "document",
-      "source_file": "docs/architecture-review.md",
+      "source_file": "RELEASE_NOTES_0.1.0.md",
       "source_location": "L10",
       "_origin": "ast",
-      "id": "docs_architecture_review_platform_scoped_library_context",
-      "community": 32,
-      "norm_label": "platform-scoped library context"
+      "id": "release_notes_0_1_0_supported_imports",
+      "community": 68,
+      "norm_label": "supported imports"
     },
     {
-      "label": "Detailed Modals & Dependency Injection (`DetailView.tsx`)",
+      "label": "Installation and Artifacts",
       "file_type": "document",
-      "source_file": "docs/architecture-review.md",
-      "source_location": "L15",
+      "source_file": "RELEASE_NOTES_0.1.0.md",
+      "source_location": "L18",
       "_origin": "ast",
-      "id": "docs_architecture_review_detailed_modals_dependency_injection_detailview_tsx",
-      "community": 32,
-      "norm_label": "detailed modals & dependency injection (`detailview.tsx`)"
+      "id": "release_notes_0_1_0_installation_and_artifacts",
+      "community": 68,
+      "norm_label": "installation and artifacts"
     },
     {
-      "label": "Math-based Focus Navigation",
+      "label": "Validation",
       "file_type": "document",
-      "source_file": "docs/architecture-review.md",
-      "source_location": "L21",
-      "_origin": "ast",
-      "id": "docs_architecture_review_math_based_focus_navigation",
-      "community": 32,
-      "norm_label": "math-based focus navigation"
-    },
-    {
-      "label": "UI Component Isolation",
-      "file_type": "document",
-      "source_file": "docs/architecture-review.md",
+      "source_file": "RELEASE_NOTES_0.1.0.md",
       "source_location": "L24",
       "_origin": "ast",
-      "id": "docs_architecture_review_ui_component_isolation",
-      "community": 32,
-      "norm_label": "ui component isolation"
+      "id": "release_notes_0_1_0_validation",
+      "community": 68,
+      "norm_label": "validation"
     },
     {
-      "label": "Backend Tauri Application (Rust)",
+      "label": "Known Limitations",
       "file_type": "document",
-      "source_file": "docs/architecture-review.md",
-      "source_location": "L29",
+      "source_file": "RELEASE_NOTES_0.1.0.md",
+      "source_location": "L37",
       "_origin": "ast",
-      "id": "docs_architecture_review_backend_tauri_application_rust",
-      "community": 32,
-      "norm_label": "backend tauri application (rust)"
+      "id": "release_notes_0_1_0_known_limitations",
+      "community": 68,
+      "norm_label": "known limitations"
     },
     {
-      "label": "Database Abstraction",
+      "label": "Migration from 64Box",
       "file_type": "document",
-      "source_file": "docs/architecture-review.md",
-      "source_location": "L31",
+      "source_file": "RELEASE_NOTES_0.1.0.md",
+      "source_location": "L43",
       "_origin": "ast",
-      "id": "docs_architecture_review_database_abstraction",
-      "community": 32,
-      "norm_label": "database abstraction"
-    },
-    {
-      "label": "Launch and Media Boundaries",
-      "file_type": "document",
-      "source_file": "docs/architecture-review.md",
-      "source_location": "L38",
-      "_origin": "ast",
-      "id": "docs_architecture_review_launch_and_media_boundaries",
-      "community": 32,
-      "norm_label": "launch and media boundaries"
-    },
-    {
-      "label": "Bridge API Payloads",
-      "file_type": "document",
-      "source_file": "docs/architecture-review.md",
-      "source_location": "L41",
-      "_origin": "ast",
-      "id": "docs_architecture_review_bridge_api_payloads",
-      "community": 32,
-      "norm_label": "bridge api payloads"
+      "id": "release_notes_0_1_0_migration_from_64box",
+      "community": 68,
+      "norm_label": "migration from 64box"
     },
     {
       "label": "platform-readiness.md",
@@ -13702,7 +13622,7 @@
       "source_file": "specs/001-multi-platform-gamebases/checklists/requirements.md",
       "source_location": "L1",
       "_origin": "ast",
-      "id": "checklists_requirements",
+      "id": "specs_001_multi_platform_gamebases_checklists_requirements_md_checklists_requirements",
       "community": 81,
       "norm_label": "requirements.md"
     },
@@ -13722,7 +13642,7 @@
       "source_file": "specs/001-multi-platform-gamebases/checklists/requirements.md",
       "source_location": "L7",
       "_origin": "ast",
-      "id": "checklists_requirements_content_quality",
+      "id": "specs_001_multi_platform_gamebases_checklists_requirements_md_checklists_requirements_content_quality",
       "community": 81,
       "norm_label": "content quality"
     },
@@ -13732,7 +13652,7 @@
       "source_file": "specs/001-multi-platform-gamebases/checklists/requirements.md",
       "source_location": "L14",
       "_origin": "ast",
-      "id": "checklists_requirements_requirement_completeness",
+      "id": "specs_001_multi_platform_gamebases_checklists_requirements_md_checklists_requirements_requirement_completeness",
       "community": 81,
       "norm_label": "requirement completeness"
     },
@@ -13742,7 +13662,7 @@
       "source_file": "specs/001-multi-platform-gamebases/checklists/requirements.md",
       "source_location": "L25",
       "_origin": "ast",
-      "id": "checklists_requirements_feature_readiness",
+      "id": "specs_001_multi_platform_gamebases_checklists_requirements_md_checklists_requirements_feature_readiness",
       "community": 81,
       "norm_label": "feature readiness"
     },
@@ -13752,7 +13672,7 @@
       "source_file": "specs/001-multi-platform-gamebases/checklists/requirements.md",
       "source_location": "L32",
       "_origin": "ast",
-      "id": "checklists_requirements_notes",
+      "id": "specs_001_multi_platform_gamebases_checklists_requirements_md_checklists_requirements_notes",
       "community": 81,
       "norm_label": "notes"
     },
@@ -14527,6 +14447,16 @@
       "norm_label": "phase 8 validation record"
     },
     {
+      "label": "Closure Note",
+      "file_type": "document",
+      "source_file": "specs/001-multi-platform-gamebases/quickstart.md",
+      "source_location": "L142",
+      "_origin": "ast",
+      "id": "001_multi_platform_gamebases_quickstart_closure_note",
+      "community": 63,
+      "norm_label": "closure note"
+    },
+    {
       "label": "research.md",
       "file_type": "document",
       "source_file": "specs/001-multi-platform-gamebases/research.md",
@@ -15085,6 +15015,766 @@
       "id": "001_multi_platform_gamebases_tasks_validation_gates",
       "community": 22,
       "norm_label": "validation gates"
+    },
+    {
+      "label": "requirements.md",
+      "file_type": "document",
+      "source_file": "specs/002-gamebasebox-public-release/checklists/requirements.md",
+      "source_location": "L1",
+      "_origin": "ast",
+      "id": "specs_002_gamebasebox_public_release_checklists_requirements_md_checklists_requirements",
+      "community": 83,
+      "norm_label": "requirements.md"
+    },
+    {
+      "label": "Specification Quality Checklist: GameBaseBox Public 0.1 Release",
+      "file_type": "document",
+      "source_file": "specs/002-gamebasebox-public-release/checklists/requirements.md",
+      "source_location": "L3",
+      "_origin": "ast",
+      "id": "checklists_requirements_specification_quality_checklist_gamebasebox_public_0_1_release",
+      "community": 83,
+      "norm_label": "specification quality checklist: gamebasebox public 0.1 release"
+    },
+    {
+      "label": "Content Quality",
+      "file_type": "document",
+      "source_file": "specs/002-gamebasebox-public-release/checklists/requirements.md",
+      "source_location": "L9",
+      "_origin": "ast",
+      "id": "specs_002_gamebasebox_public_release_checklists_requirements_md_checklists_requirements_content_quality",
+      "community": 83,
+      "norm_label": "content quality"
+    },
+    {
+      "label": "Requirement Completeness",
+      "file_type": "document",
+      "source_file": "specs/002-gamebasebox-public-release/checklists/requirements.md",
+      "source_location": "L16",
+      "_origin": "ast",
+      "id": "specs_002_gamebasebox_public_release_checklists_requirements_md_checklists_requirements_requirement_completeness",
+      "community": 83,
+      "norm_label": "requirement completeness"
+    },
+    {
+      "label": "Feature Readiness",
+      "file_type": "document",
+      "source_file": "specs/002-gamebasebox-public-release/checklists/requirements.md",
+      "source_location": "L27",
+      "_origin": "ast",
+      "id": "specs_002_gamebasebox_public_release_checklists_requirements_md_checklists_requirements_feature_readiness",
+      "community": 83,
+      "norm_label": "feature readiness"
+    },
+    {
+      "label": "Notes",
+      "file_type": "document",
+      "source_file": "specs/002-gamebasebox-public-release/checklists/requirements.md",
+      "source_location": "L34",
+      "_origin": "ast",
+      "id": "specs_002_gamebasebox_public_release_checklists_requirements_md_checklists_requirements_notes",
+      "community": 83,
+      "norm_label": "notes"
+    },
+    {
+      "label": "branding-contract.md",
+      "file_type": "document",
+      "source_file": "specs/002-gamebasebox-public-release/contracts/branding-contract.md",
+      "source_location": "L1",
+      "_origin": "ast",
+      "id": "contracts_branding_contract",
+      "community": 99,
+      "norm_label": "branding-contract.md"
+    },
+    {
+      "label": "Branding Contract",
+      "file_type": "document",
+      "source_file": "specs/002-gamebasebox-public-release/contracts/branding-contract.md",
+      "source_location": "L3",
+      "_origin": "ast",
+      "id": "contracts_branding_contract_branding_contract",
+      "community": 99,
+      "norm_label": "branding contract"
+    },
+    {
+      "label": "Required Public Identity",
+      "file_type": "document",
+      "source_file": "specs/002-gamebasebox-public-release/contracts/branding-contract.md",
+      "source_location": "L5",
+      "_origin": "ast",
+      "id": "contracts_branding_contract_required_public_identity",
+      "community": 99,
+      "norm_label": "required public identity"
+    },
+    {
+      "label": "Replacement Rules",
+      "file_type": "document",
+      "source_file": "specs/002-gamebasebox-public-release/contracts/branding-contract.md",
+      "source_location": "L13",
+      "_origin": "ast",
+      "id": "contracts_branding_contract_replacement_rules",
+      "community": 99,
+      "norm_label": "replacement rules"
+    },
+    {
+      "label": "Verification",
+      "file_type": "document",
+      "source_file": "specs/002-gamebasebox-public-release/contracts/branding-contract.md",
+      "source_location": "L21",
+      "_origin": "ast",
+      "id": "contracts_branding_contract_verification",
+      "community": 99,
+      "norm_label": "verification"
+    },
+    {
+      "label": "release-contract.md",
+      "file_type": "document",
+      "source_file": "specs/002-gamebasebox-public-release/contracts/release-contract.md",
+      "source_location": "L1",
+      "_origin": "ast",
+      "id": "contracts_release_contract",
+      "community": 94,
+      "norm_label": "release-contract.md"
+    },
+    {
+      "label": "Release Contract",
+      "file_type": "document",
+      "source_file": "specs/002-gamebasebox-public-release/contracts/release-contract.md",
+      "source_location": "L3",
+      "_origin": "ast",
+      "id": "contracts_release_contract_release_contract",
+      "community": 94,
+      "norm_label": "release contract"
+    },
+    {
+      "label": "Version",
+      "file_type": "document",
+      "source_file": "specs/002-gamebasebox-public-release/contracts/release-contract.md",
+      "source_location": "L5",
+      "_origin": "ast",
+      "id": "contracts_release_contract_version",
+      "community": 94,
+      "norm_label": "version"
+    },
+    {
+      "label": "Release Notes Sections",
+      "file_type": "document",
+      "source_file": "specs/002-gamebasebox-public-release/contracts/release-contract.md",
+      "source_location": "L11",
+      "_origin": "ast",
+      "id": "contracts_release_contract_release_notes_sections",
+      "community": 94,
+      "norm_label": "release notes sections"
+    },
+    {
+      "label": "Required Artifact Behavior",
+      "file_type": "document",
+      "source_file": "specs/002-gamebasebox-public-release/contracts/release-contract.md",
+      "source_location": "L20",
+      "_origin": "ast",
+      "id": "contracts_release_contract_required_artifact_behavior",
+      "community": 94,
+      "norm_label": "required artifact behavior"
+    },
+    {
+      "label": "Verification",
+      "file_type": "document",
+      "source_file": "specs/002-gamebasebox-public-release/contracts/release-contract.md",
+      "source_location": "L26",
+      "_origin": "ast",
+      "id": "contracts_release_contract_verification",
+      "community": 94,
+      "norm_label": "verification"
+    },
+    {
+      "label": "repository-contract.md",
+      "file_type": "document",
+      "source_file": "specs/002-gamebasebox-public-release/contracts/repository-contract.md",
+      "source_location": "L1",
+      "_origin": "ast",
+      "id": "contracts_repository_contract",
+      "community": 97,
+      "norm_label": "repository-contract.md"
+    },
+    {
+      "label": "Repository Publication Contract",
+      "file_type": "document",
+      "source_file": "specs/002-gamebasebox-public-release/contracts/repository-contract.md",
+      "source_location": "L3",
+      "_origin": "ast",
+      "id": "contracts_repository_contract_repository_publication_contract",
+      "community": 97,
+      "norm_label": "repository publication contract"
+    },
+    {
+      "label": "New Repository",
+      "file_type": "document",
+      "source_file": "specs/002-gamebasebox-public-release/contracts/repository-contract.md",
+      "source_location": "L5",
+      "_origin": "ast",
+      "id": "contracts_repository_contract_new_repository",
+      "community": 97,
+      "norm_label": "new repository"
+    },
+    {
+      "label": "Recommended Topics",
+      "file_type": "document",
+      "source_file": "specs/002-gamebasebox-public-release/contracts/repository-contract.md",
+      "source_location": "L14",
+      "_origin": "ast",
+      "id": "contracts_repository_contract_recommended_topics",
+      "community": 97,
+      "norm_label": "recommended topics"
+    },
+    {
+      "label": "Old Repository Redirect",
+      "file_type": "document",
+      "source_file": "specs/002-gamebasebox-public-release/contracts/repository-contract.md",
+      "source_location": "L27",
+      "_origin": "ast",
+      "id": "contracts_repository_contract_old_repository_redirect",
+      "community": 97,
+      "norm_label": "old repository redirect"
+    },
+    {
+      "label": "Verification",
+      "file_type": "document",
+      "source_file": "specs/002-gamebasebox-public-release/contracts/repository-contract.md",
+      "source_location": "L32",
+      "_origin": "ast",
+      "id": "contracts_repository_contract_verification",
+      "community": 97,
+      "norm_label": "verification"
+    },
+    {
+      "label": "data-model.md",
+      "file_type": "document",
+      "source_file": "specs/002-gamebasebox-public-release/data-model.md",
+      "source_location": "L1",
+      "_origin": "ast",
+      "id": "002_gamebasebox_public_release_data_model",
+      "community": 80,
+      "norm_label": "data-model.md"
+    },
+    {
+      "label": "Data Model: GameBaseBox Public 0.1 Release",
+      "file_type": "document",
+      "source_file": "specs/002-gamebasebox-public-release/data-model.md",
+      "source_location": "L3",
+      "_origin": "ast",
+      "id": "002_gamebasebox_public_release_data_model_data_model_gamebasebox_public_0_1_release",
+      "community": 80,
+      "norm_label": "data model: gamebasebox public 0.1 release"
+    },
+    {
+      "label": "ProductIdentity",
+      "file_type": "document",
+      "source_file": "specs/002-gamebasebox-public-release/data-model.md",
+      "source_location": "L5",
+      "_origin": "ast",
+      "id": "002_gamebasebox_public_release_data_model_productidentity",
+      "community": 80,
+      "norm_label": "productidentity"
+    },
+    {
+      "label": "RepositoryPublication",
+      "file_type": "document",
+      "source_file": "specs/002-gamebasebox-public-release/data-model.md",
+      "source_location": "L21",
+      "_origin": "ast",
+      "id": "002_gamebasebox_public_release_data_model_repositorypublication",
+      "community": 80,
+      "norm_label": "repositorypublication"
+    },
+    {
+      "label": "ReleaseVersion",
+      "file_type": "document",
+      "source_file": "specs/002-gamebasebox-public-release/data-model.md",
+      "source_location": "L39",
+      "_origin": "ast",
+      "id": "002_gamebasebox_public_release_data_model_releaseversion",
+      "community": 80,
+      "norm_label": "releaseversion"
+    },
+    {
+      "label": "OldRepositoryRedirect",
+      "file_type": "document",
+      "source_file": "specs/002-gamebasebox-public-release/data-model.md",
+      "source_location": "L56",
+      "_origin": "ast",
+      "id": "002_gamebasebox_public_release_data_model_oldrepositoryredirect",
+      "community": 80,
+      "norm_label": "oldrepositoryredirect"
+    },
+    {
+      "label": "plan.md",
+      "file_type": "document",
+      "source_file": "specs/002-gamebasebox-public-release/plan.md",
+      "source_location": "L1",
+      "_origin": "ast",
+      "id": "002_gamebasebox_public_release_plan",
+      "community": 17,
+      "norm_label": "plan.md"
+    },
+    {
+      "label": "Implementation Plan: GameBaseBox Public 0.1 Release",
+      "file_type": "document",
+      "source_file": "specs/002-gamebasebox-public-release/plan.md",
+      "source_location": "L3",
+      "_origin": "ast",
+      "id": "002_gamebasebox_public_release_plan_implementation_plan_gamebasebox_public_0_1_release",
+      "community": 17,
+      "norm_label": "implementation plan: gamebasebox public 0.1 release"
+    },
+    {
+      "label": "Summary",
+      "file_type": "document",
+      "source_file": "specs/002-gamebasebox-public-release/plan.md",
+      "source_location": "L9",
+      "_origin": "ast",
+      "id": "002_gamebasebox_public_release_plan_summary",
+      "community": 17,
+      "norm_label": "summary"
+    },
+    {
+      "label": "Technical Context",
+      "file_type": "document",
+      "source_file": "specs/002-gamebasebox-public-release/plan.md",
+      "source_location": "L15",
+      "_origin": "ast",
+      "id": "002_gamebasebox_public_release_plan_technical_context",
+      "community": 17,
+      "norm_label": "technical context"
+    },
+    {
+      "label": "Constitution Check",
+      "file_type": "document",
+      "source_file": "specs/002-gamebasebox-public-release/plan.md",
+      "source_location": "L35",
+      "_origin": "ast",
+      "id": "002_gamebasebox_public_release_plan_constitution_check",
+      "community": 17,
+      "norm_label": "constitution check"
+    },
+    {
+      "label": "Project Structure",
+      "file_type": "document",
+      "source_file": "specs/002-gamebasebox-public-release/plan.md",
+      "source_location": "L45",
+      "_origin": "ast",
+      "id": "002_gamebasebox_public_release_plan_project_structure",
+      "community": 17,
+      "norm_label": "project structure"
+    },
+    {
+      "label": "Documentation (this feature)",
+      "file_type": "document",
+      "source_file": "specs/002-gamebasebox-public-release/plan.md",
+      "source_location": "L47",
+      "_origin": "ast",
+      "id": "002_gamebasebox_public_release_plan_documentation_this_feature",
+      "community": 17,
+      "norm_label": "documentation (this feature)"
+    },
+    {
+      "label": "Source Code (repository root)",
+      "file_type": "document",
+      "source_file": "specs/002-gamebasebox-public-release/plan.md",
+      "source_location": "L63",
+      "_origin": "ast",
+      "id": "002_gamebasebox_public_release_plan_source_code_repository_root",
+      "community": 17,
+      "norm_label": "source code (repository root)"
+    },
+    {
+      "label": "Phase 0: Research Summary",
+      "file_type": "document",
+      "source_file": "specs/002-gamebasebox-public-release/plan.md",
+      "source_location": "L81",
+      "_origin": "ast",
+      "id": "002_gamebasebox_public_release_plan_phase_0_research_summary",
+      "community": 17,
+      "norm_label": "phase 0: research summary"
+    },
+    {
+      "label": "Phase 1: Design Summary",
+      "file_type": "document",
+      "source_file": "specs/002-gamebasebox-public-release/plan.md",
+      "source_location": "L91",
+      "_origin": "ast",
+      "id": "002_gamebasebox_public_release_plan_phase_1_design_summary",
+      "community": 17,
+      "norm_label": "phase 1: design summary"
+    },
+    {
+      "label": "Complexity Tracking",
+      "file_type": "document",
+      "source_file": "specs/002-gamebasebox-public-release/plan.md",
+      "source_location": "L104",
+      "_origin": "ast",
+      "id": "002_gamebasebox_public_release_plan_complexity_tracking",
+      "community": 17,
+      "norm_label": "complexity tracking"
+    },
+    {
+      "label": "quickstart.md",
+      "file_type": "document",
+      "source_file": "specs/002-gamebasebox-public-release/quickstart.md",
+      "source_location": "L1",
+      "_origin": "ast",
+      "id": "002_gamebasebox_public_release_quickstart",
+      "community": 27,
+      "norm_label": "quickstart.md"
+    },
+    {
+      "label": "Quickstart: GameBaseBox Public 0.1 Release Validation",
+      "file_type": "document",
+      "source_file": "specs/002-gamebasebox-public-release/quickstart.md",
+      "source_location": "L3",
+      "_origin": "ast",
+      "id": "002_gamebasebox_public_release_quickstart_quickstart_gamebasebox_public_0_1_release_validation",
+      "community": 27,
+      "norm_label": "quickstart: gamebasebox public 0.1 release validation"
+    },
+    {
+      "label": "Prerequisites",
+      "file_type": "document",
+      "source_file": "specs/002-gamebasebox-public-release/quickstart.md",
+      "source_location": "L5",
+      "_origin": "ast",
+      "id": "002_gamebasebox_public_release_quickstart_prerequisites",
+      "community": 27,
+      "norm_label": "prerequisites"
+    },
+    {
+      "label": "Validation Commands",
+      "file_type": "document",
+      "source_file": "specs/002-gamebasebox-public-release/quickstart.md",
+      "source_location": "L11",
+      "_origin": "ast",
+      "id": "002_gamebasebox_public_release_quickstart_validation_commands",
+      "community": 27,
+      "norm_label": "validation commands"
+    },
+    {
+      "label": "Branding Audit",
+      "file_type": "document",
+      "source_file": "specs/002-gamebasebox-public-release/quickstart.md",
+      "source_location": "L33",
+      "_origin": "ast",
+      "id": "002_gamebasebox_public_release_quickstart_branding_audit",
+      "community": 27,
+      "norm_label": "branding audit"
+    },
+    {
+      "label": "New Repository Verification",
+      "file_type": "document",
+      "source_file": "specs/002-gamebasebox-public-release/quickstart.md",
+      "source_location": "L44",
+      "_origin": "ast",
+      "id": "002_gamebasebox_public_release_quickstart_new_repository_verification",
+      "community": 27,
+      "norm_label": "new repository verification"
+    },
+    {
+      "label": "Release Verification",
+      "file_type": "document",
+      "source_file": "specs/002-gamebasebox-public-release/quickstart.md",
+      "source_location": "L51",
+      "_origin": "ast",
+      "id": "002_gamebasebox_public_release_quickstart_release_verification",
+      "community": 27,
+      "norm_label": "release verification"
+    },
+    {
+      "label": "Old Repository Verification",
+      "file_type": "document",
+      "source_file": "specs/002-gamebasebox-public-release/quickstart.md",
+      "source_location": "L59",
+      "_origin": "ast",
+      "id": "002_gamebasebox_public_release_quickstart_old_repository_verification",
+      "community": 27,
+      "norm_label": "old repository verification"
+    },
+    {
+      "label": "research.md",
+      "file_type": "document",
+      "source_file": "specs/002-gamebasebox-public-release/research.md",
+      "source_location": "L1",
+      "_origin": "ast",
+      "id": "002_gamebasebox_public_release_research",
+      "community": 73,
+      "norm_label": "research.md"
+    },
+    {
+      "label": "Research: GameBaseBox Public 0.1 Release",
+      "file_type": "document",
+      "source_file": "specs/002-gamebasebox-public-release/research.md",
+      "source_location": "L3",
+      "_origin": "ast",
+      "id": "002_gamebasebox_public_release_research_research_gamebasebox_public_0_1_release",
+      "community": 73,
+      "norm_label": "research: gamebasebox public 0.1 release"
+    },
+    {
+      "label": "Decision: Use GBBox / GameBase Box as public identity",
+      "file_type": "document",
+      "source_file": "specs/002-gamebasebox-public-release/research.md",
+      "source_location": "L5",
+      "_origin": "ast",
+      "id": "002_gamebasebox_public_release_research_decision_use_gbbox_gamebase_box_as_public_identity",
+      "community": 73,
+      "norm_label": "decision: use gbbox / gamebase box as public identity"
+    },
+    {
+      "label": "Decision: Publish new repository as GameBaseBox with clean history",
+      "file_type": "document",
+      "source_file": "specs/002-gamebasebox-public-release/research.md",
+      "source_location": "L13",
+      "_origin": "ast",
+      "id": "002_gamebasebox_public_release_research_decision_publish_new_repository_as_gamebasebox_with_clean_history",
+      "community": 73,
+      "norm_label": "decision: publish new repository as gamebasebox with clean history"
+    },
+    {
+      "label": "Decision: Attach built artifacts to v0.1.0",
+      "file_type": "document",
+      "source_file": "specs/002-gamebasebox-public-release/research.md",
+      "source_location": "L21",
+      "_origin": "ast",
+      "id": "002_gamebasebox_public_release_research_decision_attach_built_artifacts_to_v0_1_0",
+      "community": 73,
+      "norm_label": "decision: attach built artifacts to v0.1.0"
+    },
+    {
+      "label": "Decision: Preserve existing local data compatibility",
+      "file_type": "document",
+      "source_file": "specs/002-gamebasebox-public-release/research.md",
+      "source_location": "L29",
+      "_origin": "ast",
+      "id": "002_gamebasebox_public_release_research_decision_preserve_existing_local_data_compatibility",
+      "community": 73,
+      "norm_label": "decision: preserve existing local data compatibility"
+    },
+    {
+      "label": "Decision: Keep platform support claims factual",
+      "file_type": "document",
+      "source_file": "specs/002-gamebasebox-public-release/research.md",
+      "source_location": "L36",
+      "_origin": "ast",
+      "id": "002_gamebasebox_public_release_research_decision_keep_platform_support_claims_factual",
+      "community": 73,
+      "norm_label": "decision: keep platform support claims factual"
+    },
+    {
+      "label": "spec.md",
+      "file_type": "document",
+      "source_file": "specs/002-gamebasebox-public-release/spec.md",
+      "source_location": "L1",
+      "_origin": "ast",
+      "id": "002_gamebasebox_public_release_spec",
+      "community": 9,
+      "norm_label": "spec.md"
+    },
+    {
+      "label": "Feature Specification: GameBaseBox Public 0.1 Release",
+      "file_type": "document",
+      "source_file": "specs/002-gamebasebox-public-release/spec.md",
+      "source_location": "L3",
+      "_origin": "ast",
+      "id": "002_gamebasebox_public_release_spec_feature_specification_gamebasebox_public_0_1_release",
+      "community": 9,
+      "norm_label": "feature specification: gamebasebox public 0.1 release"
+    },
+    {
+      "label": "User Scenarios & Testing *(mandatory)*",
+      "file_type": "document",
+      "source_file": "specs/002-gamebasebox-public-release/spec.md",
+      "source_location": "L13",
+      "_origin": "ast",
+      "id": "002_gamebasebox_public_release_spec_user_scenarios_testing_mandatory",
+      "community": 9,
+      "norm_label": "user scenarios & testing *(mandatory)*"
+    },
+    {
+      "label": "User Story 1 - Rebrand the app identity (Priority: P1)",
+      "file_type": "document",
+      "source_file": "specs/002-gamebasebox-public-release/spec.md",
+      "source_location": "L15",
+      "_origin": "ast",
+      "id": "002_gamebasebox_public_release_spec_user_story_1_rebrand_the_app_identity_priority_p1",
+      "community": 9,
+      "norm_label": "user story 1 - rebrand the app identity (priority: p1)"
+    },
+    {
+      "label": "User Story 2 - Publish a new public repository (Priority: P1)",
+      "file_type": "document",
+      "source_file": "specs/002-gamebasebox-public-release/spec.md",
+      "source_location": "L31",
+      "_origin": "ast",
+      "id": "002_gamebasebox_public_release_spec_user_story_2_publish_a_new_public_repository_priority_p1",
+      "community": 9,
+      "norm_label": "user story 2 - publish a new public repository (priority: p1)"
+    },
+    {
+      "label": "User Story 3 - Ship version 0.1.0 with release artifacts (Priority: P1)",
+      "file_type": "document",
+      "source_file": "specs/002-gamebasebox-public-release/spec.md",
+      "source_location": "L47",
+      "_origin": "ast",
+      "id": "002_gamebasebox_public_release_spec_user_story_3_ship_version_0_1_0_with_release_artifacts_priority_p1",
+      "community": 9,
+      "norm_label": "user story 3 - ship version 0.1.0 with release artifacts (priority: p1)"
+    },
+    {
+      "label": "Edge Cases",
+      "file_type": "document",
+      "source_file": "specs/002-gamebasebox-public-release/spec.md",
+      "source_location": "L61",
+      "_origin": "ast",
+      "id": "002_gamebasebox_public_release_spec_edge_cases",
+      "community": 9,
+      "norm_label": "edge cases"
+    },
+    {
+      "label": "Requirements *(mandatory)*",
+      "file_type": "document",
+      "source_file": "specs/002-gamebasebox-public-release/spec.md",
+      "source_location": "L69",
+      "_origin": "ast",
+      "id": "002_gamebasebox_public_release_spec_requirements_mandatory",
+      "community": 9,
+      "norm_label": "requirements *(mandatory)*"
+    },
+    {
+      "label": "Functional Requirements",
+      "file_type": "document",
+      "source_file": "specs/002-gamebasebox-public-release/spec.md",
+      "source_location": "L71",
+      "_origin": "ast",
+      "id": "002_gamebasebox_public_release_spec_functional_requirements",
+      "community": 9,
+      "norm_label": "functional requirements"
+    },
+    {
+      "label": "Key Entities",
+      "file_type": "document",
+      "source_file": "specs/002-gamebasebox-public-release/spec.md",
+      "source_location": "L87",
+      "_origin": "ast",
+      "id": "002_gamebasebox_public_release_spec_key_entities",
+      "community": 9,
+      "norm_label": "key entities"
+    },
+    {
+      "label": "Success Criteria *(mandatory)*",
+      "file_type": "document",
+      "source_file": "specs/002-gamebasebox-public-release/spec.md",
+      "source_location": "L94",
+      "_origin": "ast",
+      "id": "002_gamebasebox_public_release_spec_success_criteria_mandatory",
+      "community": 9,
+      "norm_label": "success criteria *(mandatory)*"
+    },
+    {
+      "label": "Measurable Outcomes",
+      "file_type": "document",
+      "source_file": "specs/002-gamebasebox-public-release/spec.md",
+      "source_location": "L96",
+      "_origin": "ast",
+      "id": "002_gamebasebox_public_release_spec_measurable_outcomes",
+      "community": 9,
+      "norm_label": "measurable outcomes"
+    },
+    {
+      "label": "Assumptions",
+      "file_type": "document",
+      "source_file": "specs/002-gamebasebox-public-release/spec.md",
+      "source_location": "L105",
+      "_origin": "ast",
+      "id": "002_gamebasebox_public_release_spec_assumptions",
+      "community": 9,
+      "norm_label": "assumptions"
+    },
+    {
+      "label": "tasks.md",
+      "file_type": "document",
+      "source_file": "specs/002-gamebasebox-public-release/tasks.md",
+      "source_location": "L1",
+      "_origin": "ast",
+      "id": "002_gamebasebox_public_release_tasks",
+      "community": 32,
+      "norm_label": "tasks.md"
+    },
+    {
+      "label": "Tasks: GameBaseBox Public 0.1 Release",
+      "file_type": "document",
+      "source_file": "specs/002-gamebasebox-public-release/tasks.md",
+      "source_location": "L3",
+      "_origin": "ast",
+      "id": "002_gamebasebox_public_release_tasks_tasks_gamebasebox_public_0_1_release",
+      "community": 32,
+      "norm_label": "tasks: gamebasebox public 0.1 release"
+    },
+    {
+      "label": "Phase 1: Spec Closure and Audit",
+      "file_type": "document",
+      "source_file": "specs/002-gamebasebox-public-release/tasks.md",
+      "source_location": "L11",
+      "_origin": "ast",
+      "id": "002_gamebasebox_public_release_tasks_phase_1_spec_closure_and_audit",
+      "community": 32,
+      "norm_label": "phase 1: spec closure and audit"
+    },
+    {
+      "label": "Phase 2: Product Rebrand",
+      "file_type": "document",
+      "source_file": "specs/002-gamebasebox-public-release/tasks.md",
+      "source_location": "L17",
+      "_origin": "ast",
+      "id": "002_gamebasebox_public_release_tasks_phase_2_product_rebrand",
+      "community": 32,
+      "norm_label": "phase 2: product rebrand"
+    },
+    {
+      "label": "Phase 3: README and Repository Content",
+      "file_type": "document",
+      "source_file": "specs/002-gamebasebox-public-release/tasks.md",
+      "source_location": "L26",
+      "_origin": "ast",
+      "id": "002_gamebasebox_public_release_tasks_phase_3_readme_and_repository_content",
+      "community": 32,
+      "norm_label": "phase 3: readme and repository content"
+    },
+    {
+      "label": "Phase 4: Validation and Build Artifacts",
+      "file_type": "document",
+      "source_file": "specs/002-gamebasebox-public-release/tasks.md",
+      "source_location": "L33",
+      "_origin": "ast",
+      "id": "002_gamebasebox_public_release_tasks_phase_4_validation_and_build_artifacts",
+      "community": 32,
+      "norm_label": "phase 4: validation and build artifacts"
+    },
+    {
+      "label": "Phase 5: New Public Repository and Release",
+      "file_type": "document",
+      "source_file": "specs/002-gamebasebox-public-release/tasks.md",
+      "source_location": "L42",
+      "_origin": "ast",
+      "id": "002_gamebasebox_public_release_tasks_phase_5_new_public_repository_and_release",
+      "community": 32,
+      "norm_label": "phase 5: new public repository and release"
+    },
+    {
+      "label": "Phase 6: Old Repo Redirect and Close-Out",
+      "file_type": "document",
+      "source_file": "specs/002-gamebasebox-public-release/tasks.md",
+      "source_location": "L53",
+      "_origin": "ast",
+      "id": "002_gamebasebox_public_release_tasks_phase_6_old_repo_redirect_and_close_out",
+      "community": 32,
+      "norm_label": "phase 6: old repo redirect and close-out"
     },
     {
       "label": "Session Completion Workflow",
@@ -16686,66 +17376,6 @@
     {
       "relation": "contains",
       "confidence": "EXTRACTED",
-      "source_file": "scratch/fix_all_tests.py",
-      "source_location": "L39",
-      "weight": 1.0,
-      "confidence_score": 1.0,
-      "source": "scratch_fix_all_tests",
-      "target": "scratch_fix_all_tests_refactor_file"
-    },
-    {
-      "relation": "rationale_for",
-      "confidence": "EXTRACTED",
-      "source_file": "scratch/fix_all_tests.py",
-      "source_location": "L1",
-      "weight": 1.0,
-      "confidence_score": 1.0,
-      "source": "scratch_fix_all_tests_rationale_1",
-      "target": "scratch_fix_all_tests"
-    },
-    {
-      "relation": "rationale_for",
-      "confidence": "EXTRACTED",
-      "source_file": "scratch/fix_all_tests.py",
-      "source_location": "L40",
-      "weight": 1.0,
-      "confidence_score": 1.0,
-      "source": "scratch_fix_all_tests_rationale_40",
-      "target": "scratch_fix_all_tests_refactor_file"
-    },
-    {
-      "relation": "contains",
-      "confidence": "EXTRACTED",
-      "source_file": "scratch/fix_db_tests.py",
-      "source_location": "L33",
-      "weight": 1.0,
-      "confidence_score": 1.0,
-      "source": "scratch_fix_db_tests",
-      "target": "scratch_fix_db_tests_replace1"
-    },
-    {
-      "relation": "rationale_for",
-      "confidence": "EXTRACTED",
-      "source_file": "scratch/fix_db_tests.py",
-      "source_location": "L1",
-      "weight": 1.0,
-      "confidence_score": 1.0,
-      "source": "scratch_fix_db_tests_rationale_1",
-      "target": "scratch_fix_db_tests"
-    },
-    {
-      "relation": "rationale_for",
-      "confidence": "EXTRACTED",
-      "source_file": "scratch/unify_test_guards.py",
-      "source_location": "L1",
-      "weight": 1.0,
-      "confidence_score": 1.0,
-      "source": "scratch_unify_test_guards_rationale_1",
-      "target": "scratch_unify_test_guards"
-    },
-    {
-      "relation": "contains",
-      "confidence": "EXTRACTED",
       "source_file": "scripts/convert_csv_to_sqlite.js",
       "source_location": "L331",
       "weight": 1.0,
@@ -18282,6 +18912,56 @@
       "confidence_score": 1.0,
       "source": "scripts_platform_import_config_test",
       "target": "scripts_sqlite_support_config_requiredplatformcolumns"
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "scripts/release_branding.test.js",
+      "source_location": "L1",
+      "weight": 1.0,
+      "source": "scripts_release_branding_test",
+      "target": "scripts_release_branding_test_fs",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "scripts/release_branding.test.js",
+      "source_location": "L2",
+      "weight": 1.0,
+      "source": "scripts_release_branding_test",
+      "target": "scripts_release_branding_test_path",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "scripts/release_branding.test.js",
+      "source_location": "L6",
+      "weight": 1.0,
+      "source": "scripts_release_branding_test",
+      "target": "scripts_release_branding_test_readjson",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "scripts/release_branding.test.js",
+      "source_location": "L10",
+      "weight": 1.0,
+      "source": "scripts_release_branding_test",
+      "target": "scripts_release_branding_test_readtext",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "scripts/release_branding.test.js",
+      "source_location": "L4",
+      "weight": 1.0,
+      "source": "scripts_release_branding_test",
+      "target": "scripts_release_branding_test_root",
+      "confidence_score": 1.0
     },
     {
       "relation": "contains",
@@ -23258,9 +23938,9 @@
       "source_file": "src-tauri/src/commands/platforms/tests.rs",
       "source_location": "L33",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "platforms_tests",
-      "target": "platforms_tests_test_get_supported_platforms_includes_importable_atari2600_capabilities",
-      "confidence_score": 1.0
+      "target": "platforms_tests_test_get_supported_platforms_includes_importable_atari2600_capabilities"
     },
     {
       "relation": "contains",
@@ -23861,9 +24541,9 @@
       "source_file": "src-tauri/src/commands/setup/tests.rs",
       "source_location": "L40",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "setup_tests",
-      "target": "setup_tests_create_atari2600_folder_settings",
-      "confidence_score": 1.0
+      "target": "setup_tests_create_atari2600_folder_settings"
     },
     {
       "relation": "contains",
@@ -23881,9 +24561,9 @@
       "source_file": "src-tauri/src/commands/setup/tests.rs",
       "source_location": "L136",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "setup_tests",
-      "target": "setup_tests_rejects_atari2600_import_request_missing_screenshots_folder",
-      "confidence_score": 1.0
+      "target": "setup_tests_rejects_atari2600_import_request_missing_screenshots_folder"
     },
     {
       "relation": "contains",
@@ -23931,9 +24611,9 @@
       "source_file": "src-tauri/src/commands/setup/tests.rs",
       "source_location": "L122",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "setup_tests",
-      "target": "setup_tests_validates_atari2600_import_request_with_required_folders",
-      "confidence_score": 1.0
+      "target": "setup_tests_validates_atari2600_import_request_with_required_folders"
     },
     {
       "relation": "contains",
@@ -23952,9 +24632,9 @@
       "source_file": "src-tauri/src/commands/setup/tests.rs",
       "source_location": "L146",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "setup_tests_rejects_atari2600_import_request_missing_screenshots_folder",
-      "target": "setup_tests_request_with_paths",
-      "confidence_score": 1.0
+      "target": "setup_tests_request_with_paths"
     },
     {
       "relation": "calls",
@@ -24029,9 +24709,9 @@
       "source_file": "src-tauri/src/commands/setup/tests.rs",
       "source_location": "L126",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "setup_tests_validates_atari2600_import_request_with_required_folders",
-      "target": "setup_tests_request_with_paths",
-      "confidence_score": 1.0
+      "target": "setup_tests_request_with_paths"
     },
     {
       "relation": "calls",
@@ -24051,9 +24731,9 @@
       "source_location": "L40",
       "weight": 1.0,
       "context": "return_type",
+      "confidence_score": 1.0,
       "source": "setup_tests_create_atari2600_folder_settings",
-      "target": "src_tauri_src_commands_setup_tests_rs_platformfoldersettings",
-      "confidence_score": 1.0
+      "target": "src_tauri_src_commands_setup_tests_rs_platformfoldersettings"
     },
     {
       "relation": "references",
@@ -24128,9 +24808,9 @@
       "source_location": "L40",
       "weight": 1.0,
       "context": "parameter_type",
+      "confidence_score": 1.0,
       "source": "setup_tests_create_atari2600_folder_settings",
-      "target": "src_tauri_src_commands_setup_tests_rs_path",
-      "confidence_score": 1.0
+      "target": "src_tauri_src_commands_setup_tests_rs_path"
     },
     {
       "relation": "calls",
@@ -24139,9 +24819,9 @@
       "source_file": "src-tauri/src/commands/setup/tests.rs",
       "source_location": "L140",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "setup_tests_rejects_atari2600_import_request_missing_screenshots_folder",
-      "target": "setup_tests_create_atari2600_folder_settings",
-      "confidence_score": 1.0
+      "target": "setup_tests_create_atari2600_folder_settings"
     },
     {
       "relation": "calls",
@@ -24150,9 +24830,9 @@
       "source_file": "src-tauri/src/commands/setup/tests.rs",
       "source_location": "L129",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "setup_tests_validates_atari2600_import_request_with_required_folders",
-      "target": "setup_tests_create_atari2600_folder_settings",
-      "confidence_score": 1.0
+      "target": "setup_tests_create_atari2600_folder_settings"
     },
     {
       "relation": "contains",
@@ -29625,9 +30305,9 @@
       "source_file": "src/app/page.tsx",
       "source_location": "L51",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "app_page",
-      "target": "app_page_getrequiredplatformfolderkeys",
-      "confidence_score": 1.0
+      "target": "app_page_getrequiredplatformfolderkeys"
     },
     {
       "relation": "contains",
@@ -29655,9 +30335,9 @@
       "source_file": "src/app/page.tsx",
       "source_location": "L46",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "app_page",
-      "target": "app_page_required_platform_folder_keys",
-      "confidence_score": 1.0
+      "target": "app_page_required_platform_folder_keys"
     },
     {
       "relation": "contains",
@@ -30259,9 +30939,9 @@
       "source_file": "src/app/page.tsx",
       "source_location": "L316",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "app_page_libraryapp",
-      "target": "app_page_getrequiredplatformfolderkeys",
-      "confidence_score": 1.0
+      "target": "app_page_getrequiredplatformfolderkeys"
     },
     {
       "relation": "calls",
@@ -35836,9 +36516,9 @@
       "source_file": "src/components/settings/PathsSettingsTab.tsx",
       "source_location": "L3",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "settings_pathssettingstab",
-      "target": "types_platform_platformfoldertype",
-      "confidence_score": 1.0
+      "target": "types_platform_platformfoldertype"
     },
     {
       "relation": "imports",
@@ -43350,9 +44030,9 @@
       "source_file": ".specify/memory/constitution.md",
       "source_location": "L1",
       "weight": 1.0,
-      "confidence_score": 1.0,
       "source": "memory_constitution",
-      "target": "memory_constitution_64box_constitution"
+      "target": "memory_constitution_gbbox_constitution",
+      "confidence_score": 1.0
     },
     {
       "relation": "contains",
@@ -43360,9 +44040,9 @@
       "source_file": ".specify/memory/constitution.md",
       "source_location": "L3",
       "weight": 1.0,
-      "confidence_score": 1.0,
-      "source": "memory_constitution_64box_constitution",
-      "target": "memory_constitution_core_principles"
+      "source": "memory_constitution_gbbox_constitution",
+      "target": "memory_constitution_core_principles",
+      "confidence_score": 1.0
     },
     {
       "relation": "contains",
@@ -43370,9 +44050,9 @@
       "source_file": ".specify/memory/constitution.md",
       "source_location": "L111",
       "weight": 1.0,
-      "confidence_score": 1.0,
-      "source": "memory_constitution_64box_constitution",
-      "target": "memory_constitution_governance"
+      "source": "memory_constitution_gbbox_constitution",
+      "target": "memory_constitution_governance",
+      "confidence_score": 1.0
     },
     {
       "relation": "contains",
@@ -43380,9 +44060,9 @@
       "source_file": ".specify/memory/constitution.md",
       "source_location": "L93",
       "weight": 1.0,
-      "confidence_score": 1.0,
-      "source": "memory_constitution_64box_constitution",
-      "target": "memory_constitution_spec_kit_and_beads_workflow"
+      "source": "memory_constitution_gbbox_constitution",
+      "target": "memory_constitution_spec_kit_and_beads_workflow",
+      "confidence_score": 1.0
     },
     {
       "relation": "contains",
@@ -43390,9 +44070,9 @@
       "source_file": ".specify/memory/constitution.md",
       "source_location": "L71",
       "weight": 1.0,
-      "confidence_score": 1.0,
-      "source": "memory_constitution_64box_constitution",
-      "target": "memory_constitution_technical_standards"
+      "source": "memory_constitution_gbbox_constitution",
+      "target": "memory_constitution_technical_standards",
+      "confidence_score": 1.0
     },
     {
       "relation": "contains",
@@ -44250,89 +44930,29 @@
       "source_file": "README.md",
       "source_location": "L1",
       "weight": 1.0,
-      "confidence_score": 1.0,
       "source": "readme",
-      "target": "readme_64box"
-    },
-    {
-      "relation": "contains",
-      "confidence": "EXTRACTED",
-      "source_file": "README.md",
-      "source_location": "L84",
-      "weight": 1.0,
-      "confidence_score": 1.0,
-      "source": "readme_64box",
-      "target": "readme_1_prerequisites"
-    },
-    {
-      "relation": "contains",
-      "confidence": "EXTRACTED",
-      "source_file": "README.md",
-      "source_location": "L98",
-      "weight": 1.0,
-      "source": "readme_64box",
-      "target": "readme_2_setting_up_platform_databases_and_assets",
+      "target": "readme_gbbox",
       "confidence_score": 1.0
     },
     {
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "README.md",
-      "source_location": "L104",
+      "source_location": "L137",
       "weight": 1.0,
-      "confidence_score": 1.0,
-      "source": "readme_64box",
-      "target": "readme_3_building_the_sqlite_database"
+      "source": "readme_gbbox",
+      "target": "readme_building_the_sqlite_database",
+      "confidence_score": 1.0
     },
     {
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "README.md",
-      "source_location": "L143",
+      "source_location": "L85",
       "weight": 1.0,
-      "confidence_score": 1.0,
-      "source": "readme_64box",
-      "target": "readme_4_running_the_application_in_development"
-    },
-    {
-      "relation": "contains",
-      "confidence": "EXTRACTED",
-      "source_file": "README.md",
-      "source_location": "L157",
-      "weight": 1.0,
-      "confidence_score": 1.0,
-      "source": "readme_64box",
-      "target": "readme_5_building_for_production"
-    },
-    {
-      "relation": "contains",
-      "confidence": "EXTRACTED",
-      "source_file": "README.md",
-      "source_location": "L180",
-      "weight": 1.0,
-      "confidence_score": 1.0,
-      "source": "readme_64box",
-      "target": "readme_6_skills_used_to_build_this"
-    },
-    {
-      "relation": "contains",
-      "confidence": "EXTRACTED",
-      "source_file": "README.md",
-      "source_location": "L66",
-      "weight": 1.0,
-      "confidence_score": 1.0,
-      "source": "readme_64box",
-      "target": "readme_controls_and_shortcuts"
-    },
-    {
-      "relation": "contains",
-      "confidence": "EXTRACTED",
-      "source_file": "README.md",
-      "source_location": "L33",
-      "weight": 1.0,
-      "confidence_score": 1.0,
-      "source": "readme_64box",
-      "target": "readme_features"
+      "source": "readme_gbbox",
+      "target": "readme_controls_and_shortcuts",
+      "confidence_score": 1.0
     },
     {
       "relation": "contains",
@@ -44340,19 +44960,109 @@
       "source_file": "README.md",
       "source_location": "L170",
       "weight": 1.0,
-      "confidence_score": 1.0,
-      "source": "readme_64box",
-      "target": "readme_post_setup_configuration"
+      "source": "readme_gbbox",
+      "target": "readme_development",
+      "confidence_score": 1.0
     },
     {
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "README.md",
-      "source_location": "L43",
+      "source_location": "L7",
       "weight": 1.0,
-      "confidence_score": 1.0,
-      "source": "readme_64box",
-      "target": "readme_screenshots"
+      "source": "readme_gbbox",
+      "target": "readme_download",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "README.md",
+      "source_location": "L45",
+      "weight": 1.0,
+      "source": "readme_gbbox",
+      "target": "readme_features",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "README.md",
+      "source_location": "L194",
+      "weight": 1.0,
+      "source": "readme_gbbox",
+      "target": "readme_post_setup_configuration",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "README.md",
+      "source_location": "L101",
+      "weight": 1.0,
+      "source": "readme_gbbox",
+      "target": "readme_prerequisites",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "README.md",
+      "source_location": "L182",
+      "weight": 1.0,
+      "source": "readme_gbbox",
+      "target": "readme_production_build",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "README.md",
+      "source_location": "L206",
+      "weight": 1.0,
+      "source": "readme_gbbox",
+      "target": "readme_release_notes",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "README.md",
+      "source_location": "L55",
+      "weight": 1.0,
+      "source": "readme_gbbox",
+      "target": "readme_screenshots",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "README.md",
+      "source_location": "L113",
+      "weight": 1.0,
+      "source": "readme_gbbox",
+      "target": "readme_setting_up_platform_databases_and_assets",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "README.md",
+      "source_location": "L210",
+      "weight": 1.0,
+      "source": "readme_gbbox",
+      "target": "readme_skills_used_to_build_this",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "README.md",
+      "source_location": "L34",
+      "weight": 1.0,
+      "source": "readme_gbbox",
+      "target": "readme_supported_imports",
+      "confidence_score": 1.0
     },
     {
       "relation": "contains",
@@ -44448,19 +45158,19 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "README.md",
-      "source_location": "L80",
+      "source_location": "L130",
       "weight": 1.0,
-      "confidence_score": 1.0,
-      "source": "readme_controls_and_shortcuts",
-      "target": "readme_notes"
+      "source": "readme_setting_up_platform_databases_and_assets",
+      "target": "readme_atari_2600",
+      "confidence_score": 1.0
     },
     {
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "README.md",
-      "source_location": "L108",
+      "source_location": "L123",
       "weight": 1.0,
-      "source": "readme_2_setting_up_platform_databases_and_assets",
+      "source": "readme_setting_up_platform_databases_and_assets",
       "target": "readme_atari_800",
       "confidence_score": 1.0
     },
@@ -44468,9 +45178,9 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "README.md",
-      "source_location": "L102",
+      "source_location": "L115",
       "weight": 1.0,
-      "source": "readme_2_setting_up_platform_databases_and_assets",
+      "source": "readme_setting_up_platform_databases_and_assets",
       "target": "readme_commodore_64",
       "confidence_score": 1.0
     },
@@ -44478,130 +45188,90 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "README.md",
-      "source_location": "L119",
+      "source_location": "L153",
       "weight": 1.0,
-      "confidence_score": 1.0,
-      "source": "readme_3_building_the_sqlite_database",
-      "target": "readme_for_linux_mac"
-    },
-    {
-      "relation": "contains",
-      "confidence": "EXTRACTED",
-      "source_file": "README.md",
-      "source_location": "L108",
-      "weight": 1.0,
-      "confidence_score": 1.0,
-      "source": "readme_3_building_the_sqlite_database",
-      "target": "readme_for_windows"
-    },
-    {
-      "relation": "contains",
-      "confidence": "EXTRACTED",
-      "source_file": "docs/architecture-review.md",
-      "source_location": "L1",
-      "weight": 1.0,
-      "confidence_score": 1.0,
-      "source": "docs_architecture_review",
-      "target": "docs_architecture_review_64box_architecture_review"
-    },
-    {
-      "relation": "contains",
-      "confidence": "EXTRACTED",
-      "source_file": "docs/architecture-review.md",
-      "source_location": "L24",
-      "weight": 1.0,
-      "confidence_score": 1.0,
-      "source": "docs_architecture_review_64box_architecture_review",
-      "target": "docs_architecture_review_backend_tauri_application_rust"
-    },
-    {
-      "relation": "contains",
-      "confidence": "EXTRACTED",
-      "source_file": "docs/architecture-review.md",
-      "source_location": "L5",
-      "weight": 1.0,
-      "confidence_score": 1.0,
-      "source": "docs_architecture_review_64box_architecture_review",
-      "target": "docs_architecture_review_frontend_ui_architecture"
-    },
-    {
-      "relation": "contains",
-      "confidence": "EXTRACTED",
-      "source_file": "docs/architecture-review.md",
-      "source_location": "L10",
-      "weight": 1.0,
-      "confidence_score": 1.0,
-      "source": "docs_architecture_review_frontend_ui_architecture",
-      "target": "docs_architecture_review_detailed_modals_dependency_injection_detailview_tsx"
-    },
-    {
-      "relation": "contains",
-      "confidence": "EXTRACTED",
-      "source_file": "docs/architecture-review.md",
-      "source_location": "L16",
-      "weight": 1.0,
-      "confidence_score": 1.0,
-      "source": "docs_architecture_review_frontend_ui_architecture",
-      "target": "docs_architecture_review_math_based_focus_navigation"
-    },
-    {
-      "relation": "contains",
-      "confidence": "EXTRACTED",
-      "source_file": "docs/architecture-review.md",
-      "source_location": "L7",
-      "weight": 1.0,
-      "confidence_score": 1.0,
-      "source": "docs_architecture_review_frontend_ui_architecture",
-      "target": "docs_architecture_review_overview"
-    },
-    {
-      "relation": "contains",
-      "confidence": "EXTRACTED",
-      "source_file": "docs/architecture-review.md",
-      "source_location": "L10",
-      "weight": 1.0,
-      "source": "docs_architecture_review_frontend_ui_architecture",
-      "target": "docs_architecture_review_platform_scoped_library_context",
+      "source": "readme_building_the_sqlite_database",
+      "target": "readme_linux_and_macos",
       "confidence_score": 1.0
     },
     {
       "relation": "contains",
       "confidence": "EXTRACTED",
-      "source_file": "docs/architecture-review.md",
-      "source_location": "L19",
+      "source_file": "README.md",
+      "source_location": "L141",
       "weight": 1.0,
-      "confidence_score": 1.0,
-      "source": "docs_architecture_review_frontend_ui_architecture",
-      "target": "docs_architecture_review_ui_component_isolation"
+      "source": "readme_building_the_sqlite_database",
+      "target": "readme_windows",
+      "confidence_score": 1.0
     },
     {
       "relation": "contains",
       "confidence": "EXTRACTED",
-      "source_file": "docs/architecture-review.md",
-      "source_location": "L31",
+      "source_file": "RELEASE_NOTES_0.1.0.md",
+      "source_location": "L1",
       "weight": 1.0,
-      "confidence_score": 1.0,
-      "source": "docs_architecture_review_backend_tauri_application_rust",
-      "target": "docs_architecture_review_bridge_api_payloads"
+      "source": "release_notes_0_1_0",
+      "target": "release_notes_0_1_0_gbbox_0_1_0_release_notes",
+      "confidence_score": 1.0
     },
     {
       "relation": "contains",
       "confidence": "EXTRACTED",
-      "source_file": "docs/architecture-review.md",
-      "source_location": "L26",
+      "source_file": "RELEASE_NOTES_0.1.0.md",
+      "source_location": "L3",
       "weight": 1.0,
-      "confidence_score": 1.0,
-      "source": "docs_architecture_review_backend_tauri_application_rust",
-      "target": "docs_architecture_review_database_abstraction"
+      "source": "release_notes_0_1_0_gbbox_0_1_0_release_notes",
+      "target": "release_notes_0_1_0_highlights",
+      "confidence_score": 1.0
     },
     {
       "relation": "contains",
       "confidence": "EXTRACTED",
-      "source_file": "docs/architecture-review.md",
-      "source_location": "L38",
+      "source_file": "RELEASE_NOTES_0.1.0.md",
+      "source_location": "L18",
       "weight": 1.0,
-      "source": "docs_architecture_review_backend_tauri_application_rust",
-      "target": "docs_architecture_review_launch_and_media_boundaries",
+      "source": "release_notes_0_1_0_gbbox_0_1_0_release_notes",
+      "target": "release_notes_0_1_0_installation_and_artifacts",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "RELEASE_NOTES_0.1.0.md",
+      "source_location": "L37",
+      "weight": 1.0,
+      "source": "release_notes_0_1_0_gbbox_0_1_0_release_notes",
+      "target": "release_notes_0_1_0_known_limitations",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "RELEASE_NOTES_0.1.0.md",
+      "source_location": "L43",
+      "weight": 1.0,
+      "source": "release_notes_0_1_0_gbbox_0_1_0_release_notes",
+      "target": "release_notes_0_1_0_migration_from_64box",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "RELEASE_NOTES_0.1.0.md",
+      "source_location": "L10",
+      "weight": 1.0,
+      "source": "release_notes_0_1_0_gbbox_0_1_0_release_notes",
+      "target": "release_notes_0_1_0_supported_imports",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "RELEASE_NOTES_0.1.0.md",
+      "source_location": "L24",
+      "weight": 1.0,
+      "source": "release_notes_0_1_0_gbbox_0_1_0_release_notes",
+      "target": "release_notes_0_1_0_validation",
       "confidence_score": 1.0
     },
     {
@@ -44720,9 +45390,9 @@
       "source_file": "specs/001-multi-platform-gamebases/checklists/requirements.md",
       "source_location": "L1",
       "weight": 1.0,
-      "confidence_score": 1.0,
-      "source": "checklists_requirements",
-      "target": "checklists_requirements_specification_quality_checklist_multi_platform_gamebase_libraries"
+      "source": "specs_001_multi_platform_gamebases_checklists_requirements_md_checklists_requirements",
+      "target": "checklists_requirements_specification_quality_checklist_multi_platform_gamebase_libraries",
+      "confidence_score": 1.0
     },
     {
       "relation": "contains",
@@ -44730,9 +45400,9 @@
       "source_file": "specs/001-multi-platform-gamebases/checklists/requirements.md",
       "source_location": "L7",
       "weight": 1.0,
-      "confidence_score": 1.0,
       "source": "checklists_requirements_specification_quality_checklist_multi_platform_gamebase_libraries",
-      "target": "checklists_requirements_content_quality"
+      "target": "specs_001_multi_platform_gamebases_checklists_requirements_md_checklists_requirements_content_quality",
+      "confidence_score": 1.0
     },
     {
       "relation": "contains",
@@ -44740,9 +45410,9 @@
       "source_file": "specs/001-multi-platform-gamebases/checklists/requirements.md",
       "source_location": "L25",
       "weight": 1.0,
-      "confidence_score": 1.0,
       "source": "checklists_requirements_specification_quality_checklist_multi_platform_gamebase_libraries",
-      "target": "checklists_requirements_feature_readiness"
+      "target": "specs_001_multi_platform_gamebases_checklists_requirements_md_checklists_requirements_feature_readiness",
+      "confidence_score": 1.0
     },
     {
       "relation": "contains",
@@ -44750,9 +45420,9 @@
       "source_file": "specs/001-multi-platform-gamebases/checklists/requirements.md",
       "source_location": "L32",
       "weight": 1.0,
-      "confidence_score": 1.0,
       "source": "checklists_requirements_specification_quality_checklist_multi_platform_gamebase_libraries",
-      "target": "checklists_requirements_notes"
+      "target": "specs_001_multi_platform_gamebases_checklists_requirements_md_checklists_requirements_notes",
+      "confidence_score": 1.0
     },
     {
       "relation": "contains",
@@ -44760,9 +45430,9 @@
       "source_file": "specs/001-multi-platform-gamebases/checklists/requirements.md",
       "source_location": "L14",
       "weight": 1.0,
-      "confidence_score": 1.0,
       "source": "checklists_requirements_specification_quality_checklist_multi_platform_gamebase_libraries",
-      "target": "checklists_requirements_requirement_completeness"
+      "target": "specs_001_multi_platform_gamebases_checklists_requirements_md_checklists_requirements_requirement_completeness",
+      "confidence_score": 1.0
     },
     {
       "relation": "contains",
@@ -45358,6 +46028,16 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "specs/001-multi-platform-gamebases/quickstart.md",
+      "source_location": "L142",
+      "weight": 1.0,
+      "source": "001_multi_platform_gamebases_quickstart_quickstart_validate_multi_platform_gamebase_libraries",
+      "target": "001_multi_platform_gamebases_quickstart_closure_note",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "specs/001-multi-platform-gamebases/quickstart.md",
       "source_location": "L15",
       "weight": 1.0,
       "confidence_score": 1.0,
@@ -45370,9 +46050,9 @@
       "source_file": "specs/001-multi-platform-gamebases/quickstart.md",
       "source_location": "L127",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "001_multi_platform_gamebases_quickstart_quickstart_validate_multi_platform_gamebase_libraries",
-      "target": "001_multi_platform_gamebases_quickstart_phase_8_validation_record",
-      "confidence_score": 1.0
+      "target": "001_multi_platform_gamebases_quickstart_phase_8_validation_record"
     },
     {
       "relation": "contains",
@@ -46005,6 +46685,666 @@
       "target": "001_multi_platform_gamebases_tasks_validation_gates"
     },
     {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "specs/002-gamebasebox-public-release/checklists/requirements.md",
+      "source_location": "L3",
+      "weight": 1.0,
+      "source": "specs_002_gamebasebox_public_release_checklists_requirements_md_checklists_requirements",
+      "target": "checklists_requirements_specification_quality_checklist_gamebasebox_public_0_1_release",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "specs/002-gamebasebox-public-release/checklists/requirements.md",
+      "source_location": "L9",
+      "weight": 1.0,
+      "source": "checklists_requirements_specification_quality_checklist_gamebasebox_public_0_1_release",
+      "target": "specs_002_gamebasebox_public_release_checklists_requirements_md_checklists_requirements_content_quality",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "specs/002-gamebasebox-public-release/checklists/requirements.md",
+      "source_location": "L27",
+      "weight": 1.0,
+      "source": "checklists_requirements_specification_quality_checklist_gamebasebox_public_0_1_release",
+      "target": "specs_002_gamebasebox_public_release_checklists_requirements_md_checklists_requirements_feature_readiness",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "specs/002-gamebasebox-public-release/checklists/requirements.md",
+      "source_location": "L34",
+      "weight": 1.0,
+      "source": "checklists_requirements_specification_quality_checklist_gamebasebox_public_0_1_release",
+      "target": "specs_002_gamebasebox_public_release_checklists_requirements_md_checklists_requirements_notes",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "specs/002-gamebasebox-public-release/checklists/requirements.md",
+      "source_location": "L16",
+      "weight": 1.0,
+      "source": "checklists_requirements_specification_quality_checklist_gamebasebox_public_0_1_release",
+      "target": "specs_002_gamebasebox_public_release_checklists_requirements_md_checklists_requirements_requirement_completeness",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "specs/002-gamebasebox-public-release/contracts/branding-contract.md",
+      "source_location": "L3",
+      "weight": 1.0,
+      "source": "contracts_branding_contract",
+      "target": "contracts_branding_contract_branding_contract",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "specs/002-gamebasebox-public-release/contracts/branding-contract.md",
+      "source_location": "L13",
+      "weight": 1.0,
+      "source": "contracts_branding_contract_branding_contract",
+      "target": "contracts_branding_contract_replacement_rules",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "specs/002-gamebasebox-public-release/contracts/branding-contract.md",
+      "source_location": "L5",
+      "weight": 1.0,
+      "source": "contracts_branding_contract_branding_contract",
+      "target": "contracts_branding_contract_required_public_identity",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "specs/002-gamebasebox-public-release/contracts/branding-contract.md",
+      "source_location": "L21",
+      "weight": 1.0,
+      "source": "contracts_branding_contract_branding_contract",
+      "target": "contracts_branding_contract_verification",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "specs/002-gamebasebox-public-release/contracts/release-contract.md",
+      "source_location": "L3",
+      "weight": 1.0,
+      "source": "contracts_release_contract",
+      "target": "contracts_release_contract_release_contract",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "specs/002-gamebasebox-public-release/contracts/release-contract.md",
+      "source_location": "L11",
+      "weight": 1.0,
+      "source": "contracts_release_contract_release_contract",
+      "target": "contracts_release_contract_release_notes_sections",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "specs/002-gamebasebox-public-release/contracts/release-contract.md",
+      "source_location": "L20",
+      "weight": 1.0,
+      "source": "contracts_release_contract_release_contract",
+      "target": "contracts_release_contract_required_artifact_behavior",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "specs/002-gamebasebox-public-release/contracts/release-contract.md",
+      "source_location": "L26",
+      "weight": 1.0,
+      "source": "contracts_release_contract_release_contract",
+      "target": "contracts_release_contract_verification",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "specs/002-gamebasebox-public-release/contracts/release-contract.md",
+      "source_location": "L5",
+      "weight": 1.0,
+      "source": "contracts_release_contract_release_contract",
+      "target": "contracts_release_contract_version",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "specs/002-gamebasebox-public-release/contracts/repository-contract.md",
+      "source_location": "L3",
+      "weight": 1.0,
+      "source": "contracts_repository_contract",
+      "target": "contracts_repository_contract_repository_publication_contract",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "specs/002-gamebasebox-public-release/contracts/repository-contract.md",
+      "source_location": "L5",
+      "weight": 1.0,
+      "source": "contracts_repository_contract_repository_publication_contract",
+      "target": "contracts_repository_contract_new_repository",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "specs/002-gamebasebox-public-release/contracts/repository-contract.md",
+      "source_location": "L27",
+      "weight": 1.0,
+      "source": "contracts_repository_contract_repository_publication_contract",
+      "target": "contracts_repository_contract_old_repository_redirect",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "specs/002-gamebasebox-public-release/contracts/repository-contract.md",
+      "source_location": "L14",
+      "weight": 1.0,
+      "source": "contracts_repository_contract_repository_publication_contract",
+      "target": "contracts_repository_contract_recommended_topics",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "specs/002-gamebasebox-public-release/contracts/repository-contract.md",
+      "source_location": "L32",
+      "weight": 1.0,
+      "source": "contracts_repository_contract_repository_publication_contract",
+      "target": "contracts_repository_contract_verification",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "specs/002-gamebasebox-public-release/data-model.md",
+      "source_location": "L3",
+      "weight": 1.0,
+      "source": "002_gamebasebox_public_release_data_model",
+      "target": "002_gamebasebox_public_release_data_model_data_model_gamebasebox_public_0_1_release",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "specs/002-gamebasebox-public-release/data-model.md",
+      "source_location": "L56",
+      "weight": 1.0,
+      "source": "002_gamebasebox_public_release_data_model_data_model_gamebasebox_public_0_1_release",
+      "target": "002_gamebasebox_public_release_data_model_oldrepositoryredirect",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "specs/002-gamebasebox-public-release/data-model.md",
+      "source_location": "L5",
+      "weight": 1.0,
+      "source": "002_gamebasebox_public_release_data_model_data_model_gamebasebox_public_0_1_release",
+      "target": "002_gamebasebox_public_release_data_model_productidentity",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "specs/002-gamebasebox-public-release/data-model.md",
+      "source_location": "L39",
+      "weight": 1.0,
+      "source": "002_gamebasebox_public_release_data_model_data_model_gamebasebox_public_0_1_release",
+      "target": "002_gamebasebox_public_release_data_model_releaseversion",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "specs/002-gamebasebox-public-release/data-model.md",
+      "source_location": "L21",
+      "weight": 1.0,
+      "source": "002_gamebasebox_public_release_data_model_data_model_gamebasebox_public_0_1_release",
+      "target": "002_gamebasebox_public_release_data_model_repositorypublication",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "specs/002-gamebasebox-public-release/plan.md",
+      "source_location": "L3",
+      "weight": 1.0,
+      "source": "002_gamebasebox_public_release_plan",
+      "target": "002_gamebasebox_public_release_plan_implementation_plan_gamebasebox_public_0_1_release",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "specs/002-gamebasebox-public-release/plan.md",
+      "source_location": "L104",
+      "weight": 1.0,
+      "source": "002_gamebasebox_public_release_plan_implementation_plan_gamebasebox_public_0_1_release",
+      "target": "002_gamebasebox_public_release_plan_complexity_tracking",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "specs/002-gamebasebox-public-release/plan.md",
+      "source_location": "L35",
+      "weight": 1.0,
+      "source": "002_gamebasebox_public_release_plan_implementation_plan_gamebasebox_public_0_1_release",
+      "target": "002_gamebasebox_public_release_plan_constitution_check",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "specs/002-gamebasebox-public-release/plan.md",
+      "source_location": "L81",
+      "weight": 1.0,
+      "source": "002_gamebasebox_public_release_plan_implementation_plan_gamebasebox_public_0_1_release",
+      "target": "002_gamebasebox_public_release_plan_phase_0_research_summary",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "specs/002-gamebasebox-public-release/plan.md",
+      "source_location": "L91",
+      "weight": 1.0,
+      "source": "002_gamebasebox_public_release_plan_implementation_plan_gamebasebox_public_0_1_release",
+      "target": "002_gamebasebox_public_release_plan_phase_1_design_summary",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "specs/002-gamebasebox-public-release/plan.md",
+      "source_location": "L45",
+      "weight": 1.0,
+      "source": "002_gamebasebox_public_release_plan_implementation_plan_gamebasebox_public_0_1_release",
+      "target": "002_gamebasebox_public_release_plan_project_structure",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "specs/002-gamebasebox-public-release/plan.md",
+      "source_location": "L9",
+      "weight": 1.0,
+      "source": "002_gamebasebox_public_release_plan_implementation_plan_gamebasebox_public_0_1_release",
+      "target": "002_gamebasebox_public_release_plan_summary",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "specs/002-gamebasebox-public-release/plan.md",
+      "source_location": "L15",
+      "weight": 1.0,
+      "source": "002_gamebasebox_public_release_plan_implementation_plan_gamebasebox_public_0_1_release",
+      "target": "002_gamebasebox_public_release_plan_technical_context",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "specs/002-gamebasebox-public-release/plan.md",
+      "source_location": "L47",
+      "weight": 1.0,
+      "source": "002_gamebasebox_public_release_plan_project_structure",
+      "target": "002_gamebasebox_public_release_plan_documentation_this_feature",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "specs/002-gamebasebox-public-release/plan.md",
+      "source_location": "L63",
+      "weight": 1.0,
+      "source": "002_gamebasebox_public_release_plan_project_structure",
+      "target": "002_gamebasebox_public_release_plan_source_code_repository_root",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "specs/002-gamebasebox-public-release/quickstart.md",
+      "source_location": "L3",
+      "weight": 1.0,
+      "source": "002_gamebasebox_public_release_quickstart",
+      "target": "002_gamebasebox_public_release_quickstart_quickstart_gamebasebox_public_0_1_release_validation",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "specs/002-gamebasebox-public-release/quickstart.md",
+      "source_location": "L33",
+      "weight": 1.0,
+      "source": "002_gamebasebox_public_release_quickstart_quickstart_gamebasebox_public_0_1_release_validation",
+      "target": "002_gamebasebox_public_release_quickstart_branding_audit",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "specs/002-gamebasebox-public-release/quickstart.md",
+      "source_location": "L44",
+      "weight": 1.0,
+      "source": "002_gamebasebox_public_release_quickstart_quickstart_gamebasebox_public_0_1_release_validation",
+      "target": "002_gamebasebox_public_release_quickstart_new_repository_verification",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "specs/002-gamebasebox-public-release/quickstart.md",
+      "source_location": "L59",
+      "weight": 1.0,
+      "source": "002_gamebasebox_public_release_quickstart_quickstart_gamebasebox_public_0_1_release_validation",
+      "target": "002_gamebasebox_public_release_quickstart_old_repository_verification",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "specs/002-gamebasebox-public-release/quickstart.md",
+      "source_location": "L5",
+      "weight": 1.0,
+      "source": "002_gamebasebox_public_release_quickstart_quickstart_gamebasebox_public_0_1_release_validation",
+      "target": "002_gamebasebox_public_release_quickstart_prerequisites",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "specs/002-gamebasebox-public-release/quickstart.md",
+      "source_location": "L51",
+      "weight": 1.0,
+      "source": "002_gamebasebox_public_release_quickstart_quickstart_gamebasebox_public_0_1_release_validation",
+      "target": "002_gamebasebox_public_release_quickstart_release_verification",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "specs/002-gamebasebox-public-release/quickstart.md",
+      "source_location": "L11",
+      "weight": 1.0,
+      "source": "002_gamebasebox_public_release_quickstart_quickstart_gamebasebox_public_0_1_release_validation",
+      "target": "002_gamebasebox_public_release_quickstart_validation_commands",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "specs/002-gamebasebox-public-release/research.md",
+      "source_location": "L3",
+      "weight": 1.0,
+      "source": "002_gamebasebox_public_release_research",
+      "target": "002_gamebasebox_public_release_research_research_gamebasebox_public_0_1_release",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "specs/002-gamebasebox-public-release/research.md",
+      "source_location": "L21",
+      "weight": 1.0,
+      "source": "002_gamebasebox_public_release_research_research_gamebasebox_public_0_1_release",
+      "target": "002_gamebasebox_public_release_research_decision_attach_built_artifacts_to_v0_1_0",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "specs/002-gamebasebox-public-release/research.md",
+      "source_location": "L36",
+      "weight": 1.0,
+      "source": "002_gamebasebox_public_release_research_research_gamebasebox_public_0_1_release",
+      "target": "002_gamebasebox_public_release_research_decision_keep_platform_support_claims_factual",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "specs/002-gamebasebox-public-release/research.md",
+      "source_location": "L29",
+      "weight": 1.0,
+      "source": "002_gamebasebox_public_release_research_research_gamebasebox_public_0_1_release",
+      "target": "002_gamebasebox_public_release_research_decision_preserve_existing_local_data_compatibility",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "specs/002-gamebasebox-public-release/research.md",
+      "source_location": "L13",
+      "weight": 1.0,
+      "source": "002_gamebasebox_public_release_research_research_gamebasebox_public_0_1_release",
+      "target": "002_gamebasebox_public_release_research_decision_publish_new_repository_as_gamebasebox_with_clean_history",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "specs/002-gamebasebox-public-release/research.md",
+      "source_location": "L5",
+      "weight": 1.0,
+      "source": "002_gamebasebox_public_release_research_research_gamebasebox_public_0_1_release",
+      "target": "002_gamebasebox_public_release_research_decision_use_gbbox_gamebase_box_as_public_identity",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "specs/002-gamebasebox-public-release/spec.md",
+      "source_location": "L3",
+      "weight": 1.0,
+      "source": "002_gamebasebox_public_release_spec",
+      "target": "002_gamebasebox_public_release_spec_feature_specification_gamebasebox_public_0_1_release",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "specs/002-gamebasebox-public-release/spec.md",
+      "source_location": "L105",
+      "weight": 1.0,
+      "source": "002_gamebasebox_public_release_spec_feature_specification_gamebasebox_public_0_1_release",
+      "target": "002_gamebasebox_public_release_spec_assumptions",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "specs/002-gamebasebox-public-release/spec.md",
+      "source_location": "L69",
+      "weight": 1.0,
+      "source": "002_gamebasebox_public_release_spec_feature_specification_gamebasebox_public_0_1_release",
+      "target": "002_gamebasebox_public_release_spec_requirements_mandatory",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "specs/002-gamebasebox-public-release/spec.md",
+      "source_location": "L94",
+      "weight": 1.0,
+      "source": "002_gamebasebox_public_release_spec_feature_specification_gamebasebox_public_0_1_release",
+      "target": "002_gamebasebox_public_release_spec_success_criteria_mandatory",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "specs/002-gamebasebox-public-release/spec.md",
+      "source_location": "L13",
+      "weight": 1.0,
+      "source": "002_gamebasebox_public_release_spec_feature_specification_gamebasebox_public_0_1_release",
+      "target": "002_gamebasebox_public_release_spec_user_scenarios_testing_mandatory",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "specs/002-gamebasebox-public-release/spec.md",
+      "source_location": "L61",
+      "weight": 1.0,
+      "source": "002_gamebasebox_public_release_spec_user_scenarios_testing_mandatory",
+      "target": "002_gamebasebox_public_release_spec_edge_cases",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "specs/002-gamebasebox-public-release/spec.md",
+      "source_location": "L15",
+      "weight": 1.0,
+      "source": "002_gamebasebox_public_release_spec_user_scenarios_testing_mandatory",
+      "target": "002_gamebasebox_public_release_spec_user_story_1_rebrand_the_app_identity_priority_p1",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "specs/002-gamebasebox-public-release/spec.md",
+      "source_location": "L31",
+      "weight": 1.0,
+      "source": "002_gamebasebox_public_release_spec_user_scenarios_testing_mandatory",
+      "target": "002_gamebasebox_public_release_spec_user_story_2_publish_a_new_public_repository_priority_p1",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "specs/002-gamebasebox-public-release/spec.md",
+      "source_location": "L47",
+      "weight": 1.0,
+      "source": "002_gamebasebox_public_release_spec_user_scenarios_testing_mandatory",
+      "target": "002_gamebasebox_public_release_spec_user_story_3_ship_version_0_1_0_with_release_artifacts_priority_p1",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "specs/002-gamebasebox-public-release/spec.md",
+      "source_location": "L71",
+      "weight": 1.0,
+      "source": "002_gamebasebox_public_release_spec_requirements_mandatory",
+      "target": "002_gamebasebox_public_release_spec_functional_requirements",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "specs/002-gamebasebox-public-release/spec.md",
+      "source_location": "L87",
+      "weight": 1.0,
+      "source": "002_gamebasebox_public_release_spec_requirements_mandatory",
+      "target": "002_gamebasebox_public_release_spec_key_entities",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "specs/002-gamebasebox-public-release/spec.md",
+      "source_location": "L96",
+      "weight": 1.0,
+      "source": "002_gamebasebox_public_release_spec_success_criteria_mandatory",
+      "target": "002_gamebasebox_public_release_spec_measurable_outcomes",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "specs/002-gamebasebox-public-release/tasks.md",
+      "source_location": "L3",
+      "weight": 1.0,
+      "source": "002_gamebasebox_public_release_tasks",
+      "target": "002_gamebasebox_public_release_tasks_tasks_gamebasebox_public_0_1_release",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "specs/002-gamebasebox-public-release/tasks.md",
+      "source_location": "L11",
+      "weight": 1.0,
+      "source": "002_gamebasebox_public_release_tasks_tasks_gamebasebox_public_0_1_release",
+      "target": "002_gamebasebox_public_release_tasks_phase_1_spec_closure_and_audit",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "specs/002-gamebasebox-public-release/tasks.md",
+      "source_location": "L17",
+      "weight": 1.0,
+      "source": "002_gamebasebox_public_release_tasks_tasks_gamebasebox_public_0_1_release",
+      "target": "002_gamebasebox_public_release_tasks_phase_2_product_rebrand",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "specs/002-gamebasebox-public-release/tasks.md",
+      "source_location": "L26",
+      "weight": 1.0,
+      "source": "002_gamebasebox_public_release_tasks_tasks_gamebasebox_public_0_1_release",
+      "target": "002_gamebasebox_public_release_tasks_phase_3_readme_and_repository_content",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "specs/002-gamebasebox-public-release/tasks.md",
+      "source_location": "L33",
+      "weight": 1.0,
+      "source": "002_gamebasebox_public_release_tasks_tasks_gamebasebox_public_0_1_release",
+      "target": "002_gamebasebox_public_release_tasks_phase_4_validation_and_build_artifacts",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "specs/002-gamebasebox-public-release/tasks.md",
+      "source_location": "L42",
+      "weight": 1.0,
+      "source": "002_gamebasebox_public_release_tasks_tasks_gamebasebox_public_0_1_release",
+      "target": "002_gamebasebox_public_release_tasks_phase_5_new_public_repository_and_release",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "specs/002-gamebasebox-public-release/tasks.md",
+      "source_location": "L53",
+      "weight": 1.0,
+      "source": "002_gamebasebox_public_release_tasks_tasks_gamebasebox_public_0_1_release",
+      "target": "002_gamebasebox_public_release_tasks_phase_6_old_repo_redirect_and_close_out",
+      "confidence_score": 1.0
+    },
+    {
       "relation": "references",
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
@@ -46143,5 +47483,5 @@
       "source_file": "GB64_Modern_Frontend_Requirements.md"
     }
   ],
-  "built_at_commit": "35f655b5aa06a88786f2e34a98f7e441559c194b"
+  "built_at_commit": "44cf6edb3c2792f5e01b122958fd39492c0e2c80"
 }

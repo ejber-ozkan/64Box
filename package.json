@@ -1,6 +1,6 @@
 {
-  "name": "vic40gamebox",
-  "version": "0.7.0",
+  "name": "gamebasebox",
+  "version": "0.1.0",
   "private": true,
   "scripts": {
     "dev": "next dev",

@@ -10,34 +10,34 @@
 
 ## Phase 1: Spec Closure and Audit
 
-- [ ] T001 Confirm `specs/001-multi-platform-gamebases/tasks.md` is complete and add any final completion note needed in `specs/001-multi-platform-gamebases/quickstart.md`
-- [ ] T002 Audit tracked files for `64Box`, `64box`, `VIC40GameBox`, `vic40gamebox`, old app titles, and visible logo references
-- [ ] T003 Identify branding assets that visibly contain 64Box and record replacement targets
+- [X] T001 Confirm `specs/001-multi-platform-gamebases/tasks.md` is complete and add any final completion note needed in `specs/001-multi-platform-gamebases/quickstart.md`
+- [X] T002 Audit tracked files for `64Box`, `64box`, `VIC40GameBox`, `vic40gamebox`, old app titles, and visible logo references
+- [X] T003 Identify branding assets that visibly contain 64Box and record replacement targets
 
 ## Phase 2: Product Rebrand
 
-- [ ] T004 Update app/package/product metadata to GBBox/GameBase Box and version `0.1.0`
-- [ ] T005 Update Tauri bundle/product metadata and icon/title references for GBBox
-- [ ] T006 Replace user-facing app copy in `src/` with GBBox/GameBase Box wording
-- [ ] T007 Replace public/static logo or icon assets that contain 64Box branding
-- [ ] T008 Update `.specify/memory/constitution.md` from 64Box governance wording to GBBox/GameBase Box wording
-- [ ] T009 Update docs that describe the current product identity and supported imports
+- [X] T004 Update app/package/product metadata to GBBox/GameBase Box and version `0.1.0`
+- [X] T005 Update Tauri bundle/product metadata and icon/title references for GBBox
+- [X] T006 Replace user-facing app copy in `src/` with GBBox/GameBase Box wording
+- [X] T007 Replace public/static logo or icon assets that contain 64Box branding
+- [X] T008 Update `.specify/memory/constitution.md` from 64Box governance wording to GBBox/GameBase Box wording
+- [X] T009 Update docs that describe the current product identity and supported imports
 
 ## Phase 3: README and Repository Content
 
-- [ ] T010 Rewrite the new repository README around GBBox/GameBase Box, supported imports, setup, and roadmap
-- [ ] T011 Add old-repository README redirect copy pointing users to the new GameBaseBox repo
-- [ ] T012 Prepare release notes source text for `v0.1.0`
-- [ ] T013 Verify branding search has no unintended 64Box references
+- [X] T010 Rewrite the new repository README around GBBox/GameBase Box, supported imports, setup, and roadmap
+- [X] T011 Add old-repository README redirect copy pointing users to the new GameBaseBox repo
+- [X] T012 Prepare release notes source text for `v0.1.0`
+- [X] T013 Verify branding search has no unintended 64Box references
 
 ## Phase 4: Validation and Build Artifacts
 
-- [ ] T014 Run `npm run lint`
-- [ ] T015 Run `npm run test:frontend`
-- [ ] T016 Run `npm run test:backend`
-- [ ] T017 Run `npm run build`
-- [ ] T018 Build Tauri release artifacts and record artifact paths
-- [ ] T019 Verify built artifacts use GBBox/GameBaseBox branding where packaging allows
+- [X] T014 Run `npm run lint`
+- [X] T015 Run `npm run test:frontend`
+- [X] T016 Run `npm run test:backend`
+- [X] T017 Run `npm run build`
+- [X] T018 Build Tauri release artifacts and record artifact paths
+- [X] T019 Verify built artifacts use GBBox/GameBaseBox branding where packaging allows
 
 ## Phase 5: New Public Repository and Release
 
@@ -53,5 +53,5 @@
 ## Phase 6: Old Repo Redirect and Close-Out
 
 - [ ] T028 Commit and push the old repository README redirect if it is maintained separately from the new clean-history repo
-- [ ] T029 Run `graphify update .` after source/doc changes
+- [X] T029 Run `graphify update .` after source/doc changes
 - [ ] T030 Close beads issues, run `bd dolt push`, push all relevant git remotes, and verify clean status

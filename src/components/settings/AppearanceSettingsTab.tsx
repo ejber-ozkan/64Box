@@ -17,7 +17,7 @@ export function AppearanceSettingsTab({
       <div className="rounded-xl border border-cyan-900/40 bg-cyan-950/15 p-5">
         <div className="text-xs font-bold uppercase tracking-[0.22em] text-cyan-200">Detail View</div>
         <p className="mt-2 max-w-3xl text-sm leading-6 text-cyan-50/75">
-          Single-game detail pages now use the responsive 64Box detail layout by default. The structure is modular so future visual styles can be added without bringing back separate theme-specific layouts.
+          Single-game detail pages now use the responsive GBBox detail layout by default. The structure is modular so future visual styles can be added without bringing back separate theme-specific layouts.
         </p>
       </div>
 
