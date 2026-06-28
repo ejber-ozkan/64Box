@@ -37,7 +37,7 @@ export function WindowGameListSection({
 
           return (
             <button
-              key={`${title}-${game.id}`}
+              key={`${title}-${game.id}-${index}`}
               type="button"
               onClick={() => onSelectGame(game)}
               className={`grid w-full grid-cols-[minmax(0,1.6fr)_120px_160px_140px] items-center gap-4 px-5 py-3 text-left transition-colors ${

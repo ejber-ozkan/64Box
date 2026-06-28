@@ -38,7 +38,7 @@ export function ListView({ games, onSelectGame, onSort, focusedIndex = -1, onFoc
             const favorited = isFavorite?.(game.id.toString()) ?? false;
             return (
             <tr
-              key={game.id}
+              key={`${game.id}-${index}`}
               onClick={() => onSelectGame(game)}
               onMouseEnter={() => onFocusChange?.(index)}
               className={`border-b border-gray-700 cursor-pointer transition-colors ${

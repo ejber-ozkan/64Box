@@ -30,7 +30,7 @@ export function GridView({ games, onSelectGame, focusedIndex = -1, onFocusChange
         const isFocused = focusedIndex === index;
         return (
         <div
-          key={game.id}
+          key={`${game.id}-${index}`}
           className={`p-2 rounded-lg cursor-pointer transition-all border shadow-lg flex flex-col ${
             isFocused 
               ? 'bg-blue-900/60 scale-105 border-blue-400 ring-2 ring-blue-500 shadow-blue-900/50' 
