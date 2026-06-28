@@ -1,11 +1,13 @@
 import { describe, expect, test } from 'vitest';
 import {
   ATARI800_REFERENCE_MDB_PATH,
+  EMBEDDED_EMULATION_PLATFORM_IDS,
   PLATFORM_EMULATOR_PROFILES,
   PLATFORM_PROFILES,
   SUPPORTED_PLATFORMS,
   createDefaultPlatformSettings,
   isPlatformId,
+  supportsEmbeddedEmulation,
 } from './platform-capabilities';
 
 describe('platform-capabilities', () => {
@@ -37,6 +39,13 @@ describe('platform-capabilities', () => {
     expect(PLATFORM_PROFILES.c64.inAppEmulation).toBe(true);
     expect(PLATFORM_PROFILES.atari800.inAppEmulation).toBe(false);
     expect(PLATFORM_EMULATOR_PROFILES['altirra-atari800'].platformId).toBe('atari800');
+  });
+
+  test('lists platforms with embedded emulator support explicitly', () => {
+    expect(EMBEDDED_EMULATION_PLATFORM_IDS).toEqual(['c64']);
+    expect(supportsEmbeddedEmulation('c64')).toBe(true);
+    expect(supportsEmbeddedEmulation('atari800')).toBe(false);
+    expect(supportsEmbeddedEmulation('atari2600')).toBe(false);
   });
 
   test('creates platform settings from profile defaults', () => {

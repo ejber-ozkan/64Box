@@ -110,9 +110,14 @@ export const PLATFORM_PROFILES: Record<PlatformId, PlatformProfile> = {
 };
 
 export const SUPPORTED_PLATFORMS = Object.values(PLATFORM_PROFILES);
+export const EMBEDDED_EMULATION_PLATFORM_IDS: readonly PlatformId[] = ['c64'];
 
 export function getPlatformProfile(platformId: PlatformId): PlatformProfile {
   return PLATFORM_PROFILES[platformId];
+}
+
+export function supportsEmbeddedEmulation(platformId: PlatformId): boolean {
+  return EMBEDDED_EMULATION_PLATFORM_IDS.includes(platformId);
 }
 
 export function isPlatformId(value: string): value is PlatformId {

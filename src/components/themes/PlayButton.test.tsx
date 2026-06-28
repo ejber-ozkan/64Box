@@ -81,4 +81,20 @@ describe('PlayButton platform launch requests', () => {
       });
     });
   });
+
+  it('shows the embedded play button for C64', () => {
+    currentSettings = makeSettings('c64');
+
+    render(<PlayButton game={mockGames[0]} />);
+
+    expect(screen.getByRole('button', { name: /play embedded/i })).toBeTruthy();
+  });
+
+  it('hides the embedded play button for Atari 800', () => {
+    currentSettings = makeSettings('atari800');
+
+    render(<PlayButton game={mockGames[0]} />);
+
+    expect(screen.queryByRole('button', { name: /play embedded/i })).toBeNull();
+  });
 });

@@ -7,6 +7,7 @@ import { Game } from '../../types/game';
 import { WasmPlayer } from '../WasmPlayer';
 import { DetailNavigationHook } from '../../hooks/useDetailNavigation';
 import { buildLaunchRequest, buildPlatformAssetPath, getPlatformLaunchSettings } from '../../lib/platform-launch';
+import { supportsEmbeddedEmulation } from '../../lib/platform-capabilities';
 
 export interface PlayLaunchTarget {
   label?: string;
@@ -54,6 +55,7 @@ export function PlayButton({ game, launchTarget, nav, compact = false }: PlayBut
   const launchSource = launchTarget?.source ?? 'roms';
   const romPath = buildPlatformAssetPath(settings, launchSource, romRelativePath);
   const platformLaunchSettings = getPlatformLaunchSettings(settings);
+  const canPlayEmbedded = supportsEmbeddedEmulation(settings.activePlatformId);
 
   const handlePlayNative = async () => {
     if (!platformLaunchSettings.emulatorPath) {
@@ -118,6 +120,10 @@ export function PlayButton({ game, launchTarget, nav, compact = false }: PlayBut
   };
 
   const handlePlayWeb = () => {
+    if (!canPlayEmbedded) {
+      return;
+    }
+
     if (!romRelativePath) {
       setStatus('error');
       setMessage('No ROM file linked to this game.');
@@ -167,23 +173,25 @@ export function PlayButton({ game, launchTarget, nav, compact = false }: PlayBut
               </span>
             </button>
           </div>
-          <div
-            onMouseEnter={() => nav && nav.hoverZone('play-web')}
-            className={`flex-1 rounded-lg transition-all ${nav ? nav.focusCls('play-web') : ''}`}
-          >
-            <button
-              id="play-browser-btn"
-              onClick={handlePlayWeb}
-              className={`grid w-full ${buttonGridClass} items-center gap-3 rounded-[14px] border text-left font-black transition-all ${buttonPaddingClass} ${webButtonClass}`}
-              style={{ minHeight: buttonMinHeight }}
+          {canPlayEmbedded && (
+            <div
+              onMouseEnter={() => nav && nav.hoverZone('play-web')}
+              className={`flex-1 rounded-lg transition-all ${nav ? nav.focusCls('play-web') : ''}`}
             >
-              <span className={`flex shrink-0 items-center justify-center rounded-[10px] bg-black/18 ${iconWrapClass} ${webIconClass}`}>
-                <EmbeddedGlyph className={iconGlyphClass} />
-              </span>
-              <span className={`min-w-0 truncate ${labelClass}`}>Play Embedded</span>
-              <span className={sideLabelClass}>Instant</span>
-            </button>
-          </div>
+              <button
+                id="play-browser-btn"
+                onClick={handlePlayWeb}
+                className={`grid w-full ${buttonGridClass} items-center gap-3 rounded-[14px] border text-left font-black transition-all ${buttonPaddingClass} ${webButtonClass}`}
+                style={{ minHeight: buttonMinHeight }}
+              >
+                <span className={`flex shrink-0 items-center justify-center rounded-[10px] bg-black/18 ${iconWrapClass} ${webIconClass}`}>
+                  <EmbeddedGlyph className={iconGlyphClass} />
+                </span>
+                <span className={`min-w-0 truncate ${labelClass}`}>Play Embedded</span>
+                <span className={sideLabelClass}>Instant</span>
+              </button>
+            </div>
+          )}
         </div>
 
         {message && (
@@ -198,7 +206,7 @@ export function PlayButton({ game, launchTarget, nav, compact = false }: PlayBut
         )}
       </div>
 
-      {showWasm && (
+      {showWasm && canPlayEmbedded && (
         <WasmPlayer
           romPath={romPath}
           onClose={() => setShowWasm(false)}
