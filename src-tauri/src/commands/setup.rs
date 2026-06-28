@@ -43,7 +43,15 @@ pub fn import_database_from_mdb(
     mdb_path: String,
 ) -> Result<DatabaseImportResult, String> {
     let _ = configure_runtime_db_path(&app)?;
-    import_mdb_to_sqlite(&mdb_path)
+    match import_mdb_to_sqlite(&mdb_path) {
+        Ok(res) => Ok(res),
+        Err(err) => {
+            if std::env::var("VIC40_DEBUG_LAUNCH").is_ok() {
+                eprintln!("[DEBUG IMPORT ERROR] Failed to import database: {}", err);
+            }
+            Err(err)
+        }
+    }
 }
 
 #[tauri::command]
@@ -56,17 +64,30 @@ pub fn import_platform_database_from_mdb(
     app: tauri::AppHandle,
     request: ImportPlatformDatabaseRequest,
 ) -> Result<PlatformDatabaseImportResult, String> {
-    validate_platform_import_request(&request)?;
+    if let Err(err) = validate_platform_import_request(&request) {
+        if std::env::var("VIC40_DEBUG_LAUNCH").is_ok() {
+            eprintln!("[DEBUG IMPORT ERROR] Validation failed for {}: {}", request.platform_id, err);
+        }
+        return Err(err);
+    }
     let _ = configure_runtime_db_path(&app)?;
-    let result = import_mdb_to_sqlite_for_platform(&request.mdb_path, &request.platform_id)?;
-
-    Ok(PlatformDatabaseImportResult {
-        platform_id: request.platform_id,
-        db_path: result.db_path,
-        exported_tables: result.exported_tables,
-        imported_tables: result.imported_tables,
-        game_count: 0,
-    })
+    match import_mdb_to_sqlite_for_platform(&request.mdb_path, &request.platform_id) {
+        Ok(result) => {
+            Ok(PlatformDatabaseImportResult {
+                platform_id: request.platform_id,
+                db_path: result.db_path,
+                exported_tables: result.exported_tables,
+                imported_tables: result.imported_tables,
+                game_count: 0,
+            })
+        }
+        Err(err) => {
+            if std::env::var("VIC40_DEBUG_LAUNCH").is_ok() {
+                eprintln!("[DEBUG IMPORT ERROR] Failed to import platform database for {}: {}", request.platform_id, err);
+            }
+            Err(err)
+        }
+    }
 }
 
 pub(super) fn validate_platform_import_request(
