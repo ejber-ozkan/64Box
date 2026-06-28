@@ -41,17 +41,17 @@
 
 ## Phase 5: New Public Repository and Release
 
-- [ ] T020 Create public GitHub repository `GameBaseBox`
-- [ ] T021 Populate `GameBaseBox` with clean initial history from release-ready source
-- [ ] T022 Configure GitHub repo description and topics for search visibility
-- [ ] T023 Push the release-ready source to the new repository
-- [ ] T024 Create and push tag `v0.1.0`
-- [ ] T025 Create GitHub release `GBBox 0.1.0` with full release notes
-- [ ] T026 Attach built release artifacts to `v0.1.0`
-- [ ] T027 Verify the new repo, release notes, tag, and attached artifacts from GitHub
+- [X] T020 Create public GitHub repository `GameBaseBox`
+- [X] T021 Populate `GameBaseBox` with clean initial history from release-ready source
+- [X] T022 Configure GitHub repo description and topics for search visibility
+- [X] T023 Push the release-ready source to the new repository
+- [X] T024 Create and push tag `v0.1.0`
+- [X] T025 Create GitHub release `GBBox 0.1.0` with full release notes
+- [X] T026 Attach built release artifacts to `v0.1.0`
+- [X] T027 Verify the new repo, release notes, tag, and attached artifacts from GitHub
 
 ## Phase 6: Old Repo Redirect and Close-Out
 
-- [ ] T028 Commit and push the old repository README redirect if it is maintained separately from the new clean-history repo
+- [X] T028 Commit and push the old repository README redirect if it is maintained separately from the new clean-history repo
 - [X] T029 Run `graphify update .` after source/doc changes
-- [ ] T030 Close beads issues, run `bd dolt push`, push all relevant git remotes, and verify clean status
+- [X] T030 Close beads issues, run `bd dolt push`, push all relevant git remotes, and verify clean status
