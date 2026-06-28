@@ -23,7 +23,22 @@ describe("platform import configuration", () => {
 
   test("keeps C64 as the imported compatibility baseline", () => {
     expect(platformImportConfigs.c64.defaultImported).toBe(true);
-    expect(getPlatformImportConfig("atari2600").status).toBe("planned");
+  });
+
+  test("defines Atari 2600 as an importable RetroArch platform", () => {
+    const atari2600 = getPlatformImportConfig("atari2600");
+
+    expect(atari2600.status).toBe("available");
+    expect(atari2600.defaultImported).toBe(false);
+    expect(atari2600.requiredFolders).toEqual([
+      "gamesPath",
+      "screenshotsPath",
+      "extrasPath",
+    ]);
+    expect(atari2600.musicExtensions).toEqual([]);
+    expect(atari2600.launchExtensions).toEqual(
+      expect.arrayContaining([".a26", ".bin", ".rom", ".zip"])
+    );
   });
 
   test("defines shared platform identity columns for imported library tables", () => {

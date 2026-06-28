@@ -94,7 +94,7 @@ pub(super) fn validate_platform_import_request(
     request: &ImportPlatformDatabaseRequest,
 ) -> Result<(), String> {
     match request.platform_id.as_str() {
-        "c64" | "atari800" => {}
+        "c64" | "atari800" | "atari2600" => {}
         other => return Err(format!("Unsupported platform import: {other}")),
     }
 
@@ -112,13 +112,21 @@ pub(super) fn validate_platform_import_request(
         return Err("Selected database must be an MDB file.".to_string());
     }
 
-    if request.platform_id == "atari800" {
-        reject_obvious_wrong_platform_mdb(mdb_path)?;
-        validate_existing_folder("Games", &request.folder_settings.games_path)?;
-        validate_existing_folder("Music", &request.folder_settings.music_path)?;
-        validate_existing_folder("Photos", &request.folder_settings.photos_path)?;
-        validate_existing_folder("Screenshots", &request.folder_settings.screenshots_path)?;
-        validate_existing_folder("Extras", &request.folder_settings.extras_path)?;
+    match request.platform_id.as_str() {
+        "atari800" => {
+            reject_obvious_wrong_platform_mdb(mdb_path)?;
+            validate_existing_folder("Games", &request.folder_settings.games_path)?;
+            validate_existing_folder("Music", &request.folder_settings.music_path)?;
+            validate_existing_folder("Photos", &request.folder_settings.photos_path)?;
+            validate_existing_folder("Screenshots", &request.folder_settings.screenshots_path)?;
+            validate_existing_folder("Extras", &request.folder_settings.extras_path)?;
+        }
+        "atari2600" => {
+            validate_existing_folder("Games", &request.folder_settings.games_path)?;
+            validate_existing_folder("Screenshots", &request.folder_settings.screenshots_path)?;
+            validate_existing_folder("Extras", &request.folder_settings.extras_path)?;
+        }
+        _ => {}
     }
 
     Ok(())

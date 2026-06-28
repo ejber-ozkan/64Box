@@ -43,13 +43,14 @@ type SetupFolderKey = keyof Pick<
   'gamesPath' | 'musicPath' | 'photosPath' | 'screenshotsPath' | 'extrasPath'
 >;
 
-const ATARI800_REQUIRED_FOLDER_KEYS: SetupFolderKey[] = [
-  'gamesPath',
-  'musicPath',
-  'photosPath',
-  'screenshotsPath',
-  'extrasPath',
-];
+const REQUIRED_PLATFORM_FOLDER_KEYS: Partial<Record<keyof typeof PLATFORM_PROFILES, SetupFolderKey[]>> = {
+  atari800: ['gamesPath', 'musicPath', 'photosPath', 'screenshotsPath', 'extrasPath'],
+  atari2600: ['gamesPath', 'screenshotsPath', 'extrasPath'],
+};
+
+function getRequiredPlatformFolderKeys(platformId: keyof typeof PLATFORM_PROFILES): SetupFolderKey[] {
+  return REQUIRED_PLATFORM_FOLDER_KEYS[platformId] ?? [];
+}
 
 function LibraryApp() {
   const { settings, updateSettings, setActivePlatform } = useSettings();
@@ -223,13 +224,11 @@ function LibraryApp() {
       return;
     }
 
-    if (settings.activePlatformId === 'atari800') {
-      const missingFolder = ATARI800_REQUIRED_FOLDER_KEYS
-        .find((folderKey) => !activePlatformSettings.folders[folderKey]?.trim());
-      if (missingFolder) {
-        setPlatformSetupError(`Select the ${missingFolder.replace('Path', '')} folder first.`);
-        return;
-      }
+    const missingFolder = getRequiredPlatformFolderKeys(settings.activePlatformId)
+      .find((folderKey) => !activePlatformSettings.folders[folderKey]?.trim());
+    if (missingFolder) {
+      setPlatformSetupError(`Select the ${missingFolder.replace('Path', '')} folder first.`);
+      return;
     }
 
     setIsPlatformImporting(true);
@@ -314,11 +313,7 @@ function LibraryApp() {
             displayName: platform.displayName,
             importStatus: settings.platformSettings[platform.id].library.importStatus,
           }))}
-          requiredFolderKeys={
-            settings.activePlatformId === 'atari800'
-              ? ATARI800_REQUIRED_FOLDER_KEYS
-              : []
-          }
+          requiredFolderKeys={getRequiredPlatformFolderKeys(settings.activePlatformId)}
           selectedPlatformId={settings.activePlatformId}
           onBrowse={handleBrowsePlatformMdb}
           onBrowseFolder={handleBrowsePlatformFolder}

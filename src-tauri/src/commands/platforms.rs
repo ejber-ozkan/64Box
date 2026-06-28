@@ -82,7 +82,7 @@ fn atari2600_profile() -> PlatformProfile {
     PlatformProfile {
         id: ATARI2600_PLATFORM_ID.to_string(),
         display_name: "Atari 2600".to_string(),
-        status: "planned".to_string(),
+        status: "available".to_string(),
         import_status: "notImported".to_string(),
         default_emulator_profile_id: "retroarch-atari2600".to_string(),
         supported_emulator_profile_ids: vec!["retroarch-atari2600".to_string()],
@@ -98,7 +98,7 @@ fn atari2600_profile() -> PlatformProfile {
                 .map(String::from)
                 .collect(),
         },
-        folder_types: vec!["games", "screenshots", "extras", "boxArt"]
+        folder_types: vec!["games", "screenshots", "extras"]
             .into_iter()
             .map(String::from)
             .collect(),

@@ -40,6 +40,18 @@ describe('platform-capabilities', () => {
     expect(ATARI800_REFERENCE_MDB_PATH).toContain('Atari 800 v12.mdb');
   });
 
+  test('defines Atari 2600 as an importable RetroArch platform', () => {
+    const atari2600 = PLATFORM_PROFILES.atari2600;
+
+    expect(atari2600.status).toBe('available');
+    expect(atari2600.importStatus).toBe('notImported');
+    expect(atari2600.folderTypes).toEqual(['games', 'screenshots', 'extras']);
+    expect(atari2600.mediaCapabilities.music).toBe('none');
+    expect(atari2600.defaultEmulatorProfileId).toBe('retroarch-atari2600');
+    expect(atari2600.supportedEmulatorProfileIds).toEqual(['retroarch-atari2600']);
+    expect(atari2600.launchExtensions).toEqual(expect.arrayContaining(['.a26', '.bin', '.rom', '.zip']));
+  });
+
   test('keeps SID and in-app emulation scoped to C64', () => {
     expect(PLATFORM_PROFILES.c64.mediaCapabilities.music).toBe('sid');
     expect(PLATFORM_PROFILES.c64.inAppEmulation).toBe(true);

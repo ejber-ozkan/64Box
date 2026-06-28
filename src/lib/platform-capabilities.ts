@@ -92,11 +92,11 @@ export const PLATFORM_PROFILES: Record<PlatformId, PlatformProfile> = {
   atari2600: {
     id: 'atari2600',
     displayName: 'Atari 2600',
-    status: 'planned',
+    status: 'available',
     importStatus: 'notImported',
     defaultEmulatorProfileId: 'retroarch-atari2600',
     supportedEmulatorProfileIds: ['retroarch-atari2600'],
-    folderTypes: ['games', 'screenshots', 'extras', 'boxArt'],
+    folderTypes: ['games', 'screenshots', 'extras'],
     mediaCapabilities: {
       screenshots: true,
       photos: false,

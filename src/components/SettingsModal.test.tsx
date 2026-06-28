@@ -49,6 +49,11 @@ function makeSettings(
   platformSettings.atari800.emulator.executablePaths['retroarch-atari800'] = 'C:/RetroArch/retroarch.exe';
   platformSettings.atari800.emulator.corePaths['retroarch-atari800'] = 'C:/RetroArch/cores/atari800_libretro.dll';
   platformSettings.atari800.emulator.executablePaths['altirra-atari800'] = 'C:/Altirra/Altirra64.exe';
+  platformSettings.atari2600.folders.gamesPath = 'F:/Atari2600/Games';
+  platformSettings.atari2600.folders.screenshotsPath = 'F:/Atari2600/Screenshots';
+  platformSettings.atari2600.folders.extrasPath = 'F:/Atari2600/Extras';
+  platformSettings.atari2600.emulator.executablePaths['retroarch-atari2600'] = 'C:/RetroArch/retroarch.exe';
+  platformSettings.atari2600.emulator.corePaths['retroarch-atari2600'] = 'C:/RetroArch/cores/stella_libretro.dll';
   importedPlatformIds.forEach((platformId) => {
     platformSettings[platformId].library.importStatus = 'imported';
   });
@@ -152,6 +157,19 @@ describe('SettingsView platform emulator settings', () => {
     expect(screen.getByText('Altirra')).toBeTruthy();
     expect(screen.getByText('RetroArch Atari800 Core')).toBeTruthy();
     expect(screen.getByText('Altirra Executable (Altirra64.exe)')).toBeTruthy();
+  });
+
+  test('shows Atari 2600 path controls and RetroArch settings from the imported Atari 2600 tab', () => {
+    currentSettings = makeSettings('c64', ['c64', 'atari2600']);
+
+    openSettingsTab('Atari 2600 Platform Paths');
+
+    expect(screen.getByDisplayValue('F:/Atari2600/Games')).toBeTruthy();
+    expect(screen.getByDisplayValue('F:/Atari2600/Screenshots')).toBeTruthy();
+    expect(screen.getByDisplayValue('F:/Atari2600/Extras')).toBeTruthy();
+    expect(screen.getByText('RetroArch Executable (retroarch.exe)')).toBeTruthy();
+    expect(screen.getByText('RetroArch Atari 2600 Core')).toBeTruthy();
+    expect(screen.queryByText('Altirra Executable (Altirra64.exe)')).toBeNull();
   });
 
   test('does not show scraped media in platform paths', () => {

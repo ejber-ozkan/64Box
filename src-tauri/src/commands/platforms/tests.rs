@@ -30,6 +30,27 @@ async fn test_get_supported_platforms_includes_atari800_capabilities() {
 }
 
 #[tokio::test(flavor = "current_thread")]
+async fn test_get_supported_platforms_includes_importable_atari2600_capabilities() {
+    let platforms = get_supported_platforms().await.unwrap();
+    let atari2600 = platforms
+        .iter()
+        .find(|platform| platform.id == "atari2600")
+        .expect("Atari 2600 profile should exist");
+
+    assert_eq!(atari2600.status, "available");
+    assert_eq!(atari2600.import_status, "notImported");
+    assert_eq!(atari2600.default_emulator_profile_id, "retroarch-atari2600");
+    assert_eq!(
+        atari2600.folder_types,
+        vec!["games".to_string(), "screenshots".to_string(), "extras".to_string()]
+    );
+    assert!(atari2600
+        .capabilities
+        .launch_extensions
+        .contains(&".a26".to_string()));
+}
+
+#[tokio::test(flavor = "current_thread")]
 async fn test_active_platform_defaults_to_c64() {
     let active = get_active_platform().await.unwrap();
 

@@ -63,9 +63,10 @@ const platformImportConfigs = {
   atari2600: {
     platformId: "atari2600",
     displayName: "Atari 2600",
-    status: "planned",
+    status: "available",
     defaultImported: false,
-    requiredFolders: ["gamesPath", "screenshotsPath"],
+    sourceMdbName: "Atari 2600.mdb",
+    requiredFolders: ["gamesPath", "screenshotsPath", "extrasPath"],
     musicExtensions: [],
     launchExtensions: [".a26", ".bin", ".rom", ".zip", ".7z"],
   },
