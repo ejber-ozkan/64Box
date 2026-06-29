@@ -1,5 +1,12 @@
 # 64Box
 
+# This is repo is now deprecated for a Multiplatform version, that supports other GameBase Databases.
+
+> The new public repository is [GameBaseBox](https://github.com/ejber-ozkan/GameBaseBox).
+
+>
+Old Information here for now:
+>
 A cross-platform (Windows, Mac, Linux) modern frontend for the **GameBase64** Commodore 64 game database. 
 
 > This project is a frontend for the GB64 Collection, the long-running Commodore 64 database project maintained by the GB64 Team. To learn more about the original project, visit [gb64.com](https://gb64.com/).  
